@@ -175,7 +175,7 @@ async function autoRefreshFx(){
 function renderAssets(){renderAccounts();renderAssetGrowth();const filter=$('accountFilter');filter.innerHTML='<option value="all">전체 계좌</option>'+data.accounts.map(a=>'<option value="'+safe(a.id)+'">'+safe(a.name)+'</option>').join('');if(!data.accounts.some(a=>a.id===selectedAccount))selectedAccount='all';filter.value=selectedAccount;const investment=data.holdings.reduce((a,h)=>a+assetValue(h),0),cost=data.holdings.reduce((a,h)=>a+assetCost(h),0),net=netAsset(),pct=data.fire.goal>0?Math.max(0,fireLiquid())/(data.fire.goal*10000)*100:0;
 $('netWorth').textContent=won(net);$('investmentValue').textContent=won(investment);$('investProfit').textContent=(investment-cost>=0?'+':'')+won(investment-cost);$('assetGoalPct').textContent=pct.toFixed(1)+'%';$('assetProgress').style.width=Math.max(0,Math.min(100,pct))+'%';$('assetsSub').textContent='자산 '+won(investment+accountAmount()+Number(data.balance.cash||0)+Number(data.balance.other||0))+' − 부채 '+won(data.balance.debt||0);
 for(const [key,field] of [['fx','assetFx'],['cash','assetCash'],['other','assetOther'],['debt','assetDebt']])$(field).value=data.balance[key]??0;if(data.balance.fxAt)$('fxStatus').textContent='마지막 환율 기준일 '+data.balance.fxAt+' · 1 USD = '+Number(data.balance.fx).toLocaleString('ko-KR')+'원';
-$('holdingList').innerHTML=data.holdings.filter(h=>selectedAccount==='all'||h.accountId===selectedAccount).length?data.holdings.filter(h=>selectedAccount==='all'||h.accountId===selectedAccount).sort((a,b)=>assetValue(b)-assetValue(a)).map(h=>{const val=assetValue(h),gain=val-assetCost(h),ret=assetCost(h)>0?gain/assetCost(h)*100:0;return `<div class="tx"><div class="txicon">${h.type.startsWith('CRYPTO')?'₿':'📈'}</div><div class="txmain"><strong>${safe(h.type==='KRW'&&h.quoteName?h.quoteName:h.ticker)} <small style="font-weight:400;color:var(--sub)">· ${safe(data.accounts.find(a=>a.id===h.accountId)?.name||'미분류')}</small></strong><span>${Number(h.qty).toLocaleString('ko-KR')}주 · ${Number(h.price).toLocaleString('ko-KR')} ${h.type.endsWith('USD')?'USD':'원'}${h.type==='KRW'&&h.quoteName?' · '+safe(h.ticker):''}</span><span style="color:${gain>=0?'var(--green)':'var(--red)'}">${gain>=0?'+':''}${won(gain)} (${ret.toFixed(1)}%)</span></div><strong>${won(val)}</strong><button data-holding="${safe(h.id)}" aria-label="종목 수정">✎</button></div>`}).join(''):'<div class="empty">아직 보유 종목이 없어요. 종목을 등록해 보세요.</div>';
+$('holdingList').innerHTML=data.holdings.filter(h=>selectedAccount==='all'||h.accountId===selectedAccount).length?data.holdings.filter(h=>selectedAccount==='all'||h.accountId===selectedAccount).sort((a,b)=>assetValue(b)-assetValue(a)).map(h=>{const val=assetValue(h),gain=val-assetCost(h),ret=assetCost(h)>0?gain/assetCost(h)*100:0;return `<div class="tx"><div class="txicon">${h.type.startsWith('CRYPTO')?'₿':'📈'}</div><div class="txmain"><strong>${safe(h.type==='KRW'&&h.quoteName?h.quoteName:h.ticker)} <small style="font-weight:400;color:var(--sub)">· ${safe(data.accounts.find(a=>a.id===h.accountId)?.name||'미분류')}</small></strong><span>${Number(h.qty).toLocaleString('ko-KR')}주 · ${Number(h.price).toLocaleString('ko-KR')} ${h.type.endsWith('USD')?'USD':'원'}${h.type==='KRW'&&h.quoteName?' · '+safe(h.ticker):''}</span><span style="color:${gain>=0?'var(--green)':'var(--red)'}">${gain>=0?'+':''}${won(gain)} (${ret.toFixed(1)}%)</span><span style="font-weight:650;color:${Number.isFinite(Number(h.dayChangePct))&&h.dayChangeAt?(Number(h.dayChangePct)>=0?'var(--green)':'var(--red)'):'var(--sub)'}">전일 대비 ${Number.isFinite(Number(h.dayChangePct))&&h.dayChangePct!==null&&h.dayChangePct!==undefined&&h.dayChangeAt?(Number(h.dayChangePct)>=0?'+':'')+Number(h.dayChangePct).toFixed(2)+'%':'—'}</span></div><strong>${won(val)}</strong><button data-holding="${safe(h.id)}" aria-label="종목 수정">✎</button></div>`}).join(''):'<div class="empty">아직 보유 종목이 없어요. 종목을 등록해 보세요.</div>';
 $('holdingList').querySelectorAll('[data-holding]').forEach(e=>e.onclick=()=>openHolding(data.holdings.find(h=>h.id===e.dataset.holding)));
 const milestones=[10000000,30000000,50000000,100000000,200000000,300000000,500000000,650000000,1000000000];$('assetBadges').innerHTML=milestones.map(n=>`<div class="stat" style="opacity:${net>=n?1:.45};text-align:center"><div style="font-size:24px">${net>=n?'🏆':'🔒'}</div><strong>${n>=100000000?n/100000000+'억':n/10000000+'천만'}</strong></div>`).join('');}
 const KR_STOCK_NAMES=[['005930','삼성전자'],['000660','SK하이닉스'],['035420','NAVER'],['035720','카카오'],['005380','현대차'],['068270','셀트리온'],['373220','LG에너지솔루션'],['207940','삼성바이오로직스'],['360750','TIGER 미국S&P500'],['379800','KODEX 미국S&P500TR'],['379810','KODEX 미국나스닥100TR'],['133690','TIGER 미국나스닥100'],['069500','KODEX 200'],['102110','TIGER 200'],['305540','TIGER 2차전지테마'],['252670','KODEX 200선물인버스2X']];
@@ -273,7 +273,7 @@ async function refreshStockPrices(retryOnly){
     quote=payload;krQuoteCache.set(code,{quote,time:Date.now()});
    }
    const at=new Date().toISOString();
-   data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){h.price=Number(quote.price);h.quoteAt=at;if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}});
+   data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){h.price=Number(quote.price);h.quoteAt=at;const prev=Number(quote.previous_close??quote.prevClose);h.dayChangePct=Number.isFinite(prev)&&prev>0?(Number(quote.price)-prev)/prev*100:null;h.dayChangeAt=h.dayChangePct===null?null:at;if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}});
    persist();ok++;
   }catch(e){failed.push({symbol:'KR:'+code,reason:String(e.message).slice(0,160)})}
   priceStatus('국내 조회 '+(i+1)+'/'+krSymbols.length);quoteProgress(++quoteDone,quoteTotal);
@@ -283,13 +283,14 @@ async function refreshStockPrices(retryOnly){
   try{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
    let response;
-   try{response=await fetch('https://api.twelvedata.com/price?symbol='+encodeURIComponent(symbol)+'&apikey='+encodeURIComponent(key),{signal:controller.signal,cache:'no-store'})}finally{clearTimeout(timer)}
+   try{response=await fetch('https://api.twelvedata.com/quote?symbol='+encodeURIComponent(symbol)+'&apikey='+encodeURIComponent(key),{signal:controller.signal,cache:'no-store'})}finally{clearTimeout(timer)}
    const payload=await response.json();
    if(!response.ok||payload.status==='error')throw Error((payload.message||'HTTP '+response.status)+' [코드 '+(payload.code||response.status)+']');
-   let price=Number(payload.price);
+   let price=Number(payload.close??payload.price);
    if(!Number.isFinite(price)||price<=0)throw Error('유효한 가격 없음');
+   const prev=Number(payload.previous_close),pct=Number.isFinite(prev)&&prev>0?(price-prev)/prev*100:null;
    const at=new Date().toISOString();
-   data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker===symbol){h.price=price;h.quoteAt=at}});
+   data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker===symbol){h.price=price;h.quoteAt=at;h.dayChangePct=pct;h.dayChangeAt=pct===null?null:at}});
    persist();ok++;
   }catch(e){
    let reason=String(e.message);
@@ -300,7 +301,7 @@ async function refreshStockPrices(retryOnly){
      try{resp=await fetch('https://api.twelvedata.com/time_series?symbol=SGOV&interval=1day&outputsize=1&apikey='+encodeURIComponent(key),{signal:c.signal,cache:'no-store'})}finally{clearTimeout(t)}
      const body=await resp.json();const close=Number(body.values?.[0]?.close);
      if(!resp.ok||body.status==='error'||!Number.isFinite(close)||close<=0)throw Error(body.message||'종가 조회 불가');
-     const at=new Date().toISOString();data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker==='SGOV'){h.price=close;h.quoteAt=at}});persist();ok++;reason='';
+     const at=new Date().toISOString();data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker==='SGOV'){h.price=close;h.quoteAt=at;h.dayChangePct=null;h.dayChangeAt=null}});persist();ok++;reason='';
     }catch(fallbackError){reason+=' / SGOV 종가 조회: '+String(fallbackError.message)}
    }
    if(reason)failed.push({symbol,reason:reason.slice(0,160)});

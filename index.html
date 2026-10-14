@@ -89,13 +89,13 @@ $('executeTransfer').onclick=()=>{
  const to=data.accounts.find(a=>a.id===$('transferTo').value);if(!to)return toast('받는 계좌를 선택해 주세요');
  if($('transferType').value==='holding'){
   const h=data.holdings.find(x=>x.id===$('transferHolding').value);if(!h||h.accountId===to.id)return toast('이동할 종목과 계좌를 확인해 주세요');
-  const before=netAsset();h.accountId=to.id;if(Math.abs(netAsset()-before)>0.01)return toast('이동 금액 검증에 실패했어요');
-  if(!persist())return;modal('transferOverlay',false);render();toast(h.ticker+' 종목을 이동했어요');
+  const before=netAsset(),previousAccount=h.accountId;h.accountId=to.id;if(Math.abs(netAsset()-before)>0.01){h.accountId=previousAccount;return toast('이동 금액 검증에 실패했어요')}
+  if(!persist()){h.accountId=previousAccount;return}modal('transferOverlay',false);render();toast(h.ticker+' 종목을 이동했어요');
  }else{
   const from=data.accounts.find(a=>a.id===$('transferFrom').value),amount=Number($('transferAmount').value);
   if(!from||from.id===to.id||!Number.isSafeInteger(amount)||amount<=0||amount>Number(from.amount)||!Number.isSafeInteger(Number(from.amount))||!Number.isSafeInteger(Number(to.amount)))return toast('잔액과 이동 금액을 확인해 주세요');
   const before=netAsset();from.amount-=amount;to.amount+=amount;if(Math.abs(netAsset()-before)>0.01){from.amount+=amount;to.amount-=amount;return toast('이동 금액 검증에 실패했어요')}
-  if(!persist())return;modal('transferOverlay',false);render();toast(won(amount)+' 이동 완료');
+  if(!persist()){from.amount+=amount;to.amount-=amount;return}modal('transferOverlay',false);render();toast(won(amount)+' 이동 완료');
  }
 };
 let editingAccount=null;

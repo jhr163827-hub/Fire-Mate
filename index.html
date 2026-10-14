@@ -82,7 +82,7 @@ function showAccountDetail(id){
  modal('accountDetailOverlay',true);
 }
 $('accountDetailEdit').onclick=()=>{modal('accountDetailOverlay',false);editAccount(accountDetailId)};
-$('openLegacyMove').onclick=()=>{
+if($('openLegacyMove'))$('openLegacyMove').onclick=()=>{
  if(!data.accounts.length)return toast('먼저 계좌를 추가해 주세요');
  $('legacyMoveTarget').innerHTML=data.accounts.map(a=>'<option value="'+safe(a.id)+'">'+safe(a.name)+'</option>').join('');
  $('legacyMoveAmount').value='';$('legacyMoveSource').value='cash';updateLegacyAvailable();modal('legacyMoveOverlay',true);

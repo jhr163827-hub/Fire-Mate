@@ -95,16 +95,20 @@ function priceStatus(message){const key=localStorage.getItem(PRICE_KEY);const lo
 $('stockApiKey').value=localStorage.getItem(PRICE_KEY)||'';
 $('saveStockKey').onclick=()=>{const key=$('stockApiKey').value.trim();if(!/^[a-zA-Z0-9]{8,128}$/.test(key))return toast('API 키를 확인해 주세요');try{localStorage.setItem(PRICE_KEY,key)}catch{return toast('키 저장에 실패했어요')}priceStatus('키 저장 완료');toast('API 키는 이 기기에만 저장됩니다')};
 $('clearStockKey').onclick=()=>{localStorage.removeItem(PRICE_KEY);$('stockApiKey').value='';priceStatus('키 삭제 완료')};
-let quoteBusy=false;
-$('refreshStocks').onclick=async()=>{
+let quoteBusy=false,failedSymbols=[];
+const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className=$('refreshStocks').className;retryStocks.style.marginLeft='8px';retryStocks.hidden=true;$('refreshStocks').insertAdjacentElement('afterend',retryStocks);
+retryStocks.onclick=()=>refreshStockPrices(true);
+$('refreshStocks').onclick=()=>refreshStockPrices(false);
+async function refreshStockPrices(retryOnly){
  if(quoteBusy)return;
  const key=localStorage.getItem(PRICE_KEY);if(!key)return toast('먼저 Twelve Data API 키를 저장해 주세요');
- const symbols=[...new Set(data.holdings.filter(h=>h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
+ const allSymbols=[...new Set(data.holdings.filter(h=>h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
+ const symbols=retryOnly?allSymbols.filter(x=>failedSymbols.includes(x)):allSymbols;
  if(!symbols.length)return toast('조회할 미국 주식·ETF를 먼저 등록해 주세요');
  const logs=todayChecks();
  if(!navigator.onLine)return toast('인터넷 연결을 확인해 주세요');
  if(!confirm(symbols.length+'개 종목을 조회할까요? 무료 API 크레딧이 사용됩니다.'))return;
- quoteBusy=true;$('refreshStocks').disabled=true;let ok=0,failed=[];
+ quoteBusy=true;$('refreshStocks').disabled=true;retryStocks.disabled=true;let ok=0,failed=[];
  // Record refresh attempt for status display, including failed requests.
  localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:new Date().toISOString()}]));
  priceStatus('조회 중…');
@@ -114,20 +118,34 @@ $('refreshStocks').onclick=async()=>{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
    let response;
    try{response=await fetch('https://api.twelvedata.com/price?symbol='+encodeURIComponent(symbol)+'&apikey='+encodeURIComponent(key),{signal:controller.signal,cache:'no-store'})}finally{clearTimeout(timer)}
-   if(!response.ok)throw Error('HTTP '+response.status);
-   const payload=await response.json(),price=Number(payload.price);
-   if(payload.status==='error'||!Number.isFinite(price)||price<=0)throw Error(payload.message||'가격 없음');
+   const payload=await response.json();
+   if(!response.ok||payload.status==='error')throw Error((payload.message||'HTTP '+response.status)+' [코드 '+(payload.code||response.status)+']');
+   let price=Number(payload.price);
+   if(!Number.isFinite(price)||price<=0)throw Error('유효한 가격 없음');
    const at=new Date().toISOString();
    data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker===symbol){h.price=price;h.quoteAt=at}});
    persist();ok++;
-  }catch(e){failed.push(symbol+' ('+String(e.message).slice(0,70)+')')}
+  }catch(e){
+   let reason=String(e.message);
+   // SGOV fallback: use latest available daily closing price if /price fails for a non-quota reason.
+   if(symbol==='SGOV'&&!/429|403|401|credits|limit|quota/i.test(reason)){
+    try{
+     const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);let resp;
+     try{resp=await fetch('https://api.twelvedata.com/time_series?symbol=SGOV&interval=1day&outputsize=1&apikey='+encodeURIComponent(key),{signal:c.signal,cache:'no-store'})}finally{clearTimeout(t)}
+     const body=await resp.json();const close=Number(body.values?.[0]?.close);
+     if(!resp.ok||body.status==='error'||!Number.isFinite(close)||close<=0)throw Error(body.message||'종가 조회 불가');
+     const at=new Date().toISOString();data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker==='SGOV'){h.price=close;h.quoteAt=at}});persist();ok++;reason='';
+    }catch(fallbackError){reason+=' / SGOV 종가 조회: '+String(fallbackError.message)}
+   }
+   if(reason)failed.push({symbol,reason:reason.slice(0,160)});
+  }
   priceStatus('조회 중 '+(i+1)+'/'+symbols.length);
   // Basic free tier allows eight credits per minute; pace requests conservatively.
   if(i<symbols.length-1)await new Promise(resolve=>setTimeout(resolve,8500));
  }
- quoteBusy=false;$('refreshStocks').disabled=false;render();priceStatus(ok+'개 갱신 · '+failed.length+'개 실패');
- if(failed.length)toast('조회 실패: '+failed.slice(0,2).join(', ')+' · 기존 가격 유지');else toast(ok+'개 종목의 가격을 갱신했어요');
-};
+ quoteBusy=false;$('refreshStocks').disabled=false;retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;render();priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
+ if(failed.length)toast('실패: '+failed.map(x=>x.symbol).join(', ')+' · 기존 가격 유지');else toast(ok+'개 종목의 가격을 갱신했어요');
+}
 priceStatus();
 
 syncRecurring();render();})();

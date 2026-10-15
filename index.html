@@ -329,7 +329,7 @@ function renderCal(){
  $('fmCalendarBudget').style.color=budget&&budget<t.expense?'var(--red)':'var(--txt)';if(document.activeElement!==$('fmLedgerBudgetValue'))$('fmLedgerBudgetValue').value=budget?moneyFormat(budget):'';
  $('fmLedgerCompare').textContent=prev.expense?'지난달보다 '+won(Math.abs(t.expense-prev.expense))+(t.expense>prev.expense?' 더 지출':t.expense<prev.expense?' 덜 지출':' 동일'):'이번 달 지출을 한눈에 확인하세요';
  $('selectedTitle').textContent=selected+' 거래';
- listTo($('dayTx'),data.tx.filter(t=>t.date===selected));
+ listTo($('dayTx'),data.tx.filter(t=>t.date===selected&&t.type!=='transfer'));
  fmLedgerSetMode(fmLedgerMode);fmLedgerAnalytics();
 }
 $('fmModeCalendar').onclick=()=>fmLedgerSetMode('calendar');

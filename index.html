@@ -662,7 +662,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-26';
+ const BUILD='fire-mate-v3-0-27';
  const KEY='firemate_pwa_last_accepted_v2';
  const SEEN='firemate_pwa_last_prompted_v2';
  let reg=null,checking=false,dialogOpen=false,applying=false,lastRemote='',dismissed='';
@@ -711,7 +711,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
   navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{reg=r;check();r.addEventListener('updatefound',()=>{const worker=r.installing;if(!worker)return;worker.addEventListener('statechange',()=>{if(worker.state==='installed')check()})})}).catch(e=>console.warn('PWA registration failed',e));
  });
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){dismissed='';check()}});
- window.addEventListener('online',check);
+ window.addEventListener('online',check);window.addEventListener('pageshow',check);setInterval(()=>{if(!document.hidden)check()},60000);
 })();
 </script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{
@@ -720,7 +720,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(home){const hero=home.querySelectorAll(':scope > .hero')[1];if(hero){hero.classList.add('fm-expense-hero');const d=document.createElement('details');d.className='fm-secondary-details';d.innerHTML='<summary>소비 분석 · 최근 거래 자세히</summary>';const nodes=Array.from(home.children).filter(e=>e!==home.firstElementChild&&e!==hero&&e.id!=='fmHomeActivity'&&!e.classList.contains('home-shortcuts'));home.append(d);nodes.forEach(e=>d.append(e));const summary=document.createElement('div');summary.className='fm-budget-preview';summary.innerHTML='<div class="fm-budget-heading">가계부 한눈에</div><div class="fm-budget-metrics"><div><small>이번 달 지출</small><strong id="fmBudgetExpense">₩0</strong></div><div><small>이번 달 수입</small><strong id="fmBudgetIncome">₩0</strong></div></div><div class="fm-budget-links"><button type="button" data-go="calendar">소비 달력 →</button><button type="button" data-go="history">거래 내역 →</button><button type="button" data-go="insights">지출 분석 →</button></div>';hero.after(summary);const update=()=>{summary.querySelector('#fmBudgetExpense').textContent=document.getElementById('heroSpent')?.textContent||'₩0';summary.querySelector('#fmBudgetIncome').textContent=document.getElementById('homeIncome')?.textContent||'₩0'};update();new MutationObserver(update).observe(document.getElementById('heroSpent'),{childList:true,characterData:true,subtree:true});new MutationObserver(update).observe(document.getElementById('homeIncome'),{childList:true,characterData:true,subtree:true});summary.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector('.tab[data-view="'+b.dataset.go+'"]')?.click()))}}
  const assets=document.getElementById('view-assets');
  if(assets){const a=document.getElementById('accountSummary')?.closest('.card'),h=document.getElementById('holdingList')?.closest('.grid'),g=document.getElementById('assetGrowthChart')?.closest('.card'),m=document.getElementById('snapshotList')?.closest('.card');
- if(a)assets.querySelector(':scope > .hero')?.after(a);if(h&&a)a.after(h);
+ const donut=assets.querySelector('.fm-asset-composition'),switcher=assets.querySelector('.fm-asset-switch');if(donut&&switcher)donut.after(switcher);if(h&&switcher)switcher.after(h);if(a&&h)h.after(a);
  if(g&&m){const d=document.createElement('details');d.className='fm-secondary-details';d.innerHTML='<summary>자산 성장 그래프 · 월별 기록</summary>';assets.append(d);d.append(g,m)}
  }
  }catch(e){console.warn('Layout refinement:',e)}

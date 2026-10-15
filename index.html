@@ -13,7 +13,7 @@
 
 /* Compact finance UI polish */
 .card,.hero{border-radius:19px}.cardhead{gap:10px;align-items:center}.cardhead h3{letter-spacing:-.35px}.mini,.notice{line-height:1.5}.hero .light.small{line-height:1.4}.secondary,.primary,.iconbtn{transition:background .15s ease,transform .12s ease}.secondary:active,.primary:active,.iconbtn:active{transform:scale(.98)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:2px}@media(max-width:640px){.app{padding-left:14px;padding-right:14px}.card,.hero{padding:17px}.cardhead h3{font-size:16px}.home-shortcuts small{display:none}.home-shortcuts button{min-height:48px}.hero-row{gap:8px}.hero-stat strong{overflow-wrap:anywhere}#accountSummary .tx{gap:9px}#holdingSearchResults button{min-height:48px}}
-</style><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><style id="asset-readability">#view-assets #holdingList .txmain>strong{font-size:15px;line-height:1.5;overflow-wrap:anywhere}#view-assets #holdingList .txmain>span{font-size:12px;line-height:1.55}#view-assets #holdingList .txamount{font-size:15px;font-weight:750;white-space:nowrap}#view-assets #holdingList .tx{gap:8px}#accountDetails summary::marker{color:var(--green)}#accountDetails[open] summary{margin-bottom:10px}</style><meta name="firemate-release" content="20261015-back-navigation"><style>#view-assets .card{border-radius:20px}#view-assets .cardhead h3{letter-spacing:-.035em}#view-assets #accountSummary .tx{border-bottom:1px solid var(--line)}#view-assets #accountSummary .tx:last-child{border-bottom:0}#view-assets #holdingList .tx{padding-top:15px;padding-bottom:15px}#view-assets #holdingList .tx strong{letter-spacing:-.02em}#accountOverlay input[type=text],#holdingOverlay input[type=text]{font-variant-numeric:tabular-nums}</style><style>
+</style><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><style id="asset-readability">#view-assets #holdingList .txmain>strong{font-size:15px;line-height:1.5;overflow-wrap:anywhere}#view-assets #holdingList .txmain>span{font-size:12px;line-height:1.55}#view-assets #holdingList .txamount{font-size:15px;font-weight:750;white-space:nowrap}#view-assets #holdingList .tx{gap:8px}#accountDetails summary::marker{color:var(--green)}#accountDetails[open] summary{margin-bottom:10px}</style><meta name="firemate-release" content="fire-mate-v3-0-24"><style>#view-assets .card{border-radius:20px}#view-assets .cardhead h3{letter-spacing:-.035em}#view-assets #accountSummary .tx{border-bottom:1px solid var(--line)}#view-assets #accountSummary .tx:last-child{border-bottom:0}#view-assets #holdingList .tx{padding-top:15px;padding-bottom:15px}#view-assets #holdingList .tx strong{letter-spacing:-.02em}#accountOverlay input[type=text],#holdingOverlay input[type=text]{font-variant-numeric:tabular-nums}</style><style>
 #view-assets .fm-account-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:transparent;border:0;color:inherit;padding:15px 3px;min-height:72px}
 #view-assets .fm-account-left{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
 #view-assets .fm-account-name{font-size:15px;font-weight:760;overflow-wrap:anywhere;line-height:1.3}
@@ -660,43 +660,55 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- let reg=null,checking=false,applying=false,dialogOpen=false,declined=false;
- const close=()=>{document.getElementById('fmPwaDialog')?.remove();dialogOpen=false};
- const ask=()=>{
-  if(applying||dialogOpen||declined||!reg?.waiting||!navigator.serviceWorker.controller)return;
-  dialogOpen=true;
-  const overlay=document.createElement('div');
-  overlay.id='fmPwaDialog';
-  overlay.setAttribute('role','presentation');
-  overlay.style.cssText='position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:22px';
-  const panel=document.createElement('div');
-  panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','FIRE MATE 업데이트');
+ const BUILD='fire-mate-v3-0-24';
+ const KEY='firemate_pwa_last_accepted_v2';
+ const SEEN='firemate_pwa_last_prompted_v2';
+ let reg=null,checking=false,dialogOpen=false,applying=false,lastRemote='',dismissed='';
+ const get=k=>{try{return localStorage.getItem(k)||''}catch{return ''}};
+ const put=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
+ const clearDialog=()=>{document.getElementById('fmPwaDialog')?.remove();dialogOpen=false};
+ const show=(remote)=>{
+  if(dialogOpen||applying||!remote||remote===dismissed)return;
+  dialogOpen=true;put(SEEN,remote);
+  const overlay=document.createElement('div');overlay.id='fmPwaDialog';
+  overlay.style.cssText='position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px';
+  const panel=document.createElement('div');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','FIRE MATE 업데이트');
   panel.style.cssText='width:100%;max-width:380px;background:#16212f;color:#f5f8fa;border:1px solid #334254;border-radius:22px;padding:24px;box-shadow:0 20px 60px #0009;font-family:system-ui,sans-serif';
-  panel.innerHTML='<div style="font-size:23px;font-weight:800;margin-bottom:14px">✨ FIRE MATE 업데이트</div><p style="color:#c6d1dc;line-height:1.65;margin:0 0 22px">새로운 버전이 준비됐어요.<br>지금 업데이트하시겠습니까?</p><div style="display:flex;gap:10px"><button type="button" data-action="later" style="flex:1;padding:13px 8px;border-radius:12px;border:1px solid #364558;background:#202d3e;color:#e3eaf0;font-weight:700;font-size:14px">나중에</button><button type="button" data-action="now" style="flex:1;padding:13px 8px;border-radius:12px;border:0;background:#40cba2;color:#071e18;font-weight:800;font-size:14px">지금 업데이트</button></div>';
-  panel.querySelector('[data-action="later"]').onclick=()=>{declined=true;close()};
-  panel.querySelector('[data-action="now"]').onclick=()=>{
-   if(!reg?.waiting)return;
-   applying=true;panel.querySelector('[data-action="now"]').textContent='적용 중…';
-   reg.waiting.postMessage({type:'SKIP_WAITING'});
+  panel.innerHTML='<div style="font-size:21px;font-weight:800;margin-bottom:14px">✨ FIRE MATE 업데이트</div><p style="color:#c6d1dc;line-height:1.6;margin:0 0 20px">새 버전이 준비됐어요.<br>지금 업데이트하시겠습니까?</p><div style="display:flex;gap:10px"><button type="button" data-later style="flex:1;padding:13px 8px;border-radius:12px;border:1px solid #364558;background:#202d3e;color:#e3eaf0;font-weight:700">나중에</button><button type="button" data-now style="flex:1;padding:13px 8px;border-radius:12px;border:0;background:#40cba2;color:#071e18;font-weight:800">지금 업데이트</button></div>';
+  panel.querySelector('[data-later]').onclick=()=>{dismissed=remote;clearDialog()};
+  panel.querySelector('[data-now]').onclick=()=>{
+   applying=true;put(KEY,remote);panel.querySelector('[data-now]').textContent='업데이트 중…';
+   if(reg?.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'});setTimeout(()=>location.reload(),5000)}
+   else location.reload();
   };
   overlay.append(panel);document.body.append(overlay);
  };
+ const readRemote=async()=>{
+  const response=await fetch('./sw.js?fm_check='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('update fetch '+response.status);
+  const code=await response.text();
+  return (code.match(/const CACHE=['"]([^'"]+)['"]/)||[])[1]||'';
+ };
+ const check=async()=>{
+  if(checking||applying||!navigator.onLine)return;
+  checking=true;
+  try{
+   const remote=await readRemote();lastRemote=remote;
+   if(reg)await reg.update();
+   // Compare deployed build to the HTML currently running, not only the waiting worker:
+   // a new worker may have already activated before the UI was opened.
+   if(remote&&remote!==BUILD&&remote!==get(KEY))show(remote);
+   // First install / previously auto-activated worker: record that the running
+   // build has been seen, so merely reopening this build does not prompt.
+   if(!get(KEY))put(KEY,BUILD);
+  }catch(e){console.warn('FIRE MATE update check failed',e)}
+  finally{checking=false}
+ };
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(applying)location.reload()});
- const watch=r=>{
-  reg=r;if(r.waiting)ask();
-  r.addEventListener('updatefound',()=>{
-   const worker=r.installing;if(!worker)return;
-   worker.addEventListener('statechange',()=>{if(worker.state==='installed')ask()});
-  });
- };
- const check=()=>{
-  if(!reg||checking||!navigator.onLine)return;
-  checking=true;reg.update().then(()=>{if(reg.waiting)ask()}).catch(()=>{}).finally(()=>{checking=false});
- };
  window.addEventListener('load',()=>{
-  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{watch(r);check()}).catch(e=>console.warn('PWA registration failed',e));
+  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{reg=r;check();r.addEventListener('updatefound',()=>{const worker=r.installing;if(!worker)return;worker.addEventListener('statechange',()=>{if(worker.state==='installed')check()})})}).catch(e=>console.warn('PWA registration failed',e));
  });
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){declined=false;check()}});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){dismissed='';check()}});
  window.addEventListener('online',check);
 })();
 </script><script id="fm-layout">

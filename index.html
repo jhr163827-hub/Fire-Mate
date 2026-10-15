@@ -686,6 +686,12 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
   if(applying)return;
   applying=true;btn.textContent='업데이트 적용 중…';btn.disabled=true;
   try{
+   // Preflight before activating a waiting worker. Never switch to a build
+   // whose HTML has not yet been deployed or whose version disagrees.
+   const preflight=await fetch('./index.html?preflight='+Date.now(),{cache:'no-store'});
+   if(!preflight.ok)throw Error('새 버전 다운로드 실패');
+   const preflightHtml=await preflight.text();
+   if(!preflightHtml.includes("const BUILD='"+remote+"'"))throw Error('배포 버전 불일치');
    if(reg){await reg.update();if(reg.waiting){
     const controlled=!!navigator.serviceWorker.controller;
     if(controlled){
@@ -701,6 +707,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
    if(!response.ok)throw Error('새 화면 다운로드 실패');
    const html=await response.text();
    if(!html.includes("const BUILD='"+remote+"'"))throw Error('배포된 HTML 버전이 일치하지 않습니다');
+   // Record intent only. A successful running build is the source of truth.
    write(approvedKey,remote);
    location.replace(url);
   }catch(e){

@@ -719,97 +719,40 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-44',VERSION='3.0.44';
- let busy=false,registration=null;
+ const BUILD='fire-mate-v3-0-45',VERSION='3.0.45';
+ let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
  button.style.cssText='font-size:12px;white-space:nowrap;padding:7px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.15';
- const reset=()=>{button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인'};
- reset();
- document.querySelector('header.top .right')?.prepend(button);
- const showUpdateDialog=(next)=>new Promise(resolve=>{
-  const overlay=document.createElement('div');
-  overlay.id='fmUpdateDialog';
-  overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,10,22,.78);backdrop-filter:blur(8px)';
-  const card=document.createElement('div');
-  card.style.cssText='width:min(100%,360px);border-radius:24px;padding:28px 24px 22px;background:linear-gradient(145deg,#202c45,#111827);color:#f8fafc;border:1px solid rgba(148,163,184,.25);box-shadow:0 24px 80px rgba(0,0,0,.55);text-align:center;font-family:inherit';
-  const heading=document.createElement('div');heading.textContent='새 업데이트가 준비됐어요';heading.style.cssText='font-size:21px;font-weight:800;margin:14px 0 9px';
-  const icon=document.createElement('div');icon.textContent='✦';icon.style.cssText='width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);margin:auto;display:grid;place-items:center;font-size:32px;color:white';
-  const subtitle=document.createElement('div');subtitle.textContent='FIRE MATE를 최신 버전으로 업데이트할까요?';subtitle.style.cssText='font-size:13px;color:#cbd5e1;line-height:1.6';
-  const versions=document.createElement('div');versions.textContent='v'+VERSION+'  →  '+next.replace('fire-mate-v','').replaceAll('-', '.');versions.style.cssText='padding:12px;margin:19px 0;background:rgba(255,255,255,.07);border-radius:12px;font-size:14px;font-weight:700';
+ const reset=()=>{button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>'};
+ reset();document.querySelector('header.top .right')?.prepend(button);
+ const modal=(title,message,choices)=>new Promise(resolve=>{
+  const shade=document.createElement('div');shade.style.cssText='position:fixed;inset:0;z-index:2147483647;background:rgba(4,10,24,.78);backdrop-filter:blur(8px);display:grid;place-items:center;padding:20px';
+  const card=document.createElement('div');card.style.cssText='width:min(100%,360px);padding:26px 22px;border-radius:24px;background:linear-gradient(145deg,#233450,#111827);color:#f8fafc;box-shadow:0 20px 70px #0009;text-align:center;font-family:inherit;border:1px solid #64748b66';
+  const star=document.createElement('div');star.textContent='✦';star.style.cssText='margin:auto;width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:grid;place-items:center;font-size:30px';
+  const head=document.createElement('h3');head.textContent=title;head.style.cssText='font-size:20px;margin:18px 0 10px';
+  const desc=document.createElement('p');desc.textContent=message;desc.style.cssText='font-size:14px;color:#cbd5e1;line-height:1.6;margin:0 0 22px';
   const actions=document.createElement('div');actions.style.cssText='display:flex;gap:10px';
-  const later=document.createElement('button');later.type='button';later.textContent='나중에';later.style.cssText='flex:1;border:1px solid #475569;border-radius:13px;padding:13px;background:#334155;color:white;font-weight:700';
-  const now=document.createElement('button');now.type='button';now.textContent='지금 업데이트';now.style.cssText='flex:1.3;border:0;border-radius:13px;padding:13px;background:#60a5fa;color:#0f172a;font-weight:800';
-  const done=value=>{overlay.remove();resolve(value)};
-  later.onclick=()=>done(false);now.onclick=()=>done(true);
-  actions.append(later,now);card.append(icon,heading,subtitle,versions,actions);overlay.append(card);document.body.append(overlay);
- });
- const readBuild=async(path)=>{
-  const response=await fetch(path+(path.includes('?')?'&':'?')+'v='+Date.now(),{cache:'no-store'});
-  if(!response.ok)throw Error('서버 버전을 확인하지 못했어');
-  return response.text();
- };
- const waitInstalled=async(reg)=>{
-  if(reg.waiting)return reg.waiting;
-  const worker=reg.installing;
-  if(!worker)throw Error('새 서비스워커를 찾지 못했어');
-  if(worker.state==='installed')return worker;
-  await new Promise((resolve,reject)=>{
-   const timeout=setTimeout(()=>reject(Error('설치 대기 시간 초과')),20000);
-   worker.addEventListener('statechange',()=>{
-    if(worker.state==='installed'){clearTimeout(timeout);resolve()}
-    if(worker.state==='redundant'){clearTimeout(timeout);reject(Error('설치 실패'))}
-   });
-  });
-  return reg.waiting||worker;
- };
- const waitController=()=>new Promise((resolve,reject)=>{
-  const timeout=setTimeout(()=>reject(Error('새 버전 전환 시간 초과')),15000);
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timeout);resolve()},{once:true});
+  choices.forEach((choice,i)=>{const btn=document.createElement('button');btn.type='button';btn.textContent=choice;btn.style.cssText='flex:1;padding:13px 8px;border-radius:12px;border:0;font-weight:800;background:'+(i===choices.length-1?'#60a5fa':'#334155')+';color:'+(i===choices.length-1?'#0f172a':'white');btn.onclick=()=>{shade.remove();resolve(i)};actions.append(btn)});
+  card.append(star,head,desc,actions);shade.append(card);document.body.append(shade);
  });
  button.onclick=async()=>{
-  if(busy)return;
-  busy=true;button.disabled=true;button.textContent='확인 중…';
+  if(busy)return;busy=true;button.disabled=true;button.textContent='확인 중…';
   try{
-   if(!navigator.onLine)throw Error('인터넷 연결을 확인해 줘');
-   // GitHub Pages can publish HTML and SW at different moments.
-   // Retry the read-only preflight instead of surfacing a deployment race to the user.
-   let next='',ready=false;
-   for(let attempt=0;attempt<12;attempt++){
-    const swText=await readBuild('./sw.js');
-    const match=swText.match(/const CACHE=['"]([^'"]+)['"]/);
-    if(!match)throw Error('서비스워커 버전 확인 실패');
-    next=match[1];
-    if(next===BUILD){button.textContent='✓ 최신 버전';return}
-    const html=await readBuild('./index.html');
-    if(html.includes("const BUILD='"+next+"'")){ready=true;break}
-    button.textContent='배포 확인 중…';
-    await new Promise(resolve=>setTimeout(resolve,2500));
-   }
-   if(!ready)throw Error('배포가 아직 완료되지 않았어. 잠시 후 다시 확인해 줘');
-   if(!await showUpdateDialog(next)){button.textContent='업데이트 보류';return}
-   button.textContent='설치 중…';
-   registration=registration||await navigator.serviceWorker.getRegistration('./');
-   if(!registration)registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
-   await registration.update();
-   const waiting=await waitInstalled(registration);
-   if(waiting.state!=='installed')throw Error('새 버전 설치가 완료되지 않았어');
-   const changed=waitController();
-   waiting.postMessage({type:'SKIP_WAITING'});
-   await changed;
-   button.textContent='적용 중…';
-   location.replace('./index.html?updated='+encodeURIComponent(next)+'&t='+Date.now());
-  }catch(error){
-   alert('업데이트 실패: '+error.message+'\n기존 데이터는 삭제되지 않았어.');
-  }finally{
-   busy=false;button.disabled=false;
-   setTimeout(reset,2500);
-  }
+   const response=await fetch('./index.html?check='+Date.now(),{cache:'no-store'});
+   if(!response.ok)throw Error('서버 연결에 실패했어');
+   const html=await response.text();
+   const match=html.match(/const BUILD='(fire-mate-v[0-9-]+)'/);
+   if(!match)throw Error('버전 확인에 실패했어');
+   if(match[1]===BUILD){await modal('최신 버전이에요','현재 v'+VERSION+'을 사용 중이야.',['확인']);return}
+   const next=match[1].replace('fire-mate-v','').replaceAll('-','.');
+   if(await modal('새 업데이트가 준비됐어요','v'+VERSION+' → v'+next+'\\n지금 업데이트할까요?',['나중에','지금 업데이트'])!==1)return;
+   button.textContent='업데이트 중…';
+   location.replace('./index.html?updated='+Date.now());
+  }catch(e){await modal('업데이트 확인 실패',e.message+' 기존 데이터는 그대로 유지돼.',['확인'])}
+  finally{busy=false;button.disabled=false;reset()}
  };
- window.addEventListener('load',async()=>{
-  try{registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})}
-  catch(error){console.warn('서비스워커 등록 실패',error)}
- });
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(console.warn));
 })();
 </script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{

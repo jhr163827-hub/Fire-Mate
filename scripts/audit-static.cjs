@@ -16,7 +16,7 @@ if(!html.includes("PRICE_KEY"))throw Error('Stock quote storage integration miss
 if(!html.includes("history.pushState")||!html.includes("popstate"))throw Error('Navigation history integration missing');
 if(!html.includes("function persist()"))throw Error('Persistence entry point missing');
 if(!worker.includes("self.skipWaiting()"))throw Error('Update activation path missing');
-if(/caches\\.delete\\(|indexedDB\\.deleteDatabase\\(|localStorage\\.clear\\(/.test(worker))throw Error('Destructive cache or data operation detected');
+if(/caches\.delete\(|indexedDB\.deleteDatabase\(|localStorage\.clear\(/.test(worker))throw Error('Destructive cache or data operation detected');
 
 const build=html.match(/const BUILD=['"]([^'"]+)['"]/);
 const cache=worker.match(/const CACHE=['"]([^'"]+)['"]/);

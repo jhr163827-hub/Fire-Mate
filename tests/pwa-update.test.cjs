@@ -1,3 +1,4 @@
+const vm=require('node:vm');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const html=fs.readFileSync('index.html','utf8');
@@ -19,6 +20,7 @@ test('Preflight HTML before worker activation',()=>{const i=html.indexOf("const 
 test('Worker install validates cached build',()=>{assert.match(sw,/Staged HTML does not match worker version/);assert.match(sw,/cached\.text\(\)/);});
 test('Preflight bypasses cached navigation',()=>{assert.match(sw,/url\.searchParams\.has\('preflight'\)/);assert.match(sw,/response\.ok&&url\.searchParams\.has\('updated'\)/);});
 test('Worker activation does not delete rollback cache',()=>{const activation=sw.split("self.addEventListener('activate'")[1].split("self.addEventListener('message'")[0];assert.doesNotMatch(activation,/caches\.delete/);});
+test('Service worker JavaScript parses and registers listeners',()=>{const handlers={};vm.runInNewContext(sw,{self:{location:{origin:'https://example.com'},addEventListener:(name,handler)=>{handlers[name]=handler}},caches:{},fetch:()=>{} ,URL,Request,Response,Promise});for(const event of ['install','activate','message','fetch'])assert.equal(typeof handlers[event],'function');});
 const failed=results.filter(x=>!x.ok).length;
 console.log('\n'+results.length+' static checks; '+failed+' failed. NOTE: static checks do NOT prove installed Android PWA behavior.');
 process.exitCode=failed?1:0;

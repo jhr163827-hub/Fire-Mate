@@ -101,6 +101,40 @@ body{letter-spacing:-.015em}.top{margin-bottom:15px}.logo{font-size:20px}
  #view-home .fm-expense-hero .hero-stat:nth-child(3){display:none}
  #view-home .fm-expense-hero .progress{display:none}
 }
+</style><style id="fm-v3-home-compact">
+/* Compact intrinsic home cards, with a viewport-safe fallback for small phones. */
+@media(max-width:700px){
+body:has(#view-home.active) .app{padding-top:8px;padding-bottom:calc(75px + env(safe-area-inset-bottom))}
+body:has(#view-home.active) .top{margin-bottom:8px;min-height:40px}
+body:has(#view-home.active) #view-home{justify-content:flex-start;gap:10px}
+#view-home #homeAssetHero{flex:0 1 auto;justify-content:initial;gap:8px;padding:16px!important}
+#view-home #homeAssetHero .big{margin:2px 0;font-size:clamp(26px,7vw,36px)}
+#view-home #homeAssetHero>.light.small:nth-of-type(2){display:none}
+#view-home #homeDailyChange{font-size:11px!important;white-space:nowrap;text-overflow:ellipsis;display:block!important;overflow:hidden;line-height:1.3}
+#view-home #homeAssetHero .hero-row{margin:3px 0 0}
+#view-home #homeAssetHero .progress{margin:3px 0;height:6px}
+#view-home #homeAssetHero .fm-fire-eta{display:flex;flex-direction:row;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:3px;padding-top:10px;gap:8px}
+#view-home #homeAssetHero .fm-fire-eta>strong{font-size:clamp(17px,4.8vw,23px);white-space:nowrap}
+#view-home #homeAssetHero .fm-fire-eta>small{display:none}
+#view-home>.hero.fm-expense-hero,#view-home>.hero:nth-child(2){flex:0 1 auto;justify-content:initial;gap:7px;padding:16px!important}
+#view-home .fm-expense-hero .big{font-size:clamp(24px,6.2vw,31px)}
+#view-home .fm-expense-hero .hero-row{margin:3px 0 0}
+#view-home .fm-expense-hero .hero-stat:nth-child(3){display:none}
+#view-home .fm-expense-hero .progress{display:none}
+#view-home .fm-expense-hero #heroCompare{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media(max-width:700px) and (max-height:760px){
+#view-home #homeAssetHero{gap:5px;padding:12px!important}
+#view-home>.hero.fm-expense-hero,#view-home>.hero:nth-child(2){gap:5px;padding:12px!important}
+body:has(#view-home.active) #view-home{gap:7px}
+#view-home #homeDailyChange{display:none!important}
+}
+@media(max-width:700px) and (max-height:570px){
+#view-home #homeAssetHero .hero-row{margin:0}
+#view-home #homeAssetHero .fm-fire-eta{padding-top:5px}
+#view-home .fm-expense-hero #heroCompare{display:none}
+#view-home .fm-expense-hero .hero-row{margin:0}
+}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">

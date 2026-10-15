@@ -8,7 +8,7 @@ const important=(html.match(/!important/g)||[]).length;
 const ids=[...html.matchAll(/\bid=["']([^"']+)["']/g)].map(x=>x[1]);
 const duplicateIds=[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];
 const worker=fs.readFileSync('sw.js','utf8');
-const inlineJs=[...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(x=>x[1]);
+const inlineJs=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x=>x[1]);
 const requiredIds=['netWorth','accountSummary','holdingList','refreshStocks','view-assets','view-calendar','view-home'];
 for(const id of requiredIds){if(!ids.includes(id))throw Error('Missing core element: '+id)}
 if(!html.includes("K='firemate_smart_v3'"))throw Error('Core storage key changed');

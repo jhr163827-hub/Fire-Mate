@@ -271,12 +271,14 @@ async function refreshStockPrices(retryOnly){
  const krSymbols=retryOnly?allKr.filter(x=>failedSymbols.includes('KR:'+x)):allKr;
  const allSymbols=[...new Set(data.holdings.filter(h=>h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
  const symbols=retryOnly?allSymbols.filter(x=>failedSymbols.includes(x)):allSymbols;
- if(!symbols.length&&!krSymbols.length){priceStatus('조회 대상 없음');return toast('조회할 종목이 없어요. 국내 종목은 6자리 코드가 필요해요')}
+ const cryptoAll=[...new Set(data.holdings.filter(h=>h.type==='CRYPTO_KRW'&&['BTC','ETH'].includes(String(h.ticker||'').toUpperCase())).map(h=>String(h.ticker).toUpperCase()))];
+ const cryptoSymbols=retryOnly?cryptoAll.filter(x=>failedSymbols.includes('COIN:'+x)):cryptoAll;
+ if(!symbols.length&&!krSymbols.length&&!cryptoSymbols.length){priceStatus('조회 대상 없음');return toast('조회할 종목이 없어요. 국내 종목은 6자리 코드가 필요해요')}
  if(symbols.length&&!key){priceStatus('미국 주식 API 키 미설정');return toast('Twelve Data API 키를 설정에서 저장해 주세요')}
  const logs=todayChecks();
  if(!navigator.onLine){priceStatus('오프라인 · 조회 중단');return toast('인터넷 연결을 확인해 주세요')}
- priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개');if(!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.')){priceStatus('사용자가 조회 취소');return;}
- quoteBusy=true;$('refreshStocks').disabled=true;retryStocks.disabled=true;let ok=0,failed=[],changed=0;const quoteTotal=krSymbols.length+symbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
+ priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');if(!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.')){priceStatus('사용자가 조회 취소');return;}
+ quoteBusy=true;$('refreshStocks').disabled=true;retryStocks.disabled=true;let ok=0,failed=[],changed=0;const quoteTotal=krSymbols.length+symbols.length+cryptoSymbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
  // Record refresh attempt for status display, including failed requests.
  localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:new Date().toISOString()}]));
  priceStatus('조회 중…');
@@ -300,6 +302,30 @@ async function refreshStockPrices(retryOnly){
    persist();ok++;
   }catch(e){failed.push({symbol:'KR:'+code,reason:String(e.message).slice(0,160)})}
   priceStatus('국내 조회 '+(i+1)+'/'+krSymbols.length);quoteProgress(++quoteDone,quoteTotal);
+ }
+ // Upbit public KRW ticker: no API key required. Preserve prices if unavailable.
+ if(cryptoSymbols.length){
+  try{
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+   let response;
+   try{response=await fetch('https://api.upbit.com/v1/ticker?markets='+cryptoSymbols.map(x=>'KRW-'+x).join(','),{signal:controller.signal,cache:'no-store'})}
+   finally{clearTimeout(timer)}
+   if(!response.ok)throw Error('업비트 HTTP '+response.status);
+   const quotes=await response.json();
+   if(!Array.isArray(quotes))throw Error('업비트 응답 형식 오류');
+   for(const symbol of cryptoSymbols){
+    try{
+     const q=quotes.find(x=>x.market==='KRW-'+symbol),price=Number(q?.trade_price);
+     if(!Number.isFinite(price)||price<=0)throw Error('유효한 현재가 없음');
+     const pct=Number(q.signed_change_rate);
+     const at=new Date().toISOString();
+     data.holdings.forEach(h=>{if(h.type==='CRYPTO_KRW'&&String(h.ticker).toUpperCase()===symbol){if(Number(h.price)!==price)changed++;h.price=price;h.quoteAt=at;h.dayChangePct=Number.isFinite(pct)?pct*100:null;h.dayChangeAt=Number.isFinite(pct)?at:null}});
+     persist();ok++;
+    }catch(e){failed.push({symbol:'COIN:'+symbol,reason:String(e.message).slice(0,160)})}
+    quoteProgress(++quoteDone,quoteTotal);
+   }
+  }catch(e){for(const symbol of cryptoSymbols){failed.push({symbol:'COIN:'+symbol,reason:String(e.message).slice(0,160)});quoteProgress(++quoteDone,quoteTotal)}}
+  priceStatus('코인 조회 완료 · '+cryptoSymbols.length+'개');
  }
  for(let i=0;i<symbols.length;i++){
   const symbol=symbols[i];

@@ -17,6 +17,7 @@ test('Persistent app data not cleared by updater',()=>{const updater=html.split(
 test('Old HTML remains until explicit approval',()=>{assert.match(sw,/cached\|\|fetch\(request\)/);assert.match(sw,/event\.data\?\.type==='SKIP_WAITING'/);});
 test('Preflight HTML before worker activation',()=>{const i=html.indexOf("const preflight=await fetch(");const j=html.indexOf("reg.waiting.postMessage({type:'SKIP_WAITING'})");assert.ok(i>=0&&j>i);assert.match(html,/preflightHtml\.includes/);});
 test('Worker install validates cached build',()=>{assert.match(sw,/Staged HTML does not match worker version/);assert.match(sw,/cached\.text\(\)/);});
+test('Preflight bypasses cached navigation',()=>{assert.match(sw,/url\.searchParams\.has\('preflight'\)/);assert.match(sw,/response\.ok&&url\.searchParams\.has\('updated'\)/);});
 test('Worker activation does not delete rollback cache',()=>{const activation=sw.split("self.addEventListener('activate'")[1].split("self.addEventListener('message'")[0];assert.doesNotMatch(activation,/caches\.delete/);});
 const failed=results.filter(x=>!x.ok).length;
 console.log('\n'+results.length+' static checks; '+failed+' failed. NOTE: static checks do NOT prove installed Android PWA behavior.');

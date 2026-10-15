@@ -921,7 +921,7 @@ function fmQuoteLabel(){
   if(!v||!Number.isFinite(v.time))return '시세 갱신 기록 없음';
   const d=new Date(v.time),now=new Date(),same=d.toDateString()===now.toDateString();
   const when=(same?'오늘 ':'')+d.toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit',hour12:true});
-  return '◷ 마지막 시세 조회 · '+when+' · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'');
+  return '◷ 마지막 시세 조회 · '+when+' · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'')+(Number.isFinite(v.seconds)?' · '+v.seconds.toFixed(1)+'초':'');
  }catch{return '시세 갱신 기록 없음'}
 }
 function fmShowQuoteTime(){
@@ -953,7 +953,10 @@ async function refreshStockPrices(retryOnly){
  // Record refresh attempt for status display, including failed requests.
  localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:new Date().toISOString()}]));
  priceStatus('조회 중…');
- // Avoid repeated KRX requests during the same session.
+ // Query independent markets concurrently. US requests still obey Twelve Data credit limits.
+ const fmQuoteStarted=performance.now();
+ await Promise.all([
+  (async()=>{ // Avoid repeated KRX requests during the same session.
  for(let i=0;i<krSymbols.length;i++){
   const code=krSymbols[i];
   try{
@@ -974,7 +977,9 @@ async function refreshStockPrices(retryOnly){
   }catch(e){failed.push({symbol:'KR:'+code,reason:String(e.message).slice(0,160)})}
   priceStatus('국내 조회 '+(i+1)+'/'+krSymbols.length);quoteProgress(++quoteDone,quoteTotal);
  }
- // Upbit public KRW ticker: no API key required. Preserve prices if unavailable.
+
+  })(),
+  (async()=>{ // Upbit public KRW ticker: no API key required. Preserve prices if unavailable.
  if(cryptoSymbols.length){
   try{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
@@ -998,7 +1003,9 @@ async function refreshStockPrices(retryOnly){
   }catch(e){for(const symbol of cryptoSymbols){failed.push({symbol:'COIN:'+symbol,reason:String(e.message).slice(0,160)});quoteProgress(++quoteDone,quoteTotal)}}
   priceStatus('코인 조회 완료 · '+cryptoSymbols.length+'개');
  }
- let batchHandled=false;
+
+  })(),
+  (async()=>{ let batchHandled=false;
  if(symbols.length>1){
   try{
    priceStatus('미국 종목 일괄 조회 중…');
@@ -1063,7 +1070,11 @@ async function refreshStockPrices(retryOnly){
  }
 
  }
- quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify({time:Date.now(),ok,total:quoteTotal,failed:failed.length}))}catch(e){console.warn(e)}fmShowQuoteTime();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
+
+  })()
+ ]);
+ const fmQuoteSeconds=((performance.now()-fmQuoteStarted)/1000).toFixed(1);
+ quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify({time:Date.now(),ok,total:quoteTotal,failed:failed.length,seconds:Number(fmQuoteSeconds)}))}catch(e){console.warn(e)}fmShowQuoteTime();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
  if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개');priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+(failed.length?' · '+failed.map(x=>x.symbol+': '+x.reason).join('; '):''));
 }
 priceStatus();
@@ -1074,7 +1085,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-72',VERSION='3.0.72';
+ const BUILD='fire-mate-v3-0-73',VERSION='3.0.73';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

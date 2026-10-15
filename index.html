@@ -876,6 +876,8 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
     worker.postMessage({type:'SKIP_WAITING'});
     await changed;
    }
+   // A controller may be updated without a waiting worker (auto-activation).
+   // The versioned navigation bypasses old HTML caches while preserving site storage.
    location.replace('./index.html?updated='+encodeURIComponent(remote)+'&t='+Date.now());
   }catch(e){busy=false;report('업데이트 실패');alert('업데이트하지 못했어: '+e.message+'\n기존 자산 데이터는 삭제하지 않았어.')}
   finally{busy=false;button.disabled=false}

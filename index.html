@@ -186,15 +186,10 @@ body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:cla
 #view-calendar .fm-ledger-budget-row button{border-radius:10px;padding:8px 16px;background:var(--mint);color:#071a17;font-weight:700}
 #view-calendar #fmLedgerTrend[hidden],#view-calendar .fm-ledger-chart-title[hidden]{display:none}
 </style><style id="fm-ledger-readability-20261015">
-#view-calendar .cal{gap:2px!important}
-#view-calendar .day{background:transparent!important;border:0!important;border-radius:5px!important;min-height:75px!important;padding:7px 1px!important}
-#view-calendar .day .num{font-size:16px!important;font-weight:750!important}
-#view-calendar .day .cost,#view-calendar .day .income{font-size:clamp(10px,2.7vw,13px)!important;letter-spacing:-.035em!important;font-weight:650!important}
-#view-calendar .day.selected{background:var(--green2)!important;outline:2px solid var(--green)!important}
-#view-calendar .fm-week-summary{grid-column:1/-1;display:flex;justify-content:flex-end;gap:12px;align-items:center;background:var(--bg);padding:5px 7px;font-size:12px;font-weight:750;margin-top:6px}
-#view-calendar .fm-week-summary span:first-child{margin-right:auto;color:var(--sub)}
-#view-calendar .fm-week-income{color:var(--green)}
-#view-calendar .fm-week-expense{color:var(--txt)}
+/* Preserve compact calendar height so selected-day transactions stay visible. */
+#view-calendar .day .num{font-size:15px!important;font-weight:750!important}
+#view-calendar .day .cost,#view-calendar .day .income{font-size:clamp(10px,2.65vw,12px)!important;font-weight:700!important;letter-spacing:-.035em!important}
+#view-calendar .day.selected{outline:1px solid var(--green)!important}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -326,16 +321,6 @@ function renderCal(){
  let html=['일','월','화','수','목','금','토'].map(w=>'<div class="weekday">'+w+'</div>').join('');
  for(let i=0;i<first;i++)html+='<div class="fm-cal-blank"></div>';
  for(let d=1;d<=days;d++){const date=month+'-'+String(d).padStart(2,'0'),v=by[date]||{};html+='<button class="day '+(date===selected?'selected':'')+'" data-date="'+date+'" aria-label="'+date+' 지출 '+won(v.expense||0)+' 수입 '+won(v.income||0)+'"><div class="num">'+d+(date===today?' •':'')+'</div>'+(v.expense?'<div class="cost">-'+Math.round(v.expense).toLocaleString('ko-KR')+'</div>':'')+(v.income?'<div class="income">+'+Math.round(v.income).toLocaleString('ko-KR')+'</div>':'')+'</button>'}
- // Week totals use the same transaction records as the calendar; Sunday–Saturday.
- const cells=first+days;let weekHtml='',newHtml=['일','월','화','수','목','금','토'].map(w=>'<div class="weekday">'+w+'</div>').join('');
- for(let start=0;start<cells;start+=7){
-   let expense=0,income=0;
-   for(let slot=start;slot<Math.min(start+7,cells);slot++){const d=slot-first+1;if(d<1||d>days)continue;const v=by[month+'-'+String(d).padStart(2,'0')]||{};expense+=v.expense||0;income+=v.income||0;}
-   const weekNo=Math.floor(start/7)+1;
-   newHtml+='<div class="fm-week-summary"><span>'+weekNo+'주차</span><span class="fm-week-income">+'+Math.round(income).toLocaleString('ko-KR')+'</span><span class="fm-week-expense">-'+Math.round(expense).toLocaleString('ko-KR')+'</span></div>';
-   for(let slot=start;slot<start+7;slot++){const d=slot-first+1;if(d<1||d>days){newHtml+='<div class="fm-cal-blank"></div>';continue;}const date=month+'-'+String(d).padStart(2,'0'),v=by[date]||{};newHtml+='<button class="day '+(date===selected?'selected':'')+'" data-date="'+date+'" aria-label="'+date+' 지출 '+won(v.expense||0)+' 수입 '+won(v.income||0)+'"><div class="num">'+d+(date===today?' •':'')+'</div>'+(v.expense?'<div class="cost">-'+Math.round(v.expense).toLocaleString('ko-KR')+'</div>':'')+(v.income?'<div class="income">+'+Math.round(v.income).toLocaleString('ko-KR')+'</div>':'')+'</button>';}
- }
- html=newHtml;
  $('cal').innerHTML=html;
  $('cal').querySelectorAll('[data-date]').forEach(e=>e.onclick=()=>{selected=e.dataset.date;renderCal()});
  const t=totals(getTx()),prev=totals(getTx(prevMonth(month))),budget=Number(data.budgets[month]||0);

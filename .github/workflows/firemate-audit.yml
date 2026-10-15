@@ -1,0 +1,43 @@
+name: FIRE MATE branch audit
+on:
+  push:
+    branches: [maintenance/v3041-cleanup]
+  pull_request:
+    branches: [main]
+jobs:
+  static-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static checks
+        run: |
+          node --check sw.js
+          node scripts/audit-static.cjs
+      - name: Validate inline scripts with Node
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const html=fs.readFileSync('index.html','utf8');
+          const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+          for(let i=0;i<scripts.length;i++)new vm.Script(scripts[i][1],{filename:'index.html script '+i});
+          console.log('Validated '+scripts.length+' inline JavaScript blocks');
+          NODE
+  browser-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser runner
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Browser smoke tests
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 &
+          sleep 2
+          node scripts/browser-smoke.cjs

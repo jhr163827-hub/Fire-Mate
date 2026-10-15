@@ -4,12 +4,11 @@ self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(async()=>{
   const cached=await caches.open(CACHE).then(c=>c.match('./index.html'));
   if(!cached||!cached.ok||!(await cached.text()).includes("const BUILD='"+CACHE+"'"))throw Error('Staged HTML does not match worker version');
-  await self.skipWaiting();
  }));
- // Recovery release: activate only after a matching HTML has been safely cached.
+ // A new version waits for explicit consent from the update button.
 });
 self.addEventListener('activate',event=>{
- // Keep the previous cache for rollback until a subsequent validated release.
+ // Claim pages after verified installation. Never delete user site storage.
  event.waitUntil(self.clients.claim());
 });
 self.addEventListener('message',event=>{
@@ -26,11 +25,11 @@ self.addEventListener('fetch',event=>{
     return response;
    }).catch(()=>Response.error()));
   }else{
-   // Cache-first remains deliberate for an unapproved running version.
-   // The updater checks network version separately; never silently switch HTML.
+   // Only the current worker's verified cache can serve the app shell.
+   // Never use caches.match here: it can return an older version's HTML.
    event.respondWith(caches.open(CACHE).then(cache=>cache.match('./index.html')).then(cached=>cached||fetch(request)));
   }
   return;
  }
- event.respondWith(fetch(request).catch(()=>caches.match(request)));
+ event.respondWith(fetch(request).catch(()=>caches.open(CACHE).then(cache=>cache.match(request))));
 });

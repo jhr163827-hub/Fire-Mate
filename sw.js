@@ -1,4 +1,4 @@
-const CACHE='fire-mate-v3-0-40';
+const CACHE='fire-mate-v3-0-41';
 const ASSETS=['./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(async()=>{
@@ -28,7 +28,7 @@ self.addEventListener('fetch',event=>{
   }else{
    // Cache-first remains deliberate for an unapproved running version.
    // The updater checks network version separately; never silently switch HTML.
-   event.respondWith(caches.match('./index.html').then(cached=>cached||fetch(request)));
+   event.respondWith(caches.open(CACHE).then(cache=>cache.match('./index.html')).then(cached=>cached||fetch(request)));
   }
   return;
  }

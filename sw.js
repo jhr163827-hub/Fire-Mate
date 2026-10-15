@@ -23,7 +23,7 @@ self.addEventListener('fetch',event=>{
    event.respondWith(fetch(new Request(request,{cache:'no-store'})).then(response=>{
     if(response.ok&&url.searchParams.has('updated')){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(c=>c.put('./index.html',copy)))}
     return response;
-   }).catch(()=>caches.match('./index.html').then(r=>r||Response.error())));
+   }).catch(()=>Response.error()));
   }else{
    // Cache-first remains deliberate for an unapproved running version.
    // The updater checks network version separately; never silently switch HTML.

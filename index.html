@@ -196,6 +196,19 @@ body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:cla
 #view-insights #sixChart .fm-six-amount{height:32px;line-height:1.15;display:flex;align-items:flex-end;justify-content:center;font-size:clamp(8px,2.1vw,11px);white-space:nowrap;letter-spacing:-.04em;color:var(--sub)}
 #view-insights #sixChart .fm-six-bar-area{height:145px;min-height:0;width:100%;display:flex;align-items:flex-end}
 #view-insights #sixChart .fm-six-bar{width:100%;min-height:0;max-height:100%;flex:none;background:var(--green);border-radius:6px 6px 0 0}
+</style><style id="fm-ledger-visual-fix-20261015">
+/* The chart track must own the proportional height; older generic chart styles were overriding it. */
+#view-calendar .fm-ledger-trend{height:180px;align-items:stretch;gap:5px}
+#view-calendar .fm-ledger-trend-col{height:100%;display:flex;flex-direction:column;min-width:0;gap:5px}
+#view-calendar .fm-ledger-trend-col>strong{display:block;height:17px;line-height:17px;flex:none;font-size:clamp(9px,2.5vw,12px);font-weight:650;text-align:center;color:var(--txt);white-space:nowrap}
+#view-calendar .fm-ledger-trend-col>span{flex:none;line-height:16px}
+#view-calendar .fm-ledger-trend-track{flex:1 1 0;min-height:0;width:84%;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+#view-calendar .fm-ledger-trend-track>i{display:block;flex:none;width:100%;max-width:48px;min-height:0;border-radius:6px 6px 0 0;background:color-mix(in srgb,var(--green) 70%,var(--panel2));opacity:.83}
+#view-calendar .fm-ledger-trend-col:last-child .fm-ledger-trend-track>i{opacity:1}
+#view-calendar .fm-ledger-totals>div:first-child strong{color:var(--red);font-weight:850}
+#view-calendar .fm-ledger-totals>div:nth-child(2) strong{color:var(--green);font-weight:850}
+#view-calendar .fm-ledger-budget strong{font-size:clamp(17px,4.6vw,22px);font-weight:850;font-variant-numeric:tabular-nums}
+#view-calendar .fm-ledger-totals strong{letter-spacing:-.035em}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -313,7 +326,7 @@ function fmLedgerAnalytics(){
  bar.innerHTML=cats.length?cats.map(([name,value])=>'<div class="fm-ledger-cat"><div><span>'+safe(name)+'</span><strong>'+won(value)+' · '+(total?Math.round(value/total*100):0)+'%</strong></div><div class="fm-ledger-bar"><i style="width:'+(total?Math.min(100,value/total*100):0)+'%"></i></div></div>').join(''):'<div class="empty">지출을 기록하면 카테고리 분석이 표시돼요.</div>';
  let months=[],cur=month;for(let i=0;i<6;i++){months.unshift(cur);cur=prevMonth(cur)}
  const vals=months.map(m=>totals(getTx(m)).expense),max=Math.max(1,...vals);
- $('fmLedgerTrend').innerHTML=vals.map((v,i)=>'<div class="fm-ledger-trend-col"><strong>'+short(v)+'</strong><div class="fm-ledger-trend-track"><i style="height:'+(v?Math.max(4,v/max*100):0)+'%"></i></div><span>'+Number(months[i].slice(5))+'월</span></div>').join('');
+ $('fmLedgerTrend').innerHTML=vals.map((v,i)=>'<div class="fm-ledger-trend-col" title="'+won(v)+'"><strong>'+((v/10000).toFixed(1))+'만</strong><div class="fm-ledger-trend-track"><i style="height:'+(v?Math.max(4,v/max*100):0)+'%;'+(i===5?'background:var(--green);':'')+'"></i></div><span>'+Number(months[i].slice(5))+'월</span></div>').join('');
 }
 function fmLedgerSetMode(mode){
  const modeChanged=fmLedgerMode!==mode;fmLedgerMode=mode;
@@ -333,7 +346,7 @@ function renderCal(){
  const t=totals(getTx()),prev=totals(getTx(prevMonth(month))),budget=Number(data.budgets[month]||0);
  $('fmCalendarSpent').textContent=won(t.expense);$('fmCalendarIncome').textContent=won(t.income);
  $('fmCalendarBudget').textContent=budget?(budget<t.expense?won(t.expense-budget)+' 초과':won(budget-t.expense)):'미설정';
- $('fmCalendarBudget').style.color=budget&&budget<t.expense?'var(--red)':'var(--txt)';if(document.activeElement!==$('fmLedgerBudgetValue'))$('fmLedgerBudgetValue').value=budget?moneyFormat(budget):'';
+ $('fmCalendarBudget').style.color=budget&&budget<t.expense?'var(--red)':'var(--green)';if(document.activeElement!==$('fmLedgerBudgetValue'))$('fmLedgerBudgetValue').value=budget?moneyFormat(budget):'';
  $('fmLedgerCompare').textContent=prev.expense?'지난달보다 '+won(Math.abs(t.expense-prev.expense))+(t.expense>prev.expense?' 더 지출':t.expense<prev.expense?' 덜 지출':' 동일'):'이번 달 지출을 한눈에 확인하세요';
  $('selectedTitle').textContent=selected+' 거래';
  listTo($('dayTx'),data.tx.filter(t=>t.date===selected&&t.type!=='transfer'));

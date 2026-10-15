@@ -14,8 +14,10 @@ test('Explicit consent triggers activation',()=>{assert.match(html,/\[data-yes\]
 test('Version checked before success recording',()=>{const i=html.indexOf('html.includes("const BUILD=');const j=html.indexOf('write(approvedKey,remote)');assert.ok(i>0&&j>i);});
 test('Network bypass exists for approved update',()=>{assert.match(sw,/url\.searchParams\.has\('updated'\)/);assert.match(sw,/cache:'no-store'/);});
 test('Persistent app data not cleared by updater',()=>{const updater=html.split('<script id="fm-pwa-updates">')[1].split('</script>')[0];assert.doesNotMatch(updater,/localStorage\.clear|indexedDB\.deleteDatabase|caches\.delete/);});
-test('Detect cached-navigation risk (known limitation)',()=>{assert.match(sw,/caches\.match\('\.\/index\.html'\)\.then\(cached=>cached\|\|fetch\(request\)\)/);});
-test('Detect missing staged-HTML validation (known limitation)',()=>{const preConsent=html.split('const apply=')[0];assert.doesNotMatch(preConsent,/index\.html\?updated/);});
+test('Old HTML remains until explicit approval',()=>{assert.match(sw,/cached\|\|fetch\(request\)/);assert.match(sw,/event\.data\?\.type==='SKIP_WAITING'/);});
+test('Preflight HTML before worker activation',()=>{const i=html.indexOf("const preflight=await fetch(");const j=html.indexOf("reg.waiting.postMessage({type:'SKIP_WAITING'})");assert.ok(i>=0&&j>i);assert.match(html,/preflightHtml\.includes/);});
+test('Worker install validates cached build',()=>{assert.match(sw,/Staged HTML does not match worker version/);assert.match(sw,/cached\.text\(\)/);});
+test('Worker activation does not delete rollback cache',()=>{const activation=sw.split("self.addEventListener('activate'")[1].split("self.addEventListener('message'")[0];assert.doesNotMatch(activation,/caches\.delete/);});
 const failed=results.filter(x=>!x.ok).length;
 console.log('\n'+results.length+' static checks; '+failed+' failed. NOTE: static checks do NOT prove installed Android PWA behavior.');
 process.exitCode=failed?1:0;

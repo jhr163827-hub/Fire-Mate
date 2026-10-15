@@ -19,9 +19,9 @@ self.addEventListener('fetch',event=>{
  if(request.method!=='GET'||url.origin!==self.location.origin)return;
  const navigation=request.mode==='navigate'||url.pathname.endsWith('/index.html');
  if(navigation){
-  if(url.searchParams.has('updated')){
+  if(url.searchParams.has('updated')||url.searchParams.has('preflight')){
    event.respondWith(fetch(new Request(request,{cache:'no-store'})).then(response=>{
-    if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(c=>c.put('./index.html',copy))}
+    if(response.ok&&url.searchParams.has('updated')){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(c=>c.put('./index.html',copy))}
     return response;
    }).catch(()=>caches.match('./index.html').then(r=>r||Response.error())));
   }else{

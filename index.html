@@ -274,7 +274,7 @@ async function refreshStockPrices(retryOnly){
  const logs=todayChecks();
  if(!navigator.onLine)return toast('인터넷 연결을 확인해 주세요');
  if(!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.'))return;
- quoteBusy=true;$('refreshStocks').disabled=true;retryStocks.disabled=true;let ok=0,failed=[];const quoteTotal=krSymbols.length+symbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
+ quoteBusy=true;$('refreshStocks').disabled=true;retryStocks.disabled=true;let ok=0,failed=[],changed=0;const quoteTotal=krSymbols.length+symbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
  // Record refresh attempt for status display, including failed requests.
  localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:new Date().toISOString()}]));
  priceStatus('조회 중…');
@@ -294,7 +294,7 @@ async function refreshStockPrices(retryOnly){
     quote=payload;krQuoteCache.set(code,{quote,time:Date.now()});
    }
    const at=new Date().toISOString();
-   data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){h.price=Number(quote.price);h.quoteAt=at;const prevRaw=quote.previous_close??quote.prevClose??quote.prev_close??quote.previousClose??quote.prev_closing_price??quote.previousClosingPrice;const prev=prevRaw==null?NaN:Number(String(prevRaw).replace(/,/g,''));const suppliedPct=quote.change_percent??quote.changePercent??quote.change_pct??quote.change_rate??quote.changeRate??quote.fluctuation_rate??quote.fluctuationRate;const parsedPct=suppliedPct==null?NaN:Number(String(suppliedPct).replace(/[%+,\s]/g,''));const changeRaw=quote.change??quote.change_amount??quote.changeAmount??quote.price_change??quote.priceChange;const change=changeRaw==null?NaN:Number(String(changeRaw).replace(/,/g,''));const derivedPrev=Number.isFinite(change)?Number(quote.price)-change:NaN;h.dayChangePct=Number.isFinite(prev)&&prev>0?(Number(quote.price)-prev)/prev*100:(Number.isFinite(parsedPct)?parsedPct:(Number.isFinite(derivedPrev)&&derivedPrev>0?change/derivedPrev*100:null));h.dayChangeAt=h.dayChangePct===null?null:at;if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}});
+   data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){if(Number(h.price)!==Number(quote.price))changed++;h.price=Number(quote.price);h.quoteAt=at;const prevRaw=quote.previous_close??quote.prevClose??quote.prev_close??quote.previousClose??quote.prev_closing_price??quote.previousClosingPrice;const prev=prevRaw==null?NaN:Number(String(prevRaw).replace(/,/g,''));const suppliedPct=quote.change_percent??quote.changePercent??quote.change_pct??quote.change_rate??quote.changeRate??quote.fluctuation_rate??quote.fluctuationRate;const parsedPct=suppliedPct==null?NaN:Number(String(suppliedPct).replace(/[%+,\s]/g,''));const changeRaw=quote.change??quote.change_amount??quote.changeAmount??quote.price_change??quote.priceChange;const change=changeRaw==null?NaN:Number(String(changeRaw).replace(/,/g,''));const derivedPrev=Number.isFinite(change)?Number(quote.price)-change:NaN;h.dayChangePct=Number.isFinite(prev)&&prev>0?(Number(quote.price)-prev)/prev*100:(Number.isFinite(parsedPct)?parsedPct:(Number.isFinite(derivedPrev)&&derivedPrev>0?change/derivedPrev*100:null));h.dayChangeAt=h.dayChangePct===null?null:at;if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}});
    persist();ok++;
   }catch(e){failed.push({symbol:'KR:'+code,reason:String(e.message).slice(0,160)})}
   priceStatus('국내 조회 '+(i+1)+'/'+krSymbols.length);quoteProgress(++quoteDone,quoteTotal);
@@ -311,7 +311,7 @@ async function refreshStockPrices(retryOnly){
    if(!Number.isFinite(price)||price<=0)throw Error('유효한 가격 없음');
    const prev=Number(payload.previous_close),pct=Number.isFinite(prev)&&prev>0?(price-prev)/prev*100:null;
    const at=new Date().toISOString();
-   data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker===symbol){h.price=price;h.quoteAt=at;h.dayChangePct=pct;h.dayChangeAt=pct===null?null:at}});
+   data.holdings.forEach(h=>{if(h.type==='USD'&&h.ticker===symbol){if(Number(h.price)!==price)changed++;h.price=price;h.quoteAt=at;h.dayChangePct=pct;h.dayChangeAt=pct===null?null:at}});
    persist();ok++;
   }catch(e){
    let reason=String(e.message);
@@ -332,7 +332,7 @@ async function refreshStockPrices(retryOnly){
   if(i<symbols.length-1)await new Promise(resolve=>setTimeout(resolve,8500));
  }
  quoteBusy=false;$('refreshStocks').disabled=false;retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;render();priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
- if(failed.length)toast('실패: '+failed.map(x=>x.symbol).join(', ')+' · 기존 가격 유지');else toast(ok+'개 종목의 가격을 갱신했어요');
+ if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개');priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+'개');
 }
 priceStatus();
 

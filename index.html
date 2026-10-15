@@ -483,6 +483,23 @@ body.fm-asset-fullscreen .app{padding-top:8px!important}
 .fm-last-quote{font-size:11px;color:var(--sub);margin:2px 0 12px;line-height:1.5;letter-spacing:-.15px}
 #homeAssetHero>.light:first-child,.fm-quote-hero>.light:first-child{padding-right:110px!important}
 #homeAssetHero .fm-asset-amount-line .big,.fm-quote-hero #netWorth{margin-bottom:3px!important}
+
+/* v3.0.71: consistent refresh pill on both heroes; override old circular styles */
+#view-assets .hero.fm-quote-hero > button#refreshStocks,
+#view-home #homeAssetHero > button#homeRefreshStocks{
+ box-sizing:border-box!important;position:absolute!important;top:17px!important;right:20px!important;left:auto!important;bottom:auto!important;
+ display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+ gap:7px!important;width:auto!important;min-width:115px!important;max-width:none!important;height:36px!important;min-height:36px!important;
+ padding:0 12px!important;margin:0!important;flex:none!important;border-radius:999px!important;
+ background:rgba(76,201,164,.11)!important;border:1px solid rgba(76,201,164,.27)!important;
+ color:var(--green)!important;font-size:11px!important;line-height:1!important;white-space:nowrap!important;
+}
+#view-assets #refreshStocks > .fm-quote-refresh-icon,
+#view-home #homeRefreshStocks > .fm-quote-refresh-icon{display:inline-block!important;position:static!important;flex:0 0 auto!important;font-size:19px!important;line-height:1!important}
+#view-assets #refreshStocks > .fm-refresh-label,
+#view-home #homeRefreshStocks > .fm-refresh-label{display:inline-block!important;position:static!important;flex:0 0 auto!important;font-size:11px!important;line-height:1!important;white-space:nowrap!important}
+#view-assets .fm-quote-hero > .light:first-child,#view-home #homeAssetHero > .light:first-child{padding-right:125px!important}
+#view-assets .fm-last-quote,#view-home .fm-last-quote{margin:2px 0 9px!important;line-height:1.35!important}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -1051,7 +1068,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-70',VERSION='3.0.70';
+ const BUILD='fire-mate-v3-0-71',VERSION='3.0.71';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

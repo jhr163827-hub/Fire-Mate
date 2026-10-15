@@ -373,6 +373,24 @@ body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:cla
 #view-assets .fm-asset-donut-inner strong{font-size:clamp(13px,3.5vw,18px)!important;line-height:1.15!important;letter-spacing:-.4px!important;white-space:nowrap!important}
 #view-assets .fm-asset-donut-inner span{font-size:10px!important}
 @media(max-width:380px){#view-assets .fm-asset-legend-row{grid-template-columns:8px minmax(0,1fr) auto 37px!important;gap:3px!important}#view-assets .fm-asset-legend-row .fm-asset-legend-amount{font-size:10px!important}#view-assets .fm-asset-donut-inner strong{font-size:12px!important}}
+
+/* v3.0.57 fullscreen account and position detail */
+body.fm-asset-fullscreen header.top,body.fm-asset-fullscreen .bottom-nav,body.fm-asset-fullscreen nav,body.fm-asset-fullscreen #view-assets>.hero,body.fm-asset-fullscreen #view-assets>.fm-asset-switch{display:none!important}
+body.fm-asset-fullscreen #view-assets>*:not(#fmAccountDetail){display:none!important}
+body.fm-asset-fullscreen #view-assets #fmAccountDetail{display:block!important;min-height:100dvh;padding:12px 0 90px}
+body.fm-asset-fullscreen .app{padding-top:8px!important}
+#view-assets .fm-detail-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:18px}
+#view-assets .fm-detail-metrics>div{display:grid;gap:6px;min-width:0}
+#view-assets .fm-detail-metrics small{color:var(--sub);font-size:12px}
+#view-assets .fm-detail-metrics strong{font-size:14px;overflow-wrap:anywhere}
+#view-assets .fm-detail-holding{width:100%;background:transparent;color:var(--txt);border:0;border-bottom:1px solid var(--line);text-align:left;cursor:pointer}
+#view-assets .fm-detail-composition{margin-bottom:12px;text-align:center}
+#view-assets .fm-detail-composition h3{text-align:left}
+#view-assets .fm-detail-chart{width:112px;height:112px;border-radius:50%;margin:14px auto;position:relative}
+#view-assets .fm-detail-chart:after{content:'';position:absolute;inset:22px;border-radius:50%;background:var(--panel)}
+#view-assets .fm-detail-weights{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;font-size:12px}
+#view-assets .fm-detail-weights>div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#view-assets .fm-detail-weights strong{float:right}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -605,32 +623,51 @@ function renderAccounts(){
  holder.querySelectorAll('[data-move-down]').forEach(el=>el.onclick=()=>moveAccount(el.dataset.moveDown,1));
  $('fireLiquidSummary').textContent='FIRE 운용자산 '+won(fireLiquid())+' · 총순자산 '+won(netAsset())+' (부채 차감)';
 }
-let fmDetailAccountId=null;
-function fmOpenAccountDetail(id){
+let fmDetailAccountId=null,fmDetailHoldingId=null;
+function fmNavigateBack(){if(fmDetailHoldingId!==null){fmDetailHoldingId=null;fmOpenAccountDetail(fmDetailAccountId,false);return}if(fmDetailAccountId!==null){fmDetailAccountId=null;fmSyncDetailVisibility();return}}
+function fmPushDetailState(){try{history.pushState({fmAssetDetail:true},'','#asset-detail')}catch(e){}}
+window.addEventListener('popstate',()=>{if(fmDetailAccountId!==null||fmDetailHoldingId!==null)fmNavigateBack()});
+function fmCloseAccountDetail(){if(fmDetailAccountId!==null&&history.state?.fmAssetDetail){history.back()}else{fmDetailAccountId=null;fmDetailHoldingId=null;fmSyncDetailVisibility()}}
+function fmOpenAccountDetail(id,push=true){
  const a=data.accounts.find(x=>String(x.id)===String(id));if(!a)return;
- fmDetailAccountId=a.id;
+ if(push)fmPushDetailState();
+ fmDetailAccountId=a.id;fmDetailHoldingId=null;
  const panel=$('fmAccountDetail');if(!panel)return;
  const hs=data.holdings.filter(x=>x.accountId===a.id);
  const invest=hs.reduce((n,x)=>n+assetValue(x),0),cost=hs.reduce((n,x)=>n+assetCost(x),0);
  const total=invest+Math.max(0,Number(a.amount)||0)+otherItemsTotal(a);
  const profit=invest-cost,pct=cost>0?profit/cost*100:null;
- const rows=hs.map(x=>{const v=assetValue(x),c=assetCost(x),p=c>0?(v-c)/c*100:null;return '<div class="fm-detail-holding"><div><strong>'+safe(fmDisplayHoldingName(x))+'</strong><small>'+(p===null?'수익률 미설정':(p>=0?'+':'')+p.toFixed(2)+'%')+'</small></div><strong>'+won(v)+'</strong></div>'}).join('');
+ const rows=hs.map(x=>{const v=assetValue(x),c=assetCost(x),p=c>0?(v-c)/c*100:null;return '<button type="button" class="fm-detail-holding" data-fm-holding="'+safe(x.id)+'"><span><strong>'+safe(fmDisplayHoldingName(x))+'</strong><small>'+Number(x.qty||0).toLocaleString('ko-KR')+'주 · '+(p===null?'수익률 미설정':(p>=0?'+':'')+p.toFixed(2)+'%')+'</small></span><span style="text-align:right"><strong>'+won(v)+'</strong><small style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+'</small></span></button>'}).join('');
  const others=(a.items||[]).map(x=>'<div class="fm-detail-holding"><strong>'+safe(x.name)+'</strong><strong>'+won(x.amount)+'</strong></div>').join('');
- panel.innerHTML='<div class="fm-detail-header"><button type="button" id="fmDetailBack" class="secondary">← 계좌별 자산</button><button type="button" id="fmDetailEdit" class="secondary">계좌 수정</button></div><div class="card fm-detail-summary"><div class="mini">'+safe(a.name)+'</div><h2>'+won(total)+'</h2><div style="color:'+(profit>=0?'var(--green)':'var(--red)')+'">'+(pct===null?'계좌 평가금액':('투자 손익 '+(profit>=0?'+':'')+won(profit)+' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)'))+'</div></div><div class="card fm-detail-positions"><div class="cardhead"><h3>보유 자산</h3><button class="secondary" id="fmDetailAdd">+ 종목 추가</button></div>'+(rows||others?rows+others:'<p class="mini">등록된 보유 종목이 없어요.</p>')+'</div>';
+ const weights=hs.filter(x=>assetValue(x)>0).sort((x,y)=>assetValue(y)-assetValue(x)).slice(0,6);
+ const colors=['#3fc9a4','#6099e8','#f0b85e','#b28be8','#e47f91','#7b9da8'];
+ let offset=0;const stops=weights.map((x,i)=>{const pct=invest>0?assetValue(x)/invest*100:0;const seg=colors[i]+' '+offset+'% '+(offset+pct)+'%';offset+=pct;return seg});
+ panel.innerHTML='<div class="fm-detail-header"><button type="button" id="fmDetailBack" class="secondary">← 계좌별 자산</button><button type="button" id="fmDetailEdit" class="secondary">계좌 수정</button></div><div class="card fm-detail-summary"><div class="mini">'+safe(a.name)+'</div><h2>'+won(total)+'</h2><div style="color:'+(profit>=0?'var(--green)':'var(--red)')+'">'+(pct===null?'계좌 평가금액':('투자 손익 '+(profit>=0?'+':'')+won(profit)+' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)'))+'</div><div class="fm-detail-metrics"><div><small>총 매입금액</small><strong>'+won(cost)+'</strong></div><div><small>전체 자산 비중</small><strong>'+(netAsset()>0?(total/netAsset()*100).toFixed(1):'0.0')+'%</strong></div></div></div>'+(weights.length?'<div class="card fm-detail-composition"><h3>투자 구성</h3><div class="fm-detail-chart" style="background:conic-gradient('+stops.join(',')+')"></div><div class="fm-detail-weights">'+weights.map((x,i)=>'<div><span style="color:'+colors[i]+'">●</span> '+safe(fmDisplayHoldingName(x))+' <strong>'+(assetValue(x)/invest*100).toFixed(1)+'%</strong></div>').join('')+'</div></div>':'')+'<div class="card fm-detail-positions"><div class="cardhead"><h3>보유 자산</h3><button class="secondary" id="fmDetailAdd">+ 종목 추가</button></div>'+(rows||others?rows+others:'<p class="mini">등록된 보유 종목이 없어요.</p>')+'</div>';
  $('fmDetailBack').onclick=fmCloseAccountDetail;
  $('fmDetailEdit').onclick=()=>editAccount(a.id);
  $('fmDetailAdd').onclick=()=>{selectedAccount=a.id;openHolding(null)};
- fmSyncDetailVisibility();
+ panel.querySelectorAll('[data-fm-holding]').forEach(el=>el.onclick=()=>fmOpenHoldingDetail(el.dataset.fmHolding));
+ fmSyncDetailVisibility();window.scrollTo(0,0);
 }
-function fmCloseAccountDetail(){fmDetailAccountId=null;fmSyncDetailVisibility()}
+function fmOpenHoldingDetail(id){
+ const x=data.holdings.find(h=>String(h.id)===String(id));if(!x)return;
+ fmDetailHoldingId=x.id;fmPushDetailState();
+ const v=assetValue(x),c=assetCost(x),p=c>0?(v-c)/c*100:null;
+ const a=data.accounts.find(a=>a.id===x.accountId);
+ const panel=$('fmAccountDetail');
+ const metrics=[['보유 수량',Number(x.qty||0).toLocaleString('ko-KR')+'주'],['평균 매수가',Number(x.cost||0).toLocaleString('ko-KR')],['현재가',Number(x.price||0).toLocaleString('ko-KR')],['총 매입금액',won(c)],['평가손익',(v-c>=0?'+':'')+won(v-c)],['총 수익률',p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%']];
+ panel.innerHTML='<div class="fm-detail-header"><button type="button" id="fmDetailBack" class="secondary">← '+safe(a?.name||'계좌 상세')+'</button><button type="button" id="fmDetailEdit" class="secondary">종목 수정</button></div><div class="card fm-detail-summary"><div class="mini">'+safe(fmDisplayHoldingName(x))+'</div><h2>'+won(v)+'</h2><div style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+' ('+(p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%')+')</div></div><div class="card fm-detail-positions"><h3>보유 상세</h3><div class="fm-detail-metrics">'+metrics.map(y=>'<div><small>'+y[0]+'</small><strong>'+y[1]+'</strong></div>').join('')+'</div><p class="mini" style="margin-top:15px">배당금은 검증된 지급 데이터가 연결되면 표시돼요. 임의의 예상 배당금을 표시하지 않습니다.</p></div>';
+ $('fmDetailBack').onclick=()=>{if(history.state?.fmAssetDetail)history.back();else fmNavigateBack()};
+ $('fmDetailEdit').onclick=()=>openHolding(x);
+ fmSyncDetailVisibility();window.scrollTo(0,0);
+}
 function fmSyncDetailVisibility(){
  const d=$('fmAccountDetail'),a=$('fmAssetAccountsPanel'),h=$('fmAssetHoldingsPanel'),tabs=document.querySelector('#view-assets .fm-main-asset-tabs');
  if(!d||!a||!h)return;
- const detail=!!fmDetailAccountId;
- d.hidden=!detail;
- a.hidden=detail||fmAssetView!=='account';
- h.hidden=detail||fmAssetView!=='holding';
+ const detail=fmDetailAccountId!==null;
+ d.hidden=!detail;a.hidden=detail||fmAssetView!=='account';h.hidden=detail||fmAssetView!=='holding';
  if(tabs)tabs.hidden=detail;
+ document.body.classList.toggle('fm-asset-fullscreen',detail);
 }
 let editingAccount=null;
 function editAccount(id){
@@ -850,7 +887,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-56',VERSION='3.0.56';
+ const BUILD='fire-mate-v3-0-57',VERSION='3.0.57';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

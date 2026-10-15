@@ -801,33 +801,13 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
    if(!confirm('새 버전이 있어요. 업데이트할까요?')){busy=false;report('업데이트 보류');return}
    button.textContent='검증 중…';
    await verifyHtml(remote);
+   // The service worker may install and activate asynchronously.
+   // Never require a transient waiting/installing state to allow navigation.
    reg=reg||await navigator.serviceWorker.getRegistration('./');
    if(!reg)reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
    await reg.update();
-   // A waiting worker is optional: it may already be active.
-   if(reg.installing){
-    await new Promise((resolve,reject)=>{
-     const worker=reg.installing;
-     if(worker.state==='installed'||worker.state==='activated')return resolve();
-     const timer=setTimeout(()=>reject(Error('설치 확인 시간 초과')),15000);
-     worker.addEventListener('statechange',()=>{
-      if(worker.state==='installed'||worker.state==='activated'){clearTimeout(timer);resolve()}
-      else if(worker.state==='redundant'){clearTimeout(timer);reject(Error('설치 실패'))}
-     });
-    });
-   }
    await verifyHtml(remote);
    button.textContent='적용 중…';
-   if(reg.waiting){
-    const worker=reg.waiting;
-    const changed=new Promise((resolve,reject)=>{
-     if(!navigator.serviceWorker.controller)return resolve();
-     const timer=setTimeout(()=>reject(Error('전환 시간 초과')),12000);
-     navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timer);resolve()},{once:true});
-    });
-    worker.postMessage({type:'SKIP_WAITING'});
-    await changed;
-   }
    // A controller may be updated without a waiting worker (auto-activation).
    // The versioned navigation bypasses old HTML caches while preserving site storage.
    location.replace('./index.html?updated='+encodeURIComponent(remote)+'&t='+Date.now());

@@ -921,7 +921,7 @@ function fmQuoteLabel(){
   if(!v||!Number.isFinite(v.time))return '시세 갱신 기록 없음';
   const d=new Date(v.time),now=new Date(),same=d.toDateString()===now.toDateString();
   const when=(same?'오늘 ':'')+d.toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit',hour12:true});
-  return '◷ 마지막 시세 조회 · '+when+' · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'')+(Number.isFinite(v.seconds)?' · '+v.seconds.toFixed(1)+'초':'');
+  return '◷ 마지막 시세 조회 · '+when+' · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'')+(Number.isFinite(v.seconds)?' · '+v.seconds.toFixed(1)+'초':'')+(Number.isFinite(v.usSeconds)?' · 미국 '+v.usSeconds.toFixed(1)+'초 ('+v.usMode+(v.usWaitSeconds?' · 대기 '+v.usWaitSeconds.toFixed(1)+'초':'')+')':'');
  }catch{return '시세 갱신 기록 없음'}
 }
 function fmShowQuoteTime(){
@@ -955,6 +955,7 @@ async function refreshStockPrices(retryOnly){
  priceStatus('조회 중…');
  // Query independent markets concurrently. US requests still obey Twelve Data credit limits.
  const fmQuoteStarted=performance.now();
+ let fmUsElapsed=null;
  await Promise.all([
   (async()=>{ // Avoid repeated KRX requests during the same session.
  for(let i=0;i<krSymbols.length;i++){
@@ -1005,7 +1006,11 @@ async function refreshStockPrices(retryOnly){
  }
 
   })(),
-  (async()=>{ let batchHandled=false;
+  (async()=>{ const fmUsStarted=performance.now();
+ let fmUsMode=symbols.length>1?'일괄 시도':(symbols.length?'개별':'대상 없음');
+ let fmUsFallback=false;
+ let fmUsWaitMs=0;
+ let batchHandled=false;
  if(symbols.length>1){
   try{
    priceStatus('미국 종목 일괄 조회 중…');
@@ -1021,7 +1026,7 @@ async function refreshStockPrices(retryOnly){
      priceStatus('API 크레딧 부족 · 다음 분에 다시 시도');
     }else throw Error(reason);
    }else if(payload&&typeof payload==='object'&&symbols.some(symbol=>payload[symbol])){
-    batchHandled=true;
+    batchHandled=true;fmUsMode='일괄 성공';
     for(const symbol of symbols){
      const q=payload[symbol],price=Number(q?.close??q?.price),prev=Number(q?.previous_close);
      if(q?.status==='error'||!Number.isFinite(price)||price<=0){failed.push({symbol,reason:String(q?.message||'일괄 조회 가격 없음').slice(0,160)})}
@@ -1036,6 +1041,7 @@ async function refreshStockPrices(retryOnly){
   }catch(batchError){console.warn('일괄 조회 미지원 또는 연결 오류, 개별 조회로 전환:',batchError)}
  }
  if(!batchHandled){
+ if(symbols.length>1){fmUsFallback=true;fmUsMode='개별 전환'}
  for(let i=0;i<symbols.length;i++){
   const symbol=symbols[i];
   try{
@@ -1066,15 +1072,17 @@ async function refreshStockPrices(retryOnly){
   }
   priceStatus('조회 중 '+(i+1)+'/'+symbols.length);quoteProgress(++quoteDone,quoteTotal);
   // Basic free tier allows eight credits per minute; pace requests conservatively.
-  if(i<symbols.length-1)await new Promise(resolve=>setTimeout(resolve,8500));
+  if(i<symbols.length-1){fmUsWaitMs+=8500;await new Promise(resolve=>setTimeout(resolve,8500));}
  }
 
  }
+ fmUsElapsed=(performance.now()-fmUsStarted)/1000;
 
   })()
  ]);
+ const fmUsSeconds=Number.isFinite(fmUsElapsed)?fmUsElapsed:null;
  const fmQuoteSeconds=((performance.now()-fmQuoteStarted)/1000).toFixed(1);
- quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify({time:Date.now(),ok,total:quoteTotal,failed:failed.length,seconds:Number(fmQuoteSeconds)}))}catch(e){console.warn(e)}fmShowQuoteTime();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
+ quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify({time:Date.now(),ok,total:quoteTotal,failed:failed.length,seconds:Number(fmQuoteSeconds),usSeconds:fmUsSeconds,usMode:fmUsMode,usWaitSeconds:fmUsWaitMs/1000}))}catch(e){console.warn(e)}fmShowQuoteTime();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
  if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개');priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+(failed.length?' · '+failed.map(x=>x.symbol+': '+x.reason).join('; '):''));
 }
 priceStatus();
@@ -1085,7 +1093,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-73',VERSION='3.0.73';
+ const BUILD='fire-mate-v3-0-74',VERSION='3.0.74';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

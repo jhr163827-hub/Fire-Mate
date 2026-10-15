@@ -719,7 +719,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-42',VERSION='3.0.42';
+ const BUILD='fire-mate-v3-0-43',VERSION='3.0.43';
  let busy=false,registration=null;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
@@ -727,6 +727,23 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
  const reset=()=>{button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인'};
  reset();
  document.querySelector('header.top .right')?.prepend(button);
+ const showUpdateDialog=(next)=>new Promise(resolve=>{
+  const overlay=document.createElement('div');
+  overlay.id='fmUpdateDialog';
+  overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,10,22,.78);backdrop-filter:blur(8px)';
+  const card=document.createElement('div');
+  card.style.cssText='width:min(100%,360px);border-radius:24px;padding:28px 24px 22px;background:linear-gradient(145deg,#202c45,#111827);color:#f8fafc;border:1px solid rgba(148,163,184,.25);box-shadow:0 24px 80px rgba(0,0,0,.55);text-align:center;font-family:inherit';
+  const heading=document.createElement('div');heading.textContent='새 업데이트가 준비됐어요';heading.style.cssText='font-size:21px;font-weight:800;margin:14px 0 9px';
+  const icon=document.createElement('div');icon.textContent='✦';icon.style.cssText='width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);margin:auto;display:grid;place-items:center;font-size:32px;color:white';
+  const subtitle=document.createElement('div');subtitle.textContent='FIRE MATE를 최신 버전으로 업데이트할까요?';subtitle.style.cssText='font-size:13px;color:#cbd5e1;line-height:1.6';
+  const versions=document.createElement('div');versions.textContent='v'+VERSION+'  →  '+next.replace('fire-mate-v','').replaceAll('-', '.');versions.style.cssText='padding:12px;margin:19px 0;background:rgba(255,255,255,.07);border-radius:12px;font-size:14px;font-weight:700';
+  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:10px';
+  const later=document.createElement('button');later.type='button';later.textContent='나중에';later.style.cssText='flex:1;border:1px solid #475569;border-radius:13px;padding:13px;background:#334155;color:white;font-weight:700';
+  const now=document.createElement('button');now.type='button';now.textContent='지금 업데이트';now.style.cssText='flex:1.3;border:0;border-radius:13px;padding:13px;background:#60a5fa;color:#0f172a;font-weight:800';
+  const done=value=>{overlay.remove();resolve(value)};
+  later.onclick=()=>done(false);now.onclick=()=>done(true);
+  actions.append(later,now);card.append(icon,heading,subtitle,versions,actions);overlay.append(card);document.body.append(overlay);
+ });
  const readBuild=async(path)=>{
   const response=await fetch(path+(path.includes('?')?'&':'?')+'v='+Date.now(),{cache:'no-store'});
   if(!response.ok)throw Error('서버 버전을 확인하지 못했어');
@@ -762,7 +779,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
    if(next===BUILD){button.textContent='✓ 최신 버전';return}
    const html=await readBuild('./index.html');
    if(!html.includes("const BUILD='"+next+"'"))throw Error('서버 파일 버전이 서로 달라. 잠시 후 다시 시도해 줘');
-   if(!confirm('새 버전이 있어요. 업데이트할까요?')){button.textContent='업데이트 보류';return}
+   if(!await showUpdateDialog(next)){button.textContent='업데이트 보류';return}
    button.textContent='설치 중…';
    registration=registration||await navigator.serviceWorker.getRegistration('./');
    if(!registration)registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});

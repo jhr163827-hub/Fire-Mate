@@ -366,6 +366,13 @@ body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:cla
 #view-assets .fm-detail-holding{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border,#ffffff18)}
 #view-assets .fm-detail-holding:last-child{border-bottom:0}
 #view-assets .fm-detail-holding small{display:block;margin-top:5px;color:var(--sub)}
+
+/* v3.0.56: restore allocation amounts and improve donut legibility */
+#view-assets .fm-asset-legend-row .fm-asset-legend-amount{display:block!important;font-size:11px!important;text-align:right!important;color:var(--sub)!important}
+#view-assets .fm-asset-legend-row{grid-template-columns:9px minmax(0,1fr) auto 43px!important;gap:5px!important}
+#view-assets .fm-asset-donut-inner strong{font-size:clamp(13px,3.5vw,18px)!important;line-height:1.15!important;letter-spacing:-.4px!important;white-space:nowrap!important}
+#view-assets .fm-asset-donut-inner span{font-size:10px!important}
+@media(max-width:380px){#view-assets .fm-asset-legend-row{grid-template-columns:8px minmax(0,1fr) auto 37px!important;gap:3px!important}#view-assets .fm-asset-legend-row .fm-asset-legend-amount{font-size:10px!important}#view-assets .fm-asset-donut-inner strong{font-size:12px!important}}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -843,7 +850,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-55',VERSION='3.0.55';
+ const BUILD='fire-mate-v3-0-56',VERSION='3.0.56';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

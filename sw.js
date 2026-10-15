@@ -4,9 +4,8 @@ self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(async()=>{
   const cached=await caches.open(CACHE).then(c=>c.match('./index.html'));
   if(!cached||!cached.ok||!(await cached.text()).includes("const BUILD='"+CACHE+"'"))throw Error('Staged HTML does not match worker version');
-  await self.skipWaiting();
  }));
- // Recovery release: activate only after a matching HTML has been safely cached.
+ // A new version waits for explicit consent from the update button.
 });
 self.addEventListener('activate',event=>{
  // Claim pages after verified installation. Never delete user site storage.

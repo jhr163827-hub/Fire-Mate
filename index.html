@@ -270,6 +270,37 @@ body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:cla
 #view-assets #fmAssetAccountsPanel{padding:17px!important}
 #view-assets #fmAssetAccountsPanel .cardhead{margin-bottom:12px!important}
 @media(max-width:380px){#view-assets .fm-asset-donut-wrap{grid-template-columns:85px minmax(0,1fr)!important}#view-assets .fm-asset-donut{width:85px!important;height:85px!important}#view-assets .fm-asset-donut-inner{width:63px!important;height:63px!important}}
+
+/* v3.0.47 mobile asset dashboard density */
+@media(max-width:600px){
+ .app{padding:14px 14px 96px!important}
+ header.top{gap:8px!important;margin-bottom:13px!important}
+ header.top .logo{font-size:19px!important;white-space:nowrap}
+ header.top .logo .mini{font-size:9px!important}
+ header.top .right{gap:6px!important}
+ header.top .right .iconbtn{padding:9px!important;min-width:39px!important;min-height:39px!important}
+ header.top #fmManualUpdate{padding:5px 7px!important;font-size:10px!important;min-width:82px!important}
+ #view-assets>.hero{padding:17px 16px 14px!important;border-radius:21px!important}
+ #view-assets #netWorth{font-size:clamp(25px,7vw,32px)!important;letter-spacing:-.8px!important;overflow-wrap:anywhere}
+ #view-assets .hero-row{margin-top:12px!important;gap:12px!important}
+ #view-assets .hero-stat strong{font-size:17px!important}
+ #view-assets .progress{margin:10px 0 7px!important}
+ #view-assets .fm-asset-composition{padding:14px 0 0!important;margin-top:12px!important}
+ #view-assets .fm-asset-composition .cardhead{margin-bottom:10px!important}
+ #view-assets .fm-asset-donut-wrap{gap:12px!important;align-items:center!important;padding-bottom:0!important;margin-bottom:0!important}
+ #view-assets .fm-asset-donut{width:118px!important;height:118px!important;flex-shrink:0!important}
+ #view-assets .fm-asset-donut-inner{width:84px!important;height:84px!important}
+ #view-assets .fm-asset-legend{gap:5px!important}
+ #view-assets .fm-asset-legend-row{padding:4px 0!important;gap:5px!important}
+ #view-assets .fm-asset-legend-row .label{font-size:12px!important}
+ #view-assets .fm-asset-legend-amount{font-size:11px!important}
+ #view-assets #fmAssetAccountsPanel{margin-top:13px!important;padding:15px!important}
+ #view-assets #fmAssetAccountsPanel .cardhead{margin-bottom:6px!important}
+}
+@media(max-width:380px){
+ #view-assets .fm-asset-donut{width:96px!important;height:96px!important}
+ #view-assets .fm-asset-donut-inner{width:70px!important;height:70px!important}
+}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -719,7 +750,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-46',VERSION='3.0.46';
+ const BUILD='fire-mate-v3-0-47',VERSION='3.0.47';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

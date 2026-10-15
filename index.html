@@ -672,56 +672,67 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-33';
- const KEY='firemate_pwa_last_accepted_v2';
- const SEEN='firemate_pwa_last_prompted_v2';
- let reg=null,checking=false,dialogOpen=false,applying=false,lastRemote='',dismissed='';
- const get=k=>{try{return localStorage.getItem(k)||''}catch{return ''}};
- const put=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
- const clearDialog=()=>{document.getElementById('fmPwaDialog')?.remove();dialogOpen=false};
- const show=(remote)=>{
-  if(dialogOpen||applying||!remote||remote===dismissed||get(KEY)===remote)return;
-  dialogOpen=true;put(SEEN,remote);
-  const overlay=document.createElement('div');overlay.id='fmPwaDialog';
-  overlay.style.cssText='position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px';
-  const panel=document.createElement('div');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','FIRE MATE 업데이트');
-  panel.style.cssText='width:100%;max-width:380px;background:#16212f;color:#f5f8fa;border:1px solid #334254;border-radius:22px;padding:24px;box-shadow:0 20px 60px #0009;font-family:system-ui,sans-serif';
-  panel.innerHTML='<div style="font-size:21px;font-weight:800;margin-bottom:14px">✨ FIRE MATE 업데이트</div><p style="color:#c6d1dc;line-height:1.6;margin:0 0 20px">새 버전이 준비됐어요.<br>지금 업데이트하시겠습니까?</p><div style="display:flex;gap:10px"><button type="button" data-later style="flex:1;padding:13px 8px;border-radius:12px;border:1px solid #364558;background:#202d3e;color:#e3eaf0;font-weight:700">나중에</button><button type="button" data-now style="flex:1;padding:13px 8px;border-radius:12px;border:0;background:#40cba2;color:#071e18;font-weight:800">지금 업데이트</button></div>';
-  panel.querySelector('[data-later]').onclick=()=>{dismissed=remote;clearDialog()};
-  panel.querySelector('[data-now]').onclick=()=>{
-   applying=true;put(KEY,remote);panel.querySelector('[data-now]').textContent='업데이트 중…';
-   if(reg?.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'})}
-   location.replace('./index.html?updated='+encodeURIComponent(remote)+'&t='+Date.now());
-  };
-  overlay.append(panel);document.body.append(overlay);
+ const BUILD='fire-mate-v3-0-34', VERSION='3.0.34';
+ const approvedKey='firemate_approved_build';
+ let reg, checking=false, promptOpen=false, postponed='', applying=false;
+ const read=k=>{try{return localStorage.getItem(k)||''}catch{return ''}};
+ const write=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
+ const getRemote=async()=>{
+  const response=await fetch('./sw.js?check='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('Version check '+response.status);
+  return (await response.text()).match(/const CACHE=['"]([^'"]+)['"]/)?.[1]||'';
  };
- const readRemote=async()=>{
-  const response=await fetch('./sw.js?fm_check='+Date.now(),{cache:'no-store'});
-  if(!response.ok)throw Error('update fetch '+response.status);
-  const code=await response.text();
-  return (code.match(/const CACHE=['"]([^'"]+)['"]/)||[])[1]||'';
+ const apply=async(remote,btn)=>{
+  if(applying)return;
+  applying=true;btn.textContent='업데이트 적용 중…';btn.disabled=true;
+  try{
+   if(reg){await reg.update();if(reg.waiting){
+    const controlled=!!navigator.serviceWorker.controller;
+    if(controlled){
+     await new Promise((resolve,reject)=>{
+      const timeout=setTimeout(()=>reject(Error('새 버전 활성화 시간 초과')),12000);
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timeout);resolve()},{once:true});
+      reg.waiting.postMessage({type:'SKIP_WAITING'});
+     });
+    }else reg.waiting.postMessage({type:'SKIP_WAITING'});
+   }}
+   const url='./index.html?updated='+encodeURIComponent(remote)+'&t='+Date.now();
+   const response=await fetch(url,{cache:'no-store'});
+   if(!response.ok)throw Error('새 화면 다운로드 실패');
+   const html=await response.text();
+   if(!html.includes("const BUILD='"+remote+"'"))throw Error('배포된 HTML 버전이 일치하지 않습니다');
+   write(approvedKey,remote);
+   location.replace(url);
+  }catch(e){
+   applying=false;btn.disabled=false;btn.textContent='예 · 다시 시도';
+   document.getElementById('fmPwaError').textContent='업데이트 실패: '+e.message+' (기존 데이터 유지)';
+  }
+ };
+ const show=(remote)=>{
+  if(promptOpen||applying||postponed===remote||!remote||remote===BUILD)return;
+  promptOpen=true;
+  const overlay=document.createElement('div');overlay.id='fmPwaDialog';
+  overlay.style.cssText='position:fixed;inset:0;z-index:20000;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML='<div role="dialog" aria-modal="true" style="width:100%;max-width:360px;background:#16212f;color:#f5f8fa;border:1px solid #334254;border-radius:20px;padding:24px;font-family:system-ui"><strong style="font-size:20px">FIRE MATE 업데이트</strong><p style="line-height:1.6">새 버전이 준비됐어요.<br>업데이트하시겠습니까?</p><p id="fmPwaError" style="color:#ff9c9c;font-size:12px"></p><div style="display:flex;gap:10px"><button data-no style="flex:1;padding:13px;border-radius:10px;background:#253447;color:white;border:0">아니오</button><button data-yes style="flex:1;padding:13px;border-radius:10px;background:#40cba2;color:#081d17;border:0;font-weight:bold">예 · 업데이트</button></div></div>';
+  overlay.querySelector('[data-no]').onclick=()=>{postponed=remote;overlay.remove();promptOpen=false};
+  overlay.querySelector('[data-yes]').onclick=e=>apply(remote,e.currentTarget);
+  document.body.append(overlay);
  };
  const check=async()=>{
   if(checking||applying||!navigator.onLine)return;
   checking=true;
   try{
-   const remote=await readRemote();lastRemote=remote;
-   if(reg)await reg.update();
-   // Compare deployed build to the HTML currently running, not only the waiting worker:
-   // a new worker may have already activated before the UI was opened.
-   if(remote&&remote!==BUILD&&get(KEY)!==remote)show(remote);
-   // First install / previously auto-activated worker: record that the running
-   // build has been seen, so merely reopening this build does not prompt.
-   if(!get(KEY))put(KEY,BUILD);
-  }catch(e){console.warn('FIRE MATE update check failed',e)}
+   if(!reg)reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+   const remote=await getRemote();
+   if(remote&&remote!==BUILD)show(remote);
+  }catch(e){console.warn('FIRE MATE version check:',e)}
   finally{checking=false}
  };
- navigator.serviceWorker.addEventListener('controllerchange',()=>{if(applying)location.reload()});
- window.addEventListener('load',()=>{
-  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{reg=r;check();r.addEventListener('updatefound',()=>{const worker=r.installing;if(!worker)return;worker.addEventListener('statechange',()=>{if(worker.state==='installed')check()})})}).catch(e=>console.warn('PWA registration failed',e));
- });
- document.addEventListener('visibilitychange',()=>{if(!document.hidden){dismissed='';check()}});
- window.addEventListener('online',check);window.addEventListener('pageshow',check);setInterval(()=>{if(!document.hidden)check()},60000);
+ window.addEventListener('load',check);
+ window.addEventListener('pageshow',check);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){postponed='';check()}});
+ window.addEventListener('online',check);
+ setInterval(()=>{if(!document.hidden)check()},60000);
 })();
 </script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{
@@ -735,4 +746,4 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  }catch(e){console.warn('Layout refinement:',e)}
 });
-</script><script id="fm-version-indicator">document.addEventListener('DOMContentLoaded',()=>{const el=document.createElement('div');el.textContent='FIRE MATE v3.0.33';el.style.cssText='text-align:center;color:var(--sub);font-size:11px;padding:10px 0 90px';document.body.append(el)});</script></body></html>
+</script><script id="fm-version-indicator">document.addEventListener('DOMContentLoaded',()=>{const el=document.createElement('div');el.textContent='FIRE MATE v3.0.34';el.style.cssText='text-align:center;color:var(--sub);font-size:11px;padding:10px 0 90px';document.body.append(el)});</script></body></html>

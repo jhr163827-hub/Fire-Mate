@@ -1,0 +1,21 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const html=fs.readFileSync('index.html','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+const results=[];
+function test(name,fn){try{fn();results.push({name,ok:true});console.log('PASS',name)}catch(e){results.push({name,ok:false});console.error('FAIL',name,e.message)}}
+const build=html.match(/const BUILD='([^']+)'/)?.[1];
+const cache=sw.match(/const CACHE='([^']+)'/)?.[1];
+test('HTML and SW version match',()=>assert.equal(build,cache));
+test('Version indicator matches build',()=>assert.ok(html.includes("FIRE MATE "+build.replace('fire-mate-v','v').replace(/-/g,'.'))));
+test('Update dialog includes both decisions',()=>{assert.match(html,/data-no/);assert.match(html,/data-yes/);assert.match(html,/업데이트하시겠습니까/);});
+test('No automatic skipWaiting on install',()=>{const install=sw.split("self.addEventListener('install'")[1].split("self.addEventListener('activate'")[0];assert.doesNotMatch(install,/skipWaiting\s*\(/);});
+test('Explicit consent triggers activation',()=>{assert.match(html,/\[data-yes\]/);assert.match(html,/postMessage\(\{type:'SKIP_WAITING'\}\)/);assert.match(sw,/event\.data\?\.type==='SKIP_WAITING'/);});
+test('Version checked before success recording',()=>{const i=html.indexOf('html.includes("const BUILD=');const j=html.indexOf('write(approvedKey,remote)');assert.ok(i>0&&j>i);});
+test('Network bypass exists for approved update',()=>{assert.match(sw,/url\.searchParams\.has\('updated'\)/);assert.match(sw,/cache:'no-store'/);});
+test('Persistent app data not cleared by updater',()=>{const updater=html.split('<script id="fm-pwa-updates">')[1].split('</script>')[0];assert.doesNotMatch(updater,/localStorage\.clear|indexedDB\.deleteDatabase|caches\.delete/);});
+test('Detect cached-navigation risk (known limitation)',()=>{assert.match(sw,/caches\.match\('\.\/index\.html'\)\.then\(cached=>cached\|\|fetch\(request\)\)/);});
+test('Detect missing staged-HTML validation (known limitation)',()=>{const preConsent=html.split('const apply=')[0];assert.doesNotMatch(preConsent,/index\.html\?updated/);});
+const failed=results.filter(x=>!x.ok).length;
+console.log('\n'+results.length+' static checks; '+failed+' failed. NOTE: static checks do NOT prove installed Android PWA behavior.');
+process.exitCode=failed?1:0;

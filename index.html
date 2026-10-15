@@ -261,19 +261,19 @@ let quoteBusy=false,failedSymbols=[];
 function quoteProgress(done,total){const pct=total?Math.round(done/total*100):0;$('quoteProgress').style.display='block';$('quoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목'+(done===total?' 완료':' 진행 중');$('quoteProgressPercent').textContent=pct+'%';$('quoteProgressBar').style.width=pct+'%'}
 const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className=$('refreshStocks').className;retryStocks.style.marginLeft='8px';retryStocks.hidden=true;$('refreshStocks').insertAdjacentElement('afterend',retryStocks);
 retryStocks.onclick=()=>refreshStockPrices(true);
-$('refreshStocks').onclick=()=>refreshStockPrices(false);
+$('refreshStocks').onclick=()=>{const el=$('stockStatus');if(el)el.textContent='↻ 버튼 입력 확인 · 시세 조회 준비 중…';refreshStockPrices(false).catch(e=>{const msg='갱신 오류: '+String(e?.message||e);if(el)el.textContent=msg;toast(msg);quoteBusy=false;$('refreshStocks').disabled=false;retryStocks.disabled=false})};
 async function refreshStockPrices(retryOnly){
- if(quoteBusy)return;
+ if(quoteBusy){priceStatus('이미 조회 진행 중');toast('이미 시세 조회가 진행 중이에요');return}
  const key=localStorage.getItem(PRICE_KEY);
  const allKr=[...new Set(data.holdings.filter(h=>h.type==='KRW'&&/^\d{6}$/.test(h.ticker)).map(h=>h.ticker))];
  const krSymbols=retryOnly?allKr.filter(x=>failedSymbols.includes('KR:'+x)):allKr;
  const allSymbols=[...new Set(data.holdings.filter(h=>h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
  const symbols=retryOnly?allSymbols.filter(x=>failedSymbols.includes(x)):allSymbols;
- if(!symbols.length&&!krSymbols.length)return toast('조회할 종목을 등록해 주세요. 국내 종목은 6자리 코드가 필요합니다');
- if(symbols.length&&!key)return toast('미국 주식 조회를 위해 Twelve Data API 키를 먼저 저장해 주세요');
+ if(!symbols.length&&!krSymbols.length){priceStatus('조회 대상 없음');return toast('조회할 종목이 없어요. 국내 종목은 6자리 코드가 필요해요')}
+ if(symbols.length&&!key){priceStatus('미국 주식 API 키 미설정');return toast('Twelve Data API 키를 설정에서 저장해 주세요')}
  const logs=todayChecks();
- if(!navigator.onLine)return toast('인터넷 연결을 확인해 주세요');
- if(!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.'))return;
+ if(!navigator.onLine){priceStatus('오프라인 · 조회 중단');return toast('인터넷 연결을 확인해 주세요')}
+ priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개');if(!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.')){priceStatus('사용자가 조회 취소');return;}
  quoteBusy=true;$('refreshStocks').disabled=true;retryStocks.disabled=true;let ok=0,failed=[],changed=0;const quoteTotal=krSymbols.length+symbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
  // Record refresh attempt for status display, including failed requests.
  localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:new Date().toISOString()}]));
@@ -332,7 +332,7 @@ async function refreshStockPrices(retryOnly){
   if(i<symbols.length-1)await new Promise(resolve=>setTimeout(resolve,8500));
  }
  quoteBusy=false;$('refreshStocks').disabled=false;retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;render();priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
- if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개');priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+'개');
+ if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개');priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+(failed.length?' · '+failed.map(x=>x.symbol+': '+x.reason).join('; '):''));
 }
 priceStatus();
 

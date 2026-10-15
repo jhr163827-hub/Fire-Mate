@@ -719,71 +719,72 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-41',VERSION='3.0.41';
- let busy=false,reg;
+ const BUILD='fire-mate-v3-0-42',VERSION='3.0.42';
+ let busy=false,registration=null;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
- button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인';
  button.style.cssText='font-size:12px;white-space:nowrap;padding:7px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.15';
- const header=document.querySelector('header.top .right');
- if(header)header.prepend(button);
- const report=(message)=>{button.title=message;button.innerHTML='<span>'+message+'</span><small>v'+VERSION+'</small>';setTimeout(()=>{if(!busy){button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인'}},3500)};
- const remoteBuild=async()=>{
-  const r=await fetch('./sw.js?check='+Date.now(),{cache:'no-store'});
-  if(!r.ok)throw Error('버전 조회 실패');
-  const match=(await r.text()).match(/const CACHE=['"]([^'"]+)['"]/);
-  if(!match)throw Error('버전 정보를 찾을 수 없음');
-  return match[1];
+ const reset=()=>{button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인'};
+ reset();
+ document.querySelector('header.top .right')?.prepend(button);
+ const readBuild=async(path)=>{
+  const response=await fetch(path+(path.includes('?')?'&':'?')+'v='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('서버 버전을 확인하지 못했어');
+  return response.text();
  };
- const verifyHtml=async(remote)=>{
-  const r=await fetch('./index.html?preflight='+Date.now(),{cache:'no-store'});
-  if(!r.ok)throw Error('새 화면 다운로드 실패');
-  const html=await r.text();
-  if(!html.includes("const BUILD='"+remote+"'"))throw Error('배포 버전이 일치하지 않음');
+ const waitInstalled=async(reg)=>{
+  if(reg.waiting)return reg.waiting;
+  const worker=reg.installing;
+  if(!worker)throw Error('새 서비스워커를 찾지 못했어');
+  if(worker.state==='installed')return worker;
+  await new Promise((resolve,reject)=>{
+   const timeout=setTimeout(()=>reject(Error('설치 대기 시간 초과')),20000);
+   worker.addEventListener('statechange',()=>{
+    if(worker.state==='installed'){clearTimeout(timeout);resolve()}
+    if(worker.state==='redundant'){clearTimeout(timeout);reject(Error('설치 실패'))}
+   });
+  });
+  return reg.waiting||worker;
  };
+ const waitController=()=>new Promise((resolve,reject)=>{
+  const timeout=setTimeout(()=>reject(Error('새 버전 전환 시간 초과')),15000);
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timeout);resolve()},{once:true});
+ });
  button.onclick=async()=>{
   if(busy)return;
   busy=true;button.disabled=true;button.textContent='확인 중…';
   try{
    if(!navigator.onLine)throw Error('인터넷 연결을 확인해 줘');
-   const remote=await remoteBuild();
-   if(remote===BUILD){busy=false;report('✓ 최신 버전');return}
-   if(!confirm('새 버전이 있어요. 업데이트할까요?')){busy=false;report('업데이트 보류');return}
-   button.textContent='검증 중…';
-   await verifyHtml(remote);
-   reg=reg||await navigator.serviceWorker.getRegistration('./');
-   if(!reg)reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
-   await reg.update();
-   // A waiting worker is optional: it may already be active.
-   if(reg.installing){
-    await new Promise((resolve,reject)=>{
-     const worker=reg.installing;
-     if(worker.state==='installed'||worker.state==='activated')return resolve();
-     const timer=setTimeout(()=>reject(Error('설치 확인 시간 초과')),15000);
-     worker.addEventListener('statechange',()=>{
-      if(worker.state==='installed'||worker.state==='activated'){clearTimeout(timer);resolve()}
-      else if(worker.state==='redundant'){clearTimeout(timer);reject(Error('설치 실패'))}
-     });
-    });
-   }
-   await verifyHtml(remote);
+   const swText=await readBuild('./sw.js');
+   const match=swText.match(/const CACHE=['"]([^'"]+)['"]/);
+   if(!match)throw Error('서비스워커 버전 확인 실패');
+   const next=match[1];
+   if(next===BUILD){button.textContent='✓ 최신 버전';return}
+   const html=await readBuild('./index.html');
+   if(!html.includes("const BUILD='"+next+"'"))throw Error('서버 파일 버전이 서로 달라. 잠시 후 다시 시도해 줘');
+   if(!confirm('새 버전이 있어요. 업데이트할까요?')){button.textContent='업데이트 보류';return}
+   button.textContent='설치 중…';
+   registration=registration||await navigator.serviceWorker.getRegistration('./');
+   if(!registration)registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+   await registration.update();
+   const waiting=await waitInstalled(registration);
+   if(waiting.state!=='installed')throw Error('새 버전 설치가 완료되지 않았어');
+   const changed=waitController();
+   waiting.postMessage({type:'SKIP_WAITING'});
+   await changed;
    button.textContent='적용 중…';
-   if(reg.waiting){
-    const worker=reg.waiting;
-    const changed=new Promise((resolve,reject)=>{
-     if(!navigator.serviceWorker.controller)return resolve();
-     const timer=setTimeout(()=>reject(Error('전환 시간 초과')),12000);
-     navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timer);resolve()},{once:true});
-    });
-    worker.postMessage({type:'SKIP_WAITING'});
-    await changed;
-   }
-   location.replace('./index.html?updated='+encodeURIComponent(remote)+'&t='+Date.now());
-  }catch(e){busy=false;report('업데이트 실패');alert('업데이트하지 못했어: '+e.message+'\n기존 자산 데이터는 삭제하지 않았어.')}
-  finally{busy=false;button.disabled=false}
+   location.replace('./index.html?updated='+encodeURIComponent(next)+'&t='+Date.now());
+  }catch(error){
+   alert('업데이트 실패: '+error.message+'\n기존 데이터는 삭제되지 않았어.');
+  }finally{
+   busy=false;button.disabled=false;
+   setTimeout(reset,2500);
+  }
  };
- // Register silently for offline support; never prompt or activate on its own.
- window.addEventListener('load',async()=>{try{reg=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})}catch(e){console.warn('SW registration:',e)}});
+ window.addEventListener('load',async()=>{
+  try{registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})}
+  catch(error){console.warn('서비스워커 등록 실패',error)}
+ });
 })();
 </script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{

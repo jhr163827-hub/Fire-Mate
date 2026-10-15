@@ -1,4 +1,4 @@
-const CACHE='fire-mate-v3-0-41';
+const CACHE='fire-mate-v3-0-42';
 const ASSETS=['./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{

@@ -590,7 +590,46 @@ priceStatus();
 syncRecurring();recordDailyNetWorth();render();})();
 </script><script>
 (()=>{const more=document.getElementById('moreMenu');const open=document.getElementById('moreOpen');const close=()=>more.classList.remove('show');open.addEventListener('click',()=>more.classList.add('show'));document.getElementById('moreClose').addEventListener('click',close);more.addEventListener('click',e=>{if(e.target===more)close()});document.querySelectorAll('[data-morego]').forEach(btn=>btn.addEventListener('click',()=>{close();document.querySelector('.tabs [data-view="'+btn.dataset.morego+'"]')?.click()}));document.getElementById('moreSettings').addEventListener('click',()=>{close();document.getElementById('settingsBtn')?.click()});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});})();
-</script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script><script>(()=>{const id='20261015-money-inputs',key='firemate_seen_update',info='가계부·예산·FIRE·자산·이체 등 금액 입력창 전체에 천 단위 쉼표를 적용했어요. 환율·수량·수익률은 기존 입력 방식을 유지해요.';function notify(message,refresh){if(document.getElementById('fmUpdateNotice'))return;const el=document.createElement('div');el.id='fmUpdateNotice';el.style.cssText='position:fixed;bottom:85px;left:12px;right:12px;z-index:9999;padding:15px;border-radius:14px;background:var(--panel);color:var(--txt);border:1px solid var(--line);box-shadow:0 6px 25px #0008';el.innerHTML='<strong>✨ FIRE MATE가 업데이트됐어요!</strong><p id="fmUpdateMessage" style="font-size:13px;margin:8px 0"></p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="fmUpdateDetails">변경사항 보기</button><button type="button" id="fmUpdateClose">확인</button></div>';document.body.append(el);document.getElementById('fmUpdateMessage').textContent=message;document.getElementById('fmUpdateDetails').onclick=()=>{document.getElementById('fmUpdateMessage').textContent=info};document.getElementById('fmUpdateClose').onclick=()=>{if(refresh)location.reload();else{try{localStorage.setItem(key,id)}catch{}el.remove()}};if(refresh)document.getElementById('fmUpdateClose').textContent='새 화면 열기'}async function check(){let seen;try{seen=localStorage.getItem(key)}catch{}if(seen!==id){notify(info,false);return}try{const r=await fetch('./index.html?release_check='+Date.now(),{cache:'no-store'});const t=await r.text();const m=t.match(/name="firemate-release" content="([^"]+)"/);if(m&&m[1]!==id)notify('새 업데이트가 준비됐어요. 원할 때 새 화면을 열 수 있어요.',true)}catch{}}window.addEventListener('load',()=>setTimeout(check,800))})();</script><script id="fm-layout">
+</script><script id="fm-pwa-updates">
+(()=>{
+ if(!('serviceWorker' in navigator))return;
+ let refreshing=false,updateAvailable=false,reg=null,checking=false;
+ const banner=()=>{
+  if(document.getElementById('fmPwaUpdateBanner'))return;
+  const el=document.createElement('div');el.id='fmPwaUpdateBanner';
+  el.setAttribute('role','status');
+  el.style.cssText='position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:14px;right:14px;z-index:10050;background:#182b30;color:#f0f7f4;border:1px solid #4ac89d;border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px #0007;display:flex;align-items:center;justify-content:space-between;gap:12px;font:13px system-ui,sans-serif';
+  const msg=document.createElement('span');msg.textContent='새 버전이 준비됐어요.';
+  const btn=document.createElement('button');btn.type='button';btn.textContent='새 버전 적용';btn.style.cssText='border:0;border-radius:9px;background:#39c795;color:#081a15;padding:10px 12px;font-weight:700;white-space:nowrap';
+  btn.onclick=()=>{if(!confirm('새 버전을 적용하면 화면이 새로고침됩니다. 작성 중인 내용은 먼저 저장했나요?'))return;sessionStorage.setItem('fm_pwa_apply_update','1');if(reg&&reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});else location.reload()};
+  el.append(msg,btn);document.body.append(el);
+ };
+ const changed=()=>{updateAvailable=true;banner()};
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(refreshing)return;
+  refreshing=true;
+  if(sessionStorage.getItem('fm_pwa_apply_update')==='1'){
+   sessionStorage.removeItem('fm_pwa_apply_update');location.reload();
+  }else{refreshing=false;changed()}
+ });
+ const watch=registration=>{
+  reg=registration;
+  if(registration.waiting&&navigator.serviceWorker.controller)changed();
+  registration.addEventListener('updatefound',()=>{
+   const worker=registration.installing;if(!worker)return;
+   worker.addEventListener('statechange',()=>{
+    if(worker.state==='installed'&&navigator.serviceWorker.controller)changed();
+   });
+  });
+ };
+ const check=()=>{if(!reg||checking||!navigator.onLine)return;checking=true;reg.update().catch(()=>{}).finally(()=>{checking=false})};
+ window.addEventListener('load',()=>{
+  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{watch(r);check()}).catch(e=>console.warn('PWA update registration failed',e));
+ });
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+ window.addEventListener('online',check);
+})();
+</script><script>(()=>{const id='20261015-money-inputs',key='firemate_seen_update',info='가계부·예산·FIRE·자산·이체 등 금액 입력창 전체에 천 단위 쉼표를 적용했어요. 환율·수량·수익률은 기존 입력 방식을 유지해요.';function notify(message,refresh){if(document.getElementById('fmUpdateNotice'))return;const el=document.createElement('div');el.id='fmUpdateNotice';el.style.cssText='position:fixed;bottom:85px;left:12px;right:12px;z-index:9999;padding:15px;border-radius:14px;background:var(--panel);color:var(--txt);border:1px solid var(--line);box-shadow:0 6px 25px #0008';el.innerHTML='<strong>✨ FIRE MATE가 업데이트됐어요!</strong><p id="fmUpdateMessage" style="font-size:13px;margin:8px 0"></p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="fmUpdateDetails">변경사항 보기</button><button type="button" id="fmUpdateClose">확인</button></div>';document.body.append(el);document.getElementById('fmUpdateMessage').textContent=message;document.getElementById('fmUpdateDetails').onclick=()=>{document.getElementById('fmUpdateMessage').textContent=info};document.getElementById('fmUpdateClose').onclick=()=>{if(refresh)location.reload();else{try{localStorage.setItem(key,id)}catch{}el.remove()}};if(refresh)document.getElementById('fmUpdateClose').textContent='새 화면 열기'}async function check(){let seen;try{seen=localStorage.getItem(key)}catch{}if(seen!==id){notify(info,false);return}try{const r=await fetch('./index.html?release_check='+Date.now(),{cache:'no-store'});const t=await r.text();const m=t.match(/name="firemate-release" content="([^"]+)"/);if(m&&m[1]!==id)notify('새 업데이트가 준비됐어요. 원할 때 새 화면을 열 수 있어요.',true)}catch{}}window.addEventListener('load',()=>setTimeout(check,800))})();</script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{
  try{
  const home=document.getElementById('view-home');

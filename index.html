@@ -818,7 +818,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
     });
    }
    await verifyHtml(remote);
-   if(!reg.waiting)throw Error('새 버전이 설치 대기 중이 아니야. 잠시 후 다시 확인해 줘');
+   if(!reg.waiting||reg.waiting.state!=='installed')throw Error('새 버전이 설치 대기 중이 아니야. 잠시 후 다시 확인해 줘');
    button.textContent='적용 중…';
    const switched=new Promise((resolve,reject)=>{
     const timer=setTimeout(()=>reject(Error('새 버전 활성화 시간 초과')),15000);

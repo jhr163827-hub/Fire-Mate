@@ -660,43 +660,57 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- let refreshing=false,updateAvailable=false,reg=null,checking=false;
- const banner=()=>{
-  if(document.getElementById('fmPwaUpdateBanner'))return;
-  const el=document.createElement('div');el.id='fmPwaUpdateBanner';
-  el.setAttribute('role','status');
-  el.style.cssText='position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:14px;right:14px;z-index:10050;background:#182b30;color:#f0f7f4;border:1px solid #4ac89d;border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px #0007;display:flex;align-items:center;justify-content:space-between;gap:12px;font:13px system-ui,sans-serif';
-  const msg=document.createElement('span');msg.textContent='새 버전이 준비됐어요.';
-  const btn=document.createElement('button');btn.type='button';btn.textContent='업데이트 적용';btn.style.cssText='border:0;border-radius:9px;background:#39c795;color:#081a15;padding:10px 12px;font-weight:700;white-space:nowrap';
-  btn.onclick=()=>{if(!confirm('새 업데이트를 적용하시겠습니까?'))return;sessionStorage.setItem('fm_pwa_apply_update','1');if(reg&&reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});else location.reload()};
-  el.append(msg,btn);document.body.append(el);
+ let reg=null,checking=false,prompting=false,applying=false;
+ const release='20261015-pwa-update-confirm-v1';
+ const seenKey='firemate_seen_update';
+ const promptUpdate=()=>{
+  if(prompting||applying||!reg?.waiting||!navigator.serviceWorker.controller)return;
+  prompting=true;
+  const yes=confirm('FIRE MATE 새 업데이트가 준비됐어요. 지금 업데이트하시겠습니까?');
+  prompting=false;
+  if(!yes)return;
+  applying=true;
+  try{sessionStorage.setItem('fm_pwa_apply_update','1')}catch{}
+  reg.waiting.postMessage({type:'SKIP_WAITING'});
  };
- const changed=()=>{updateAvailable=true;banner()};
  navigator.serviceWorker.addEventListener('controllerchange',()=>{
-  if(refreshing)return;
-  refreshing=true;
-  if(sessionStorage.getItem('fm_pwa_apply_update')==='1'){
-   sessionStorage.removeItem('fm_pwa_apply_update');location.reload();
-  }else{refreshing=false;changed()}
+  if(!applying)return;
+  try{sessionStorage.removeItem('fm_pwa_apply_update')}catch{}
+  location.reload();
  });
- const watch=registration=>{
-  reg=registration;
-  if(registration.waiting&&navigator.serviceWorker.controller)changed();
-  registration.addEventListener('updatefound',()=>{
-   const worker=registration.installing;if(!worker)return;
+ const watch=r=>{
+  reg=r;
+  if(r.waiting)promptUpdate();
+  r.addEventListener('updatefound',()=>{
+   const worker=r.installing;
+   if(!worker)return;
    worker.addEventListener('statechange',()=>{
-    if(worker.state==='installed'&&navigator.serviceWorker.controller)changed();
+    if(worker.state==='installed')promptUpdate();
    });
   });
  };
- const check=()=>{if(!reg||checking||!navigator.onLine)return;checking=true;reg.update().catch(()=>{}).finally(()=>{checking=false})};
+ const check=()=>{
+  if(!reg||checking||!navigator.onLine)return;
+  checking=true;
+  reg.update().then(()=>{if(reg.waiting)promptUpdate()}).catch(()=>{}).finally(()=>{checking=false});
+ };
  window.addEventListener('load',()=>{
-  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{watch(r);check()}).catch(e=>console.warn('PWA update registration failed',e));
+  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>{watch(r);check()}).catch(e=>console.warn('PWA registration failed',e));
  });
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
  window.addEventListener('online',check);
+ // Existing installations that already loaded the new worker still get a one-time release notice.
+ window.addEventListener('load',()=>{
+  let seen;try{seen=localStorage.getItem(seenKey)}catch{}
+  if(seen===release)return;
+  const el=document.createElement('div');el.id='fmUpdateNotice';
+  el.style.cssText='position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:14px;right:14px;z-index:10050;background:#182b30;color:#f0f7f4;border:1px solid #4ac89d;border-radius:14px;padding:14px;box-shadow:0 8px 30px #0007;font:14px system-ui,sans-serif';
+  el.innerHTML='<strong>✨ FIRE MATE 업데이트 안내</strong><p style="margin:8px 0">업데이트 확인 기능을 개선했어요. 이후 새 버전은 예/아니오로 선택할 수 있어요.</p><button type="button" style="border:0;border-radius:9px;background:#39c795;padding:9px 16px;font-weight:700">확인</button>';
+  el.querySelector('button').onclick=()=>{try{localStorage.setItem(seenKey,release)}catch{}el.remove()};
+  document.body.append(el);
+ });
 })();
-</script><script>(()=>{const id='20261015-back-navigation',key='firemate_seen_update',info='안드로이드 뒤로가기 제스처로 이전 탭과 가계부 달력·목록 화면으로 돌아갈 수 있도록 개선했어요.';function notify(message,refresh){if(document.getElementById('fmUpdateNotice'))return;const el=document.createElement('div');el.id='fmUpdateNotice';el.style.cssText='position:fixed;bottom:85px;left:12px;right:12px;z-index:9999;padding:15px;border-radius:14px;background:var(--panel);color:var(--txt);border:1px solid var(--line);box-shadow:0 6px 25px #0008';el.innerHTML='<strong>✨ FIRE MATE 업데이트</strong><p id="fmUpdateMessage" style="font-size:13px;margin:8px 0"></p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" id="fmUpdateDetails">변경사항 보기</button><button type="button" id="fmUpdateClose">확인</button></div>';document.body.append(el);document.getElementById('fmUpdateMessage').textContent=message;document.getElementById('fmUpdateDetails').onclick=()=>{document.getElementById('fmUpdateMessage').textContent=info};document.getElementById('fmUpdateClose').onclick=()=>{if(refresh)location.reload();else{try{localStorage.setItem(key,id)}catch{}el.remove()}};if(refresh)document.getElementById('fmUpdateClose').textContent='예'}async function check(){let seen;try{seen=localStorage.getItem(key)}catch{}if(seen!==id){notify(info,false);return}try{const r=await fetch('./index.html?release_check='+Date.now(),{cache:'no-store'});const t=await r.text();const m=t.match(/name="firemate-release" content="([^"]+)"/);if(m&&m[1]!==id)notify('새 업데이트가 준비됐어요. 원할 때 새 화면을 열 수 있어요.',true)}catch{}}window.addEventListener('load',()=>setTimeout(check,800))})();</script><script id="fm-layout">
+</script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{
  try{
  const home=document.getElementById('view-home');

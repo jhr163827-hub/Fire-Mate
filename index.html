@@ -672,7 +672,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-32';
+ const BUILD='fire-mate-v3-0-33';
  const KEY='firemate_pwa_last_accepted_v2';
  const SEEN='firemate_pwa_last_prompted_v2';
  let reg=null,checking=false,dialogOpen=false,applying=false,lastRemote='',dismissed='';
@@ -680,7 +680,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
  const put=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
  const clearDialog=()=>{document.getElementById('fmPwaDialog')?.remove();dialogOpen=false};
  const show=(remote)=>{
-  if(dialogOpen||applying||!remote||remote===dismissed)return;
+  if(dialogOpen||applying||!remote||remote===dismissed||get(KEY)===remote)return;
   dialogOpen=true;put(SEEN,remote);
   const overlay=document.createElement('div');overlay.id='fmPwaDialog';
   overlay.style.cssText='position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px';
@@ -690,8 +690,8 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
   panel.querySelector('[data-later]').onclick=()=>{dismissed=remote;clearDialog()};
   panel.querySelector('[data-now]').onclick=()=>{
    applying=true;put(KEY,remote);panel.querySelector('[data-now]').textContent='업데이트 중…';
-   if(reg?.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'});setTimeout(()=>location.replace('./?updated='+encodeURIComponent(remote)),2200)}
-   else {navigator.serviceWorker.getRegistration().then(r=>r?.update()).finally(()=>setTimeout(()=>location.replace('./?updated='+encodeURIComponent(remote)),800))}
+   if(reg?.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'})}
+   location.replace('./index.html?updated='+encodeURIComponent(remote)+'&t='+Date.now());
   };
   overlay.append(panel);document.body.append(overlay);
  };
@@ -709,7 +709,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
    if(reg)await reg.update();
    // Compare deployed build to the HTML currently running, not only the waiting worker:
    // a new worker may have already activated before the UI was opened.
-   if(remote&&remote!==BUILD)show(remote);
+   if(remote&&remote!==BUILD&&get(KEY)!==remote)show(remote);
    // First install / previously auto-activated worker: record that the running
    // build has been seen, so merely reopening this build does not prompt.
    if(!get(KEY))put(KEY,BUILD);
@@ -735,4 +735,4 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  }catch(e){console.warn('Layout refinement:',e)}
 });
-</script><script id="fm-version-indicator">document.addEventListener('DOMContentLoaded',()=>{const el=document.createElement('div');el.textContent='FIRE MATE v3.0.32';el.style.cssText='text-align:center;color:var(--sub);font-size:11px;padding:10px 0 90px';document.body.append(el)});</script></body></html>
+</script><script id="fm-version-indicator">document.addEventListener('DOMContentLoaded',()=>{const el=document.createElement('div');el.textContent='FIRE MATE v3.0.33';el.style.cssText='text-align:center;color:var(--sub);font-size:11px;padding:10px 0 90px';document.body.append(el)});</script></body></html>

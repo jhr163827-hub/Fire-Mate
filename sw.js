@@ -1,11 +1,12 @@
-const CACHE='fire-mate-v3-0-39';
+const CACHE='fire-mate-v3-0-40';
 const ASSETS=['./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(async()=>{
   const cached=await caches.open(CACHE).then(c=>c.match('./index.html'));
   if(!cached||!cached.ok||!(await cached.text()).includes("const BUILD='"+CACHE+"'"))throw Error('Staged HTML does not match worker version');
+  await self.skipWaiting();
  }));
- // Do not auto-activate: the app must ask the user before switching versions.
+ // Recovery release: activate only after a matching HTML has been safely cached.
 });
 self.addEventListener('activate',event=>{
  // Keep the previous cache for rollback until a subsequent validated release.

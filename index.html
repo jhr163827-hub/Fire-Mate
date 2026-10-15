@@ -241,6 +241,19 @@ body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:cla
 #view-assets .fm-asset-donut-inner strong{font-size:12px!important;letter-spacing:-.5px!important;white-space:nowrap}
 #view-assets .fm-asset-legend-row{font-size:11px}
 @media(max-width:370px){#view-assets .fm-asset-donut{flex-basis:94px!important;width:94px!important;height:94px!important}#view-assets .fm-asset-donut-inner{width:69px!important;height:69px!important}#view-assets .fm-asset-donut-inner strong{font-size:11px!important}}
+</style><style id="fm-assets-polish-v3037">
+#view-assets .fm-asset-composition{padding-bottom:17px}
+#view-assets .fm-asset-donut-wrap{display:grid!important;grid-template-columns:112px minmax(0,1fr);gap:13px!important;align-items:center!important;padding:14px 0 4px!important;min-height:0}
+#view-assets .fm-asset-donut{width:112px!important;height:112px!important;flex:none!important;justify-self:center}
+#view-assets .fm-asset-donut-inner{width:82px!important;height:82px!important}
+#view-assets .fm-asset-legend{width:100%;gap:10px!important}
+#view-assets .fm-asset-legend-row{grid-template-columns:8px minmax(0,1fr) auto auto!important;gap:5px!important;min-height:24px}
+#view-assets .fm-asset-legend-row .label{font-size:12px!important;color:var(--txt)!important}
+#view-assets .fm-asset-legend-amount{font-size:11px;color:var(--sub)!important}
+#view-assets .fm-asset-legend-row strong{font-size:12px}
+#view-assets .fm-asset-donut-inner strong{font-size:12px!important}
+#fmManualUpdate small{font-size:10px;opacity:.65;letter-spacing:0}
+@media(max-width:390px){#view-assets .fm-asset-donut-wrap{grid-template-columns:96px minmax(0,1fr);gap:8px!important}#view-assets .fm-asset-donut{width:96px!important;height:96px!important}#view-assets .fm-asset-donut-inner{width:70px!important;height:70px!important}#view-assets .fm-asset-legend-row .label{font-size:11px!important}#view-assets .fm-asset-legend-amount{font-size:10px}}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -690,15 +703,15 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-36',VERSION='3.0.36';
+ const BUILD='fire-mate-v3-0-37',VERSION='3.0.37';
  let busy=false,reg;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
- button.textContent='↻ 업데이트';button.title='새 버전 확인';
- button.style.cssText='font-size:12px;white-space:nowrap;padding:10px 9px';
+ button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인';
+ button.style.cssText='font-size:12px;white-space:nowrap;padding:7px 9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.15';
  const header=document.querySelector('header.top .right');
  if(header)header.prepend(button);
- const report=(message)=>{button.title=message;button.textContent=message;setTimeout(()=>{if(!busy){button.textContent='↻ 업데이트';button.title='새 버전 확인'}},3500)};
+ const report=(message)=>{button.title=message;button.innerHTML='<span>'+message+'</span><small>v'+VERSION+'</small>';setTimeout(()=>{if(!busy){button.innerHTML='<span>↻ 업데이트</span><small>v'+VERSION+'</small>';button.title='현재 버전 v'+VERSION+' · 새 버전 확인'}},3500)};
  const remoteBuild=async()=>{
   const r=await fetch('./sw.js?check='+Date.now(),{cache:'no-store'});
   if(!r.ok)throw Error('버전 조회 실패');

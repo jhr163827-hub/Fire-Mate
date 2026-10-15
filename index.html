@@ -929,7 +929,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-60',VERSION='3.0.60';
+ const BUILD='fire-mate-v3-0-61',VERSION='3.0.61';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
@@ -949,7 +949,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
  button.onclick=async()=>{
   if(busy)return;busy=true;button.disabled=true;button.textContent='확인 중…';
   try{
-   const response=await fetch('./index.html?check='+Date.now(),{cache:'no-store'});
+   const response=await fetch('https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check='+Date.now(),{cache:'no-store'});
    if(!response.ok)throw Error('서버 연결에 실패했어');
    const html=await response.text();
    const match=html.match(/const BUILD='(fire-mate-v[0-9-]+)'/);
@@ -958,7 +958,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
    const next=match[1].replace('fire-mate-v','').replaceAll('-','.');
    if(await modal('새 업데이트가 준비됐어요','v'+VERSION+' → v'+next+'\\n지금 업데이트할까요?',['나중에','지금 업데이트'])!==1)return;
    button.textContent='업데이트 중…';
-   location.replace('./index.html?updated='+Date.now());
+   if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});}}location.replace('./index.html?updated='+Date.now());
   }catch(e){await modal('업데이트 확인 실패',e.message+' 기존 데이터는 그대로 유지돼.',['확인'])}
   finally{busy=false;button.disabled=false;reset()}
  };

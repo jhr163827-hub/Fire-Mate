@@ -461,6 +461,13 @@ body.fm-asset-fullscreen .app{padding-top:8px!important}
 #fmPullHint{position:fixed;z-index:9998;top:76px;left:50%;transform:translate(-50%,-18px);padding:10px 16px;border-radius:999px;background:#1d3040;color:#c7e9df;border:1px solid #365d58;box-shadow:0 8px 28px #0005;font-size:12px;font-weight:700;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;white-space:nowrap}
 #fmPullHint.show{opacity:1;transform:translate(-50%,0)}
 #fmPullHint.ready{background:#235c4f;color:white}
+
+/* v3.0.68 compact quote refresh; never let retry crowd amount */
+#view-assets .fm-quote-refresh,#view-home .fm-quote-refresh{width:40px!important;min-width:40px!important;max-width:40px!important;height:40px!important;padding:0!important;flex:0 0 40px!important;font-size:0!important}
+#view-assets #netWorth,#view-home #homeTotalAssets{white-space:nowrap!important;font-size:clamp(20px,5.4vw,34px)!important;letter-spacing:-1.1px!important}
+#view-assets .hero .flex:has(#netWorth){justify-content:flex-start!important}
+#view-assets .hero .flex:has(#netWorth) #refreshStocks{margin-left:4px!important}
+#fmPullHint{top:90px!important}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -871,7 +878,7 @@ $('saveStockKey').onclick=()=>{const key=$('stockApiKey').value.trim();if(!/^[a-
 $('clearStockKey').onclick=()=>{localStorage.removeItem(PRICE_KEY);$('stockApiKey').value='';priceStatus('키 삭제 완료')};
 let quoteBusy=false,failedSymbols=[];
 function quoteProgress(done,total){const pct=total?Math.round(done/total*100):0;$('quoteProgress').style.display='block';$('quoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목'+(done===total?' 완료':' 진행 중');$('quoteProgressPercent').textContent=pct+'%';$('quoteProgressBar').style.width=pct+'%';const home=$('homeQuoteProgress');if(home){home.hidden=false;home.style.display='block';$('homeQuoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목';$('homeQuoteProgressPercent').textContent=pct+'%';$('homeQuoteProgressBar').style.width=pct+'%'}}
-const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className=$('refreshStocks').className;retryStocks.style.cssText='display:none;margin:10px 0 0;max-width:100%;font-size:12px';retryStocks.hidden=true;$('refreshStocks').insertAdjacentElement('afterend',retryStocks);
+const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
 retryStocks.onclick=()=>refreshStockPrices(true);
 $('homeRefreshStocks').onclick=()=>$('refreshStocks').click();
 $('refreshStocks').onclick=()=>{const el=$('stockStatus');if(el)el.textContent='↻ 버튼 입력 확인 · 시세 조회 준비 중…';refreshStockPrices(false).catch(e=>{const msg='갱신 오류: '+String(e?.message||e);if(el)el.textContent=msg;toast(msg);quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');retryStocks.disabled=false})};
@@ -981,7 +988,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-67',VERSION='3.0.67';
+ const BUILD='fire-mate-v3-0-68',VERSION='3.0.68';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
@@ -1030,29 +1037,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script><script id="fm-version-indicator">document.addEventListener('DOMContentLoaded',()=>{const el=document.createElement('div');el.textContent='FIRE MATE v3.0.35';el.style.cssText='text-align:center;color:var(--sub);font-size:11px;padding:10px 0 90px';document.body.append(el)});</script>
 <script id="fm-pull-refresh">
-/* Pull-to-refresh on Home and Assets. Never intercept normal scrolling. */
+/* Home-only pull-to-refresh: handles short, non-scrollable PWA screens. */
 (()=>{
- let startY=0,startX=0,armed=false,tracking=false;
+ let sy=0,sx=0,tracking=false,ready=false;
  const hint=document.createElement('div');hint.id='fmPullHint';hint.textContent='↓ 당겨서 시세 갱신';
  const mount=()=>{if(!hint.isConnected)document.body.appendChild(hint)};
- const reset=()=>{armed=false;tracking=false;hint.classList.remove('show','ready');hint.textContent='↓ 당겨서 시세 갱신'};
+ const top=()=>Math.max(document.scrollingElement?.scrollTop||0,window.scrollY||0)<=3;
+ const reset=()=>{tracking=false;ready=false;hint.classList.remove('show','ready');hint.textContent='↓ 당겨서 시세 갱신'};
  document.addEventListener('touchstart',e=>{
-  if(e.touches.length!==1||window.scrollY>3||!['home','assets'].includes(typeof active==='string'?active:'')){reset();return}
-  if(e.target.closest('button,input,textarea,select,[contenteditable="true"],.modal,.dialog')){reset();return}
-  startY=e.touches[0].clientY;startX=e.touches[0].clientX;tracking=true;armed=false;
+  reset();
+  if(e.touches.length!==1||active!=='home'||!top()||e.target.closest('button,input,textarea,select,[contenteditable],.modal,[role="dialog"]'))return;
+  sy=e.touches[0].clientY;sx=e.touches[0].clientX;tracking=true;
  },{passive:true});
  document.addEventListener('touchmove',e=>{
-  if(!tracking||e.touches.length!==1)return;
-  const dy=e.touches[0].clientY-startY,dx=e.touches[0].clientX-startX;
-  if(window.scrollY>3||Math.abs(dx)>Math.max(30,dy)){reset();return}
-  if(dy>20){mount();hint.classList.add('show');armed=dy>=100;hint.classList.toggle('ready',armed);hint.textContent=armed?'↻ 놓으면 시세 갱신':'↓ 조금 더 당겨줘'}
+  if(!tracking||e.touches.length!==1||active!=='home')return;
+  const dy=e.touches[0].clientY-sy,dx=e.touches[0].clientX-sx;
+  if(!top()||Math.abs(dx)>Math.max(28,dy)){reset();return}
+  if(dy>12){mount();hint.classList.add('show');ready=dy>=85;hint.classList.toggle('ready',ready);hint.textContent=ready?'↻ 놓으면 시세 갱신':'↓ 아래로 더 당겨줘';if(e.cancelable)e.preventDefault()}
   else if(dy<0)reset();
- },{passive:true});
- document.addEventListener('touchend',()=>{
-  if(!tracking)return;
-  const shouldRefresh=armed;reset();
-  if(shouldRefresh&&!quoteBusy){const btn=document.getElementById('refreshStocks');if(btn)btn.click()}
- },{passive:true});
+ },{passive:false});
+ document.addEventListener('touchend',()=>{const run=tracking&&ready;reset();if(run&&!quoteBusy)document.getElementById('homeRefreshStocks')?.click()},{passive:true});
  document.addEventListener('touchcancel',reset,{passive:true});
 })();
 </script>

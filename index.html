@@ -719,7 +719,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-43',VERSION='3.0.43';
+ const BUILD='fire-mate-v3-0-44',VERSION='3.0.44';
  let busy=false,registration=null;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
@@ -772,13 +772,21 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
   busy=true;button.disabled=true;button.textContent='확인 중…';
   try{
    if(!navigator.onLine)throw Error('인터넷 연결을 확인해 줘');
-   const swText=await readBuild('./sw.js');
-   const match=swText.match(/const CACHE=['"]([^'"]+)['"]/);
-   if(!match)throw Error('서비스워커 버전 확인 실패');
-   const next=match[1];
-   if(next===BUILD){button.textContent='✓ 최신 버전';return}
-   const html=await readBuild('./index.html');
-   if(!html.includes("const BUILD='"+next+"'"))throw Error('서버 파일 버전이 서로 달라. 잠시 후 다시 시도해 줘');
+   // GitHub Pages can publish HTML and SW at different moments.
+   // Retry the read-only preflight instead of surfacing a deployment race to the user.
+   let next='',ready=false;
+   for(let attempt=0;attempt<12;attempt++){
+    const swText=await readBuild('./sw.js');
+    const match=swText.match(/const CACHE=['"]([^'"]+)['"]/);
+    if(!match)throw Error('서비스워커 버전 확인 실패');
+    next=match[1];
+    if(next===BUILD){button.textContent='✓ 최신 버전';return}
+    const html=await readBuild('./index.html');
+    if(html.includes("const BUILD='"+next+"'")){ready=true;break}
+    button.textContent='배포 확인 중…';
+    await new Promise(resolve=>setTimeout(resolve,2500));
+   }
+   if(!ready)throw Error('배포가 아직 완료되지 않았어. 잠시 후 다시 확인해 줘');
    if(!await showUpdateDialog(next)){button.textContent='업데이트 보류';return}
    button.textContent='설치 중…';
    registration=registration||await navigator.serviceWorker.getRegistration('./');

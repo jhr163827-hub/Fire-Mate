@@ -1038,24 +1038,23 @@ async function fmRenderDividends(){
  const fx=Number(data.balance.fx)||0,qtyBySymbol={},namesBySymbol={};
  for(const h of data.holdings){
   let sym=String(h.ticker||h.symbol||'').trim().toUpperCase();
-  if(sym==='498400')sym='498400.KS';
-  if(sym==='360750')sym='360750.KS';
+  if(/^\d{6}$/.test(sym))sym+='.KS';
   if(['BTC','BTC-USD','ETH','ETH-USD','KRW','USD','CASH'].includes(sym)||h.type==='CRYPTO_USD'||h.type==='CRYPTO')continue;
-  const qty=Number(h.qty)||0;
-  if(sym&&qty>0){qtyBySymbol[sym]=(qtyBySymbol[sym]||0)+qty;const name=fmDisplayHoldingName(h);namesBySymbol[sym]=/^\d{6}(\.KS)?$/.test(name)?({'498400.KS':'KODEX 200타겟위클리커버드콜','360750.KS':'TIGER 미국S&P500'}[sym]||name):name}
+  const qty=Number(h.qty);
+  if(sym&&Number.isFinite(qty)&&qty>0){qtyBySymbol[sym]=(qtyBySymbol[sym]||0)+qty;const name=fmDisplayHoldingName(h);namesBySymbol[sym]=/^\d{6}(\.KS)?$/.test(name)?({'498400.KS':'KODEX 200타겟위클리커버드콜','360750.KS':'TIGER 미국S&P500'}[sym]||name):name}
  }
  let annualNet=0,annualGross=0,annualTax=0,monthNet=0,monthGross=0,unknownGross=0,covered=0;
  const missing=[],rows=[],monthEvents=[],cutoff=year+'-01-01',yearEnd=year+'-12-31';
  for(const [sym,qty] of Object.entries(qtyBySymbol)){
   const entry=fmDivFeed.symbols[sym];
   if(!entry||!Array.isArray(entry.events)){missing.push(sym);continue}
-  const rate=entry.currency==='USD'?fx:1;
-  if(!rate){missing.push(sym);continue}
+  const rate=entry.currency==='USD'?fx:entry.currency==='KRW'?1:NaN;
+  if(!Number.isFinite(rate)||rate<=0){missing.push(sym);continue}
   covered++;
   const isCoveredCall=sym==='498400.KS';
   let grossYear=0,netYear=0,taxYear=0,latest='',uncertain=false;
   for(const e of entry.events){
-   if(!e||!e.date||!Number.isFinite(Number(e.amount)))continue;
+   if(!e||!/^\d{4}-\d{2}-\d{2}$/.test(String(e.date))||!Number.isFinite(Number(e.amount))||Number(e.amount)<=0)continue;
    const gross=Number(e.amount)*qty*rate,month=e.date.slice(0,7);
    const taxBase=Number(e.taxBasePerShare);
    const hasTaxBase=e.taxBasePerShare!==null&&e.taxBasePerShare!==undefined&&Number.isFinite(taxBase);
@@ -1366,7 +1365,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-132',VERSION='3.0.132';
+ const BUILD='fire-mate-v3-0-133',VERSION='3.0.133';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

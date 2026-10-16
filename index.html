@@ -1087,13 +1087,13 @@ function fmQuoteLabel(){
   if(!v||!Number.isFinite(v.time))return '시세 갱신 기록 없음';
   const d=new Date(v.time),now=new Date(),same=d.toDateString()===now.toDateString();
   const when=(same?'오늘 ':'')+d.toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit',hour12:true});
-  return '◷ 마지막 시세 조회 · '+when+' · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'')+(Number.isFinite(v.seconds)?' · '+v.seconds.toFixed(1)+'초':'')+(Number.isFinite(v.usSeconds)?' · 미국 '+v.usSeconds.toFixed(1)+'초 ('+v.usMode+(v.usWaitSeconds?' · 대기 '+v.usWaitSeconds.toFixed(1)+'초':'')+')':'');
+  return '◷ 마지막 시세 조회 · '+when+' · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'');
  }catch{return '시세 갱신 기록 없음'}
 }
 function fmShowQuoteFailures(){const box=$('fmQuoteFailures'),title=$('fmQuoteFailuresTitle'),list=$('fmQuoteFailuresList');if(!box||!title||!list)return;let info;try{info=fmGetLatestQuote()}catch{}const failures=Array.isArray(info?.failureDetails)?info.failureDetails:[];box.style.display=info?.failed?'block':'none';title.textContent=info?.failed?'실패 '+info.failed+'종목 · 원인 확인':'';list.replaceChildren();if(info?.failed&&!failures.length){list.textContent='이전 조회는 상세 오류가 저장되지 않았어요. 다음 시세 갱신부터 실패 원인이 표시됩니다.';return}failures.forEach(item=>{const row=document.createElement('div');row.style.cssText='padding:7px 0;border-bottom:1px solid var(--line)';const strong=document.createElement('strong');strong.textContent=String(item.symbol||'알 수 없음');row.append(strong,document.createTextNode(' · '+String(item.reason||'원인 미확인')));list.appendChild(row)})}
 function fmShowQuoteTime(){
  const label=fmQuoteLabel();
- let attempt=null;try{attempt=JSON.parse(localStorage.getItem(FM_QUOTE_ATTEMPT_KEY)||'null')}catch{}const extra=attempt&&Number.isFinite(attempt.time)?'\n↻ 마지막 버튼 시도 · '+new Date(attempt.time).toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit',hour12:true})+' · '+attempt.message:'';['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el){el.textContent=label+extra;el.style.whiteSpace='pre-line'}});fmShowQuoteFailures();
+ let attempt=null;try{attempt=JSON.parse(localStorage.getItem(FM_QUOTE_ATTEMPT_KEY)||'null')}catch{}const latest=fmGetLatestQuote(),msg=String(attempt?.message||''),showAttempt=attempt&&Number.isFinite(attempt.time)&&(!latest||attempt.time>Number(latest.time||0))&&!msg.startsWith('조회 완료');const extra=showAttempt?'\n↻ '+msg:'';['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el){el.textContent=label+extra;el.style.whiteSpace='pre-line'}});fmShowQuoteFailures();
 }
 fmShowQuoteTime();
 let quoteBusy=false,failedSymbols=[];
@@ -1269,7 +1269,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-114',VERSION='3.0.114';
+ const BUILD='fire-mate-v3-0-115',VERSION='3.0.115';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

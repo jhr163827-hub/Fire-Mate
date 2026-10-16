@@ -1,0 +1,36 @@
+name: Dividend data feasibility probe
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test public dividend endpoints (read-only)
+        shell: python
+        run: |
+          import json, urllib.request, urllib.parse, datetime
+          symbols = ["JEPQ", "SCHD", "498400.KS"]
+          for symbol in symbols:
+              print("\n=== " + symbol + " ===")
+              params = urllib.parse.urlencode({"period1": 1672531200, "period2": int(datetime.datetime.now(datetime.timezone.utc).timestamp()), "interval": "1mo", "events": "div"})
+              url = "https://query1.finance.yahoo.com/v8/finance/chart/" + urllib.parse.quote(symbol) + "?" + params
+              req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 FIRE-MATE-dividend-feasibility"})
+              try:
+                  with urllib.request.urlopen(req, timeout=18) as response:
+                      payload = json.load(response)
+                  result = payload.get("chart", {}).get("result") or []
+                  events = (result[0].get("events") or {}).get("dividends") if result else None
+                  rows = sorted((events or {}).values(), key=lambda x: x.get("date", 0), reverse=True)
+                  print("STATUS:", "OK" if rows else "NO_DIVIDEND_DATA")
+                  print("COUNT:", len(rows))
+                  for row in rows[:4]:
+                      print(datetime.datetime.fromtimestamp(row["date"], datetime.timezone.utc).date(), row.get("amount"))
+              except Exception as exc:
+                  print("STATUS: ERROR")
+                  print("DETAIL:", type(exc).__name__, str(exc)[:180])
+          print("\nDiagnostic only. No production data or app files modified.")

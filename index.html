@@ -626,6 +626,13 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-home .fm-expense-hero .big{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
 #view-home .fm-expense-hero{border-radius:20px}
 @media(max-width:380px){#view-home #homeTotalAssets{font-size:clamp(26px,6.8vw,36px)!important}}
+</style><style id="fm-home-fire-focus-v149">
+#view-home #homeAssetHero .hero-row .hero-stat:last-child #homeAssetPercent{font-size:clamp(26px,7vw,38px)!important;line-height:1.12;letter-spacing:-.055em;color:var(--green);font-weight:850;font-variant-numeric:tabular-nums}
+#view-home #homeAssetHero .hero-row .hero-stat:last-child .light.small{font-size:12px;font-weight:700}
+#view-home #homeAssetHero .hero-row .hero-stat:first-child strong{font-size:clamp(15px,4.1vw,21px)!important;font-variant-numeric:tabular-nums}
+#view-home #homeAssetHero .progress{height:9px}
+#view-home .fm-fire-remaining{color:var(--green);font-size:clamp(12px,3.2vw,15px);font-weight:750;line-height:1.4;letter-spacing:-.015em;margin-top:7px;font-variant-numeric:tabular-nums}
+@media(max-width:380px){#view-home #homeAssetHero .hero-row .hero-stat:last-child #homeAssetPercent{font-size:27px!important}}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -637,7 +644,7 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
     <div class="hero-stat"><span class="light small">FIRE 목표</span><strong id="homeAssetGoal">₩0</strong></div>
     <div class="hero-stat"><span class="light small">목표 달성률</span><strong id="homeAssetPercent">0%</strong></div>
   </div>
-  <div class="progress"><div id="homeAssetProgress"></div></div><div class="fm-fire-eta"><span>FIRE 예상 소요기간</span><strong id="homeFireEta">계산 중…</strong><small id="homeFireEtaNote">월 투자금과 예상 수익률 기준</small></div>
+  <div class="progress"><div id="homeAssetProgress"></div></div><div id="homeFireRemaining" class="fm-fire-remaining" aria-live="polite">목표까지 남은 금액 계산 중…</div><div class="fm-fire-eta"><span>FIRE 예상 소요기간</span><strong id="homeFireEta">계산 중…</strong><small id="homeFireEtaNote">월 투자금과 예상 수익률 기준</small></div>
   <button class="secondary" type="button" data-go="assets" style="margin-top:8px;width:100%">자산 상세 →</button>
 </div>
 <div class="hero"><div class="light small">이번 달 지출 <span id="heroMonth"></span></div><div class="big" id="heroSpent">₩0</div><div class="light small" id="heroCompare">이번 달 소비 현황</div><div class="hero-row"><div class="hero-stat"><span class="light small">남은 예산</span><strong id="heroLeft">미설정</strong></div><div class="hero-stat"><span class="light small">오늘 지출</span><strong id="heroToday">₩0</strong></div><div class="hero-stat"><span class="light small">기록한 날</span><strong id="heroDays">0일</strong></div></div><div class="progress"><div id="budgetProgress"></div></div></div><div id="fmHomeActivity" class="fm-home-activity" aria-label="최근 자산 기록 및 거래"><div class="fm-home-minihead"><strong>최근 자산 기록</strong><span id="fmHomeChartNote">기록 확인 중</span></div><div id="fmHomeSparkline" class="fm-home-spark"></div><div class="fm-home-minihead"><strong>최근 거래</strong><span>최대 2건</span></div><div id="fmHomeRecent" class="fm-home-recent"></div></div><div class="home-shortcuts"><button data-go="calendar">📅 소비 달력<small>날짜별 지출 확인</small></button><button data-go="assets">💰 내 자산<small>투자·현금·부채</small></button><button data-go="retire">🏖️ 은퇴 설계<small>미래 포트폴리오</small></button><button data-go="history">📋 거래 검색<small>지난 기록 찾아보기</small></button></div><div class="statrow"><div class="stat"><div class="muted small">이번 달 수입</div><div class="value green" id="homeIncome">₩0</div></div><div class="stat"><div class="muted small">저축·투자 이체</div><div class="value" id="homeTransfer">₩0</div></div><div class="stat"><div class="muted small">순현금흐름</div><div class="value" id="homeNet">₩0</div></div></div><div class="grid"><div class="card"><div class="cardhead"><h3>📊 이번 달 소비 요약</h3><button class="ghost small" data-go="insights">상세 분석 →</button></div><div class="muted small">많이 사용한 항목 TOP 3</div><div id="homeTopSpend" style="margin-top:12px"></div><div class="line"></div><div class="muted small">지난달 같은 기간 대비</div><div id="homeSpendCompare" style="margin-top:8px;font-weight:700"></div><p class="mini" style="margin-top:8px">계좌 이체는 소비 금액에서 제외합니다.</p></div><div class="card"><div class="cardhead"><h3>오늘의 소비 코치</h3><span class="pill">자동 분석</span></div><div id="coach" class="notice"></div><div class="line"></div><div class="flex"><span class="muted small">이번 달 무지출 일수</span><strong id="noSpend">0일</strong></div></div></div><div class="grid"><div class="card"><div class="cardhead"><h3>최근 거래</h3><button class="ghost small" data-go="history">전체 보기 →</button></div><div id="recent"></div></div></div></section>
@@ -713,6 +720,7 @@ $('homeTotalAssets').textContent=won(homeNetWorth);
 $('homeAssetGoal').textContent=won(homeGoal);
 const homePercent=homeGoal>0?Math.max(0,homeNetWorth)/homeGoal*100:0;
 $('homeAssetPercent').textContent=homePercent.toFixed(1)+'%';
+$('homeFireRemaining').textContent=homeGoal>0?(homeNetWorth>=homeGoal?'🎉 FIRE 목표 달성!':'목표까지 '+won(Math.max(0,homeGoal-homeNetWorth))+' 남았어요'):'FIRE 목표를 설정해 주세요';
 $('homeAssetProgress').style.width=Math.min(100,Math.max(0,homePercent))+'%';
 const principal=Math.max(0,homeNetWorth),target=homeGoal,contribution=Math.max(0,Number(data.fire.monthly)||0)*10000,annual=Number(data.fire.rate)||0;
 const months=target>0?estimate(principal/10000,target/10000,contribution/10000,annual):null;
@@ -1467,7 +1475,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-148',VERSION='3.0.148';
+ const BUILD='fire-mate-v3-0-149',VERSION='3.0.149';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

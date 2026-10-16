@@ -23,7 +23,7 @@ jobs:
           from pathlib import Path
           import re, subprocess, tempfile
           html=Path('index.html').read_text(encoding='utf-8')
-          scripts=re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>',html)
+          scripts=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',html)
           assert scripts, 'No inline scripts found'
           for i,code in enumerate(scripts,1):
               with tempfile.NamedTemporaryFile(suffix='.js',mode='w',encoding='utf-8') as f:

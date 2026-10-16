@@ -1254,7 +1254,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-104',VERSION='3.0.104';
+ const BUILD='fire-mate-v3-0-105',VERSION='3.0.105';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
@@ -1279,9 +1279,9 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
    const html=await response.text();
    const match=html.match(/const BUILD='(fire-mate-v[0-9-]+)'/);
    if(!match)throw Error('버전 확인에 실패했어');
-   if(!html.includes('id="view-home"')||!html.includes('id="view-assets"')||!html.includes('id="view-fire"')||!html.includes('id="settingsOverlay"')||!html.includes('function renderFire()')||html.length<100000)throw Error('새 버전 파일 검증에 실패했어. 업데이트를 중단했어');if(match[1]===BUILD){await modal('최신 버전이에요','현재 v'+VERSION+'을 사용 중이야.',['확인']);return}
+   if(!html.includes('id="view-home"')||!html.includes('id="view-assets"')||!html.includes('id="view-fire"')||!html.includes('id="settingsOverlay"')||!html.includes('function renderFire()')||html.length<100000)throw Error('새 버전 파일 검증에 실패했어. 업데이트를 중단했어');const versionParts=v=>v.replace('fire-mate-v','').split('-').map(Number);const compareVersions=(a,b)=>{const aa=versionParts(a),bb=versionParts(b);for(let i=0;i<Math.max(aa.length,bb.length);i++){if((aa[i]||0)!==(bb[i]||0))return (aa[i]||0)-(bb[i]||0)}return 0};if(compareVersions(match[1],BUILD)<0){await modal('서버 반영 대기 중','서버에서 이전 버전이 확인됐어. 현재 버전은 유지하고 잠시 후 다시 확인해 줘.',['확인']);return}if(match[1]===BUILD){await modal('최신 버전이에요','현재 v'+VERSION+'을 사용 중이야.',['확인']);return}
    const next=match[1].replace('fire-mate-v','').replaceAll('-','.');
-   if(await modal('새 업데이트가 준비됐어요','v'+VERSION+' → v'+next+'\\n지금 업데이트할까요?',['나중에','지금 업데이트'])!==1)return;
+   if(await modal('새 업데이트가 준비됐어요','v'+VERSION+' → v'+next+'\n지금 업데이트할까요?',['나중에','지금 업데이트'])!==1)return;
    button.textContent='업데이트 중…';
    if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});}}location.replace('./index.html?updated='+Date.now());
   }catch(e){await modal('업데이트 확인 실패',e.message+' 기존 데이터는 그대로 유지돼.',['확인'])}

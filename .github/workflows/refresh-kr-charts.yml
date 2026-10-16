@@ -33,5 +33,7 @@ jobs:
           git add chart-data/KR-*.json .kr-chart-cursor
           if ! git diff --cached --quiet; then
             git commit -m "Refresh Korean stock and ETF chart histories"
-            git push
+            # Replay the generated data commit on the newest main to avoid fetch-first races.
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi

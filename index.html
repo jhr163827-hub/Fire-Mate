@@ -836,7 +836,7 @@ function fmRenderFireExtra(){
  const labels=years.map(m=>'<text x="'+x(m)+'" y="'+(H-8)+'" text-anchor="middle" fill="currentColor" font-size="10">'+(date.getFullYear()+Math.floor((date.getMonth()+m)/12))+'년</text>').join('');
  const goalLine='<line x1="'+left+'" x2="'+(W-right)+'" y1="'+y(goal)+'" y2="'+y(goal)+'" stroke="#e6b65d" stroke-dasharray="5 4" stroke-width="1.6"/>';
  const hit=monthsToGoal!==null&&monthsToGoal<=N?'<circle cx="'+x(monthsToGoal)+'" cy="'+y(values[monthsToGoal])+'" r="4" fill="#e6b65d" stroke="white"/>':'';
- const scenarioButtons=[4,7,10].map(n=>'<button type="button" data-forecast-rate="'+n+'" class="'+(rate===n?'primary':'secondary')+'" style="padding:7px 12px">'+n+'%</button>').join('');
+ const scenarioButtons=[4,7,10,15].map(n=>'<button type="button" data-forecast-rate="'+n+'" class="'+(rate===n?'primary':'secondary')+'" style="padding:7px 12px">'+n+'%</button>').join('');
  const periodButtons=[5,10,20].map(n=>'<button type="button" data-forecast-period="'+n+'" class="'+(horizon===n?'primary':'secondary')+'" style="padding:7px 12px">'+n+'년</button>').join('');
  forecast.innerHTML='<label hidden class="mini" style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><input id="fmUseActualAssets" type="checkbox" '+(window.fmFireUseActual?'checked':'')+' style="width:auto">실제 순자산을 전망 시작금액으로 사용 ('+(netAsset()/100000000).toFixed(2)+'억)</label><div style="font-weight:700;margin:6px 0 10px">'+(monthsToGoal===null?'100년 내 목표 미도달':monthsToGoal===0?'목표 달성!':'예상 달성: '+targetDate.getFullYear()+'년 '+(targetDate.getMonth()+1)+'월 · 약 '+Math.floor(monthsToGoal/12)+'년 '+monthsToGoal%12+'개월 후')+'</div><div class="mini" style="margin-bottom:5px">연평균 수익률 시나리오 · 임시 비교</div><div style="display:flex;gap:6px;margin-bottom:10px">'+scenarioButtons+'</div><div style="display:flex;gap:6px;margin-bottom:10px">'+periodButtons+'</div><div style="padding:12px;border-radius:12px;background:var(--panel2);margin-bottom:10px"><div class="mini">'+selectedDate.getFullYear()+'년 '+(selectedDate.getMonth()+1)+'월 예상 자산</div><div style="font-size:23px;font-weight:800;color:var(--green)">'+fmtForecast(amount)+'</div><div class="mini">투자 원금 '+fmtForecast(principal)+' · 예상 수익 '+fmtForecast(profit)+'</div></div><div style="position:relative;touch-action:pan-y" id="fmForecastPlot"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="금액 눈금과 연도가 표시된 미래 자산 예측 차트" style="display:block;width:100%;height:auto">'+lines+goalLine+'<path d="'+coords+'" fill="none" stroke="#39cda7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+hit+'<line x1="'+x(selected)+'" x2="'+x(selected)+'" y1="'+top+'" y2="'+(H-bottom)+'" stroke="var(--green)" stroke-dasharray="3 3" opacity=".7"/><circle cx="'+x(selected)+'" cy="'+y(amount)+'" r="5" fill="var(--green)" stroke="white" stroke-width="1.5"/>'+labels+'</svg></div><div class="mini" style="margin-top:6px">목표 '+fmtForecast(goal)+' · 그래프 터치로 금액 확인</div><div class="mini">월 '+monthly.toLocaleString()+'만 · 연 '+rate+'% 가정</div>';
 
@@ -1506,7 +1506,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-162',VERSION='3.0.162';
+ const BUILD='fire-mate-v3-0-163',VERSION='3.0.163';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

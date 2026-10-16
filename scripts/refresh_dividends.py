@@ -10,7 +10,7 @@ SYMBOLS = ["JEPQ", "SCHD", "JEPI", "SPY", "QLD", "SGOV", "498400.KS", "360750.KS
 now = dt.datetime.now(dt.timezone.utc)
 start = int((now - dt.timedelta(days=1250)).timestamp())
 end = int(now.timestamp())
-out = {"updatedAt": now.isoformat(), "source": "Yahoo Finance chart dividend events (unofficial)", "symbols": {}, "errors": {}}
+out = {"updatedAt": now.isoformat(), "source": "Yahoo Finance chart dividend events (unofficial)", "symbols": {}, "errors": {}, "symbolStatus": {}}
 for symbol in SYMBOLS:
     query = urllib.parse.urlencode({"period1": start, "period2": end, "interval": "1mo", "events": "div"})
     url = "https://query1.finance.yahoo.com/v8/finance/chart/" + urllib.parse.quote(symbol) + "?" + query
@@ -32,9 +32,11 @@ for symbol in SYMBOLS:
         if not rows:
             raise ValueError("No dividend events")
         out["symbols"][symbol] = {"currency": "KRW" if symbol.endswith(".KS") else "USD", "events": rows}
+        out["symbolStatus"][symbol] = {"status": "ok", "checkedAt": now.isoformat()}
         print(symbol, "OK", len(rows), "latest", rows[-1])
     except Exception as ex:
         out["errors"][symbol] = str(ex)[:180]
+        out["symbolStatus"][symbol] = {"status": "unavailable" if str(ex) == "No dividend events" else "error", "checkedAt": now.isoformat()}
         print(symbol, "ERROR", str(ex)[:180])
 if not out["symbols"]:
     raise SystemExit("No dividend data collected; retaining previous file")
@@ -44,6 +46,10 @@ if os.path.exists("dividends.json"):
     for symbol, record in (previous.get("symbols") or {}).items():
         if symbol not in out["symbols"]:
             out["symbols"][symbol] = record
+            out["symbolStatus"][symbol] = {"status": "stale", "checkedAt": now.isoformat(), "lastSuccessfulAt": (previous.get("symbolStatus") or {}).get(symbol, {}).get("lastSuccessfulAt") or (previous.get("symbolStatus") or {}).get(symbol, {}).get("checkedAt") or previous.get("updatedAt")}
+for symbol, status in out["symbolStatus"].items():
+    if status["status"] == "ok":
+        status["lastSuccessfulAt"] = now.isoformat()
 with open("dividends.json", "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=2)
     f.write("\n")

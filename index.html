@@ -825,6 +825,7 @@ function fmOpenAccountDetail(id,push=true){
 
 const fmHistoryCache=new Map();
 let fmHistoryToken=0;
+let fmHistoryShowAverage=true;
 async function fmHoldingChartLoad(x,period='1M'){
  const el=document.getElementById('fmHoldingHistory');if(!el)return;
  const key=x.type+':'+x.ticker,token=++fmHistoryToken;
@@ -867,13 +868,14 @@ async function fmHoldingChartLoad(x,period='1M'){
  const xx=i=>12+i*316/(rows.length-1),yy=v=>158-(v-min)/span*135;
  const path=rows.map((v,i)=>(i?'L':'M')+xx(i).toFixed(1)+' '+yy(v.close).toFixed(1)).join(' ');
  const unit=x.type==='USD'?'$':'₩',money=v=>unit+v.toLocaleString('ko-KR',{maximumFractionDigits:unit==='$'?3:0});
- const avgline=avg>0?'<line x1="12" x2="328" y1="'+yy(avg)+'" y2="'+yy(avg)+'" stroke="#efb85e" stroke-dasharray="5 5"/>':'';
+ const avgline=avg>0&&fmHistoryShowAverage?'<line x1="12" x2="328" y1="'+yy(avg)+'" y2="'+yy(avg)+'" stroke="#efb85e" stroke-dasharray="5 5"/>':'';
  draw('<div class="fm-history-last"><strong>'+money(latest)+'</strong><small>마지막 종가 · '+safe(rows[rows.length-1].date)+'</small></div>'+
  '<div class="fm-history-plot"><svg viewBox="0 0 340 175" preserveAspectRatio="none" class="fm-history-svg"><path d="'+path+' L328 175 L12 175 Z" fill="#3fc9a4" opacity=".13"/>'+avgline+'<path d="'+path+'" stroke="#3fc9a4" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg><div class="fm-history-cursor" hidden><div class="fm-history-tooltip"></div><div class="fm-history-crosshair"></div><div class="fm-history-dot"></div></div></div>'+
  '<div class="fm-history-dates"><span>'+safe(rows[0].date)+'</span><span>'+safe(rows[rows.length-1].date)+'</span></div>'+
  '<div class="fm-history-metrics"><div><small>기간 최고가</small><strong>'+money(highest)+'</strong><small>'+highDate+'</small></div><div><small>기간 최저가</small><strong>'+money(lowest)+'</strong><small>'+lowDate+'</small></div><div><small>고점 대비</small><strong style="color:var(--red)">'+((latest/highest-1)*100).toFixed(2)+'%</strong></div><div><small>기간 수익률</small><strong style="color:'+(periodReturn>=0?'var(--green)':'var(--red)')+'">'+(periodReturn>=0?'+':'')+periodReturn.toFixed(2)+'%</strong></div></div>'+
- (avg>0?'<p class="mini">노란 점선 · 내 평균 매수가 '+money(avg)+'</p>':'')+
+ (avg>0?'<button type="button" class="secondary" id="fmAvgLineToggle" aria-pressed="'+fmHistoryShowAverage+'" style="margin-top:10px;font-size:12px">'+(fmHistoryShowAverage?'✓ 평단가 선 표시':'평단가 선 숨김')+' · '+money(avg)+'</button>':'')+
  '<p class="mini">저장된 일별 고가·저가 기준이며, 고점 대비는 마지막 종가 기준이야. 전체는 보유 데이터 전체('+cached.rows.length+'거래일)까지만 표시돼.</p>');
+ const avgToggle=el.querySelector('#fmAvgLineToggle');if(avgToggle)avgToggle.onclick=()=>{fmHistoryShowAverage=!fmHistoryShowAverage;fmHoldingChartLoad(x,period)};
 }
 function fmOpenHoldingDetail(id){
  const x=data.holdings.find(h=>String(h.id)===String(id));if(!x)return;

@@ -640,6 +640,13 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-home .fm-eta-detail-grid span{color:var(--sub)}
 #view-home .fm-eta-detail-grid strong{text-align:right;overflow-wrap:anywhere}
 #view-home .fm-eta-details p{color:var(--sub);font-size:11px;line-height:1.6;margin:8px 0 2px}
+</style><style id="fm-home-eta-scroll-v151">
+/* Allow the home dashboard to scroll when the FIRE ETA explanation expands. */
+@media(max-width:700px){
+body:has(#view-home.active .fm-eta-details[open]) .app{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+body:has(#view-home.active .fm-eta-details[open]) #view-home{flex:0 0 auto!important;min-height:auto!important;overflow:visible!important}
+body:has(#view-home.active .fm-eta-details[open]) #homeAssetHero{flex:0 0 auto!important;min-height:auto!important;overflow:visible!important}
+}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -1487,7 +1494,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-150',VERSION='3.0.150';
+ const BUILD='fire-mate-v3-0-151',VERSION='3.0.151';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

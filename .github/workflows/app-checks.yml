@@ -1,0 +1,19 @@
+name: FIRE MATE safety checks
+on:
+  push:
+    paths:
+      - 'index.html'
+      - 'sw.js'
+      - 'scripts/check_app.py'
+      - '.github/workflows/app-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify app integrity and version consistency
+        run: python3 scripts/check_app.py

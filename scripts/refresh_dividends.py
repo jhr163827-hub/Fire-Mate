@@ -6,7 +6,7 @@ import os
 import urllib.parse
 import urllib.request
 
-SYMBOLS = ["JEPQ", "SCHD", "JEPI", "SPY", "QLD", "SGOV", "498400.KS"]
+SYMBOLS = ["JEPQ", "SCHD", "JEPI", "SPY", "QLD", "SGOV", "498400.KS", "360750.KS", "SPYM"]
 now = dt.datetime.now(dt.timezone.utc)
 start = int((now - dt.timedelta(days=800)).timestamp())
 end = int(now.timestamp())

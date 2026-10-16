@@ -1130,6 +1130,7 @@ async function refreshStockPrices(retryOnly,auto=false){
  // Query independent markets concurrently. US requests still obey Twelve Data credit limits.
  const fmQuoteStarted=performance.now();
  let fmUsElapsed=null;
+ let fmUsMode='대상 없음',fmUsWaitMs=0;
  await Promise.all([
   (async()=>{ // Avoid repeated KRX requests during the same session.
  for(let i=0;i<krSymbols.length;i++){
@@ -1181,9 +1182,9 @@ async function refreshStockPrices(retryOnly,auto=false){
 
   })(),
   (async()=>{ const fmUsStarted=performance.now();
- let fmUsMode=symbols.length>1?'일괄 시도':(symbols.length?'개별':'대상 없음');
+ fmUsMode=symbols.length>1?'일괄 시도':(symbols.length?'개별':'대상 없음');
  let fmUsFallback=false;
- let fmUsWaitMs=0;
+ fmUsWaitMs=0;
  let batchHandled=false;
  if(symbols.length>1){
   try{
@@ -1268,7 +1269,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-113',VERSION='3.0.113';
+ const BUILD='fire-mate-v3-0-114',VERSION='3.0.114';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

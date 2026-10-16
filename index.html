@@ -516,6 +516,16 @@ body.fm-asset-fullscreen .app{padding-top:8px!important}
 .fm-detail-holding:has(.fm-holding-market)>span:first-child{flex:1;min-width:0}
 .fm-detail-holding:has(.fm-holding-market)>span:last-child{flex:0 0 auto}
 @media(max-width:390px){.fm-detail-holding .fm-holding-market{gap:5px}.fm-detail-holding .fm-holding-market b{font-size:11px}}
+
+/* v3.0.76: compact market summary in one line below each position */
+.fm-detail-holding:has(.fm-holding-market){display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:10px!important;row-gap:0!important}
+.fm-detail-holding:has(.fm-holding-market)>span:first-child{display:contents!important}
+.fm-detail-holding:has(.fm-holding-market)>span:first-child>strong,.fm-detail-holding:has(.fm-holding-market)>span:first-child>small{grid-column:1!important}
+.fm-detail-holding:has(.fm-holding-market)>span:last-child{grid-column:2!important;grid-row:1 / span 2!important;align-self:start!important}
+.fm-detail-holding:has(.fm-holding-market) .fm-holding-market{grid-column:1 / -1!important;grid-row:3!important;display:flex!important;flex-direction:row!important;justify-content:space-between!important;align-items:center!important;gap:8px!important;width:100%!important;max-width:none!important;margin-top:7px!important}
+.fm-detail-holding .fm-holding-market .fm-market-prices{display:inline!important;min-width:0!important;font-size:11px!important;color:var(--sub)!important;white-space:nowrap!important;letter-spacing:-.25px!important}
+.fm-detail-holding .fm-holding-market .fm-market-day{display:inline!important;flex:0 0 auto!important;font-size:11px!important;font-weight:750!important;white-space:nowrap!important}
+@media(max-width:380px){.fm-detail-holding .fm-holding-market .fm-market-prices,.fm-detail-holding .fm-holding-market .fm-market-day{font-size:10px!important}}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -786,7 +796,7 @@ function fmHoldingMarketLine(x){
  const day=validDay?Number(x.dayChangePct):null;
  const dayText=day===null?'—':(day>0?'+':'')+day.toFixed(2)+'%';
  const dayColor=day===null?'var(--sub)':day>0?'var(--green)':day<0?'var(--red)':'var(--sub)';
- return '<span class="fm-holding-market"><span><em>현재가</em><b>'+(Number.isFinite(current)&&current>0?format(current):'—')+'</b></span><span><em>내 매수가</em><b>'+(Number.isFinite(average)&&average>0?format(average):'—')+'</b></span><span><em>오늘 등락</em><b style="color:'+dayColor+'">'+dayText+'</b></span></span>';
+ return '<span class="fm-holding-market"><span class="fm-market-prices">현재 '+(Number.isFinite(current)&&current>0?format(current):'—')+' · 매수 '+(Number.isFinite(average)&&average>0?format(average):'—')+'</span><span class="fm-market-day" style="color:'+dayColor+'">오늘 '+dayText+'</span></span>';
 }
 function fmOpenAccountDetail(id,push=true){
  const a=data.accounts.find(x=>String(x.id)===String(id));if(!a)return;
@@ -1115,7 +1125,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-75',VERSION='3.0.75';
+ const BUILD='fire-mate-v3-0-76',VERSION='3.0.76';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

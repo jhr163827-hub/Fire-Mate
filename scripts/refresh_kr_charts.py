@@ -26,7 +26,7 @@ symbols=codes()
 cursor=Path(".kr-chart-cursor")
 offset=int(cursor.read_text().strip()) if cursor.exists() else 0
 # Refresh priority holdings before continuing the regular market-wide rotation.
-priority=[v.strip() for v in os.environ.get("KR_CHART_PRIORITY","360750").split(",") if v.strip().isdigit() and len(v.strip())==6]
+priority=[v.strip() for v in os.environ.get("KR_CHART_PRIORITY","360750,498400").split(",") if v.strip().isdigit() and len(v.strip())==6]
 regular=[symbols[(offset+i)%len(symbols)] for i in range(min(LIMIT,len(symbols)))]
 batch=list(dict.fromkeys(priority+regular))
 ok=0

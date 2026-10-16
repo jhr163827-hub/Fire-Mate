@@ -990,9 +990,9 @@ function renderAssetGrowth(){
 $('assetChartPeriod').onchange=renderAssetGrowth;
 function renderDailyRecords(){
  const host=document.getElementById('fmDailyRecords');if(!host)return;rpInit();
- const rows=[...data.dailySnapshots].filter(x=>/^\\d{4}-\\d{2}-\\d{2}$/.test(x.day)&&Number.isFinite(Number(x.amount))).sort((a,b)=>b.day.localeCompare(a.day));
+ const rows=[...data.dailySnapshots].filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.day)&&Number.isFinite(Number(x.amount))).sort((a,b)=>b.day.localeCompare(a.day));
  host.innerHTML=rows.length?rows.slice(0,90).map((x,i)=>{const prev=rows[i+1],diff=prev?Number(x.amount)-Number(prev.amount):null,pct=prev&&Number(prev.amount)?diff/Math.abs(Number(prev.amount))*100:null;return '<div class="fm-daily-row"><div><strong>'+safe(x.day)+'</strong><small>'+won(Number(x.amount))+'</small></div><div class="fm-daily-change" style="color:'+(diff===null?'var(--sub)':diff>=0?'var(--green)':'var(--red)')+'">'+(diff===null?'첫 기록':(diff>=0?'+':'')+won(diff)+(pct===null?'':' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)'))+'</div><button type="button" class="secondary fm-daily-delete" data-day="'+safe(x.day)+'" aria-label="'+safe(x.day)+' 기록 삭제">삭제</button></div>'}).join(''):'<p class="mini">아직 일별 기록이 없어요. 앱 실행 시 자동으로 저장됩니다.</p>';
- host.querySelectorAll('[data-day]').forEach(btn=>btn.onclick=()=>{const day=btn.dataset.day;if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(day)||!confirm(day+' 자산 기록을 삭제할까요?\\n다른 날짜의 기록과 실제 보유 자산은 그대로 유지됩니다.'))return;data.dailySnapshots=data.dailySnapshots.filter(x=>x.day!==day);if(!persist())return;render();toast(day+' 기록을 삭제했어요')});
+ host.querySelectorAll('[data-day]').forEach(btn=>btn.onclick=()=>{const day=btn.dataset.day;if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!confirm(day+' 자산 기록을 삭제할까요?\\n다른 날짜의 기록과 실제 보유 자산은 그대로 유지됩니다.'))return;data.dailySnapshots=data.dailySnapshots.filter(x=>x.day!==day);if(!persist())return;render();toast(day+' 기록을 삭제했어요')});
 }
 function renderSnapshots(){rpInit();renderAssetGrowth();renderDailyRecords();const sorted=[...data.snapshots].sort((a,b)=>b.month.localeCompare(a.month));$('snapshotList').innerHTML=sorted.length?sorted.map((s,i)=>{const prev=sorted[i+1];const delta=prev?s.amount-prev.amount:null;return `<div class="tx"><div class="txicon">📈</div><div class="txmain"><strong>${safe(s.month)}</strong><span>${delta===null?'첫 기록':(delta>=0?'+':'')+won(delta)+' 전월 기록 대비'}</span></div><strong>${won(s.amount)}</strong><button data-snapdel="${safe(s.month)}" aria-label="월별 기록 삭제">✕</button></div>`}).join(''):'<div class="empty">아직 월별 기록이 없어요. 위 버튼으로 첫 기록을 남겨보세요.</div>';$('snapshotList').querySelectorAll('[data-snapdel]').forEach(el=>el.onclick=()=>{if(!confirm(el.dataset.snapdel+' 기록을 삭제할까요?'))return;data.snapshots=data.snapshots.filter(s=>s.month!==el.dataset.snapdel);persist();renderSnapshots()})}
 $('rpSave').onclick=()=>{rpInit();const inputs=[...document.querySelectorAll('[data-rp]')];const vals=inputs.map(el=>Number(el.value));const nums=[moneyNumber($('rpMonthly').value),Number($('rpYield').value),Number($('rpReturn').value),Number($('rpCrash').value)];if(vals.some(n=>!Number.isFinite(n)||n<0||n>1000000)||nums.some(n=>!Number.isFinite(n))||nums[0]<0||nums[0]>10000||nums[1]<0||nums[1]>30||nums[2]<-50||nums[2]>50||nums[3]<0||nums[3]>90)return toast('설정값을 확인해 주세요');data.retirement.items.forEach((it,i)=>it.amount=vals[i]);Object.assign(data.retirement,{monthly:nums[0],yield:nums[1],priceChange:nums[2],crash:nums[3]});persist();renderRetirement();toast('은퇴 계획을 저장했어요')};
@@ -1191,7 +1191,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-82',VERSION='3.0.82';
+ const BUILD='fire-mate-v3-0-83',VERSION='3.0.83';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

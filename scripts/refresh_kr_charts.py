@@ -25,7 +25,10 @@ def codes():
 symbols=codes()
 cursor=Path(".kr-chart-cursor")
 offset=int(cursor.read_text().strip()) if cursor.exists() else 0
-batch=[symbols[(offset+i)%len(symbols)] for i in range(min(LIMIT,len(symbols)))]
+# Refresh priority holdings before continuing the regular market-wide rotation.
+priority=[v.strip() for v in os.environ.get("KR_CHART_PRIORITY","360750").split(",") if v.strip().isdigit() and len(v.strip())==6]
+regular=[symbols[(offset+i)%len(symbols)] for i in range(min(LIMIT,len(symbols)))]
+batch=list(dict.fromkeys(priority+regular))
 ok=0
 for symbol in batch:
     try:
@@ -40,6 +43,6 @@ for symbol in batch:
     except Exception as e:
         print(f"{symbol}: {type(e).__name__}: {e}",flush=True)
     time.sleep(.2)
-cursor.write_text(str((offset+len(batch))%len(symbols))+"\n")
+cursor.write_text(str((offset+len(regular))%len(symbols))+"\n")
 print(f"Updated {ok}/{len(batch)} tickers; total universe {len(symbols)}; next offset {(offset+len(batch))%len(symbols)}")
 if ok==0: raise RuntimeError("No price histories downloaded; check data provider.")

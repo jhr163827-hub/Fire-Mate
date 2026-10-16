@@ -734,22 +734,24 @@ function fmRenderFireExtra(){
 function render(){document.querySelectorAll('.monthLabel').forEach(e=>e.textContent=month.slice(0,4)+'년 '+Number(month.slice(5))+'월');renderHome();if(active==='calendar')renderCal();if(active==='history')renderHistory();if(active==='insights')renderInsights();if(active==='fire'){renderFire();fmRenderFireExtra();}if(active==='firecalc')renderFire();if(active==='assets')renderAssets()}autoRefreshFx();$('settingsBottom').onclick=()=>{renderFavoriteEditor();modal('settingsOverlay',true)};function renderFavoriteEditor(){$('favoriteEditor').innerHTML=data.favorites.map((f,i)=>`<div class="tx"><div class="txmain"><strong>${safe(f.emoji)} ${safe(f.name)}</strong><span>${safe(f.category)} · ${won(f.amount)}</span></div><button data-editfav="${i}">수정</button><button data-delfav="${i}">✕</button></div>`).join('');$('favoriteEditor').querySelectorAll('[data-editfav]').forEach(e=>e.onclick=()=>editFavorite(Number(e.dataset.editfav)));$('favoriteEditor').querySelectorAll('[data-delfav]').forEach(e=>e.onclick=()=>{data.favorites.splice(Number(e.dataset.delfav),1);persist();renderFavoriteEditor();render()})}function editFavorite(i){const old=i===null?{emoji:'💸',name:'',amount:0,category:'기타'}:data.favorites[i],name=prompt('즐겨찾기 이름',old.name);if(name===null)return;const amount=prompt('금액 (원)',String(old.amount));if(amount===null)return;const n=Number(amount);if(!name.trim()||!Number.isSafeInteger(n)||n<=0)return toast('이름과 금액을 확인해 주세요');const category=prompt('카테고리 (식비, 카페·간식, 교통, 쇼핑 등)',old.category);if(category===null)return;const emoji=prompt('아이콘 이모지',old.emoji);if(emoji===null)return;const v={name:name.trim().slice(0,20),amount:n,category:cats.expense.includes(category)?category:'기타',emoji:emoji.slice(0,8)||'💸'};if(i===null)data.favorites.push(v);else data.favorites[i]=v;persist();renderFavoriteEditor();render();toast('즐겨찾기를 저장했어요')}$('addFavorite').onclick=()=>editFavorite(null);function fmValidateBackup(obj){
  const d=obj?.data;
  if(obj?.app!=='FIRE MATE'||!d||typeof d!=='object'||Array.isArray(d))throw Error('FIRE MATE 백업 파일이 아닙니다');
- if(!Array.isArray(d.tx)||!Array.isArray(d.rec)||!Array.isArray(d.favorites)||!Array.isArray(d.holdings||[])||!Array.isArray(d.accounts||[]))throw Error('백업 거래·계좌 목록 형식이 잘못됐습니다');
+ if(!Array.isArray(d.tx)||!Array.isArray(d.rec)||!Array.isArray(d.favorites)||!Array.isArray(d.holdings)||!Array.isArray(d.accounts))throw Error('백업 거래·계좌 목록 형식이 잘못됐습니다');
  if(!d.fire||typeof d.fire!=='object'||Array.isArray(d.fire)||!d.budgets||typeof d.budgets!=='object'||Array.isArray(d.budgets))throw Error('백업 FIRE·예산 설정이 잘못됐습니다');
  if(!d.balance||typeof d.balance!=='object'||Array.isArray(d.balance))throw Error('백업 잔액 정보가 잘못됐습니다');
  for(const [name,items] of [['거래',d.tx],['반복 거래',d.rec],['즐겨찾기',d.favorites],['보유 종목',d.holdings],['계좌',d.accounts]]){
   if(items.some(x=>!x||typeof x!=='object'||Array.isArray(x)))throw Error(name+' 항목이 손상됐습니다');
  }
  if(d.tx.some(t=>typeof t.date!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(t.date)||!Number.isFinite(Number(t.amount))||Number(t.amount)<0))throw Error('거래 날짜 또는 금액이 잘못됐습니다');
- if(d.holdings.some(h=>!Number.isFinite(Number(h.qty))||!Number.isFinite(Number(h.price))))throw Error('보유 종목 수량 또는 가격이 잘못됐습니다');
+ if(d.holdings.some(h=>!Number.isFinite(Number(h.qty))||Number(h.qty)<0||!Number.isFinite(Number(h.price))||Number(h.price)<0||('cost' in h&&(!Number.isFinite(Number(h.cost))||Number(h.cost)<0))))throw Error('보유 종목 수량·가격·매입가가 잘못됐습니다');
  if(d.accounts.some(a=>typeof a.id!=='string'||!a.id))throw Error('계좌 ID가 잘못됐습니다');
+ if(new Set(d.accounts.map(a=>a.id)).size!==d.accounts.length)throw Error('계좌 ID가 중복됐습니다');
+ if(['cash','other','debt','fx'].some(k=>k in d.balance&&!Number.isFinite(Number(d.balance[k]))))throw Error('잔액 또는 환율 정보가 잘못됐습니다');
  return d;
 }
 function fmBackupSelfTest(){
  const example={...base,tx:[{id:'test',date:'2026-10-16',type:'expense',category:'식비',amount:1000}],rec:[],favorites:[],accounts:[{id:'test-account'}],holdings:[],balance:{...base.balance},fire:{...base.fire},budgets:{}};
  const payload={app:'FIRE MATE',version:5,data:example};
  fmValidateBackup(JSON.parse(JSON.stringify(payload)));
- for(const bad of [null,{...payload,data:{...example,tx:'invalid'}},{...payload,data:{...example,tx:[{date:'broken',amount:1000}]}},{...payload,data:{...example,accounts:[{}]}}]){
+ for(const bad of [null,{...payload,data:{...example,tx:'invalid'}},{...payload,data:{...example,tx:[{date:'broken',amount:1000}]}},{...payload,data:{...example,accounts:[{}]}},{...payload,data:{...example,holdings:'broken'}},{...payload,data:{...example,holdings:[{qty:-1,price:100}]}},{...payload,data:{...example,accounts:[{id:'dup'},{id:'dup'}]}},{...payload,data:{...example,balance:{...example.balance,fx:'invalid'}}}]){
   let rejected=false;try{fmValidateBackup(bad)}catch{rejected=true}if(!rejected)throw Error('백업 검증 자체 테스트 실패');
  }
  return true;
@@ -1366,7 +1368,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-134',VERSION='3.0.134';
+ const BUILD='fire-mate-v3-0-135',VERSION='3.0.135';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

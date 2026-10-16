@@ -526,7 +526,7 @@ body.fm-asset-fullscreen .app{padding-top:8px!important}
 .fm-detail-holding .fm-holding-market .fm-market-prices{display:inline!important;min-width:0!important;font-size:11px!important;color:var(--sub)!important;white-space:nowrap!important;letter-spacing:-.25px!important}
 .fm-detail-holding .fm-holding-market .fm-market-day{display:inline!important;flex:0 0 auto!important;font-size:11px!important;font-weight:750!important;white-space:nowrap!important}
 @media(max-width:380px){.fm-detail-holding .fm-holding-market .fm-market-prices,.fm-detail-holding .fm-holding-market .fm-market-day{font-size:10px!important}}
-</style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
+.fm-history-card{margin-top:16px}.fm-history-tabs{display:flex;gap:5px;margin:15px 0}.fm-history-tabs button{flex:1;min-width:0;padding:9px 3px;background:var(--panel2);color:var(--sub);border:1px solid var(--line);border-radius:10px;font-size:12px}.fm-history-tabs button.on{background:var(--green2);color:var(--green);border-color:var(--green)}.fm-history-last{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:10px}.fm-history-last strong{font-size:24px}.fm-history-last small,.fm-history-dates{color:var(--sub);font-size:11px}.fm-history-svg{width:100%;height:185px}.fm-history-dates{display:flex;justify-content:space-between}.fm-history-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:20px 0}.fm-history-metrics div{display:flex;flex-direction:column;gap:7px}.fm-history-metrics small{color:var(--sub);font-size:11px}.fm-history-metrics strong{font-size:clamp(12px,3.4vw,16px);white-space:nowrap}.fm-history-card p.mini{line-height:1.6}</style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
   <div class="light small">💰 나의 전체 순자산</div>
@@ -819,6 +819,53 @@ function fmOpenAccountDetail(id,push=true){
  panel.querySelectorAll('[data-fm-holding]').forEach(el=>el.onclick=()=>fmOpenHoldingDetail(el.dataset.fmHolding));
  fmSyncDetailVisibility();window.scrollTo(0,0);
 }
+
+const fmHistoryCache=new Map();
+let fmHistoryToken=0;
+async function fmHoldingChartLoad(x,period='1M'){
+ const el=document.getElementById('fmHoldingHistory');if(!el)return;
+ const key=x.type+':'+x.ticker,token=++fmHistoryToken;
+ const periods={ '1W':7,'1M':30,'3M':90,'1Y':365,'ALL':Infinity };
+ const tabs=()=>'<div class="fm-history-tabs">'+Object.entries({'1W':'1주','1M':'1개월','3M':'3개월','1Y':'1년','ALL':'전체'}).map(([k,v])=>'<button class="'+(period===k?'on':'')+'" data-period="'+k+'">'+v+'</button>').join('')+'</div>';
+ const draw=(body)=>{el.innerHTML='<h3>가격 추이</h3>'+tabs()+body;el.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>fmHoldingChartLoad(x,b.dataset.period))};
+ let cached=fmHistoryCache.get(key);
+ if(!cached||Date.now()-cached.at>3600000){
+  draw('<p class="mini">실제 과거 시세 조회 중…</p>');
+  try{
+   let rows=[];
+   if(x.type==='USD'){
+    const api=localStorage.getItem(PRICE_KEY);if(!api)throw Error('Twelve Data API 키가 필요해요.');
+    const res=await fetch('https://api.twelvedata.com/time_series?symbol='+encodeURIComponent(x.ticker)+'&interval=1day&outputsize=500&apikey='+encodeURIComponent(api),{cache:'no-store'});
+    const j=await res.json();if(!res.ok||j.status==='error')throw Error(String(j.message||'과거 시세 조회 실패'));
+    rows=(j.values||[]).map(v=>({date:v.datetime,close:+v.close,high:+v.high,low:+v.low}));
+   }else if(x.type==='CRYPTO_KRW'&&['BTC','ETH'].includes(String(x.ticker).toUpperCase())){
+    const res=await fetch('https://api.upbit.com/v1/candles/days?market=KRW-'+String(x.ticker).toUpperCase()+'&count=200',{cache:'no-store'});
+    if(!res.ok)throw Error('업비트 과거 시세 조회 실패');
+    const j=await res.json();rows=j.map(v=>({date:String(v.candle_date_time_kst).slice(0,10),close:+v.trade_price,high:+v.high_price,low:+v.low_price}));
+   }else throw Error(x.type==='KRW'?'국내 주식 과거 시세 API가 아직 연결되지 않았어요.':'이 종목의 차트 데이터는 아직 지원하지 않아요.');
+   rows=rows.filter(v=>/^\d{4}-\d\d-\d\d$/.test(v.date)&&[v.close,v.high,v.low].every(n=>Number.isFinite(n)&&n>0)).sort((a,b)=>a.date.localeCompare(b.date));
+   if(rows.length<2)throw Error('과거 시세 데이터가 부족해요.');
+   cached={at:Date.now(),rows};fmHistoryCache.set(key,cached);
+  }catch(e){cached={at:Date.now(),error:String(e.message||e).slice(0,130)};fmHistoryCache.set(key,cached)}
+ }
+ if(token!==fmHistoryToken||String(fmDetailHoldingId)!==String(x.id))return;
+ if(cached.error){draw('<p class="mini">'+safe(cached.error)+'</p><button class="secondary" id="fmHistoryRetry">다시 조회</button>');el.querySelector('#fmHistoryRetry').onclick=()=>{fmHistoryCache.delete(key);fmHoldingChartLoad(x,period)};return}
+ const cutoff=Date.now()-periods[period]*86400000;
+ const rows=cached.rows.filter(v=>period==='ALL'||new Date(v.date+'T00:00:00').getTime()>=cutoff);
+ if(rows.length<2){draw('<p class="mini">선택 기간의 데이터가 부족해요.</p>');return}
+ const highest=Math.max(...rows.map(v=>v.high)),lowest=Math.min(...rows.map(v=>v.low)),latest=rows[rows.length-1].close;
+ const avg=Number(x.cost),min=Math.min(lowest,avg>0?avg:lowest),max=Math.max(highest,avg>0?avg:highest),span=max-min||1;
+ const xx=i=>12+i*316/(rows.length-1),yy=v=>158-(v-min)/span*135;
+ const path=rows.map((v,i)=>(i?'L':'M')+xx(i).toFixed(1)+' '+yy(v.close).toFixed(1)).join(' ');
+ const unit=x.type==='USD'?'$':'₩',money=v=>unit+v.toLocaleString('ko-KR',{maximumFractionDigits:unit==='$'?3:0});
+ const avgline=avg>0?'<line x1="12" x2="328" y1="'+yy(avg)+'" y2="'+yy(avg)+'" stroke="#efb85e" stroke-dasharray="5 5"/>':'';
+ draw('<div class="fm-history-last"><strong>'+money(latest)+'</strong><small>마지막 종가 · '+safe(rows[rows.length-1].date)+'</small></div>'+
+ '<svg viewBox="0 0 340 175" preserveAspectRatio="none" class="fm-history-svg"><path d="'+path+' L328 175 L12 175 Z" fill="#3fc9a4" opacity=".13"/>'+avgline+'<path d="'+path+'" stroke="#3fc9a4" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'+
+ '<div class="fm-history-dates"><span>'+safe(rows[0].date)+'</span><span>'+safe(rows[rows.length-1].date)+'</span></div>'+
+ '<div class="fm-history-metrics"><div><small>기간 최고가</small><strong>'+money(highest)+'</strong></div><div><small>기간 최저가</small><strong>'+money(lowest)+'</strong></div><div><small>고점 대비</small><strong style="color:var(--red)">'+((latest/highest-1)*100).toFixed(2)+'%</strong></div></div>'+
+ (avg>0?'<p class="mini">노란 점선 · 내 평균 매수가 '+money(avg)+'</p>':'')+
+ '<p class="mini">조회된 기간의 일별 고가·저가 기준이며, 고점 대비는 마지막 종가 기준이야. 전체는 API 제공 범위('+cached.rows.length+'거래일)까지만 표시돼.</p>');
+}
 function fmOpenHoldingDetail(id){
  const x=data.holdings.find(h=>String(h.id)===String(id));if(!x)return;
  fmDetailHoldingId=x.id;fmPushDetailState();
@@ -826,9 +873,10 @@ function fmOpenHoldingDetail(id){
  const a=data.accounts.find(a=>a.id===x.accountId);
  const panel=$('fmAccountDetail');
  const metrics=[['보유 수량',Number(x.qty||0).toLocaleString('ko-KR')+'주'],['평균 매수가',Number(x.cost||0).toLocaleString('ko-KR')],['현재가',Number(x.price||0).toLocaleString('ko-KR')],['총 매입금액',won(c)],['평가손익',(v-c>=0?'+':'')+won(v-c)],['총 수익률',p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%']];
- panel.innerHTML='<div class="fm-detail-header"><button type="button" id="fmDetailBack" class="secondary">← '+safe(a?.name||'계좌 상세')+'</button><button type="button" id="fmDetailEdit" class="secondary">종목 수정</button></div><div class="card fm-detail-summary fm-holding-summary"><h1 class="fm-holding-title">'+safe(fmDisplayHoldingName(x))+'</h1><div class="fm-holding-value-label">보유 평가금액</div><h2>'+won(v)+'</h2><div style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+' ('+(p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%')+')</div></div><div class="card fm-detail-positions"><h3>보유 상세</h3><div class="fm-detail-metrics">'+metrics.map(y=>'<div><small>'+y[0]+'</small><strong>'+y[1]+'</strong></div>').join('')+'</div><p class="mini" style="margin-top:15px">배당금은 검증된 지급 데이터가 연결되면 표시돼요. 임의의 예상 배당금을 표시하지 않습니다.</p></div>';
+ panel.innerHTML='<div class="fm-detail-header"><button type="button" id="fmDetailBack" class="secondary">← '+safe(a?.name||'계좌 상세')+'</button><button type="button" id="fmDetailEdit" class="secondary">종목 수정</button></div><div class="card fm-detail-summary fm-holding-summary"><h1 class="fm-holding-title">'+safe(fmDisplayHoldingName(x))+'</h1><div class="fm-holding-value-label">보유 평가금액</div><h2>'+won(v)+'</h2><div style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+' ('+(p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%')+')</div></div><div class="card fm-detail-positions"><h3>보유 상세</h3><div class="fm-detail-metrics">'+metrics.map(y=>'<div><small>'+y[0]+'</small><strong>'+y[1]+'</strong></div>').join('')+'</div><p class="mini" style="margin-top:15px">배당금은 검증된 지급 데이터가 연결되면 표시돼요. 임의의 예상 배당금을 표시하지 않습니다.</p></div>'+( ['USD','KRW','CRYPTO_KRW','CRYPTO_USD'].includes(x.type)?'<div class="card fm-history-card" id="fmHoldingHistory"></div>':'');
  $('fmDetailBack').onclick=()=>{if(history.state?.fmAssetDetail)history.back();else fmNavigateBack()};
  $('fmDetailEdit').onclick=()=>openHolding(x);
+ if(document.getElementById('fmHoldingHistory'))fmHoldingChartLoad(x);
  fmSyncDetailVisibility();window.scrollTo(0,0);
 }
 function fmSyncDetailVisibility(){
@@ -1125,7 +1173,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-76',VERSION='3.0.76';
+ const BUILD='fire-mate-v3-0-77',VERSION='3.0.77';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

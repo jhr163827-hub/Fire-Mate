@@ -1035,14 +1035,14 @@ async function fmRenderDividends(){
  const now=new Date(),today=now.toISOString().slice(0,10),current=today.slice(0,7);
  const months=Array.from({length:6},(_,i)=>new Date(Date.UTC(now.getFullYear(),now.getMonth()-5+i,1)).toISOString().slice(0,7));
  const totals=Object.fromEntries(months.map(m=>[m,0]));
- const fx=Number(data.balance.fx)||0,qtyBySymbol={};
+ const fx=Number(data.balance.fx)||0,qtyBySymbol={},namesBySymbol={};
  for(const h of data.holdings){
   let sym=String(h.ticker||h.symbol||'').trim().toUpperCase();
   if(sym==='498400')sym='498400.KS';
   if(sym==='360750')sym='360750.KS';
   if(['BTC','BTC-USD','ETH','ETH-USD','KRW','USD','CASH'].includes(sym)||h.type==='CRYPTO_USD'||h.type==='CRYPTO')continue;
   const qty=Number(h.qty)||0;
-  if(sym&&qty>0)qtyBySymbol[sym]=(qtyBySymbol[sym]||0)+qty;
+  if(sym&&qty>0){qtyBySymbol[sym]=(qtyBySymbol[sym]||0)+qty;namesBySymbol[sym]=fmDisplayHoldingName(h)}
  }
  let annualNet=0,annualGross=0,annualTax=0,monthNet=0,monthGross=0,unknownGross=0,covered=0;
  const missing=[],rows=[],cutoff=new Date(Date.UTC(now.getFullYear()-1,now.getMonth(),now.getDate())).toISOString().slice(0,10);
@@ -1071,7 +1071,7 @@ async function fmRenderDividends(){
    if(e.date>latest)latest=e.date;
   }
   annualGross+=grossYear;annualNet+=netYear;annualTax+=taxYear;
-  rows.push({sym,qty,grossYear,netYear,latest,uncertain});
+  rows.push({sym,name:namesBySymbol[sym]||sym,qty,grossYear,netYear,latest,uncertain});
  }
  $('fmDivMonth').textContent=won(monthNet)+(unknownGross?' + 미확인':'');
  $('fmDivYear').textContent=won(annualNet)+(unknownGross?' + 미확인':'');
@@ -1361,7 +1361,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-121',VERSION='3.0.121';
+ const BUILD='fire-mate-v3-0-122',VERSION='3.0.122';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

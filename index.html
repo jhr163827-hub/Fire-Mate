@@ -689,26 +689,31 @@ function renderHistory(){const q=$('search').value.trim().toLowerCase(),type=$('
 function fmRenderFireExtra(){
  const forecast=document.getElementById('fmFireForecast'),portfolio=document.getElementById('fmFirePortfolioProgress'),life=document.getElementById('fmFireLife');
  if(!forecast||!portfolio||!life)return;
- const p=data.fire,goal=Number(p.goal)||65000,initial=Math.max(0,Number(p.asset)||0),monthly=Math.max(0,Number(p.monthly)||0),rate=Number(p.rate)||0;
+ const p=data.fire,goal=Number(p.goal)||65000,initial=Math.max(0,Number(p.asset)||0),monthly=Math.max(0,Number(p.monthly)||0),rate=Number(p.rate)||0;const monthsToGoal=estimate(initial,goal,monthly,rate);
  const years=[0,2,4,6,8,10,12,15,20],points=years.map(y=>{let a=initial;for(let i=0;i<y*12;i++)a=a*(1+rate/1200)+monthly;return {y,a}});
  const max=Math.max(goal,...points.map(v=>v.a),1),W=340,H=155,pad=18;
  const coords=points.map(v=>(pad+(W-2*pad)*v.y/20).toFixed(1)+','+(H-pad-(H-2*pad)*v.a/max).toFixed(1)).join(' ');
  const goalY=(H-pad-(H-2*pad)*goal/max).toFixed(1);
- forecast.innerHTML='<svg viewBox="0 0 340 155" role="img" aria-label="20년간 예상 자산 성장 그래프" style="width:100%;max-height:230px"><line x1="18" x2="322" y1="'+goalY+'" y2="'+goalY+'" stroke="#e6b65d" stroke-dasharray="5 4" stroke-width="1.5"/><polyline points="'+coords+'" fill="none" stroke="#39cda7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="20" y="12" fill="currentColor" font-size="10">목표 '+(goal/10000).toFixed(2)+'억</text><text x="18" y="151" fill="currentColor" font-size="10">현재</text><text x="297" y="151" fill="currentColor" font-size="10">20년</text></svg><div class="mini">월 '+monthly.toLocaleString()+'만 원 투자 · 연 '+rate+'% 복리 가정 · 세금/물가/변동성 제외</div>';
+ forecast.innerHTML='<div style="font-weight:700;margin:6px 0 12px">'+(monthsToGoal===null?'100년 내 목표 미도달':monthsToGoal===0?'목표 달성!':'예상 달성: '+(new Date().getFullYear()+Math.floor((new Date().getMonth()+monthsToGoal)/12))+'년 · 약 '+Math.floor(monthsToGoal/12)+'년 '+monthsToGoal%12+'개월 후')+'</div><svg viewBox="0 0 340 155" role="img" aria-label="20년간 예상 자산 성장 그래프" style="width:100%;max-height:230px"><line x1="18" x2="322" y1="'+goalY+'" y2="'+goalY+'" stroke="#e6b65d" stroke-dasharray="5 4" stroke-width="1.5"/><polyline points="'+coords+'" fill="none" stroke="#39cda7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="20" y="12" fill="currentColor" font-size="10">목표 '+(goal/10000).toFixed(2)+'억</text><text x="18" y="151" fill="currentColor" font-size="10">현재</text><text x="297" y="151" fill="currentColor" font-size="10">20년</text></svg><div class="mini">월 '+monthly.toLocaleString()+'만 원 투자 · 연 '+rate+'% 복리 가정 · 세금/물가/변동성 제외</div>';
  rpInit();
  const normalized=h=>String(h.symbol||h.ticker||h.code||h.name||'').toUpperCase().replace(/[\s_-]/g,'');
- const groups=[['KODEX 200 타겟위클리커버드콜',h=>normalized(h).includes('498400')||normalized(h).includes('KODEX200타겟위클리커버드콜')],['JEPQ',h=>/(^|[^A-Z])JEPQ([^A-Z]|$)/.test(String(h.symbol||h.ticker||h.name||'').toUpperCase())],['SCHD',h=>normalized(h)==='SCHD'],['SPY',h=>['SPY','SPYM','SPLG','360750'].includes(normalized(h))||normalized(h).includes('TIGER미국S&P500')],['QLD',h=>normalized(h)==='QLD'],['SGOV',h=>normalized(h)==='SGOV'],['비트코인',h=>['BTC','BTCUSD','BTCKRW','BITCOIN','비트코인'].includes(normalized(h))],['현금',h=>false]];
+ const groups=[['KODEX 200 타겟위클리커버드콜',h=>normalized(h).includes('498400')||normalized(h).includes('498400.KS')||normalized(h).includes('KODEX200타겟위클리커버드콜')],['JEPQ',h=>/(^|[^A-Z])JEPQ([^A-Z]|$)/.test(String(h.symbol||h.ticker||h.name||'').toUpperCase())],['SCHD',h=>normalized(h)==='SCHD'],['SPY',h=>['SPY','SPYM','SPLG','360750'].includes(normalized(h))||normalized(h).includes('TIGER미국S&P500')],['QLD',h=>normalized(h)==='QLD'],['SGOV',h=>normalized(h)==='SGOV'],['비트코인',h=>['BTC','BTCUSD','BTCKRW','BITCOIN','비트코인'].includes(normalized(h))],['현금',h=>false]];
  const holdings=Array.isArray(data.holdings)?data.holdings:[],cash=Math.max(0,Number(data.balance?.cash)||0);
  const targetItems=data.retirement.items||[],fmt=v=>Math.round(v).toLocaleString('ko-KR')+'만';
- portfolio.innerHTML=targetItems.map(it=>{
+ const allRows=targetItems.map(it=>{
   const name=String(it.name||''),entry=groups.find(g=>g[0]===name),target=Math.max(0,Number(it.amount)||0);
   const matched=entry?holdings.filter(entry[1]):[];
   const owned=name==='현금'?cash/10000:matched.reduce((a,h)=>a+Math.max(0,assetValue(h)),0)/10000;
   const pct=target>0?owned/target*100:0,remaining=Math.max(0,target-owned);
-  return '<div style="margin:15px 0"><div class="flex" style="justify-content:space-between;align-items:baseline;gap:10px"><strong style="font-size:13px">'+safe(name)+(name==='SPY'?' <small class="mini">SPYM + TIGER 미국S&P500</small>':'')+'</strong><strong style="font-size:13px">'+pct.toFixed(1)+'%</strong></div><div class="progress" style="margin:8px 0;height:7px"><div style="width:'+Math.min(100,pct)+'%;background:#39cda7;height:100%"></div></div><div class="mini">보유 '+fmt(owned)+' / 목표 '+fmt(target)+' · 부족 '+fmt(remaining)+'</div></div>';
- }).join('')+'<p class="mini">※ 종목 코드/이름으로 연결된 평가액 기준. 연결되지 않은 종목이나 계좌 현금은 직접 확인해 주세요.</p>';
+  return {name,target,owned,pct,remaining,matched:matched.length,known:!!entry};
+ });
+ const totalTarget=allRows.reduce((a,x)=>a+x.target,0),totalOwned=allRows.reduce((a,x)=>a+x.owned,0),totalPct=totalTarget?totalOwned/totalTarget*100:0;
+ const rowHtml=x=>'<div style="margin:14px 0"><div class="flex" style="justify-content:space-between;align-items:baseline;gap:10px"><strong style="font-size:13px">'+safe(x.name)+(x.name==='SPY'?' <small class="mini">SPY·SPYM·SPLG·TIGER</small>':'')+'</strong><strong style="font-size:13px">'+x.pct.toFixed(1)+'%</strong></div><div class="progress" style="margin:8px 0;height:7px"><div style="width:'+Math.min(100,x.pct)+'%;background:#39cda7;height:100%"></div></div><div class="mini">보유 '+fmt(x.owned)+' / 목표 '+fmt(x.target)+' · 부족 '+fmt(x.remaining)+(x.name!=='현금'&&x.matched===0?' · 연결된 종목 없음':'')+'</div></div>';
+ const top=[...allRows].sort((a,b)=>b.pct-a.pct).slice(0,3);
+ portfolio.innerHTML='<div style="margin:12px 0"><strong style="font-size:23px">'+totalPct.toFixed(1)+'%</strong><div class="mini">목표 종목 보유액 '+fmt(totalOwned)+' / 목표 '+fmt(totalTarget)+' · 전체 순자산 달성률과 별개</div></div><div id="fmFirePortfolioRows">'+(window.fmPortfolioExpanded?allRows:top).map(rowHtml).join('')+'</div><button class="secondary" type="button" id="fmFirePortfolioToggle" style="width:100%;margin-top:10px">'+(window.fmPortfolioExpanded?'접기 ↑':'전체 '+allRows.length+'개 종목 보기 ↓')+'</button><p class="mini">※ 보유 평가금액 기준. 종목명·티커가 매칭되지 않거나 계좌 잔고로만 입력된 금액은 제외될 수 있어요. 현금은 별도 현금 항목만 반영해요.</p>';
+ document.getElementById('fmFirePortfolioToggle').onclick=()=>{window.fmPortfolioExpanded=!window.fmPortfolioExpanded;fmRenderFireExtra()};
  const sum=targetItems.reduce((a,it)=>a+(Number(it.amount)||0),0),spend=Number(data.retirement.monthly)||0,yieldRate=Number(data.retirement.yield)||0,monthlyIncome=sum*yieldRate/1200;
- life.innerHTML='<div class="hero-row"><div class="hero-stat"><span class="light small">예상 월 분배금 · 세전</span><strong>'+fmt(monthlyIncome)+'</strong></div><div class="hero-stat"><span class="light small">월 생활비</span><strong>'+fmt(spend)+'</strong></div><div class="hero-stat"><span class="light small">월 차액 · 세전</span><strong>'+(monthlyIncome-spend>=0?'+':'')+fmt(monthlyIncome-spend)+'</strong></div></div><p class="mini">목표 '+fmt(sum)+' 기준 인출률 '+(sum>0?(spend*12/sum*100).toFixed(2):'0')+'%/년 · 세금/건보료 제외</p>';
+ life.innerHTML='<p class="mini">아래 현금흐름은 세전 추정치로, 실제 사용 가능한 금액과 다릅니다.</p><div class="hero-row"><div class="hero-stat"><span class="light small">예상 월 분배금 · 세전</span><strong>'+fmt(monthlyIncome)+'</strong></div><div class="hero-stat"><span class="light small">월 생활비</span><strong>'+fmt(spend)+'</strong></div><div class="hero-stat"><span class="light small">월 차액 · 세전</span><strong>'+(monthlyIncome-spend>=0?'+':'')+fmt(monthlyIncome-spend)+'</strong></div></div><p class="mini">목표 '+fmt(sum)+' 기준 인출률 '+(sum>0?(spend*12/sum*100).toFixed(2):'0')+'%/년 · 세금/건보료 제외</p>';
  const open=()=>go('retire');
  document.getElementById('fmOpenCalculator').onclick=()=>go('firecalc');
  document.getElementById('fmFirePortfolioOpen').onclick=open;
@@ -1238,7 +1243,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-88',VERSION='3.0.88';
+ const BUILD='fire-mate-v3-0-89',VERSION='3.0.89';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

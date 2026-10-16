@@ -1214,11 +1214,12 @@ async function refreshStockPrices(retryOnly,auto=false){
  const allKr=[...new Set(data.holdings.filter(h=>h.type==='KRW'&&/^\d{6}$/.test(h.ticker)).map(h=>h.ticker))];
  const krSymbols=retryOnly?allKr.filter(x=>failedSymbols.includes('KR:'+x)):allKr;
  const allSymbols=[...new Set(data.holdings.filter(h=>h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
- const symbols=retryOnly?allSymbols.filter(x=>failedSymbols.includes(x)):allSymbols;
+ const symbolsWithKey=retryOnly?allSymbols.filter(x=>failedSymbols.includes(x)):allSymbols;
+ const symbols=key?symbolsWithKey:[];
  const cryptoAll=[...new Set(data.holdings.filter(h=>h.type==='CRYPTO_KRW'&&['BTC','ETH'].includes(String(h.ticker||'').toUpperCase())).map(h=>String(h.ticker).toUpperCase()))];
  const cryptoSymbols=retryOnly?cryptoAll.filter(x=>failedSymbols.includes('COIN:'+x)):cryptoAll;
  if(!symbols.length&&!krSymbols.length&&!cryptoSymbols.length){fmQuoteNotice('조회 대상 없음 · 종목 코드 확인');priceStatus('조회 대상 없음');return toast('조회할 종목이 없어요. 국내 종목은 6자리 코드가 필요해요')}
- if(symbols.length&&!key){fmQuoteNotice('미국 주식 API 키 미설정');if(auto){priceStatus('자동 조회 건너뜀 · 미국 주식 API 키 없음');return}priceStatus('미국 주식 API 키 미설정');return toast('Twelve Data API 키를 설정에서 저장해 주세요')}
+ if(symbolsWithKey.length&&!key){fmQuoteNotice('미국 주식 API 키 미설정 · 국내 주식·코인만 조회');priceStatus('미국 주식 조회 제외 · 국내 주식·코인 조회 진행')}
  const logs=todayChecks();
  if(!navigator.onLine){fmQuoteNotice('인터넷 연결 없음');priceStatus('오프라인 · 조회 중단');return toast('인터넷 연결을 확인해 주세요')}
  fmSetQuoteAttempt('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');if(!auto&&!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.')){fmQuoteNotice('조회 취소됨');priceStatus('사용자가 조회 취소');return;}
@@ -1368,7 +1369,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-136',VERSION='3.0.136';
+ const BUILD='fire-mate-v3-0-137',VERSION='3.0.137';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

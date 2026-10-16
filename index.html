@@ -1075,6 +1075,9 @@ $('stockApiKey').value=localStorage.getItem(PRICE_KEY)||'';
 $('saveStockKey').onclick=()=>{const key=$('stockApiKey').value.trim();if(!/^[a-zA-Z0-9]{8,128}$/.test(key))return toast('API 키를 확인해 주세요');try{localStorage.setItem(PRICE_KEY,key)}catch{return toast('키 저장에 실패했어요')}priceStatus('키 저장 완료');toast('API 키는 이 기기에만 저장됩니다')};
 $('clearStockKey').onclick=()=>{localStorage.removeItem(PRICE_KEY);$('stockApiKey').value='';priceStatus('키 삭제 완료')};
 const FM_LAST_QUOTE_KEY='firemate_last_quote_v1';
+const FM_QUOTE_ATTEMPT_KEY='firemate_quote_attempt_v1';
+function fmSetQuoteAttempt(message){try{localStorage.setItem(FM_QUOTE_ATTEMPT_KEY,JSON.stringify({time:Date.now(),message:String(message).slice(0,200)}))}catch{}fmShowQuoteTime()}
+
 function fmQuoteLabel(){
  try{
   const v=JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null');
@@ -1087,22 +1090,22 @@ function fmQuoteLabel(){
 function fmShowQuoteFailures(){const box=$('fmQuoteFailures'),title=$('fmQuoteFailuresTitle'),list=$('fmQuoteFailuresList');if(!box||!title||!list)return;let info;try{info=JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null')}catch{}const failures=Array.isArray(info?.failureDetails)?info.failureDetails:[];box.style.display=info?.failed?'block':'none';title.textContent=info?.failed?'실패 '+info.failed+'종목 · 원인 확인':'';list.replaceChildren();if(info?.failed&&!failures.length){list.textContent='이전 조회는 상세 오류가 저장되지 않았어요. 다음 시세 갱신부터 실패 원인이 표시됩니다.';return}failures.forEach(item=>{const row=document.createElement('div');row.style.cssText='padding:7px 0;border-bottom:1px solid var(--line)';const strong=document.createElement('strong');strong.textContent=String(item.symbol||'알 수 없음');row.append(strong,document.createTextNode(' · '+String(item.reason||'원인 미확인')));list.appendChild(row)})}
 function fmShowQuoteTime(){
  const label=fmQuoteLabel();
- ['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el)el.textContent=label});fmShowQuoteFailures();
+ let attempt=null;try{attempt=JSON.parse(localStorage.getItem(FM_QUOTE_ATTEMPT_KEY)||'null')}catch{}const extra=attempt&&Number.isFinite(attempt.time)?'\n↻ 마지막 버튼 시도 · '+new Date(attempt.time).toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit',hour12:true})+' · '+attempt.message:'';['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el){el.textContent=label+extra;el.style.whiteSpace='pre-line'}});fmShowQuoteFailures();
 }
 fmShowQuoteTime();
 let quoteBusy=false,failedSymbols=[];
 const FM_QUOTE_COOLDOWN='firemate_quote_cooldown_v1';
-function fmQuoteNotice(message){['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el)el.textContent='◷ 조회 미실행 · '+message})}
+function fmQuoteNotice(message){fmSetQuoteAttempt('조회 미실행 · '+message)}
 function fmQuoteCooldown(){try{return Math.max(0,Number(localStorage.getItem(FM_QUOTE_COOLDOWN)||0)-Date.now())}catch{return 0}}
 function fmSetQuoteCooldown(response,reason){if(response?.status!==429&&!/credits|quota|rate.limit|too many|limit exceeded/i.test(String(reason)))return false;let seconds=60;const retry=Number(response?.headers?.get('retry-after'));if(Number.isFinite(retry)&&retry>0)seconds=Math.min(3600,Math.max(60,retry));try{localStorage.setItem(FM_QUOTE_COOLDOWN,String(Date.now()+seconds*1000))}catch{}return true}
 function fmRestoreQuoteFailures(){try{const v=JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null');failedSymbols=Array.isArray(v?.failureDetails)?v.failureDetails.map(x=>String(x.symbol||'')):[];retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none'}catch{}}
 
 function quoteProgress(done,total){const pct=total?Math.round(done/total*100):0;$('quoteProgress').style.display='block';$('quoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목'+(done===total?' 완료':' 진행 중');$('quoteProgressPercent').textContent=pct+'%';$('quoteProgressBar').style.width=pct+'%';const home=$('homeQuoteProgress');if(home){home.hidden=false;home.style.display='block';$('homeQuoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목';$('homeQuoteProgressPercent').textContent=pct+'%';$('homeQuoteProgressBar').style.width=pct+'%'}}
 const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
-retryStocks.onclick=()=>refreshStockPrices(true);
+retryStocks.onclick=()=>{fmSetQuoteAttempt('실패 종목 재시도 요청');refreshStockPrices(true).catch(e=>{fmQuoteNotice(String(e?.message||e));toast('조회 오류가 발생했어요')})};
 fmRestoreQuoteFailures();
 $('homeRefreshStocks').onclick=()=>$('refreshStocks').click();
-$('refreshStocks').onclick=()=>{const el=$('stockStatus');if(el)el.textContent='↻ 버튼 입력 확인 · 시세 조회 준비 중…';refreshStockPrices(false).catch(e=>{const msg='갱신 오류: '+String(e?.message||e);if(el)el.textContent=msg;fmQuoteNotice(msg);toast(msg);quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');fmShowQuoteTime();retryStocks.disabled=false})};
+$('refreshStocks').onclick=()=>{const el=$('stockStatus');if(el)el.textContent='↻ 버튼 입력 확인 · 시세 조회 준비 중…';fmSetQuoteAttempt('시세 조회 요청됨');refreshStockPrices(false).catch(e=>{const msg='갱신 오류: '+String(e?.message||e);if(el)el.textContent=msg;fmQuoteNotice(msg);toast(msg);quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');fmShowQuoteTime();retryStocks.disabled=false})};
 async function refreshStockPrices(retryOnly,auto=false){
  if(quoteBusy){fmQuoteNotice('이미 조회 진행 중');priceStatus('이미 조회 진행 중');toast('이미 시세 조회가 진행 중이에요');return}const cooldown=fmQuoteCooldown();if(cooldown>0){const wait=Math.ceil(cooldown/1000);fmQuoteNotice('API 사용량 제한 · '+wait+'초 후 재시도 가능');priceStatus('API 사용량 제한 · '+wait+'초 후 다시 시도');if(!auto)toast('API 사용량 제한 · 약 '+wait+'초 후 다시 시도해 주세요');return}
  const key=localStorage.getItem(PRICE_KEY);
@@ -1116,8 +1119,8 @@ async function refreshStockPrices(retryOnly,auto=false){
  if(symbols.length&&!key){fmQuoteNotice('미국 주식 API 키 미설정');if(auto){priceStatus('자동 조회 건너뜀 · 미국 주식 API 키 없음');return}priceStatus('미국 주식 API 키 미설정');return toast('Twelve Data API 키를 설정에서 저장해 주세요')}
  const logs=todayChecks();
  if(!navigator.onLine){fmQuoteNotice('인터넷 연결 없음');priceStatus('오프라인 · 조회 중단');return toast('인터넷 연결을 확인해 주세요')}
- priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');if(!auto&&!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.')){fmQuoteNotice('조회 취소됨');priceStatus('사용자가 조회 취소');return;}
- quoteBusy=true;['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el)el.textContent='◷ 시세 조회 중…'});$('refreshStocks').disabled=true;$('homeRefreshStocks').disabled=true;document.body.classList.add('fm-quote-loading');retryStocks.disabled=true;let ok=0,failed=[],changed=0;const quoteTotal=krSymbols.length+symbols.length+cryptoSymbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
+ fmSetQuoteAttempt('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');if(!auto&&!confirm('미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개 종목을 조회할까요? 미국 API 크레딧이 사용됩니다.')){fmQuoteNotice('조회 취소됨');priceStatus('사용자가 조회 취소');return;}
+ fmSetQuoteAttempt('시세 조회 진행 중');quoteBusy=true;['homeLastQuote','assetsLastQuote'].forEach(id=>{const el=$(id);if(el)el.textContent='◷ 시세 조회 중…'});$('refreshStocks').disabled=true;$('homeRefreshStocks').disabled=true;document.body.classList.add('fm-quote-loading');retryStocks.disabled=true;let ok=0,failed=[],changed=0;const quoteTotal=krSymbols.length+symbols.length+cryptoSymbols.length;let quoteDone=0;quoteProgress(0,quoteTotal);
  // Record refresh attempt for status display, including failed requests.
  localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:new Date().toISOString()}]));
  priceStatus('조회 중…');
@@ -1251,7 +1254,7 @@ async function refreshStockPrices(retryOnly,auto=false){
  ]);
  const fmUsSeconds=Number.isFinite(fmUsElapsed)?fmUsElapsed:null;
  const fmQuoteSeconds=((performance.now()-fmQuoteStarted)/1000).toFixed(1);
- quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify({time:Date.now(),ok,total:quoteTotal,failed:failed.length,seconds:Number(fmQuoteSeconds),usSeconds:fmUsSeconds,usMode:fmUsMode,usWaitSeconds:fmUsWaitMs/1000,failureDetails:failed.map(f=>({symbol:String(f.symbol).slice(0,32),reason:String(f.reason).slice(0,160)}))}))}catch(e){console.warn(e)}fmShowQuoteTime();recordDailyNetWorth();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
+ quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify({time:Date.now(),ok,total:quoteTotal,failed:failed.length,seconds:Number(fmQuoteSeconds),usSeconds:fmUsSeconds,usMode:fmUsMode,usWaitSeconds:fmUsWaitMs/1000,failureDetails:failed.map(f=>({symbol:String(f.symbol).slice(0,32),reason:String(f.reason).slice(0,160)}))}))}catch(e){console.warn(e)}fmSetQuoteAttempt('조회 완료 · 성공 '+ok+'개 · 실패 '+failed.length+'개');recordDailyNetWorth();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
  if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개');priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+(failed.length?' · '+failed.map(x=>x.symbol+': '+x.reason).join('; '):''));
 }
 priceStatus();
@@ -1262,7 +1265,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-111',VERSION='3.0.111';
+ const BUILD='fire-mate-v3-0-112',VERSION='3.0.112';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

@@ -1083,7 +1083,7 @@ async function fmRenderDividends(){
  monthEvents.sort((a,b)=>a.date.localeCompare(b.date));
  const selectedLabel=year+'년 '+fmDivSelectedMonth+'월';
  const sumGross=monthEvents.reduce((n,x)=>n+x.gross,0),sumNet=monthEvents.reduce((n,x)=>n+(x.net||0),0);
- list.innerHTML='<div class="fm-div-detail-title"><strong>'+selectedLabel+' 상세 내역</strong><span>세전 '+safe(won(sumGross))+' · 세후 '+safe(won(sumNet))+'</span></div>'+ (monthEvents.length?monthEvents.map(x=>'<div class="fm-div-row"><div><strong>'+safe(x.name)+'</strong><div><small>'+safe(x.date)+' · 이벤트일 (지급일 아님)</small></div><div><small>'+safe(x.sym)+' · '+x.qty.toLocaleString('ko-KR')+'주 · 주당 '+safe(x.perShare.toLocaleString('ko-KR'))+' '+safe(x.currency||'')+'</small></div></div><div style="text-align:right"><strong>'+(safe(won(x.net)))+'</strong><div><small>세전 '+safe(won(x.gross))+'</small></div><div><small>세금 '+(safe(won(x.tax)))+'</small></div></div></div>').join(''):'<div class="mini">해당 월에 확인된 배당 이벤트가 없습니다.</div>');
+ list.innerHTML='<div class="fm-div-detail-title"><strong>'+selectedLabel+' 상세 내역</strong><span>세전 '+safe(won(sumGross))+' · 세후 '+safe(won(sumNet))+'</span></div>'+ (monthEvents.length?monthEvents.map(x=>'<div class="fm-div-row"><div><strong>'+safe(x.name)+'</strong><div><small>'+'배당일 '+Number(x.date.slice(5,7))+'/'+Number(x.date.slice(8,10))+'</small></div><div><small>'+safe(x.sym)+' · '+x.qty.toLocaleString('ko-KR')+'주 · 주당 '+safe(x.perShare.toLocaleString('ko-KR'))+' '+safe(x.currency||'')+'</small></div></div><div style="text-align:right"><strong>'+(safe(won(x.net)))+'</strong><div><small>세전 '+safe(won(x.gross))+'</small></div><div><small>세금 '+(safe(won(x.tax)))+'</small></div></div></div>').join(''):'<div class="mini">해당 월에 확인된 배당 이벤트가 없습니다.</div>');
 
  status.textContent='공개 배당 이벤트 기반 · '+covered+'종목 · 갱신 '+String(fmDivFeed.updatedAt||'').slice(0,10)+(missing.length?' · 배당 조회 불가: '+missing.join(', '):'');
 }
@@ -1366,7 +1366,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-127',VERSION='3.0.127';
+ const BUILD='fire-mate-v3-0-127',VERSION='3.0.128';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

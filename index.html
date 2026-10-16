@@ -655,7 +655,7 @@ body:has(#view-home.active) #view-home{display:flex!important;flex-direction:col
 body:has(#view-home.active) #homeAssetHero{flex:none!important;min-height:auto!important;overflow:visible!important;justify-content:flex-start!important;gap:9px!important}
 body:has(#view-home.active) #view-home>.hero.fm-expense-hero,body:has(#view-home.active) #view-home>.hero:nth-child(2){flex:none!important;min-height:auto!important;overflow:visible!important}
 }
-</style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
+</style><style id="fm-home-cleanup-v153">#view-home #fmHomeActivity{display:none!important}</style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
   <div class="light small">💰 나의 전체 순자산</div>
@@ -1502,7 +1502,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-152',VERSION='3.0.152';
+ const BUILD='fire-mate-v3-0-153',VERSION='3.0.153';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

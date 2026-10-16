@@ -615,7 +615,18 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-assets .fm-detail-summary{padding:20px!important}
 #view-assets .fm-detail-summary h2{font-variant-numeric:tabular-nums}
 @media(max-width:380px){#view-assets .fm-detail-positions{padding:15px!important}#view-assets .fm-detail-positions .fm-detail-metrics{gap:12px 10px!important}}
-</style></style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
+</style></style><style id="fm-home-clarity-v148">
+/* Home-only visual hierarchy. Keep all app logic and storage unchanged. */
+#view-home #homeTotalAssets{font-variant-numeric:tabular-nums;letter-spacing:-.045em;line-height:1.18;font-weight:850}
+#view-home #homeAssetHero .light.small{line-height:1.5}
+#view-home #homeAssetHero .progress{height:8px;border-radius:999px;overflow:hidden}
+#view-home #homeAssetHero .progress>div{border-radius:999px}
+#view-home #homeDailyChange{font-variant-numeric:tabular-nums}
+#view-home .fm-fire-eta>strong{font-variant-numeric:tabular-nums}
+#view-home .fm-expense-hero .big{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+#view-home .fm-expense-hero{border-radius:20px}
+@media(max-width:380px){#view-home #homeTotalAssets{font-size:clamp(26px,6.8vw,36px)!important}}
+</style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
   <div class="light small">💰 나의 전체 순자산</div>
@@ -1456,7 +1467,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-147',VERSION='3.0.147';
+ const BUILD='fire-mate-v3-0-148',VERSION='3.0.148';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

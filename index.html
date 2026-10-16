@@ -1091,13 +1091,19 @@ function fmShowQuoteTime(){
 }
 fmShowQuoteTime();
 let quoteBusy=false,failedSymbols=[];
+const FM_QUOTE_COOLDOWN='firemate_quote_cooldown_v1';
+function fmQuoteCooldown(){try{return Math.max(0,Number(localStorage.getItem(FM_QUOTE_COOLDOWN)||0)-Date.now())}catch{return 0}}
+function fmSetQuoteCooldown(response,reason){if(response?.status!==429&&!/credits|quota|rate.limit|too many|limit exceeded/i.test(String(reason)))return false;let seconds=60;const retry=Number(response?.headers?.get('retry-after'));if(Number.isFinite(retry)&&retry>0)seconds=Math.min(3600,Math.max(60,retry));try{localStorage.setItem(FM_QUOTE_COOLDOWN,String(Date.now()+seconds*1000))}catch{}return true}
+function fmRestoreQuoteFailures(){try{const v=JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null');failedSymbols=Array.isArray(v?.failureDetails)?v.failureDetails.map(x=>String(x.symbol||'')):[];retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none'}catch{}}
+
 function quoteProgress(done,total){const pct=total?Math.round(done/total*100):0;$('quoteProgress').style.display='block';$('quoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목'+(done===total?' 완료':' 진행 중');$('quoteProgressPercent').textContent=pct+'%';$('quoteProgressBar').style.width=pct+'%';const home=$('homeQuoteProgress');if(home){home.hidden=false;home.style.display='block';$('homeQuoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목';$('homeQuoteProgressPercent').textContent=pct+'%';$('homeQuoteProgressBar').style.width=pct+'%'}}
 const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
 retryStocks.onclick=()=>refreshStockPrices(true);
+fmRestoreQuoteFailures();
 $('homeRefreshStocks').onclick=()=>$('refreshStocks').click();
 $('refreshStocks').onclick=()=>{const el=$('stockStatus');if(el)el.textContent='↻ 버튼 입력 확인 · 시세 조회 준비 중…';refreshStockPrices(false).catch(e=>{const msg='갱신 오류: '+String(e?.message||e);if(el)el.textContent=msg;toast(msg);quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');fmShowQuoteTime();retryStocks.disabled=false})};
 async function refreshStockPrices(retryOnly,auto=false){
- if(quoteBusy){priceStatus('이미 조회 진행 중');toast('이미 시세 조회가 진행 중이에요');return}
+ if(quoteBusy){priceStatus('이미 조회 진행 중');toast('이미 시세 조회가 진행 중이에요');return}const cooldown=fmQuoteCooldown();if(cooldown>0){const wait=Math.ceil(cooldown/1000);priceStatus('API 사용량 제한 · '+wait+'초 후 다시 시도');if(!auto)toast('API 사용량 제한 · 약 '+wait+'초 후 다시 시도해 주세요');return}
  const key=localStorage.getItem(PRICE_KEY);
  const allKr=[...new Set(data.holdings.filter(h=>h.type==='KRW'&&/^\d{6}$/.test(h.ticker)).map(h=>h.ticker))];
  const krSymbols=retryOnly?allKr.filter(x=>failedSymbols.includes('KR:'+x)):allKr;
@@ -1181,7 +1187,7 @@ async function refreshStockPrices(retryOnly,auto=false){
    const payload=await response.json();
    if(!response.ok||payload.status==='error'){
     const reason=String(payload.message||'HTTP '+response.status);
-    if(response.status===429||/credits|quota|rate.limit|too many/i.test(reason)){
+    if(fmSetQuoteCooldown(response,reason)){
      batchHandled=true;
      symbols.forEach(symbol=>{failed.push({symbol,reason:reason.slice(0,160)});quoteProgress(++quoteDone,quoteTotal)});
      priceStatus('API 크레딧 부족 · 다음 분에 다시 시도');
@@ -1190,7 +1196,7 @@ async function refreshStockPrices(retryOnly,auto=false){
     batchHandled=true;fmUsMode='일괄 성공';
     for(const symbol of symbols){
      const q=payload[symbol],price=Number(q?.close??q?.price),prev=Number(q?.previous_close);
-     if(q?.status==='error'||!Number.isFinite(price)||price<=0){failed.push({symbol,reason:String(q?.message||'일괄 조회 가격 없음').slice(0,160)})}
+     if(q?.status==='error'||!Number.isFinite(price)||price<=0){const reason=String(q?.message||'일괄 조회 가격 없음');fmSetQuoteCooldown(null,reason);failed.push({symbol,reason:reason.slice(0,160)})}
      else{
       const pct=Number.isFinite(prev)&&prev>0?(price-prev)/prev*100:null,at=new Date().toISOString();
       data.holdings.forEach(holding=>{if(holding.type==='USD'&&holding.ticker===symbol){if(Number(holding.price)!==price)changed++;holding.price=price;holding.quoteAt=at;holding.dayChangePct=pct;holding.dayChangeAt=pct===null?null:at}});
@@ -1205,12 +1211,13 @@ async function refreshStockPrices(retryOnly,auto=false){
  if(symbols.length>1){fmUsFallback=true;fmUsMode='개별 전환'}
  for(let i=0;i<symbols.length;i++){
   const symbol=symbols[i];
+  if(fmQuoteCooldown()>0){failed.push({symbol,reason:'API 크레딧 제한 · 잠시 후 재시도'});quoteProgress(++quoteDone,quoteTotal);continue}
   try{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
    let response;
    try{response=await fetch('https://api.twelvedata.com/quote?symbol='+encodeURIComponent(symbol)+'&apikey='+encodeURIComponent(key),{signal:controller.signal,cache:'no-store'})}finally{clearTimeout(timer)}
    const payload=await response.json();
-   if(!response.ok||payload.status==='error')throw Error((payload.message||'HTTP '+response.status)+' [코드 '+(payload.code||response.status)+']');
+   if(!response.ok||payload.status==='error'){fmSetQuoteCooldown(response,payload.message);throw Error((payload.message||'HTTP '+response.status)+' [코드 '+(payload.code||response.status)+']')}
    let price=Number(payload.close??payload.price);
    if(!Number.isFinite(price)||price<=0)throw Error('유효한 가격 없음');
    const prev=Number(payload.previous_close),pct=Number.isFinite(prev)&&prev>0?(price-prev)/prev*100:null;
@@ -1233,7 +1240,7 @@ async function refreshStockPrices(retryOnly,auto=false){
   }
   priceStatus('조회 중 '+(i+1)+'/'+symbols.length);quoteProgress(++quoteDone,quoteTotal);
   // Basic free tier allows eight credits per minute; pace requests conservatively.
-  if(i<symbols.length-1){fmUsWaitMs+=8500;await new Promise(resolve=>setTimeout(resolve,8500));}
+  if(i<symbols.length-1&&!fmQuoteCooldown()){fmUsWaitMs+=8500;await new Promise(resolve=>setTimeout(resolve,8500));}
  }
 
  }
@@ -1254,7 +1261,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-108',VERSION='3.0.108';
+ const BUILD='fire-mate-v3-0-109',VERSION='3.0.109';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

@@ -5,6 +5,7 @@ on:
       - 'index.html'
       - 'sw.js'
       - 'scripts/check_app.py'
+      - 'scripts/test_calculations.cjs'
       - '.github/workflows/app-checks.yml'
   workflow_dispatch:
 permissions:
@@ -17,6 +18,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify app integrity and version consistency
         run: python3 scripts/check_app.py
+      - name: Test asset and FIRE calculations
+        run: node scripts/test_calculations.cjs
       - name: Check inline JavaScript syntax
         run: |
           python3 - <<'PY'

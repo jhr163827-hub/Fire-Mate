@@ -591,6 +591,20 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-assets #fmAssetAccountsPanel .fm-account-name{font-size:14px!important}
 #view-assets #fmAssetAccountsPanel .fm-account-toggle .mini{line-height:1.35}
 @media(max-width:365px){#view-assets .fm-quote-hero .hero-stat{padding:8px 5px!important}#view-assets .fm-quote-hero .hero-stat strong{font-size:11px!important}}
+</style><style id="fm-holding-detail-v144">
+/* Price chart and holding detail readability; no data or calculation changes. */
+.fm-detail-holding .fm-history-card{margin-top:14px}
+.fm-detail-holding .fm-history-svg{height:225px!important;max-height:none}
+.fm-detail-holding .fm-history-plot{margin:10px 0 6px}
+.fm-detail-holding .fm-history-tabs{gap:6px;margin:13px 0 15px}
+.fm-detail-holding .fm-history-tabs button{min-height:41px;border-radius:11px;font-weight:700}
+.fm-detail-holding .fm-history-last{margin:10px 0 14px}
+.fm-detail-holding .fm-history-last strong{font-size:clamp(25px,6vw,32px);letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.fm-detail-holding .fm-history-metrics{gap:15px 12px!important;margin:18px 0!important}
+.fm-detail-holding .fm-history-metrics strong{font-size:clamp(14px,3.8vw,18px);font-variant-numeric:tabular-nums}
+.fm-detail-holding .fm-history-dates{font-size:11px;line-height:1.6}
+.fm-detail-holding .fm-history-card p.mini{font-size:11px;line-height:1.65;color:var(--sub)}
+@media(max-width:380px){.fm-detail-holding .fm-history-svg{height:205px!important}.fm-detail-holding .fm-history-tabs button{font-size:11px;padding:9px 2px}}
 </style></style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -1431,7 +1445,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-143',VERSION='3.0.143';
+ const BUILD='fire-mate-v3-0-144',VERSION='3.0.144';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

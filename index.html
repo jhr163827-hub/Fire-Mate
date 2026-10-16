@@ -834,10 +834,13 @@ async function fmHoldingChartLoad(x,period='1M'){
   try{
    let rows=[];
    if(x.type==='USD'){
-    const api=localStorage.getItem(PRICE_KEY);if(!api)throw Error('Twelve Data API 키가 필요해요.');
-    const res=await fetch('https://api.twelvedata.com/time_series?symbol='+encodeURIComponent(x.ticker)+'&interval=1day&outputsize=500&apikey='+encodeURIComponent(api),{cache:'no-store'});
-    const j=await res.json();if(!res.ok||j.status==='error')throw Error(String(j.message||'과거 시세 조회 실패'));
-    rows=(j.values||[]).map(v=>({date:v.datetime,close:+v.close,high:+v.high,low:+v.low}));
+    const symbol=String(x.ticker||'').toUpperCase();
+    if(!/^[A-Z][A-Z0-9.\-]{0,14}$/.test(symbol))throw Error('종목 코드가 올바르지 않아요.');
+    const res=await fetch('./chart-data/'+encodeURIComponent(symbol)+'.json',{cache:'no-store'});
+    if(!res.ok)throw Error(res.status===404?'아직 차트 데이터가 준비되지 않았어요. GitHub Actions에서 최초 수집 후 이용할 수 있어요.':'저장된 차트 데이터를 불러오지 못했어요.');
+    const j=await res.json();
+    if(j.symbol!==symbol||!Array.isArray(j.points))throw Error('차트 데이터 형식 오류');
+    rows=j.points.map(v=>({date:v.date,close:+v.close,high:+v.high,low:+v.low}));
    }else if(x.type==='CRYPTO_KRW'&&['BTC','ETH'].includes(String(x.ticker).toUpperCase())){
     const res=await fetch('https://api.upbit.com/v1/candles/days?market=KRW-'+String(x.ticker).toUpperCase()+'&count=200',{cache:'no-store'});
     if(!res.ok)throw Error('업비트 과거 시세 조회 실패');
@@ -864,7 +867,7 @@ async function fmHoldingChartLoad(x,period='1M'){
  '<div class="fm-history-dates"><span>'+safe(rows[0].date)+'</span><span>'+safe(rows[rows.length-1].date)+'</span></div>'+
  '<div class="fm-history-metrics"><div><small>기간 최고가</small><strong>'+money(highest)+'</strong></div><div><small>기간 최저가</small><strong>'+money(lowest)+'</strong></div><div><small>고점 대비</small><strong style="color:var(--red)">'+((latest/highest-1)*100).toFixed(2)+'%</strong></div></div>'+
  (avg>0?'<p class="mini">노란 점선 · 내 평균 매수가 '+money(avg)+'</p>':'')+
- '<p class="mini">조회된 기간의 일별 고가·저가 기준이며, 고점 대비는 마지막 종가 기준이야. 전체는 API 제공 범위('+cached.rows.length+'거래일)까지만 표시돼.</p>');
+ '<p class="mini">저장된 일별 고가·저가 기준이며, 고점 대비는 마지막 종가 기준이야. 전체는 API 제공 범위('+cached.rows.length+'거래일)까지만 표시돼.</p>');
 }
 function fmOpenHoldingDetail(id){
  const x=data.holdings.find(h=>String(h.id)===String(id));if(!x)return;
@@ -1173,7 +1176,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-77',VERSION='3.0.77';
+ const BUILD='fire-mate-v3-0-78',VERSION='3.0.78';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

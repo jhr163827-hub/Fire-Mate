@@ -1045,7 +1045,8 @@ function fmOpenHoldingDetail(id){
  const v=assetValue(x),c=assetCost(x),p=c>0?(v-c)/c*100:null;
  const a=data.accounts.find(a=>a.id===x.accountId);
  const panel=$('fmAccountDetail');
- const fmtUnitPrice=n=>{const v=Number(n);if(!Number.isFinite(v))return '—';if(x.type==='USD'||x.type==='CRYPTO_USD')return ',['평가손익',(v-c>=0?'+':'')+won(v-c)],['총 수익률',p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%']];
+ const fmtUnitPrice=n=>{const price=Number(n);if(!Number.isFinite(price))return '—';if(x.type==='USD'||x.type==='CRYPTO_USD')return '$'+price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});return '₩'+price.toLocaleString('ko-KR',{maximumFractionDigits:x.type==='KRW'?0:6})};
+ const metrics=[['보유 수량',Number(x.qty||0).toLocaleString('ko-KR')+(String(x.type).startsWith('CRYPTO')?'':'주')],['평균 매수가',fmtUnitPrice(x.cost)],['현재가',fmtUnitPrice(x.price)],['총 매입금액',won(c)],['평가손익',(v-c>=0?'+':'')+won(v-c)],['총 수익률',p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%']];
  panel.innerHTML='<div class="fm-detail-header"><button type="button" id="fmDetailBack" class="secondary">← '+safe(a?.name||'계좌 상세')+'</button><button type="button" id="fmDetailEdit" class="secondary">종목 수정</button></div><div class="card fm-detail-summary fm-holding-summary"><h1 class="fm-holding-title">'+safe(fmDisplayHoldingName(x))+'</h1><div class="fm-holding-value-label">보유 평가금액</div><h2>'+won(v)+'</h2><div style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+' ('+(p===null?'—':(p>=0?'+':'')+p.toFixed(2)+'%')+')</div></div><div class="card fm-detail-positions"><h3>보유 상세</h3><div class="fm-detail-metrics">'+metrics.map(y=>'<div><small>'+y[0]+'</small><strong>'+y[1]+'</strong></div>').join('')+'</div><p class="mini" style="margin-top:15px">배당금은 검증된 지급 데이터가 연결되면 표시돼요. 임의의 예상 배당금을 표시하지 않습니다.</p></div>'+( ['USD','KRW','CRYPTO_KRW','CRYPTO_USD'].includes(x.type)?'<div class="card fm-history-card" id="fmHoldingHistory"></div>':'');
  $('fmDetailBack').onclick=()=>{if(history.state?.fmAssetDetail)history.back();else fmNavigateBack()};
  $('fmDetailEdit').onclick=()=>openHolding(x);
@@ -1455,7 +1456,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-145',VERSION='3.0.145';
+ const BUILD='fire-mate-v3-0-146',VERSION='3.0.146';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

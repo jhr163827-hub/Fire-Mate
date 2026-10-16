@@ -659,9 +659,10 @@ body:has(#view-home.active) #view-home>.hero.fm-expense-hero,body:has(#view-home
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
   <div class="light small">💰 나의 전체 순자산</div>
-  <button class="fm-quote-refresh" id="homeRefreshStocks" type="button" aria-label="시세 업데이트" title="시세 업데이트">업데이트</button><div class="fm-asset-amount-line"><div class="big" id="homeTotalAssets">₩0</div></div>
+  <button class="fm-quote-refresh" id="homeRefreshStocks" type="button" aria-label="시세 업데이트" title="시세 갱신">시세 갱신</button><div class="fm-asset-amount-line"><div class="big" id="homeTotalAssets">₩0</div></div>
   
   <div class="fm-last-quote" id="homeLastQuote" aria-live="polite">시세 갱신 기록 없음</div><div id="homeQuoteProgress" hidden style="display:none;margin:10px 0"><div class="flex" style="justify-content:space-between;font-size:12px;color:var(--sub)"><span id="homeQuoteProgressText">시세 확인 중</span><span id="homeQuoteProgressPercent">0%</span></div><div style="height:6px;background:var(--panel2);border-radius:8px;overflow:hidden;margin-top:5px"><div id="homeQuoteProgressBar" style="height:100%;width:0;background:var(--green);transition:width .3s"></div></div></div><div id="homeDailyChange" class="notice" style="margin-top:12px;font-size:13px" aria-live="polite">자산 변화 확인 중…</div>
+  <div id="fmHomeTrend" style="margin-top:8px"></div><div id="fmNextMilestone" class="mini" style="margin-top:6px;color:var(--green)"></div>
   <div class="hero-row">
     <div class="hero-stat"><span class="light small">FIRE 목표</span><strong id="homeAssetGoal">₩0</strong></div>
     <div class="hero-stat"><span class="light small">목표 달성률</span><strong id="homeAssetPercent">0%</strong></div>
@@ -1551,4 +1552,20 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
+
+<script id="fm-home-improvements-20261016">
+(function(){
+ function update(){try{
+ const host=document.getElementById('fmHomeTrend'),mile=document.getElementById('fmNextMilestone');if(!host||!mile||typeof data==='undefined')return;
+ const records=(Array.isArray(data.dailySnapshots)?data.dailySnapshots:[]).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.day)&&Number.isFinite(+x.amount)).sort((a,b)=>a.day.localeCompare(b.day));
+ const unique=[...new Map(records.map(x=>[x.day,+x.amount])).entries()];const now=new Date(),cutoff=new Date(now);cutoff.setDate(now.getDate()-29);const day=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const series=unique.filter(x=>x[0]>=day(cutoff)&&x[0]<=day(now));
+ if(series.length<2){host.innerHTML='<div style="font-size:12px;color:var(--sub)">📈 자산 추이 · '+(series.length?'첫 기록 완료, 다음 날짜부터 표시':'기록이 쌓이면 표시')+'</div>'}else{
+ const values=series.map(x=>x[1]),min=Math.min(...values),max=Math.max(...values),span=max-min||1;const pts=values.map((v,i)=>(8+i*304/(values.length-1)).toFixed(1)+','+(53-(v-min)/span*42).toFixed(1)).join(' ');host.innerHTML='<div style="font-size:12px;color:var(--sub);margin-bottom:4px">최근 30일 자산 추이</div><svg viewBox="0 0 320 62" style="width:100%;height:55px;display:block" role="img" aria-label="최근 30일 순자산 기록 그래프"><polyline points="'+pts+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+ }
+ const current=Number(String(document.getElementById('homeTotalAssets')?.textContent||'').replace(/[^0-9.-]/g,''));if(Number.isFinite(current)&&current>0){const goals=[200000000,300000000,400000000,500000000,650000000];const next=goals.find(x=>x>current);mile.textContent=next?'🎯 다음 목표 '+(next/100000000)+'억까지 '+Math.ceil((next-current)/10000).toLocaleString('ko-KR')+'만 원':'🎉 목표 마일스톤 달성';}
+ const compare=document.getElementById('heroCompare');if(compare){const t=compare.textContent||'';compare.style.color=t.includes('더 사용')?'var(--red)':t.includes('차이')?'var(--green)':'var(--sub)';}
+ }catch(e){console.warn('Home trend:',e)}}
+ document.addEventListener('DOMContentLoaded',()=>{update();const target=document.getElementById('homeTotalAssets');if(target)new MutationObserver(update).observe(target,{childList:true,subtree:true});document.querySelectorAll('[data-view="home"]').forEach(b=>b.addEventListener('click',update));});
+})();
+</script>
 </body></html>

@@ -506,6 +506,16 @@ body.fm-asset-fullscreen .app{padding-top:8px!important}
  min-width:76px!important;width:auto!important;height:34px!important;min-height:34px!important;
  padding:0 14px!important;font-size:12px!important;font-weight:750!important;letter-spacing:-.2px!important;
 }
+
+/* v3.0.75 compact market snapshot inside account holdings */
+.fm-detail-holding .fm-holding-market{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;max-width:420px}
+.fm-detail-holding .fm-holding-market>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fm-detail-holding .fm-holding-market em{font-size:10px;font-weight:500;font-style:normal;color:var(--sub);white-space:nowrap}
+.fm-detail-holding .fm-holding-market b{font-size:12px;font-weight:750;white-space:nowrap;color:var(--txt);letter-spacing:-.2px}
+.fm-detail-holding:has(.fm-holding-market){align-items:flex-start;gap:10px}
+.fm-detail-holding:has(.fm-holding-market)>span:first-child{flex:1;min-width:0}
+.fm-detail-holding:has(.fm-holding-market)>span:last-child{flex:0 0 auto}
+@media(max-width:390px){.fm-detail-holding .fm-holding-market{gap:5px}.fm-detail-holding .fm-holding-market b{font-size:11px}}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button><button class="iconbtn" id="settingsBtn" title="설정">⚙️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero" id="homeAssetHero" style="margin-bottom:17px">
@@ -766,6 +776,18 @@ function fmOpenTotalDetail(push=true){
  panel.querySelectorAll('[data-fm-totalholding]').forEach(el=>el.onclick=()=>fmOpenHoldingDetail(el.dataset.fmTotalholding));
  fmSyncDetailVisibility();window.scrollTo(0,0);
 }
+function fmHoldingMarketLine(x){
+ const type=String(x.type||'');
+ if(!['USD','KRW','CRYPTO_KRW','CRYPTO_USD'].includes(type))return '';
+ const unit=type==='USD'||type==='CRYPTO_USD'?'$':'₩';
+ const format=n=>unit+Number(n).toLocaleString('ko-KR',{maximumFractionDigits:unit==='$'?4:2});
+ const current=Number(x.price),average=Number(x.cost);
+ const validDay=x.dayChangeAt&&x.dayChangePct!==null&&x.dayChangePct!==undefined&&Number.isFinite(Number(x.dayChangePct));
+ const day=validDay?Number(x.dayChangePct):null;
+ const dayText=day===null?'—':(day>0?'+':'')+day.toFixed(2)+'%';
+ const dayColor=day===null?'var(--sub)':day>0?'var(--green)':day<0?'var(--red)':'var(--sub)';
+ return '<span class="fm-holding-market"><span><em>현재가</em><b>'+(Number.isFinite(current)&&current>0?format(current):'—')+'</b></span><span><em>내 매수가</em><b>'+(Number.isFinite(average)&&average>0?format(average):'—')+'</b></span><span><em>오늘 등락</em><b style="color:'+dayColor+'">'+dayText+'</b></span></span>';
+}
 function fmOpenAccountDetail(id,push=true){
  const a=data.accounts.find(x=>String(x.id)===String(id));if(!a)return;
  if(push)fmPushDetailState();
@@ -775,7 +797,7 @@ function fmOpenAccountDetail(id,push=true){
  const invest=hs.reduce((n,x)=>n+assetValue(x),0),cost=hs.reduce((n,x)=>n+assetCost(x),0);
  const total=invest+Math.max(0,Number(a.amount)||0)+otherItemsTotal(a);
  const profit=invest-cost,pct=cost>0?profit/cost*100:null;
- const rows=hs.map(x=>{const v=assetValue(x),c=assetCost(x),p=c>0?(v-c)/c*100:null;return '<button type="button" class="fm-detail-holding" data-fm-holding="'+safe(x.id)+'"><span><strong>'+safe(fmDisplayHoldingName(x))+'</strong><small>'+Number(x.qty||0).toLocaleString('ko-KR')+'주 · '+(p===null?'수익률 미설정':(p>=0?'+':'')+p.toFixed(2)+'%')+'</small></span><span style="text-align:right"><strong>'+won(v)+'</strong><small style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+'</small></span></button>'}).join('');
+ const rows=hs.map(x=>{const v=assetValue(x),c=assetCost(x),p=c>0?(v-c)/c*100:null;return '<button type="button" class="fm-detail-holding" data-fm-holding="'+safe(x.id)+'"><span><strong>'+safe(fmDisplayHoldingName(x))+'</strong><small>'+Number(x.qty||0).toLocaleString('ko-KR')+'주 · '+(p===null?'수익률 미설정':(p>=0?'+':'')+p.toFixed(2)+'%')+'</small>'+fmHoldingMarketLine(x)+'</span><span style="text-align:right"><strong>'+won(v)+'</strong><small style="color:'+(v-c>=0?'var(--green)':'var(--red)')+'">'+(v-c>=0?'+':'')+won(v-c)+'</small></span></button>'}).join('');
  const others=(a.items||[]).map(x=>'<div class="fm-detail-holding"><strong>'+safe(x.name)+'</strong><strong>'+won(x.amount)+'</strong></div>').join('');
  const weights=hs.filter(x=>assetValue(x)>0).sort((x,y)=>assetValue(y)-assetValue(x)).slice(0,6);
  const colors=['#3fc9a4','#6099e8','#f0b85e','#b28be8','#e47f91','#7b9da8'];
@@ -1093,7 +1115,7 @@ syncRecurring();recordDailyNetWorth();try{const restored=sessionStorage.getItem(
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-74',VERSION='3.0.74';
+ const BUILD='fire-mate-v3-0-75',VERSION='3.0.75';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

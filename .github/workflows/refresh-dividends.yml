@@ -1,0 +1,24 @@
+name: Refresh dividend data
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 1 * * *'
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch public dividend events
+        run: python3 scripts/refresh_dividends.py
+      - name: Commit updated data only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dividends.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh public dividend events"
+            git push
+          fi

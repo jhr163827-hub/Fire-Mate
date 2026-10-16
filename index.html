@@ -1085,7 +1085,7 @@ async function fmRenderDividends(){
  const sumGross=monthEvents.reduce((n,x)=>n+x.gross,0),sumNet=monthEvents.reduce((n,x)=>n+(x.net||0),0);
  list.innerHTML='<div class="fm-div-detail-title"><strong>'+selectedLabel+' 상세 내역</strong><span>세전 '+safe(won(sumGross))+' · 세후 '+safe(won(sumNet))+'</span></div>'+ (monthEvents.length?monthEvents.map(x=>'<div class="fm-div-row"><div><strong>'+safe(x.name)+'</strong><div><small>'+'배당일 '+Number(x.date.slice(5,7))+'/'+Number(x.date.slice(8,10))+'</small></div><div><small>'+safe(x.sym)+' · '+x.qty.toLocaleString('ko-KR')+'주 · 주당 '+safe(x.perShare.toLocaleString('ko-KR'))+' '+safe(x.currency||'')+'</small></div></div><div style="text-align:right"><strong>'+(safe(won(x.net)))+'</strong><div><small>세전 '+safe(won(x.gross))+'</small></div><div><small>세금 '+(safe(won(x.tax)))+'</small></div></div></div>').join(''):'<div class="mini">해당 월에 확인된 배당 이벤트가 없습니다.</div>');
 
- const feedDate=String(fmDivFeed.updatedAt||'').slice(0,10);const feedAge=feedDate?Math.floor((Date.now()-Date.parse(feedDate+'T00:00:00Z'))/86400000):Infinity;const feedErrors=fmDivFeed.errors||{};const failedHeld=Object.keys(qtyBySymbol).filter(sym=>Object.prototype.hasOwnProperty.call(feedErrors,sym));status.textContent='현재 보유 수량 기준 배당 추정 · '+covered+'종목 · 자료 '+(feedDate||'날짜 미확인')+(feedAge>3?' · 데이터 갱신 지연':'')+(failedHeld.length?' · 최근 조회 실패: '+failedHeld.join(', '):'')+(missing.length?' · 조회 불가: '+missing.join(', '):'');
+ const feedDate=String(fmDivFeed.updatedAt||'').slice(0,10);const feedAge=feedDate?Math.floor((Date.now()-Date.parse(feedDate+'T00:00:00Z'))/86400000):Infinity;const feedErrors=fmDivFeed.errors||{},feedHealth=fmDivFeed.symbolStatus||{};const failedHeld=Object.keys(qtyBySymbol).filter(sym=>feedHealth[sym]?.status==='stale'||(Object.prototype.hasOwnProperty.call(feedErrors,sym)&&!!fmDivFeed.symbols[sym]));status.textContent='현재 보유 수량 기준 배당 추정 · '+covered+'종목 · 자료 '+(feedDate||'날짜 미확인')+(feedAge>3?' · 데이터 갱신 지연':'')+(failedHeld.length?' · 이전 배당 자료 사용: '+failedHeld.join(', '):'')+(missing.length?' · 조회 불가: '+missing.join(', '):'');
 }
 
 function renderAssets(){renderAccounts();renderAssetGrowth();fmRenderAssetComposition();if(!$('fmDividendPanel').hidden)fmRenderDividends();if(fmDetailAccountId===null)fmSetAssetView('account');const filter=$('accountFilter');filter.innerHTML='<option value="all">전체 계좌</option>'+data.accounts.map(a=>'<option value="'+safe(a.id)+'">'+safe(a.name)+'</option>').join('');if(!data.accounts.some(a=>a.id===selectedAccount))selectedAccount='all';filter.value=selectedAccount;const investment=data.holdings.reduce((a,h)=>a+assetValue(h),0),cost=data.holdings.reduce((a,h)=>a+assetCost(h),0),net=netAsset(),pct=data.fire.goal>0?Math.max(0,net)/(data.fire.goal*10000)*100:0;
@@ -1366,7 +1366,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-131',VERSION='3.0.131';
+ const BUILD='fire-mate-v3-0-132',VERSION='3.0.132';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

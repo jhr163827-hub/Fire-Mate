@@ -14,7 +14,10 @@ class HomeResponsiveTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.p = sync_playwright().start()
-        cls.browser = cls.p.chromium.launch()
+        chromium_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH")
+        cls.browser = cls.p.chromium.launch(
+            executable_path=chromium_path if chromium_path else None
+        )
 
     @classmethod
     def tearDownClass(cls):

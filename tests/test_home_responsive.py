@@ -256,6 +256,7 @@ class HomeResponsiveTest(unittest.TestCase):
     def test_pwa_update_decline_preserves_data(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
             page.route("https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check=*",
                        lambda route: route.fulfill(status=200, content_type="text/html",
                                                    body="""const BUILD='fire-mate-v3-4-2'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))

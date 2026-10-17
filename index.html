@@ -979,7 +979,7 @@ function render(){document.querySelectorAll('.monthLabel').forEach(e=>e.textCont
  }
  if(d.tx.some(t=>typeof t.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(t.date)||!Number.isFinite(Number(t.amount))||Number(t.amount)<0))throw Error('거래 날짜 또는 금액이 잘못됐습니다');
  if(d.holdings.some(h=>!Number.isFinite(Number(h.qty))||Number(h.qty)<0||!Number.isFinite(Number(h.price))||Number(h.price)<0||('cost' in h&&(!Number.isFinite(Number(h.cost))||Number(h.cost)<0))))throw Error('보유 종목 수량·가격·매입가가 잘못됐습니다');
- if(d.tx.some(t=>{const m=/^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(t.date);if(!m)return true;const y=Number(m[1]),mo=Number(m[2]),day=Number(m[3]),dt=new Date(y,mo-1,day);return dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==day;}))throw Error('거래 날짜에 실제 존재하지 않는 날짜가 있습니다');
+ if(d.tx.some(t=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(t.date);if(!m)return true;const y=Number(m[1]),mo=Number(m[2]),day=Number(m[3]),dt=new Date(y,mo-1,day);return dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==day;}))throw Error('거래 날짜에 실제 존재하지 않는 날짜가 있습니다');
  if(d.rec.some(t=>'amount' in t&&(!Number.isFinite(Number(t.amount))||Number(t.amount)<0)))throw Error('반복 거래 금액이 잘못됐습니다');
  if(d.favorites.some(t=>'amount' in t&&(!Number.isFinite(Number(t.amount))||Number(t.amount)<0)))throw Error('즐겨찾기 금액이 잘못됐습니다');
  if(d.accounts.some(a=>typeof a.id!=='string'||!a.id))throw Error('계좌 ID가 잘못됐습니다');
@@ -2012,7 +2012,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-286',VERSION='3.0.286';
+ const BUILD='fire-mate-v3-0-287',VERSION='3.0.287';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

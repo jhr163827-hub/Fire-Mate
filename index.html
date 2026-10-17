@@ -765,7 +765,7 @@ body:has(#view-home.active) #view-home>.hero.fm-expense-hero,body:has(#view-home
 <div class="stack">
 <div class="field"><label>배당 세금·보험료 부담률 가정 (%)</label><input id="fmStrDivCost" type="number" min="0" max="100" value="20"></div>
 <p class="mini">매도 양도세는 취득원가를 몰라 계산하지 않습니다. 사용하지 않는 세율·공제 입력은 제거했습니다.</p>
-<details style="margin:8px 0"><summary style="cursor:pointer;font-weight:700;padding:8px 0">세금 상세 비교 · 실험용 (기본 OFF)</summary><div class="stack"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="fmStrTaxPreview"> 해외주식 매도세 추정 결과 보기</label><div class="field"><label>매도차익 비중 가정 (%)</label><input id="fmStrGainShare" type="number" min="0" max="100" step="5" value="30"></div><p class="mini">매도차익 비중은 매도대금 중 이익 부분의 추정치입니다. 실제 취득원가와 다른 계좌·종목의 연간 양도차익은 반영하지 않습니다.</p><p class="mini">해외주식 일반 과세 가정: 연간 추정 매도차익에서 250만 원 공제 후 22% 단순 계산. ISA·연금·국내 상장 ETF 및 건보료 계산에는 적용하지 않습니다. 결과 미리보기만 제공하며 기존 30년 잔여 자산 계산은 변경하지 않습니다.</p></div></details>
+<details style="margin:8px 0"><summary style="cursor:pointer;font-weight:700;padding:8px 0">세금 상세 비교 · 실험용 (기본 OFF)</summary><div class="stack"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="fmStrTaxPreview"> 해외주식 매도세 추정 결과 보기</label><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="fmStrTaxApply"> 매도세 반영 비교 보기 (기존 결과 유지)</label><div class="field"><label>매도차익 비중 가정 (%)</label><input id="fmStrGainShare" type="number" min="0" max="100" step="5" value="30"></div><p class="mini">매도차익 비중은 매도대금 중 이익 부분의 추정치입니다. 실제 취득원가와 다른 계좌·종목의 연간 양도차익은 반영하지 않습니다.</p><p class="mini">해외주식 일반 과세 가정: 연간 추정 매도차익에서 250만 원 공제 후 22% 단순 계산. ISA·연금·국내 상장 ETF 및 건보료 계산에는 적용하지 않습니다. 결과 미리보기만 제공하며 기존 30년 잔여 자산 계산은 변경하지 않습니다.</p></div></details>
 <div class="field"><label>자가배당 추가 보험료 가정 (연 만원)</label><input id="fmStrInsurance" type="number" min="0" value="0"></div>
 </div></details>
 <details style="margin:8px 0"><summary style="cursor:pointer;font-weight:700;padding:10px 0">30년 생존 시뮬레이션 설정</summary><div class="fields"><div class="field"><label>분석 기간 (년)</label><input id="fmStrYears" type="number" min="1" max="60" value="30"></div><div class="field"><label>연 물가상승률 (%)</label><input id="fmStrInflation" type="number" min="0" max="20" step="0.5" value="2"></div><div class="field"><label>배당 FIRE 연 총수익률 가정 (%) · 배당 포함</label><input id="fmStrDivGrowth" type="number" min="-100" max="100" step="1" value="5"></div><div class="field fm-str-option"><label><input id="fmStrSameReturn" type="checkbox"> <span>동일 총수익률로 비교</span></label><p class="mini">두 전략에 위 총수익률 적용 · 종목별 입력 유지</p></div><div class="field fm-str-option"><label><input id="fmStrFairMode" type="checkbox"> <span>공정 비교 모드 · 총자산 전액 운용</span></label><p class="mini">양쪽 총자산 전액 운용 · 수익률 동일 적용은 별도 옵션</p></div></div><details><summary class="mini" style="cursor:pointer">시뮬레이션 계산 가정 보기</summary><p class="mini">연말 인출, 매년 생활비 물가 반영. 배당 전략은 2025년 지급액과 배당 포함 총수익률을 가정하고, 자가배당은 종목별 배당 포함 총수익률을 가정합니다. 지급 배당금은 자산에서 차감해 중복 계산하지 않습니다. 세금은 단순 가정만 적용합니다.</p></details></details><button type="button" class="primary" id="fmStrRun">두 전략 비교하기</button>
@@ -1570,7 +1570,7 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
  const fairMode=Boolean(document.getElementById('fmStrFairMode')?.checked);
  const rate=sameReturn?divGrowth:(tb>0?B.reduce((n,x)=>n+Math.max(0,Number(x.amount)||0)*Math.max(-100,Math.min(100,Number(x.rate)||0))/100,0)/tb:0);
  // 공정 비교에서는 미배분 현금까지 동일 수익률로 운용하되 실제 배분은 변경하지 않는다.
- const fairNote=fairMode?'<p class="mini">공정 비교 (30년 시뮬레이션 전용): 위쪽 연 배당·인출 요약과 미배분 현금 경고는 기존 실제 배분 기준입니다. 아래 장기 비교에서는 두 전략 모두 비교 총자산 전액에 동일 총수익률을 적용합니다. 실제 종목 배분과 별개의 가상 시뮬레이션입니다. 배당 세금은 기존 가정을 유지하며 매도세는 미반영입니다.</p>':'';
+ const fairNote=fairMode?'<p class="mini">공정 비교 (30년 시뮬레이션 전용): 위쪽 연 배당·인출 요약과 미배분 현금 경고는 기존 실제 배분 기준입니다. 아래 장기 비교에서는 두 전략 모두 비교 총자산 전액을 운용하며, 동일 수익률은 별도 옵션을 선택한 경우에만 적용됩니다. 실제 종목 배분과 별개의 가상 시뮬레이션입니다. 배당 세금은 기존 가정을 유지하며 매도세는 미반영입니다.</p>':'';
  const scenarios=[{name:'배당 FIRE',capital:fairMode?0:Math.max(0,budget-ta),invested:fairMode?budget:ta,kind:'div'},{name:'자가배당 FIRE',capital:fairMode?0:Math.max(0,budget-tb),invested:fairMode?budget:tb,kind:'sale'}];
  const results=scenarios.map(o=>{
   let cash=o.capital,invested=o.invested,exhausted=null,cumulativeDividendCost=0,maxLedgerError=0;
@@ -1615,14 +1615,28 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
  const validationHtml='<p class="mini">'+(validationPassed?'✓':'⚠')+' 자동 검증 '+validationChecks.filter(x=>x.ok).length+'/'+validationChecks.length+'개 통과'+(validationPassed?'':' · '+validationChecks.filter(x=>!x.ok).map(x=>x.label).join(', '))+'</p>';
   const taxPreview=Boolean(document.getElementById('fmStrTaxPreview')?.checked);
  const gainShare=Math.max(0,Math.min(100,Number(document.getElementById('fmStrGainShare')?.value)||0))/100;
- const saleLedger=results.find(x=>x.kind==='sale')?.ledger||[];
- const taxRows=saleLedger.map(y=>{
-  const taxableGain=Math.max(0,y.spending*gainShare-250);
-  return {year:y.year,saleProceeds:y.spending,taxableGain,estimatedTax:taxableGain*0.22};
- });
- const estimatedTaxTotal=taxRows.reduce((n,x)=>n+x.estimatedTax,0);
- const taxPreviewHtml=taxPreview?'<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">해외주식 매도세 추정 · 참고용</summary><p class="mini">연간 생활비 인출액을 매도대금으로 가정, 매도차익 비중 '+(gainShare*100).toFixed(0)+'% · 연 기본공제 250만 원 · 추정 세율 22%. 실제 매도·취득원가·다른 양도차익은 미반영. 세금 납부를 위한 추가 매도도 계산하지 않았습니다.</p><p class="mini">분석 기간 단순 합산 추정 세액 '+fmStrMoney(estimatedTaxTotal)+' (자산 시뮬레이션에는 미반영)</p><div style="max-height:220px;overflow:auto"><table style="width:100%;font-size:12px;text-align:right"><thead><tr><th>연도</th><th>가정 매도액</th><th>과세 차익</th><th>추정 세액</th></tr></thead><tbody>'+taxRows.map(y=>'<tr><td>'+y.year+'년</td><td>'+Math.round(y.saleProceeds).toLocaleString('ko-KR')+'</td><td>'+Math.round(y.taxableGain).toLocaleString('ko-KR')+'</td><td>'+Math.round(y.estimatedTax).toLocaleString('ko-KR')+'</td></tr>').join('')+'</tbody></table></div></details>':'';
-  const ledgerNote=ledgerOk?'<p class="mini">연도별 자산 증감 검산 통과 (투자수익·배당 부담·실제 인출 기준)</p>':'<p style="color:#e6aa56">⚠ 연도별 자산 증감 검산 오류: 결과를 확인하세요.</p>';
+ const taxApply=Boolean(document.getElementById('fmStrTaxApply')?.checked);
+ const taxScenario=()=>{
+  let cash=fairMode?0:Math.max(0,budget-tb),invested=fairMode?budget:tb,cumulativeTax=0;
+  const ledger=[],series=[cash+invested];
+  for(let y=1;y<=years;y++){
+   invested=Math.max(0,invested*(1+rate));
+   const cost=(spend+insurance)*Math.pow(1+inflation,y-1);
+   const fromCash=Math.min(cash,cost);cash-=fromCash;
+   const needed=Math.max(0,cost-fromCash);
+   const threshold=gainShare>0?250/gainShare:Infinity;
+   const grossNeeded=needed<=threshold?needed:(needed-55)/(1-0.22*gainShare);
+   const sale=Math.min(invested,Math.max(0,grossNeeded));
+   const tax=Math.max(0,sale*gainShare-250)*0.22;
+   invested-=sale;cumulativeTax+=tax;
+   ledger.push({year:y,sale,tax,closing:cash+invested,shortfall:Math.max(0,needed-(sale-tax))});
+   series.push(cash+invested);
+  }
+  return {ledger,series,cumulativeTax};
+ };
+ const taxed=taxScenario();
+ const taxPreviewHtml=(taxPreview||taxApply)?'<details open style="margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px"><summary style="cursor:pointer;font-weight:700">해외주식 매도세 추정 · 세금 반영 실험</summary><p class="mini">매도차익 비중 '+(gainShare*100).toFixed(0)+'% · 연 기본공제 250만 원 · 세율 22% 가정. 현금 사용 후 해외주식 매도 시 추정 세금과 세금 납부용 추가 매도를 반영합니다.</p><p class="mini">기존 자가배당 '+fmStrMoney(results[1].series[years])+' → <strong>매도세 반영 '+fmStrMoney(taxed.series[years])+'</strong> · 누적 추정 세금 '+fmStrMoney(taxed.cumulativeTax)+'</p><p class="mini">기존 그래프는 변경하지 않습니다. 실제 취득원가·다른 매도차익·국내 ETF·ISA·건보료는 미반영한 가상 실험입니다.</p><details><summary class="mini" style="cursor:pointer">연도별 추정 세금 (만원)</summary><div style="max-height:230px;overflow:auto"><table style="width:100%;font-size:12px;text-align:right"><thead><tr><th>연도</th><th>매도액</th><th>세금</th><th>연말 자산</th></tr></thead><tbody>'+taxed.ledger.map(y=>'<tr><td>'+y.year+'년</td><td>'+Math.round(y.sale).toLocaleString('ko-KR')+'</td><td>'+Math.round(y.tax).toLocaleString('ko-KR')+'</td><td>'+Math.round(y.closing).toLocaleString('ko-KR')+'</td></tr>').join('')+'</tbody></table></div></details></details>':'';
+   const ledgerNote=ledgerOk?'<p class="mini">연도별 자산 증감 검산 통과 (투자수익·배당 부담·실제 인출 기준)</p>':'<p style="color:#e6aa56">⚠ 연도별 자산 증감 검산 오류: 결과를 확인하세요.</p>';
  const cfId='fmCashFlowDetails';
  const cashFlowTable='<details style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px"><summary style="cursor:pointer;font-weight:700">연도별 현금흐름 · '+years+'년</summary><div id="'+cfId+'"><div style="display:flex;gap:6px;margin:10px 0"><button type="button" data-fm-cf-kind="div" style="flex:1;background:var(--accent,#38cba2);color:#071b17;border-radius:8px;padding:9px 4px;font-weight:700">배당 FIRE</button><button type="button" data-fm-cf-kind="sale" style="flex:1;border-radius:8px;padding:9px 4px">자가배당 FIRE</button></div><label class="mini" style="display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;margin:8px 0;width:auto;max-width:100%;font-size:12px"><input type="checkbox" data-fm-cf-all style="flex:none;width:17px;height:17px;margin:0"> 전체 연도 보기 (기본 1년·5년 단위)</label><div data-fm-cf-view></div><details style="margin-top:10px"><summary class="mini" style="cursor:pointer">표 항목과 계산 가정</summary><p class="mini">단위: 만 원. 투자 총수익에 배당이 포함되며 별도로 더하지 않습니다. 배당 부담은 추정 세금·보험료, 생활비는 실제 인출액입니다. 부족액은 자산 소진으로 충당하지 못한 금액입니다. 자가배당 매도세는 미반영입니다.</p></details></div></details>';
  const renderCashFlow=(root,kind,all)=>{
@@ -1960,7 +1974,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-278',VERSION='3.0.278';
+ const BUILD='fire-mate-v3-0-279',VERSION='3.0.279';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

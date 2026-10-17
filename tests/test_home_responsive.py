@@ -38,6 +38,16 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_small_home_goal_amount_stays_on_one_line(self):
+        page = self.browser.new_page(viewport={"width": 320, "height": 720}, is_mobile=True)
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            dims = page.locator('#homeAssetGoal').evaluate("e => ({height:e.clientHeight,size:parseFloat(getComputedStyle(e).fontSize),width:e.clientWidth,scroll:e.scrollWidth})")
+            self.assertLessEqual(dims['height'], dims['size'] * 1.6)
+            self.assertLessEqual(dims['scroll'], dims['width'] + 1)
+        finally:
+            page.close()
+
     def test_home_budget_uses_current_ledger_month_and_handles_boundaries(self):
         current = date.today().strftime('%Y-%m')
         page = self.browser.new_page(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)

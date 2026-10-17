@@ -937,6 +937,42 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_fire_retirement_mobile_detail_and_navigation(self):
+        for width in (320, 375, 430):
+            for theme in ('dark', 'light'):
+                with self.subTest(width=width, theme=theme):
+                    page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
+                    errors=[]
+                    page.on('pageerror',lambda exc: errors.append(str(exc)))
+                    try:
+                        page.goto(URL,wait_until="domcontentloaded")
+                        page.evaluate("theme => document.documentElement.dataset.theme=theme",theme)
+                        page.locator('.bottomnav [data-view="fire"]').click()
+                        self.assertTrue(page.locator('#firePct').is_visible())
+                        self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                        forecast=page.locator('#fmForecastControls')
+                        forecast.locator('summary').click()
+                        self.assertTrue(forecast.evaluate('(el)=>el.open'))
+                        forecast.locator('summary').click()
+                        self.assertFalse(forecast.evaluate('(el)=>el.open'))
+                        page.locator('#fmFireLifeOpen').click()
+                        self.assertTrue(page.locator('#view-retire').is_visible())
+                        self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                        self.assertFalse(page.locator('#rpReset').is_visible())
+                        toggle=page.locator('#fmRpEditToggle')
+                        toggle.click()
+                        self.assertEqual(toggle.get_attribute('aria-expanded'),'true')
+                        self.assertTrue(page.locator('#rpReset').is_visible())
+                        toggle.click()
+                        self.assertEqual(toggle.get_attribute('aria-expanded'),'false')
+                        page.locator('#fmRetireToCalculator').click()
+                        self.assertTrue(page.locator('#view-firecalc').is_visible())
+                        page.locator('#fmBackFire').click()
+                        self.assertTrue(page.locator('#view-fire').is_visible())
+                        self.assertFalse(errors)
+                    finally:
+                        page.close()
+
     def test_theme_and_navigation(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

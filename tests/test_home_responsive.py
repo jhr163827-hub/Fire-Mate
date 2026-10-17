@@ -1115,9 +1115,13 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.goto(URL,wait_until='domcontentloaded')
                         if theme=='light':page.locator('#theme').click()
                         page.locator('.bottomnav [data-view="fire"]').click()
+                        page.locator('#fmFireLifeOpen').click()
+                        self.assertTrue(page.locator('#view-retire').is_visible())
                         page.locator('#fmStrategyDetails > summary').click()
                         page.locator('#fmStrModeDetail').click()
                         self.assertGreaterEqual(page.locator('#fmStrategyCard .fm-str-row-top button').first.bounding_box()['height'],44)
+                        self.assertGreaterEqual(page.locator('#fmStrAddDiv').bounding_box()['height'],44)
+                        self.assertNotEqual(page.locator('#fmStrAddDiv').evaluate('(el)=>getComputedStyle(el).backgroundColor'),'rgba(0, 0, 0, 0)')
                         page.evaluate("""() => {
                             document.getElementById('fmQuickBudget').value='65000';
                             document.getElementById('fmQuickSpend').value='2400';

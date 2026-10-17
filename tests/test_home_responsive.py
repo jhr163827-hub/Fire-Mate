@@ -27,7 +27,7 @@ class HomeResponsiveTest(unittest.TestCase):
                 page = self.browser.new_page(viewport={"width": width, "height": 720}, is_mobile=True, has_touch=True)
                 try:
                     page.goto(URL, wait_until="domcontentloaded")
-                    page.locator('[data-view="home"]').first.click()
+                    page.locator('.bottomnav [data-view="home"]').click()
                     page.wait_for_timeout(150)
                     self.assertTrue(page.locator("#view-home").is_visible())
                     dimensions = page.evaluate("""() => ({
@@ -49,16 +49,25 @@ class HomeResponsiveTest(unittest.TestCase):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:
             page.goto(URL, wait_until="domcontentloaded")
-            home = page.locator('[data-view="home"]').first
+            home = page.locator('.bottomnav [data-view="home"]')
             home.click()
             self.assertTrue(page.locator("#view-home").is_visible())
-            # The app may expose theme selection through settings rather than a global button.
-            # Verify both theme palettes at the CSS-token level without mutating storage.
-            colors = []
-            for theme in ("dark", "light"):
-                page.evaluate("(theme) => document.documentElement.setAttribute('data-theme', theme)", theme)
-                colors.append(page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()"))
-            self.assertNotEqual(colors[0], colors[1])
+            # Exercise the real theme toggle, not an artificial DOM attribute change.
+            theme_button = page.locator("#theme")
+            self.assertTrue(theme_button.is_visible())
+            initial = page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()")
+            theme_button.click()
+            changed = page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()")
+            self.assertNotEqual(initial, changed)
+            theme_button.click()
+            restored = page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()")
+            self.assertEqual(initial, restored)
+
+            # Exercise bottom navigation and return to home.
+            page.locator('.bottomnav [data-view="assets"]').click()
+            self.assertTrue(page.locator("#view-assets").is_visible())
+            home.click()
+            self.assertTrue(page.locator("#view-home").is_visible())
         finally:
             page.close()
 

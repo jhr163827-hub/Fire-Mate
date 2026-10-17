@@ -26,6 +26,18 @@ class HomeResponsiveTest(unittest.TestCase):
         cls.browser.close()
         cls.p.stop()
 
+    def test_light_hero_values_are_dark_on_light_cards(self):
+        page = self.browser.new_page(viewport={"width": 320, "height": 720}, is_mobile=True)
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            page.evaluate("document.documentElement.dataset.theme='light'")
+            for view, value in (("home", "#homeTotalAssets"), ("assets", "#netWorth"), ("fire", "#fireAsset")):
+                page.locator(f'.bottomnav [data-view="{view}"]').click()
+                channels = page.locator(value).evaluate("e => getComputedStyle(e).color.match(/\\d+/g).slice(0,3).map(Number)")
+                self.assertLess(max(channels), 130, f'{view} 핵심 금액은 밝은 카드에서 짙은 색이어야 합니다')
+        finally:
+            page.close()
+
     def test_home_budget_uses_current_ledger_month_and_handles_boundaries(self):
         current = date.today().strftime('%Y-%m')
         page = self.browser.new_page(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)

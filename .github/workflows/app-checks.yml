@@ -6,6 +6,7 @@ on:
       - 'sw.js'
       - 'scripts/check_app.py'
       - 'scripts/test_calculations.cjs'
+      - 'tests/storage-rollback.test.cjs'
       - '.github/workflows/app-checks.yml'
   workflow_dispatch:
 permissions:
@@ -20,6 +21,8 @@ jobs:
         run: python3 scripts/check_app.py
       - name: Test asset and FIRE calculations
         run: node scripts/test_calculations.cjs
+      - name: Test storage rollback guards
+        run: node tests/storage-rollback.test.cjs
       - name: Check inline JavaScript syntax
         run: |
           python3 - <<'PY'

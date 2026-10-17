@@ -58,6 +58,13 @@ def main():
                         page.screenshot(path=str(OUT / filename), full_page=False)
                         measurements.append({"view":view,"width":width,"theme":theme,"version":version,
                                              "image":filename,**metrics})
+                        if view == "assets" and version == "after":
+                            for pane, button in (("holdings", "#fmAssetQuickHoldings"),
+                                                 ("dividend", "#fmAssetQuickDividend"),
+                                                 ("analysis", "#fmAssetQuickAnalysis")):
+                                page.locator(button).click()
+                                page.screenshot(path=str(OUT / f"assets-{pane}-{width}-{theme}.png"), full_page=False)
+                            page.locator('#fmAssetQuickAccounts').click()
                     context.close()
         browser.close()
     (OUT / "measurements.json").write_text(json.dumps(measurements,ensure_ascii=False,indent=2))

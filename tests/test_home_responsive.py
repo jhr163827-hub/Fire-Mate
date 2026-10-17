@@ -112,6 +112,31 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_saved_theme_survives_reload_and_navigation(self):
+        # Real UI writes to the app's persisted data; no mocked storage.
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="home"]').click()
+            key = "firemate_smart_v3"
+            before = page.evaluate("""key => JSON.parse(localStorage.getItem(key) || '{}').theme""", key)
+            page.locator("#theme").click()
+            saved = page.evaluate("""key => JSON.parse(localStorage.getItem(key) || '{}').theme""", key)
+            self.assertIn(saved, ("light", "dark"))
+            self.assertNotEqual(before, saved)
+            page.reload(wait_until="domcontentloaded")
+            after = page.evaluate("""key => JSON.parse(localStorage.getItem(key) || '{}').theme""", key)
+            self.assertEqual(after, saved)
+            page.locator('.bottomnav [data-view="fire"]').click()
+            self.assertTrue(page.locator("#view-fire").is_visible())
+            page.locator('.bottomnav [data-view="assets"]').click()
+            self.assertTrue(page.locator("#view-assets").is_visible())
+            page.locator('.bottomnav [data-view="home"]').click()
+            self.assertTrue(page.locator("#view-home").is_visible())
+            self.assertEqual(page.evaluate("""key => JSON.parse(localStorage.getItem(key) || '{}').theme""", key), saved)
+        finally:
+            page.close()
+
     def test_theme_and_navigation(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

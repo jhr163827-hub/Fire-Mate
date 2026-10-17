@@ -980,6 +980,48 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_long_transactions_fit_history_calendar_insights_and_firecalc(self):
+        for width in (320, 360, 375, 390, 430):
+            for height in (568, 844):
+                with self.subTest(width=width, height=height):
+                    page=self.browser.new_page(viewport={"width":width,"height":height},is_mobile=True,has_touch=True)
+                    errors=[]
+                    page.on('pageerror',lambda exc: errors.append(str(exc)))
+                    try:
+                        page.add_init_script("""(() => {
+                            const d=new Date(), date=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+                            localStorage.setItem('firemate_smart_v3',JSON.stringify({
+                                tx:[{id:'long-mobile-tx',date,type:'expense',amount:98765432100,category:'식비',
+                                    memo:'긴 거래 이름을 사용하는 휴대전화 화면 가독성 확인용 거래 이름입니다'}],
+                                rec:[],budgets:{},favorites:[],theme:'dark',accounts:[],holdings:[],
+                                fire:{goal:65000,monthly:300,rate:7,withdrawal:4},
+                                balance:{fx:1400,cash:0,other:0,debt:0}
+                            }));
+                        })()""")
+                        page.goto(URL,wait_until='domcontentloaded')
+                        for theme in ('dark','light'):
+                            if theme=='light':
+                                page.locator('#theme').click()
+                            page.locator('.bottomnav [data-view="home"]').click()
+                            page.locator('#view-home [data-go="history"]').click()
+                            self.assertTrue(page.locator('#historyList [data-edit="long-mobile-tx"]').is_visible())
+                            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'history')
+                            self.assertGreaterEqual(page.locator('#historyList [data-edit="long-mobile-tx"]').bounding_box()['height'],44)
+                            page.locator('.bottomnav [data-view="calendar"]').click()
+                            self.assertTrue(page.locator('#dayTx [data-edit="long-mobile-tx"]').is_visible())
+                            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'calendar')
+                            page.locator('#view-calendar [data-go="insights"]').click()
+                            self.assertTrue(page.locator('#view-insights').is_visible())
+                            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'insights')
+                            page.locator('.bottomnav [data-view="fire"]').click()
+                            page.locator('#fmOpenCalculator').click()
+                            self.assertTrue(page.locator('#view-firecalc').is_visible())
+                            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'firecalc')
+                        self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.filter(x=>x.id==='long-mobile-tx').length"),1)
+                        self.assertFalse(errors)
+                    finally:
+                        page.close()
+
     def test_ledger_mobile_entry_list_and_data_preservation(self):
         for width in (320, 360, 390, 430):
             with self.subTest(width=width):

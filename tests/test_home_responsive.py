@@ -136,6 +136,8 @@ class HomeResponsiveTest(unittest.TestCase):
                     amount=page.locator('#holdingList .tx > strong').first.evaluate(
                         'e => ({height:e.getBoundingClientRect().height,font:parseFloat(getComputedStyle(e).fontSize)})')
                     self.assertLessEqual(amount['height'],amount['font']*1.6,'종목 평가금액은 한 줄로 보여야 합니다')
+                    self.assertEqual(page.locator('#holdingList .txmain > span').first.evaluate(
+                        'e => getComputedStyle(e).display'),'block')
                     page.locator('#fmHoldingSearch').fill('BBB')
                     self.assertEqual(page.locator('#holdingList .tx').count(), 1)
                     self.assertIn('베타', page.locator('#holdingList').inner_text())
@@ -144,6 +146,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertEqual(page.locator('#holdingList .tx').count(), 2)
                     page.locator('#fmAssetQuickDividend').click()
                     self.assertTrue(page.locator('#fmDividendPanel').is_visible())
+                    self.assertLessEqual(page.locator('#fmDivBars').evaluate('e => e.getBoundingClientRect().height'),120)
                     self.assertFalse(page.locator('#fmAssetAccountsPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetHoldingsPanel').is_visible())
                     self.assertFalse(page.locator('#assetGrowthChart').is_visible())

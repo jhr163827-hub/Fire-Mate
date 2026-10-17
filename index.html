@@ -606,13 +606,13 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-home #homeAssetHero .progress>div{border-radius:999px}
 #view-home #homeDailyChange{font-variant-numeric:tabular-nums}
 #view-home .fm-fire-eta>strong{font-variant-numeric:tabular-nums}
-#view-home .fm-expense-hero .big{font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+#view-home .fm-expense-hero .big{font-variant-numeric:tabular-nums;letter-spacing:-.035em;overflow-wrap:anywhere;line-height:1.2}
 #view-home .fm-expense-hero{border-radius:20px}
 
 /* Home responsive layout: content grows naturally; page owns vertical scrolling. */
 #view-home{min-height:0;max-height:none;overflow:visible}
 #view-home #homeAssetHero{min-width:0;max-height:none}
-#view-home #homeAssetHero .hero-row{min-width:0}
+#view-home #homeAssetHero .hero-row{min-width:0;gap:10px}
 #view-home #homeAssetHero .hero-stat{min-width:0}
 #view-home #homeTotalAssets{line-height:1.18;font-weight:850;font-size:clamp(20px,5.4vw,34px)!important;max-width:100%;white-space:normal!important;overflow-wrap:anywhere}
 @media(max-width:380px){#view-home #homeAssetHero .hero-row{gap:12px}#view-home #homeAssetHero .hero-stat{flex:1 1 120px}}
@@ -661,11 +661,11 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-fire .fm-fire-section-head button,
 #view-fire .fm-fire-life-button{min-height:40px}
 #view-fire .fm-fire-hero .progress{overflow:hidden;border-radius:999px}
-#view-home #homeAssetHero .big,#view-home .fm-expense-hero .big{overflow-wrap:anywhere;line-height:1.2}
+
 
 @media(max-width:700px){
  #view-fire .fm-fire-section-head button{font-size:12px;padding:9px 11px;white-space:nowrap}
- #view-home #homeAssetHero .hero-row{gap:10px}
+
  
  #view-home #homeAssetHero .hero-stat strong{overflow-wrap:anywhere}
  #view-home #fmHomeActivity .fm-home-minihead{gap:6px}

@@ -389,13 +389,13 @@ class HomeResponsiveTest(unittest.TestCase):
             page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
             page.goto(URL, wait_until="domcontentloaded")
             actual = page.evaluate("""() => ({
-                noGrowth: fmProjectedAsset(10000,100,0,360),
-                noGrowthSeries: fmProjectionSeries(10000,100,0,360),
-                compound: fmProjectedAsset(10000,0,7,360),
-                compoundSeries: fmProjectionSeries(10000,0,7,360),
-                goalMonths: estimate(10000,13000,100,0),
-                reached: estimate(14000,13000,100,0),
-                invalid: fmProjectedAsset(10000,100,-100,360)
+                noGrowth: window.__fmFinanceTest.projection(10000,100,0,360).projected,
+                noGrowthSeries: window.__fmFinanceTest.projection(10000,100,0,360).series,
+                compound: window.__fmFinanceTest.projection(10000,0,7,360).projected,
+                compoundSeries: window.__fmFinanceTest.projection(10000,0,7,360).series,
+                goalMonths: window.__fmFinanceTest.estimate(10000,13000,100,0),
+                reached: window.__fmFinanceTest.estimate(14000,13000,100,0),
+                invalid: window.__fmFinanceTest.projection(10000,100,-100,360).projected
             })""")
             self.assertEqual(actual["noGrowth"], 46000)
             self.assertEqual(len(actual["noGrowthSeries"]), 361)
@@ -419,7 +419,7 @@ class HomeResponsiveTest(unittest.TestCase):
                 document.getElementById('fmQuickYield').value='4';
                 document.getElementById('fmQuickTax').value='15';
                 document.getElementById('fmQuickGain').value='7';
-                fmQuickCompare();
+                window.__fmFinanceTest.quick();
             }""")
             result = page.locator("#fmQuickResult").inner_text()
             # 10,000 x 4% = 400 gross; 15% withholding = 60; net = 340.
@@ -449,10 +449,10 @@ class HomeResponsiveTest(unittest.TestCase):
                 document.getElementById('fmStrGainShare').value='30';
                 document.getElementById('fmStrDivCost').value='15';
                 document.getElementById('fmStrInsurance').value='0';
-                fmStrVirtual.div=[{name:'TEST',amount:10000,estimatedAnnualMan:400,rate:4}];
-                fmStrVirtual.sale=[{name:'TEST',amount:10000,rate:7}];
-                fmRunStrategyComparison();
-                return document.getElementById('fmStrResult').innerText;
+                return window.__fmFinanceTest.strategy({
+                    div:[{name:'TEST',amount:10000,estimatedAnnualMan:400,rate:4}],
+                    sale:[{name:'TEST',amount:10000,rate:7}]
+                });
             }""")
             self.assertIn("30년", output)
             self.assertIn("340만", output)

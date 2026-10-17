@@ -2065,7 +2065,30 @@ function fmCommitQuoteUpdate(update){const previous=data.holdings;const previous
 }
 priceStatus();
 
-syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_auto_quote_day_v1';if(localStorage.getItem(autoKey)!==autoDay&&navigator.onLine&&data.holdings.length){localStorage.setItem(autoKey,autoDay);setTimeout(async()=>{try{await autoRefreshFx();recordDailyNetWorth();await refreshStockPrices(false,true);recordDailyNetWorth()}catch(e){console.warn('Auto quote:',e)}},1200)}}catch(e){console.warn('Auto quote setup:',e)}try{const restored=sessionStorage.getItem(FM_TAB_KEY);if(FM_VALID_TABS.has(restored)&&document.getElementById('view-'+restored)){active=restored;document.querySelectorAll('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+restored));document.querySelectorAll('.tab,.bottom-item[data-view]').forEach(e=>e.classList.toggle('active',e.dataset.view===restored))}}catch{}render();})();
+syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_auto_quote_day_v1';if(localStorage.getItem(autoKey)!==autoDay&&navigator.onLine&&data.holdings.length){localStorage.setItem(autoKey,autoDay);setTimeout(async()=>{try{await autoRefreshFx();recordDailyNetWorth();await refreshStockPrices(false,true);recordDailyNetWorth()}catch(e){console.warn('Auto quote:',e)}},1200)}}catch(e){console.warn('Auto quote setup:',e)}try{const restored=sessionStorage.getItem(FM_TAB_KEY);if(FM_VALID_TABS.has(restored)&&document.getElementById('view-'+restored)){active=restored;document.querySelectorAll('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+restored));document.querySelectorAll('.tab,.bottom-item[data-view]').forEach(e=>e.classList.toggle('active',e.dataset.view===restored))}}catch{}render();
+ // Read-only production-calculation access for browser regression tests only.
+ if(navigator.webdriver){
+  window.__fmFinanceTest={
+   projection:(asset,monthly,rate,months)=>({
+    projected:fmProjectedAsset(asset,monthly,rate,months),
+    series:fmProjectionSeries(asset,monthly,rate,months)
+   }),
+   estimate:(asset,goal,monthly,rate)=>estimate(asset,goal,monthly,rate),
+   quick:()=>fmQuickCompare(),
+   strategy:({div,sale})=>{
+    const originalDiv=fmStrVirtual.div,originalSale=fmStrVirtual.sale;
+    try{
+     fmStrVirtual.div=div.map(x=>({...x}));
+     fmStrVirtual.sale=sale.map(x=>({...x}));
+     fmRunStrategyComparison();
+     return document.getElementById('fmStrResult')?.innerText||'';
+    }finally{
+     fmStrVirtual.div=originalDiv;fmStrVirtual.sale=originalSale;
+    }
+   }
+  };
+ }
+})();
 </script><script>
 (()=>{})();
 </script><script id="fm-pwa-updates">

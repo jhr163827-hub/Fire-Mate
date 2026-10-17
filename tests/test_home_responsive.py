@@ -301,7 +301,7 @@ class HomeResponsiveTest(unittest.TestCase):
             page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
             page.route("https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check=*",
                        lambda route: route.fulfill(status=200, content_type="text/html",
-                                                   body="""const BUILD='fire-mate-v3-4-2'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))
+                                                   body="""const BUILD='fire-mate-v99-0-0'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))
             page.goto(URL, wait_until="domcontentloaded")
             before = page.evaluate("""() => localStorage.getItem('firemate_smart_v3')""")
             page.locator("#fmManualUpdate").click()
@@ -310,6 +310,38 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(page.evaluate("""() => localStorage.getItem('firemate_smart_v3')"""), before)
             self.assertEqual(page.locator("#fmManualUpdate").count(), 1)
         finally:
+            page.close()
+
+    def test_pwa_update_accept_requests_activation_and_keeps_storage(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.route("https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check=*",
+                       lambda route: route.fulfill(status=200, content_type="text/html",
+                                                   body="""const BUILD='fire-mate-v99-0-0'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))
+            page.goto(URL, wait_until="domcontentloaded")
+            page.evaluate("""() => localStorage.setItem('fm-pwa-test-marker', 'keep')""")
+            page.locator("#fmManualUpdate").click()
+            page.get_by_text("새 업데이트가 준비됐어요").wait_for(timeout=15000)
+            page.get_by_role("button", name="지금 업데이트").click()
+            page.wait_for_url("**/index.html?updated=*", timeout=15000)
+            self.assertEqual(page.evaluate("""() => localStorage.getItem('fm-pwa-test-marker')"""), "keep")
+        finally:
+            page.close()
+
+    def test_service_worker_offline_navigation_keeps_local_data(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.goto(URL, wait_until="load")
+            page.wait_for_function("""() => navigator.serviceWorker?.controller !== null""", timeout=15000)
+            page.evaluate("""() => localStorage.setItem('fm-pwa-offline-marker','kept')""")
+            page.context.set_offline(True)
+            page.reload(wait_until="domcontentloaded", timeout=15000)
+            self.assertTrue(page.locator("#view-home").count() > 0)
+            self.assertEqual(page.evaluate("""() => localStorage.getItem('fm-pwa-offline-marker')"""), "kept")
+        finally:
+            page.context.set_offline(False)
             page.close()
 
     def test_theme_save_failure_keeps_previous_setting(self):

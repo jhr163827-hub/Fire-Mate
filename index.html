@@ -2098,7 +2098,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
    const next=match[1].replace('fire-mate-v','').replaceAll('-','.');
    if(await modal('새 업데이트가 준비됐어요','v'+VERSION+' → v'+next+'\n지금 업데이트할까요?',['나중에','지금 업데이트'])!==1)return;
    button.textContent='업데이트 중…';
-   if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();const waiting=reg.waiting;if(waiting)waiting.postMessage({type:'SKIP_WAITING'});}}location.replace('./index.html?updated='+Date.now());
+   if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();let waiting=reg.waiting;if(!waiting&&reg.installing){await new Promise(resolve=>{const worker=reg.installing;const done=()=>{if(worker.state==='installed'||worker.state==='activated'||worker.state==='redundant')resolve()};worker.addEventListener('statechange',done);done();setTimeout(resolve,5000)});waiting=reg.waiting;}if(waiting){const changed=new Promise(resolve=>{navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true});setTimeout(resolve,5000)});waiting.postMessage({type:'SKIP_WAITING'});await changed;}}}location.replace('./index.html?updated='+Date.now());
   }catch(e){await modal('업데이트 확인 실패',e.message+' 기존 데이터는 그대로 유지돼.',['확인'])}
   finally{busy=false;button.disabled=false;reset()}
  };

@@ -1,0 +1,32 @@
+name: Home responsive regression
+on:
+  push:
+    paths:
+      - 'index.html'
+      - 'tests/test_home_responsive.py'
+      - '.github/workflows/home-responsive.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'tests/test_home_responsive.py'
+      - '.github/workflows/home-responsive.yml'
+  workflow_dispatch:
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Serve application
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 > /tmp/fire-mate-http.log 2>&1 &
+          sleep 2
+      - name: Run viewport regression
+        env:
+          FIRE_MATE_URL: http://127.0.0.1:8000
+        run: python -m unittest discover -s tests -p 'test_home_responsive.py' -v

@@ -57,6 +57,43 @@ class HomeResponsiveTest(unittest.TestCase):
                     finally:
                         page.close()
 
+    def test_phase2_home_visual_hierarchy_and_theme(self):
+        for width in (320,390,430):
+            for theme in ("dark","light"):
+                with self.subTest(width=width,theme=theme):
+                    page=self.browser.new_page(viewport={"width":width,"height":844},is_mobile=True,has_touch=True)
+                    try:
+                        page.goto(URL,wait_until="domcontentloaded")
+                        page.evaluate("""theme => document.documentElement.setAttribute('data-theme',theme)""",theme)
+                        metrics=page.evaluate("""() => {
+                            const hero=document.getElementById('homeAssetHero');
+                            const amount=document.getElementById('homeTotalAssets');
+                            const progress=document.getElementById('homeAssetProgress');
+                            const expense=document.querySelector('#view-home .fm-home-budget');
+                            const rect=hero.getBoundingClientRect();
+                            return {
+                                amountSize:parseFloat(getComputedStyle(amount).fontSize),
+                                amountWeight:parseFloat(getComputedStyle(amount).fontWeight),
+                                amountVisible:amount.getBoundingClientRect().width>0,
+                                heroRight:rect.right,
+                                viewport:document.documentElement.clientWidth,
+                                progressPresent:!!progress,
+                                expenseVisible:expense.getBoundingClientRect().width>0,
+                                theme:document.documentElement.getAttribute('data-theme'),
+                                horizontalOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+2
+                            };
+                        }""")
+                        self.assertEqual(metrics["theme"],theme)
+                        self.assertGreaterEqual(metrics["amountSize"],30)
+                        self.assertGreaterEqual(metrics["amountWeight"],700)
+                        self.assertTrue(metrics["amountVisible"])
+                        self.assertTrue(metrics["progressPresent"])
+                        self.assertTrue(metrics["expenseVisible"])
+                        self.assertLessEqual(metrics["heroRight"],metrics["viewport"]+2)
+                        self.assertFalse(metrics["horizontalOverflow"])
+                    finally:
+                        page.close()
+
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.
         for width in [320, 360, 375, 390, 430]:

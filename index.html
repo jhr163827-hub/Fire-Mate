@@ -710,6 +710,31 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
  #view-assets .fm-main-asset-tabs{gap:8px}
  #view-assets .fm-main-asset-tabs button{min-width:0}
 }
+</style><style id="fm-phase2-home-polish">
+/* Phase 2 home: progressive visual hierarchy; preserve DOM IDs and click handlers. */
+#view-home #homeAssetHero{border-radius:24px;box-shadow:0 16px 38px #0002}
+#view-home #homeAssetHero .fm-home-overline{font-size:10px;letter-spacing:.12em;font-weight:750;opacity:.82}
+#view-home #homeAssetHero .fm-home-section-title{font-size:13px;font-weight:700;opacity:.92}
+#view-home #homeTotalAssets{font-size:clamp(30px,8.2vw,48px);font-weight:850;letter-spacing:-.055em;line-height:1.1;font-variant-numeric:tabular-nums}
+#view-home #homeDailyChange{border:1px solid #ffffff18;background:#ffffff0c;border-radius:12px;padding:10px 12px}
+#view-home #homeAssetHero .hero-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#view-home #homeAssetHero .hero-stat{min-width:0}
+#view-home #homeAssetHero .hero-stat strong{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#view-home #homeAssetHero .progress{height:8px;background:#ffffff24}
+#view-home #homeAssetHero .progress>div{background:#77efbc}
+#view-home .fm-home-budget{border-radius:20px}
+#view-home .fm-home-budget .big{font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+#view-home .home-shortcuts button{min-height:44px}
+@media(max-width:430px){
+ #view-home #homeAssetHero{padding:18px 17px}
+ #view-home #homeAssetHero .hero-row{gap:9px}
+ #view-home #homeAssetHero .hero-stat strong{font-size:clamp(14px,4.2vw,19px)}
+ #view-home .fm-home-budget{padding:15px 16px}
+ #view-home .fm-home-budget .hero-row{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ #view-home #homeAssetHero .progress>div{transition:none}
+}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero fm-home-wealth" id="homeAssetHero">

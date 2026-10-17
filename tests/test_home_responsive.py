@@ -129,6 +129,32 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_phase2_home_secondary_details_are_accessible(self):
+        for width in (320,390,430):
+            for theme in ("dark","light"):
+                with self.subTest(width=width,theme=theme):
+                    page=self.browser.new_page(viewport={"width":width,"height":844},is_mobile=True,has_touch=True)
+                    try:
+                        page.goto(URL,wait_until="domcontentloaded")
+                        page.evaluate("theme => document.documentElement.setAttribute('data-theme',theme)",theme)
+                        page.locator('.bottomnav [data-view="home"]').click()
+                        activity=page.locator("#view-home .fm-home-activity-details")
+                        self.assertEqual(activity.count(),1)
+                        self.assertFalse(activity.evaluate("(el)=>el.open"))
+                        activity.locator("summary").click()
+                        self.assertTrue(activity.evaluate("(el)=>el.open"))
+                        self.assertTrue(page.locator("#fmHomeActivity").is_visible())
+                        activity.locator("summary").click()
+                        self.assertFalse(activity.evaluate("(el)=>el.open"))
+                        self.assertTrue(page.locator("#homeTotalAssets").is_visible())
+                        self.assertTrue(page.locator("#homeDailyChange").is_visible())
+                        self.assertTrue(page.locator("#homeAssetPercent").is_visible())
+                        self.assertTrue(page.locator("#homeFireEta").is_visible())
+                        self.assertTrue(page.locator("#fmBudgetExpense").is_visible())
+                        self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"),width+2)
+                    finally:
+                        page.close()
+
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.
         for width in [320, 360, 375, 390, 430]:

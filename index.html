@@ -753,6 +753,26 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
  #view-home #homeTotalAssets{font-size:30px!important}
  #view-home .fm-home-budget{padding:13px 14px}
 }
+</style><style id="fm-phase2-home-focus">
+/* Preserve all home features, but collapse secondary analysis behind one disclosure. */
+#view-home .fm-budget-preview{margin:0;border:1px solid var(--line);border-radius:16px;padding:13px 15px;background:var(--panel)}
+#view-home .fm-budget-preview .fm-budget-heading{font-size:12px;color:var(--sub)}
+#view-home .fm-budget-preview .fm-budget-metrics{margin-top:8px}
+#view-home .fm-budget-preview .fm-budget-links{margin-top:9px}
+#view-home #fmHomeActivity{margin:0!important;padding:0!important;border:0!important;background:transparent!important}
+#view-home .fm-home-activity-details{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:0 13px}
+#view-home .fm-home-activity-details>summary{padding:12px 0;font-size:12px;font-weight:750;color:var(--sub);cursor:pointer}
+#view-home .fm-home-activity-details>#fmHomeActivity{padding:8px 0 12px!important}
+#view-home .fm-secondary-details{margin:0}
+#view-home .fm-secondary-details>summary{padding:13px 0}
+#view-home #homeAssetHero .fm-eta-details{margin-top:6px}
+@media(max-width:430px){
+ #view-home{gap:9px!important}
+ #view-home #homeAssetHero{padding:16px 15px}
+ #view-home #homeAssetHero .hero-row{margin-top:12px}
+ #view-home .fm-budget-preview{padding:10px 13px}
+ #view-home .fm-home-activity-details>summary{padding:10px 0}
+}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow">FINANCIAL FREEDOM STARTS HERE</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero fm-home-wealth" id="homeAssetHero">
@@ -2210,6 +2230,14 @@ document.addEventListener('DOMContentLoaded',()=>{
  try{
  const home=document.getElementById('view-home');
  if(home){const hero=home.querySelectorAll(':scope > .hero')[1];if(hero){hero.classList.add('fm-expense-hero');const d=document.createElement('details');d.className='fm-secondary-details';d.innerHTML='<summary>소비 분석 · 최근 거래 자세히</summary>';const nodes=Array.from(home.children).filter(e=>e!==home.firstElementChild&&e!==hero&&e.id!=='fmHomeActivity'&&!e.classList.contains('home-shortcuts'));home.append(d);nodes.forEach(e=>d.append(e));const summary=document.createElement('div');summary.className='fm-budget-preview';summary.innerHTML='<div class="fm-budget-heading">가계부 한눈에</div><div class="fm-budget-metrics"><div><small>이번 달 지출</small><strong id="fmBudgetExpense">₩0</strong></div><div><small>이번 달 수입</small><strong id="fmBudgetIncome">₩0</strong></div></div><div class="fm-budget-links"><button type="button" data-go="calendar">소비 달력 →</button><button type="button" data-go="history">거래 내역 →</button><button type="button" data-go="insights">지출 분석 →</button></div>';hero.after(summary);const update=()=>{summary.querySelector('#fmBudgetExpense').textContent=document.getElementById('heroSpent')?.textContent||'₩0';summary.querySelector('#fmBudgetIncome').textContent=document.getElementById('homeIncome')?.textContent||'₩0'};update();new MutationObserver(update).observe(document.getElementById('heroSpent'),{childList:true,characterData:true,subtree:true});new MutationObserver(update).observe(document.getElementById('homeIncome'),{childList:true,characterData:true,subtree:true});summary.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>document.querySelector('.tab[data-view="'+b.dataset.go+'"]')?.click()))}}
+ const activity=document.getElementById('fmHomeActivity');
+ if(home&&activity&&!activity.closest('.fm-home-activity-details')){
+  const disclosure=document.createElement('details');
+  disclosure.className='fm-home-activity-details';
+  disclosure.innerHTML='<summary>자산 추이 자세히</summary>';
+  activity.before(disclosure);
+  disclosure.append(activity);
+ }
  const assets=document.getElementById('view-assets');
  if(assets){const a=document.getElementById('accountSummary')?.closest('.card'),h=document.getElementById('holdingList')?.closest('.grid'),g=document.getElementById('assetGrowthChart')?.closest('.card'),m=document.getElementById('snapshotList')?.closest('.card');
  const donut=assets.querySelector('.fm-asset-composition'),switcher=assets.querySelector('.fm-asset-switch'),hero=assets.querySelector(':scope > .hero');if(donut&&hero){hero.append(donut);hero.classList.add('fm-unified-hero')}if(a&&hero){hero.after(a);a.hidden=false;}if(switcher&&a){a.before(switcher);switcher.hidden=false;}if(h){h.hidden=true;}if(switcher){switcher.hidden=false;switcher.style.display='flex';}if(a){const accountTab=document.getElementById('fmAssetAccountTab');accountTab?.click();}

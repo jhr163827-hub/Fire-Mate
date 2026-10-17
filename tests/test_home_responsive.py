@@ -147,7 +147,8 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertLess(page.locator('#fmAssetAnalysis').bounding_box()['y'],
                                     page.locator('.fm-asset-jump').bounding_box()['y'] + 90)
                     self.assertEqual(page.locator('#fmAssetQuickDividend').get_attribute('aria-pressed'), 'true')
-                    page.evaluate('renderAssets()')
+                    page.locator('.bottomnav [data-view="home"]').click()
+                    page.locator('.bottomnav [data-view="assets"]').click()
                     self.assertTrue(page.locator('#fmDividendPanel').is_visible())
                     page.locator('#fmAssetQuickAnalysis').click()
                     self.assertTrue(page.locator('#fmAssetDonut').is_visible())
@@ -378,6 +379,7 @@ class HomeResponsiveTest(unittest.TestCase):
         try:
             page.goto(URL,wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="assets"]').click()
+            page.locator('#fmAssetQuickAnalysis').click()
             milestone=page.locator('#view-assets .fm-milestone-details')
             self.assertEqual(milestone.count(),1)
             milestone.locator('summary').click()

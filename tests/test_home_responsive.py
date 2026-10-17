@@ -189,6 +189,33 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_account_holding_details_fit_and_label_stale_quote(self):
+        for width in (320,390,430):
+            with self.subTest(width=width):
+                page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
+                try:
+                    page.add_init_script("""localStorage.setItem('firemate_smart_v3',JSON.stringify({
+                        tx:[],rec:[],budgets:{},favorites:[],theme:'dark',
+                        fire:{goal:65000,monthly:300,rate:7},
+                        accounts:[{id:'demo',name:'긴 이름의 투자 계좌',kind:'investment',amount:0,fire:true}],
+                        holdings:[{id:'h1',accountId:'demo',type:'USD',ticker:'SPLG',name:'SPLG',
+                            qty:1234,price:123456.9876,cost:100000.1234,
+                            dayChangeAt:'2020-01-01T00:00:00Z',dayChangePct:2.5}],
+                        balance:{fx:1400,cash:0,other:0,debt:0}
+                    }))""")
+                    page.goto(URL,wait_until="domcontentloaded")
+                    page.locator('.bottomnav [data-view="assets"]').click()
+                    page.locator('[data-inline-toggle="demo"]').click()
+                    self.assertTrue(page.locator('#fmAccountDetail').is_visible())
+                    self.assertIn('최근 +2.50%',page.locator('.fm-market-day').first.inner_text())
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    page.locator('[data-fm-holding="h1"]').click()
+                    self.assertTrue(page.locator('#fmAccountDetail').is_visible())
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    self.assertEqual(len(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings")),1)
+                finally:
+                    page.close()
+
     def test_primary_views_fit_mobile_width(self):
         # Exercise the real navigation and inspect rendered width, including 320px.
         for width in (320, 360, 390, 430):

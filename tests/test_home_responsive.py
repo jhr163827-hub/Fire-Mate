@@ -45,6 +45,9 @@ class HomeResponsiveTest(unittest.TestCase):
             dims = page.locator('#homeAssetGoal').evaluate("e => ({height:e.clientHeight,size:parseFloat(getComputedStyle(e).fontSize),width:e.clientWidth,scroll:e.scrollWidth})")
             self.assertLessEqual(dims['height'], dims['size'] * 1.6)
             self.assertLessEqual(dims['scroll'], dims['width'] + 1)
+            quote = page.locator('#homeRefreshStocks').bounding_box()
+            total = page.locator('#homeTotalAssets').bounding_box()
+            self.assertGreaterEqual(total['y'], quote['y'] + quote['height'], '총자산 숫자와 시세 갱신 버튼이 겹치면 안 됩니다')
         finally:
             page.close()
 

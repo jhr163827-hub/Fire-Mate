@@ -94,6 +94,21 @@ class HomeResponsiveTest(unittest.TestCase):
                     finally:
                         page.close()
 
+    def test_five_home_metrics_fit_a_standard_phone(self):
+        # Check the rendered first viewport, not just CSS display or DOM presence.
+        for width in (375, 390, 430):
+            with self.subTest(width=width):
+                page=self.browser.new_page(viewport={"width":width,"height":844},is_mobile=True,has_touch=True)
+                try:
+                    page.goto(URL,wait_until="domcontentloaded")
+                    nav_top=page.locator('.bottomnav').bounding_box()['y']
+                    for ident in ('homeTotalAssets','homeDailyChange','heroSpent','homeAssetPercent','homeFireEta'):
+                        box=page.locator('#'+ident).bounding_box()
+                        self.assertIsNotNone(box,ident)
+                        self.assertLessEqual(box['y']+box['height'],nav_top+2,ident)
+                finally:
+                    page.close()
+
     def test_phase2_home_navigation_and_no_clipped_content(self):
         for width in (320,360,390,430):
             with self.subTest(width=width):

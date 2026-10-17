@@ -7,6 +7,7 @@ on:
       - 'scripts/check_app.py'
       - 'scripts/test_calculations.cjs'
       - 'tests/storage-rollback.test.cjs'
+      - 'tests/pwa-update.test.cjs'
       - '.github/workflows/app-checks.yml'
   workflow_dispatch:
 permissions:
@@ -23,6 +24,8 @@ jobs:
         run: node scripts/test_calculations.cjs
       - name: Test storage rollback guards
         run: node tests/storage-rollback.test.cjs
+      - name: Test PWA update guards
+        run: node tests/pwa-update.test.cjs
       - name: Check inline JavaScript syntax
         run: |
           python3 - <<'PY'

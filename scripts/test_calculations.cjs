@@ -46,6 +46,22 @@ assert.equal(estimate(100,200,0,0),null,'unreachable goal');
 assert.equal(estimate(100,200,0,-100),null,'invalid total-loss rate');
 assert.equal(estimate(0,100,10,0),10,'ten monthly deposits');
 assert.ok(estimate(15000,65000,300,7)>0,'representative FIRE estimate');
+assert.equal(estimate(-1,100,10,7),null,'negative assets rejected');
+assert.equal(estimate(100,200,-10,7),null,'negative contributions rejected');
+const project=(...args)=>fireContext.fmProjectedAsset(...args);
+assert.equal(project(100,10,0,12),220,'12 monthly deposits without growth');
+assert.equal(project(100,10,0,360),3700,'30 year horizon without growth');
+assert.equal(project(100,10,7,-1),null,'negative projection horizon rejected');
+assert.equal(project(100,10,-100,12),null,'invalid projection return rejected');
+assert.equal(project(100,10,7,1.5),null,'fractional months rejected');
+assert.ok(Number.isFinite(project(15000,300,7,360)),'30 year projection remains finite');
+for(const rate of [0,4,7,10,15]){
+ const months=estimate(15000,65000,300,rate);
+ assert.ok(months!==null,'representative goal reached');
+ assert.ok(project(15000,300,rate,months)>=65000-0.001,'projected goal reached at estimated month');
+ if(months>0)assert.ok(project(15000,300,rate,months-1)<65000,'goal not reached in preceding month');
+}
+assert.ok(html.includes('const monthlyRate=fireMonthlyRate(rate);for(let i=1;i<=N;i++)'),'forecast uses monthly compound return');
 assert.ok(html.includes("const months=target>0?estimate(principal/10000,target/10000,contribution/10000,annual)"),'home FIRE uses common estimator');
 assert.ok(html.includes("const monthsToGoal=estimate(initial,goal,monthly,rate)"),'forecast uses common estimator');
 assert.ok(html.includes("const monthlyNetIncome=fmDividendRows.reduce"),'cashflow includes net dividend estimate');

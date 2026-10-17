@@ -150,10 +150,29 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(page.locator("#homeDailyChange").is_visible())
                         self.assertTrue(page.locator("#homeAssetPercent").is_visible())
                         self.assertTrue(page.locator("#homeFireEta").is_visible())
+                        self.assertTrue(page.locator("#heroSpent").is_visible())
+                        budget_details=page.locator("#view-home .fm-secondary-details")
+                        self.assertFalse(page.locator("#fmBudgetExpense").is_visible())
+                        budget_details.locator("summary").click()
                         self.assertTrue(page.locator("#fmBudgetExpense").is_visible())
+                        budget_details.locator("summary").click()
                         self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"),width+2)
                     finally:
                         page.close()
+
+    def test_asset_milestone_remains_accessible(self):
+        page=self.browser.new_page(viewport={"width":320,"height":670},is_mobile=True,has_touch=True)
+        try:
+            page.goto(URL,wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="assets"]').click()
+            milestone=page.locator('#view-assets .fm-milestone-details')
+            self.assertEqual(milestone.count(),1)
+            milestone.locator('summary').click()
+            self.assertTrue(milestone.evaluate('(el)=>el.open'))
+            self.assertTrue(page.locator('#assetBadges').is_visible())
+            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),322)
+        finally:
+            page.close()
 
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.

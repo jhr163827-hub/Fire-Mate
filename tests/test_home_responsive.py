@@ -116,7 +116,7 @@ class HomeResponsiveTest(unittest.TestCase):
         # Deterministic mixed-currency fixture: no external quote API needed.
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:
-            page.add_init_script("""() => {
+            page.add_init_script("""(() => {
                 const fixture = {
                     tx: [], rec: [], budgets: {}, favorites: [], theme: 'dark',
                     fire: {asset: 0, goal: 100, monthly: 0, rate: 0, withdrawal: 4},
@@ -132,7 +132,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     balance: {fx: 1400, cash: 10000, other: 2000, debt: 3000}
                 };
                 localStorage.setItem('firemate_smart_v3', JSON.stringify(fixture));
-            }""")
+            })()""")
             expected_net = 2 * 100 * 1400 + 3 * 10000 + 5000 + 7000 + 10000 + 2000 - 3000
             expected_pct = expected_net / (100 * 10000) * 100
             for attempt in range(2):

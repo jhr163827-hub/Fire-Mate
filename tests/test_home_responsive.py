@@ -9,7 +9,7 @@ from playwright.sync_api import sync_playwright
 
 URL = os.environ.get("FIRE_MATE_URL", "http://localhost:8000")
 WIDTHS = [320, 360, 375, 390, 430, 768, 1024]
-HEIGHTS = [568, 720, 844]
+HEIGHTS = [568, 670, 720, 844]
 
 class HomeResponsiveTest(unittest.TestCase):
     @classmethod
@@ -54,6 +54,45 @@ class HomeResponsiveTest(unittest.TestCase):
                         if dimensions["scrollHeight"] > dimensions["viewportHeight"] + 4:
                             self.assertGreater(page.evaluate("window.scrollY"), 0,
                                                "Page has content below fold but cannot scroll")
+                    finally:
+                        page.close()
+
+    def test_home_progress_and_activity_computed_styles(self):
+        # Check the actual cascade across narrow mobile widths and short/tall heights.
+        for width in [320, 360, 375, 390, 430]:
+            for height in HEIGHTS:
+                with self.subTest(width=width, height=height):
+                    page = self.browser.new_page(viewport={"width": width, "height": height},
+                                                 is_mobile=True, has_touch=True)
+                    try:
+                        page.goto(URL, wait_until="domcontentloaded")
+                        page.locator('.bottomnav [data-view="home"]').click()
+                        page.wait_for_timeout(100)
+                        computed = page.evaluate("""() => {
+                            const progress = document.querySelector('#homeAssetPercent');
+                            const activity = document.querySelector('#fmHomeActivity');
+                            const pct = getComputedStyle(progress);
+                            const act = getComputedStyle(activity);
+                            const box = activity.getBoundingClientRect();
+                            return {
+                                progressSize: parseFloat(pct.fontSize),
+                                progressVisible: pct.display !== 'none' && pct.visibility !== 'hidden',
+                                activityDisplay: act.display,
+                                activityVisible: act.display !== 'none' && act.visibility !== 'hidden',
+                                activityHeight: box.height,
+                                activityRight: box.right,
+                                viewportWidth: document.documentElement.clientWidth
+                            };
+                        }""")
+                        self.assertTrue(computed["progressVisible"])
+                        self.assertGreater(computed["progressSize"], 0)
+                        if width <= 375:
+                            self.assertAlmostEqual(computed["progressSize"], 27, delta=0.5)
+                        self.assertTrue(computed["activityVisible"],
+                                        "Recent asset activity must remain accessible on mobile")
+                        self.assertGreater(computed["activityHeight"], 0)
+                        self.assertLessEqual(computed["activityRight"],
+                                             computed["viewportWidth"] + 2)
                     finally:
                         page.close()
 

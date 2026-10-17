@@ -32,3 +32,23 @@ assert.equal(vm.runInContext('netAsset()',context),385000,'invalid price cannot 
 context.data.balance.other='bad';
 assert.equal(vm.runInContext('netAsset()',context),365000,'invalid other balance cannot corrupt total');
 console.log('PASS: asset value, cost, net worth, FIRE eligible assets, invalid numeric inputs');
+
+const estimateStart=html.indexOf('function fireMonthlyRate(');
+const estimateEnd=html.indexOf('function fmReadableMan(',estimateStart);
+assert(estimateStart>=0&&estimateEnd>estimateStart,'production FIRE estimator found');
+const fireContext={};
+vm.createContext(fireContext);
+vm.runInContext(html.slice(estimateStart,estimateEnd),fireContext,{timeout:1000});
+const estimate=(...args)=>fireContext.estimate(...args);
+assert.equal(estimate(65000,65000,300,7),0,'already reached goal');
+assert.equal(estimate(100,200,100,0),1,'zero-return contribution');
+assert.equal(estimate(100,200,0,0),null,'unreachable goal');
+assert.equal(estimate(100,200,0,-100),null,'invalid total-loss rate');
+assert.equal(estimate(0,100,10,0),10,'ten monthly deposits');
+assert.ok(estimate(15000,65000,300,7)>0,'representative FIRE estimate');
+assert.match(html,/const months=target>0\\?estimate\\(principal\\/10000,target\\/10000,contribution\\/10000,annual\\)/,'home FIRE uses common estimator');
+assert.match(html,/const monthsToGoal=estimate\\(initial,goal,monthly,rate\\)/,'forecast uses common estimator');
+assert.match(html,/const monthlyNetIncome=fmDividendRows\\.reduce/,'cashflow includes net dividend estimate');
+assert.match(html,/const crashNetMonthly=crashMonthly\\*\\(1-taxRate\\/100\\)/,'retirement stress uses after-tax assumption');
+assert.match(html,/budget>=t\\.expense\\?won\\(budget-t\\.expense\\):'예산 초과 '/,'overspent budget is labeled, not shown as negative remainder');
+console.log('PASS: FIRE estimate edge cases, cross-view consistency guards, net cashflow and budget label');

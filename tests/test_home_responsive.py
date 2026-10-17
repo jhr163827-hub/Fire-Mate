@@ -116,6 +116,9 @@ class HomeResponsiveTest(unittest.TestCase):
         # Deterministic mixed-currency fixture: no external quote API needed.
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:
+            page.route("https://api.frankfurter.dev/**",
+                       lambda route: route.fulfill(status=200, content_type="application/json",
+                                                   body='{"date":"2026-10-16","rates":{"KRW":1400}}'))
             page.add_init_script("""(() => {
                 const fixture = {
                     tx: [], rec: [], budgets: {}, favorites: [], theme: 'dark',

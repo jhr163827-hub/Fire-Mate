@@ -66,6 +66,7 @@ assert.ok(html.includes('const values=fmProjectionSeries(initial,monthly,rate,N)
 assert.equal(project(100,10,7,-1),null,'negative projection horizon rejected');
 assert.equal(project(100,10,-100,12),null,'invalid projection return rejected');
 assert.equal(project(100,10,7,1.5),null,'fractional months rejected');
+assert.equal(project(100,10,7,1201),null,'calculator and chart share 100-year horizon bound');
 assert.ok(Number.isFinite(project(15000,300,7,360)),'30 year projection remains finite');
 for(const rate of [0,4,7,10,15]){
  const months=estimate(15000,65000,300,rate);

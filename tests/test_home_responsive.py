@@ -9,6 +9,7 @@ from playwright.sync_api import sync_playwright
 
 URL = os.environ.get("FIRE_MATE_URL", "http://localhost:8000")
 WIDTHS = [320, 360, 375, 390, 430, 768, 1024]
+HEIGHTS = [568, 720, 844]
 
 class HomeResponsiveTest(unittest.TestCase):
     @classmethod
@@ -26,27 +27,35 @@ class HomeResponsiveTest(unittest.TestCase):
 
     def test_home_layouts(self):
         for width in WIDTHS:
-            with self.subTest(width=width):
-                page = self.browser.new_page(viewport={"width": width, "height": 720}, is_mobile=True, has_touch=True)
-                try:
-                    page.goto(URL, wait_until="domcontentloaded")
-                    page.locator('.bottomnav [data-view="home"]').click()
-                    page.wait_for_timeout(150)
-                    self.assertTrue(page.locator("#view-home").is_visible())
-                    dimensions = page.evaluate("""() => ({
-                        scrollWidth: document.documentElement.scrollWidth,
-                        viewportWidth: document.documentElement.clientWidth,
-                        scrollHeight: document.documentElement.scrollHeight,
-                        viewportHeight: window.innerHeight
-                    })""")
-                    self.assertLessEqual(dimensions["scrollWidth"], dimensions["viewportWidth"] + 2)
-                    self.assertGreaterEqual(dimensions["scrollHeight"], dimensions["viewportHeight"])
-                    page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
-                    if dimensions["scrollHeight"] > dimensions["viewportHeight"] + 4:
-                        self.assertGreater(page.evaluate("window.scrollY"), 0,
-                                           "Page has content below fold but cannot scroll")
-                finally:
-                    page.close()
+            for height in HEIGHTS:
+                with self.subTest(width=width, height=height):
+                    page = self.browser.new_page(viewport={"width": width, "height": height}, is_mobile=True, has_touch=True)
+                    try:
+                        page.goto(URL, wait_until="domcontentloaded")
+                        page.locator('.bottomnav [data-view="home"]').click()
+                        page.wait_for_timeout(150)
+                        self.assertTrue(page.locator("#view-home").is_visible())
+                        nav = page.locator(".bottomnav")
+                        self.assertTrue(nav.is_visible())
+                        self.assertLessEqual(nav.bounding_box()["y"] + nav.bounding_box()["height"], height + 2)
+                        self.assertGreaterEqual(nav.bounding_box()["y"], -2)
+                        hero = page.locator("#homeAssetHero")
+                        self.assertLessEqual(hero.bounding_box()["x"] + hero.bounding_box()["width"], width + 2)
+
+                        dimensions = page.evaluate("""() => ({
+                            scrollWidth: document.documentElement.scrollWidth,
+                            viewportWidth: document.documentElement.clientWidth,
+                            scrollHeight: document.documentElement.scrollHeight,
+                            viewportHeight: window.innerHeight
+                        })""")
+                        self.assertLessEqual(dimensions["scrollWidth"], dimensions["viewportWidth"] + 2)
+                        self.assertGreaterEqual(dimensions["scrollHeight"], dimensions["viewportHeight"])
+                        page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+                        if dimensions["scrollHeight"] > dimensions["viewportHeight"] + 4:
+                            self.assertGreater(page.evaluate("window.scrollY"), 0,
+                                               "Page has content below fold but cannot scroll")
+                    finally:
+                        page.close()
 
     def test_home_details_expand_and_collapse(self):
         page = self.browser.new_page(viewport={"width": 360, "height": 740}, is_mobile=True, has_touch=True)

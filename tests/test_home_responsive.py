@@ -508,6 +508,95 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_thirty_year_ledger_against_independent_annual_model(self):
+        # Independent Python recurrence, compared with the app's actual year-by-year ledger.
+        for scenario in (
+            {"name":"zero_return_exhaustion","budget":1000,"spend":200,"rate":0,"inflation":0,"gross":0,"tax":0,"cash":0,"gain":0},
+            {"name":"negative_return","budget":10000,"spend":300,"rate":-10,"inflation":0,"gross":400,"tax":15,"cash":0,"gain":0},
+            {"name":"inflation_and_cash","budget":10000,"spend":300,"rate":5,"inflation":3,"gross":400,"tax":15,"cash":2000,"gain":0},
+            {"name":"withholding_and_sale_tax","budget":10000,"spend":300,"rate":7,"inflation":2,"gross":400,"tax":15,"cash":0,"gain":30},
+        ):
+            with self.subTest(scenario=scenario["name"]):
+                page=self.browser.new_page(viewport={"width":390,"height":844})
+                try:
+                    page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+                    page.goto(URL,wait_until="domcontentloaded")
+                    got=page.evaluate("""(v) => {
+                        const set=(id,val)=>document.getElementById(id).value=String(val);
+                        set('fmQuickBudget',v.budget);
+                        set('fmQuickSpend',v.spend);
+                        set('fmStrYears',30);
+                        set('fmStrInflation',v.inflation);
+                        set('fmStrDivGrowth',v.rate);
+                        set('fmStrDivCost',v.tax);
+                        set('fmStrInsurance',0);
+                        set('fmStrGainShare',v.gain);
+                        document.getElementById('fmStrSameReturn').checked=true;
+                        document.getElementById('fmStrFairMode').checked=false;
+                        document.getElementById('fmStrTaxApply').checked=true;
+                        window.__fmFinanceTest.strategy({
+                          div:[{name:'TEST',amount:v.budget-v.cash,
+                                estimatedAnnualMan:v.gross,rate:4}],
+                          sale:[{name:'TEST',amount:v.budget-v.cash,rate:v.rate}]
+                        });
+                        return window.__fmFinanceLedger;
+                    }""",scenario)
+                    budget=float(scenario["budget"])
+                    invested=budget-scenario["cash"]
+                    rate=scenario["rate"]/100
+                    inflation=scenario["inflation"]/100
+                    gross=scenario["gross"]
+                    net_factor=1-scenario["tax"]/100
+                    div_cash=float(scenario["cash"])
+                    div_inv=invested
+                    sale_cash=float(scenario["cash"])
+                    sale_inv=invested
+                    taxed_cash=float(scenario["cash"])
+                    taxed_inv=invested
+                    cumulative_tax=0
+                    gain_share=scenario["gain"]/100
+                    for year in range(1,31):
+                        cost=scenario["spend"]*((1+inflation)**(year-1))
+                        div_grown=max(0,div_inv*(1+rate))
+                        annual_gross=min(div_grown,max(0,gross*(div_inv/invested))) if invested else 0
+                        annual_net=annual_gross*net_factor
+                        div_inv=div_grown-annual_gross
+                        div_cash+=annual_net
+                        take_cash=min(div_cash,cost)
+                        div_cash-=take_cash
+                        take_inv=min(div_inv,max(0,cost-take_cash))
+                        div_inv-=take_inv
+                        sale_inv=max(0,sale_inv*(1+rate))
+                        from_cash=min(sale_cash,cost)
+                        sale_cash-=from_cash
+                        sale_inv-=min(sale_inv,max(0,cost-from_cash))
+                        taxed_inv=max(0,taxed_inv*(1+rate))
+                        from_cash_tax=min(taxed_cash,cost)
+                        taxed_cash-=from_cash_tax
+                        needed=max(0,cost-from_cash_tax)
+                        threshold=250/gain_share if gain_share>0 else float('inf')
+                        gross_needed=needed if needed<=threshold else (needed-55)/(1-0.22*gain_share)
+                        sold=min(taxed_inv,max(0,gross_needed))
+                        tax=max(0,sold*gain_share-250)*0.22
+                        taxed_inv-=sold
+                        cumulative_tax+=tax
+                        if year in (1,5,10,30):
+                            self.assertAlmostEqual(got["baseline"][0]["series"][year],div_cash+div_inv,delta=0.025)
+                            self.assertAlmostEqual(got["baseline"][1]["series"][year],sale_cash+sale_inv,delta=0.025)
+                            self.assertAlmostEqual(got["taxed"]["series"][year],taxed_cash+taxed_inv,delta=0.025)
+                            self.assertAlmostEqual(sum(row["tax"] for row in got["taxed"]["ledger"][:year]),cumulative_tax,delta=0.025)
+                    self.assertAlmostEqual(got["taxed"]["cumulativeTax"],cumulative_tax,delta=0.025)
+                    for kind in ("baseline","displayed"):
+                        for result in got[kind]:
+                            self.assertEqual(len(result["series"]),31)
+                            self.assertTrue(all(x>=0 for x in result["series"]))
+                    if scenario["name"]=="zero_return_exhaustion":
+                        self.assertEqual(got["baseline"][0]["exhausted"],5)
+                        self.assertEqual(got["baseline"][1]["exhausted"],5)
+                    self.assertTrue(got["sameReturn"])
+                finally:
+                    page.close()
+
     def test_legacy_partial_saved_data_is_normalized(self):
         for legacy in (
             {"fire": None, "balance": None, "tx": None, "accounts": None},

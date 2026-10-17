@@ -1723,6 +1723,14 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
  const taxCheckHtml=taxApply&&!taxCheckPassed?'<p role="alert" style="color:#e6aa56;font-weight:700;margin-top:10px">⚠ 매도세 계산 검증 실패 ('+allTaxChecks.filter(x=>x[1]).length+'/'+allTaxChecks.length+'): '+allTaxChecks.filter(x=>!x[1]).map(x=>x[0]).join(', ')+' · 결과를 참고용으로만 확인하세요.</p>':'';
  const taxCheckDetailHtml=taxApply?'<details style="margin-top:8px"><summary class="mini" style="cursor:pointer">계산 검증 결과 자세히</summary><p class="mini">'+(taxCheckPassed?'✓':'⚠')+' 매도세 검증 '+allTaxChecks.filter(x=>x[1]).length+'/'+allTaxChecks.length+'개 통과</p></details>':'';
  const displayedResults=taxApply?results.map((x,i)=>i===1?{...x,series:taxed.series,ledger:taxed.ledger.map(y=>({...y,estimatedSaleTax:y.tax,estimatedSale:y.sale,grossDividend:0,netDividend:0,dividendCost:0})),exhausted:taxed.series.findIndex((v,j)=>j>0&&v<=0)>0?taxed.series.findIndex((v,j)=>j>0&&v<=0):null}:x):results;
+ if(navigator.webdriver){
+  window.__fmFinanceLedger={
+   years,inflation,divGrowth,rate,fairMode,sameReturn,
+   baseline:results.map(x=>({kind:x.kind,series:[...x.series],ledger:x.ledger.map(y=>({...y})),exhausted:x.exhausted})),
+   taxed:{series:[...taxed.series],ledger:taxed.ledger.map(y=>({...y})),cumulativeTax:taxed.cumulativeTax},
+   displayed:displayedResults.map(x=>({kind:x.kind,series:[...x.series],ledger:x.ledger.map(y=>({...y})),exhausted:x.exhausted}))
+  };
+ }
  const saleTaxLabel=taxApply?'매도세 반영 추정':'매도세 미반영';
 
  const taxPreviewHtml=taxApply?'<details style="margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px"><summary style="cursor:pointer;font-weight:700">해외주식 매도세 계산 가정·연도별 내역</summary><p class="mini">매도차익 비중 '+(gainShare*100).toFixed(0)+'% · 연 기본공제 250만 원 · 세율 22% 가정. 현금 사용 후 해외주식 매도 시 세금 납부용 추가 매도를 추정합니다. 실제 취득원가·다른 양도차익·국내 ETF·ISA·건보료는 미반영합니다.</p>'+taxCheckDetailHtml+'<label class="mini" style="display:inline-flex;align-items:center;gap:8px;margin:8px 0"><input type="checkbox" data-fm-tax-all style="flex:none;width:17px;height:17px;margin:0"> 전체 연도 보기 (기본 1년·5년 단위)</label><div data-fm-tax-view></div></details>':'';

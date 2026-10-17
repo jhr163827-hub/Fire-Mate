@@ -174,6 +174,24 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_primary_views_fit_mobile_width(self):
+        # Exercise the real navigation and inspect rendered width, including 320px.
+        for width in (320, 360, 390, 430):
+            with self.subTest(width=width):
+                page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
+                try:
+                    page.goto(URL,wait_until="domcontentloaded")
+                    for view in ("assets", "calendar", "fire"):
+                        page.locator(f'.bottomnav [data-view="{view}"]').click()
+                        self.assertTrue(page.locator(f'#view-{view}').is_visible())
+                        self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,view)
+                    page.locator('.bottomnav [data-view="home"]').click()
+                    page.locator('#view-home [data-go="retire"]').click()
+                    self.assertTrue(page.locator('#view-retire').is_visible())
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'retire')
+                finally:
+                    page.close()
+
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.
         for width in [320, 360, 375, 390, 430]:

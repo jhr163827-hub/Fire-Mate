@@ -73,7 +73,7 @@ for(const rate of [0,4,7,10,15]){
  assert.ok(project(15000,300,rate,months)>=65000-0.001,'projected goal reached at estimated month');
  if(months>0)assert.ok(project(15000,300,rate,months-1)<65000,'goal not reached in preceding month');
 }
-assert.ok(html.includes('const monthlyRate=fireMonthlyRate(rate);for(let i=1;i<=N;i++)'),'forecast uses monthly compound return');
+assert.ok(html.includes('const values=fmProjectionSeries(initial,monthly,rate,N)'),'forecast uses validated monthly compound projection series');
 assert.ok(html.includes("const months=target>0?estimate(principal/10000,target/10000,contribution/10000,annual)"),'home FIRE uses common estimator');
 assert.ok(html.includes("const monthsToGoal=estimate(initial,goal,monthly,rate)"),'forecast uses common estimator');
 assert.ok(html.includes("const monthlyNetIncome=fmDividendRows.reduce"),'cashflow includes net dividend estimate');

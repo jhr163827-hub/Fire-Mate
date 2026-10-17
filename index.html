@@ -97,6 +97,31 @@ body:has(#view-home.active) #view-home .hero-stat strong{overflow-wrap:anywhere}
  #view-home .hero-stat{min-width:0}
  #view-home .hero-stat strong,#view-home .stat .value{overflow-wrap:anywhere}
 }
+
+/* Phase 2 / shared visual foundation: visual-only, no data or navigation changes */
+:root{
+ --fm-radius-sm:12px;--fm-radius-md:16px;--fm-radius-lg:22px;
+ --fm-focus-ring:0 0 0 3px color-mix(in srgb,var(--green) 24%,transparent);
+ --fm-motion-fast:160ms;--fm-motion-normal:220ms;
+}
+button,input,select,textarea{transition:border-color var(--fm-motion-fast) ease,background-color var(--fm-motion-fast) ease,box-shadow var(--fm-motion-fast) ease}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{
+ outline:2px solid var(--green);outline-offset:3px
+}
+.card,.stat{border-radius:var(--fm-radius-lg)}
+.iconbtn,.ghost,.secondary,.primary{border-radius:var(--fm-radius-sm)}
+#view-home .fm-home-wealth{position:relative;isolation:isolate}
+#view-home .fm-home-wealth .big{font-variant-numeric:tabular-nums;letter-spacing:-.035em;overflow-wrap:anywhere}
+#view-home .fm-home-wealth .fm-home-section-title{letter-spacing:-.025em}
+#view-home .fm-last-quote{font-variant-numeric:tabular-nums}
+@media(max-width:760px){
+ #view-home .fm-home-wealth{border-radius:var(--fm-radius-lg)}
+ #view-home .fm-home-wealth .big{line-height:1.13}
+ .bottom-item{transition:background-color var(--fm-motion-fast) ease,color var(--fm-motion-fast) ease}
+}
+@media(prefers-reduced-motion:reduce){
+ button,input,select,textarea,.bottom-item{transition:none!important}
+}
 </style><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><style id="asset-readability">#view-assets #holdingList .txmain>strong{font-size:15px;line-height:1.5;overflow-wrap:anywhere}#view-assets #holdingList .txmain>span{font-size:12px;line-height:1.55}#view-assets #holdingList .txamount{font-size:15px;font-weight:750;white-space:nowrap}#view-assets #holdingList .tx{gap:8px}#accountDetails summary::marker{color:var(--green)}#accountDetails[open] summary{margin-bottom:10px}</style><meta name="firemate-release" content="fire-mate-v3-0-257"><style>#view-assets .card{border-radius:20px}#view-assets .cardhead h3{letter-spacing:-.035em}#view-assets #accountSummary .tx{border-bottom:1px solid var(--line)}#view-assets #accountSummary .tx:last-child{border-bottom:0}#view-assets #holdingList .tx{padding-top:15px;padding-bottom:15px}#view-assets #holdingList .tx strong{letter-spacing:-.02em}#accountOverlay input[type=text],#holdingOverlay input[type=text]{font-variant-numeric:tabular-nums}</style><style>
 #view-assets .fm-account-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:transparent;border:0;color:inherit;padding:15px 3px;min-height:72px}
 #view-assets .fm-account-left{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}

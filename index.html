@@ -2069,7 +2069,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-4-1',VERSION='3.4.1';
+ const BUILD='fire-mate-v3-4-2',VERSION='3.4.2';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';
@@ -2098,7 +2098,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
    const next=match[1].replace('fire-mate-v','').replaceAll('-','.');
    if(await modal('새 업데이트가 준비됐어요','v'+VERSION+' → v'+next+'\n지금 업데이트할까요?',['나중에','지금 업데이트'])!==1)return;
    button.textContent='업데이트 중…';
-   if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});}}location.replace('./index.html?updated='+Date.now());
+   if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.getRegistration();if(reg){await reg.update();const waiting=reg.waiting;if(waiting)waiting.postMessage({type:'SKIP_WAITING'});}}location.replace('./index.html?updated='+Date.now());
   }catch(e){await modal('업데이트 확인 실패',e.message+' 기존 데이터는 그대로 유지돼.',['확인'])}
   finally{busy=false;button.disabled=false;reset()}
  };

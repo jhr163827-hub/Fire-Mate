@@ -253,6 +253,48 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_quote_api_success_and_invalid_responses_preserve_user_fields(self):
+        for scenario in ("success", "network", "invalid"):
+            with self.subTest(scenario=scenario):
+                page = self.browser.new_page(viewport={"width": 390, "height": 844})
+                try:
+                    page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+                    def quote_route(route):
+                        if scenario == "network":
+                            route.abort("failed")
+                        elif scenario == "invalid":
+                            route.fulfill(status=200, content_type="application/json",
+                                          body='{"close":"-1","previous_close":"170"}')
+                        else:
+                            route.fulfill(status=200, content_type="application/json",
+                                          body='{"close":"200","previous_close":"180"}')
+                    page.route("https://api.twelvedata.com/**", quote_route)
+                    page.add_init_script("""(() => {
+                        localStorage.setItem('firemate_td_key_v1','playwright-test-key');
+                        localStorage.setItem('firemate_smart_v3',JSON.stringify({
+                            tx:[{id:'ledger-fixture',type:'expense',amount:3456,date:'2026-10-17',category:'식비',memo:'keep me'}],
+                            holdings:[{id:'holding-fixture',type:'USD',ticker:'AAPL',qty:3,price:180,cost:150,accountId:'legacy-us',memo:'keep holding'}],
+                            accounts:[{id:'legacy-us',name:'Test account',kind:'investment',amount:1234,fire:true}],
+                            balance:{fx:1400,cash:4321,other:0,debt:0,fxCheckedAt:new Date().toISOString().slice(0,10)}
+                        }));
+                    })()""")
+                    page.goto(URL, wait_until="domcontentloaded")
+                    page.locator('.bottomnav [data-view="assets"]').click()
+                    page.once("dialog", lambda dialog: dialog.accept())
+                    page.locator("#refreshStocks").click()
+                    page.wait_for_function("""() => !document.querySelector('#refreshStocks').disabled && document.querySelector('#quoteProgressText')?.textContent?.includes('완료')""", timeout=20000)
+                    saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3'))""")
+                    holding = saved["holdings"][0]
+                    self.assertEqual(holding["price"], 200 if scenario == "success" else 180)
+                    self.assertEqual(holding["qty"], 3)
+                    self.assertEqual(holding["accountId"], "legacy-us")
+                    self.assertEqual(holding["memo"], "keep holding")
+                    self.assertEqual(saved["accounts"][0]["amount"], 1234)
+                    self.assertEqual(saved["balance"]["cash"], 4321)
+                    self.assertEqual(saved["tx"][0]["memo"], "keep me")
+                finally:
+                    page.close()
+
     def test_pwa_update_decline_preserves_data(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

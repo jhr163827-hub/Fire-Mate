@@ -76,6 +76,27 @@ body:has(#view-home.active) #view-home .hero-row{flex-wrap:wrap}
 body:has(#view-home.active) #view-home .hero-stat{min-width:0;flex:1 1 100px}
 body:has(#view-home.active) #view-home .hero-stat strong{overflow-wrap:anywhere}
 @media(max-width:700px){body:has(#view-home.active) #view-home #fmHomeActivity{padding:12px!important}}
+
+/* Consolidated home dashboard layout: normal page scrolling on every viewport. */
+@media(max-width:700px){
+ html:has(#view-home.active),body:has(#view-home.active){height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior-y:auto}
+ body:has(#view-home.active) .app{height:auto;min-height:100dvh;overflow:visible;display:block;padding:10px 14px calc(105px + env(safe-area-inset-bottom))}
+ body:has(#view-home.active) .top{margin-bottom:12px;min-height:44px}
+ body:has(#view-home.active) .top .eyebrow{display:none}
+ body:has(#view-home.active) #view-home.active{display:flex;flex-direction:column;gap:12px;flex:none;height:auto;max-height:none;min-height:0;overflow:visible}
+ #view-home #homeAssetHero,#view-home .fm-home-budget{flex:none;height:auto;max-height:none;min-height:0;overflow:visible;justify-content:flex-start}
+ #view-home #homeAssetHero{gap:8px}
+ #view-home #homeAssetHero .big{font-size:clamp(26px,7vw,38px);line-height:1.2;overflow-wrap:anywhere}
+ #view-home #homeDailyChange{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+ #view-home #homeAssetHero .fm-fire-eta{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+ #view-home #homeAssetHero .fm-fire-eta>strong{white-space:normal;overflow-wrap:anywhere}
+ #view-home .fm-home-budget .hero-row{flex-wrap:wrap}
+ #view-home #fmHomeActivity{display:block;visibility:visible;flex:none;height:auto;max-height:none;min-height:0;overflow:visible;margin:0;padding:12px 14px;border:1px solid var(--line)}
+ #view-home #fmHomeActivity .fm-home-spark{height:48px;max-height:48px}
+ #view-home .home-shortcuts,#view-home .statrow,#view-home .grid{display:grid;min-width:0}
+ #view-home .hero-stat{min-width:0}
+ #view-home .hero-stat strong,#view-home .stat .value{overflow-wrap:anywhere}
+}
 </style><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><style id="asset-readability">#view-assets #holdingList .txmain>strong{font-size:15px;line-height:1.5;overflow-wrap:anywhere}#view-assets #holdingList .txmain>span{font-size:12px;line-height:1.55}#view-assets #holdingList .txamount{font-size:15px;font-weight:750;white-space:nowrap}#view-assets #holdingList .tx{gap:8px}#accountDetails summary::marker{color:var(--green)}#accountDetails[open] summary{margin-bottom:10px}</style><meta name="firemate-release" content="fire-mate-v3-0-257"><style>#view-assets .card{border-radius:20px}#view-assets .cardhead h3{letter-spacing:-.035em}#view-assets #accountSummary .tx{border-bottom:1px solid var(--line)}#view-assets #accountSummary .tx:last-child{border-bottom:0}#view-assets #holdingList .tx{padding-top:15px;padding-bottom:15px}#view-assets #holdingList .tx strong{letter-spacing:-.02em}#accountOverlay input[type=text],#holdingOverlay input[type=text]{font-variant-numeric:tabular-nums}</style><style>
 #view-assets .fm-account-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:transparent;border:0;color:inherit;padding:15px 3px;min-height:72px}
 #view-assets .fm-account-left{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
@@ -116,36 +137,7 @@ body{letter-spacing:-.015em}.top{margin-bottom:15px}.logo{font-size:20px}
 #fmLedgerListPane[hidden],#fmLedgerCalendarPane[hidden]{display:none!important}
 @media(max-width:420px){.fm-ledger-month{gap:4px}.fm-ledger-month button{padding:5px 9px}.fm-ledger-totals>div{gap:6px}#view-calendar .day{min-height:62px}.fm-ledger-controls>button{padding:9px 6px}}
 </style>
-<style id="fm-v3-mobile-stage1">
-/* FIRE MATE 3.0 / Stage 1: mobile viewport-first dashboard */
-@media(max-width:700px){
- html:has(#view-home.active),body:has(#view-home.active){height:100%;overflow:hidden;overscroll-behavior:none}
- body:has(#view-home.active) .app{height:100vh;height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding:10px 14px calc(75px + env(safe-area-inset-bottom));}
- body:has(#view-home.active) .top{flex:0 0 auto;margin:0 0 10px;min-height:44px}
- body:has(#view-home.active) .top .eyebrow{display:none}
- body:has(#view-home.active) .top .logo{font-size:20px}
- body:has(#view-home.active) .top .iconbtn{padding:8px 10px}
- body:has(#view-home.active) #view-home{display:flex;flex:1;min-height:0;flex-direction:column;gap:9px;overflow:hidden}
- #view-home #homeAssetHero{flex:1 1 60%;min-height:0;margin:0!important;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(12px,2.3dvh,19px);gap:3px;box-shadow:none}
- #view-home #homeAssetHero .big{font-size:clamp(24px,6.4vw,37px);margin:0;line-height:1.1;overflow-wrap:anywhere}
- #view-home #homeAssetHero>.light.small:nth-of-type(2){display:none}
- #view-home #homeDailyChange{margin:0!important;padding:0!important;border:0!important;background:transparent!important;font-size:11px!important;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
- #view-home #homeAssetHero .hero-row{margin:2px 0 0;gap:8px}
- #view-home #homeAssetHero .hero-stat{min-width:0;flex:1}
- #view-home #homeAssetHero .hero-stat strong{font-size:clamp(13px,3.8vw,19px);margin-top:2px}
- #view-home #homeAssetHero .progress{height:6px;margin:3px 0}
- #view-home #homeAssetHero .fm-fire-eta{margin:0;padding:6px 0 0;gap:2px}
- #view-home #homeAssetHero .fm-fire-eta strong{font-size:clamp(19px,5vw,26px);line-height:1.15}
- #view-home #homeAssetHero .fm-fire-eta small{font-size:10px;line-height:1.2}
- #view-home #homeAssetHero>button[data-go="assets"]{display:none}
- #view-home>.hero.fm-expense-hero,#view-home>.hero:nth-child(2){flex:0 1 36%;min-height:0;margin:0!important;padding:clamp(12px,2.2dvh,18px);display:flex;flex-direction:column;justify-content:space-around;gap:3px;box-shadow:none}
- #view-home .fm-expense-hero .big{font-size:clamp(23px,6vw,32px);margin:0;line-height:1.1}
- #view-home .fm-expense-hero .hero-row{margin:2px 0;gap:6px}
- #view-home .fm-expense-hero .hero-stat{min-width:0;flex:1}
- #view-home .fm-expense-hero .hero-stat strong{font-size:clamp(12px,3.4vw,17px);margin-top:3px}
- #view-home .fm-expense-hero .progress{margin:2px 0;height:5px}
- #view-home>.home-shortcuts,#view-home>.statrow,#view-home>.grid,#view-home>.fm-budget-preview,#view-home>.fm-secondary-details{display:none!important}
- #view-calendar .fm-ledger-header{padding:2px 0 9px}
+<style id="fm-v3-mobile-calendar">\n@media(max-width:700px){\n #view-calendar .fm-ledger-header{padding:2px 0 9px}
  #view-calendar .fm-ledger-month strong{font-size:clamp(17px,4.5vw,22px)}
  #view-calendar .fm-ledger-totals strong{font-size:clamp(14px,3.8vw,18px)}
  #view-calendar .fm-ledger-compare{padding:10px 12px;margin-bottom:10px;gap:7px}
@@ -155,50 +147,7 @@ body{letter-spacing:-.015em}.top{margin-bottom:15px}.logo{font-size:20px}
  #view-calendar .cal{gap:3px;margin-bottom:10px}
  #view-calendar .day{min-height:clamp(45px,7.5dvh,59px);padding:4px 2px}
  #view-calendar .day .num{font-size:11px}
- #view-calendar .day .cost,#view-calendar .day .income{font-size:clamp(9px,2.4vw,11px);margin-top:2px;line-height:1.25}
-}
-@media(max-width:700px) and (max-height:680px){
- #view-home #homeAssetHero{padding:10px;gap:1px}
- #view-home #homeDailyChange{-webkit-line-clamp:1}
- #view-home #homeAssetHero .fm-fire-eta small{display:none}
- #view-home .fm-expense-hero .hero-stat:nth-child(3){display:none}
- #view-home .fm-expense-hero .progress{display:none}
-}
-</style><style id="fm-v3-home-compact">
-/* Compact intrinsic home cards, with a viewport-safe fallback for small phones. */
-@media(max-width:700px){
-body:has(#view-home.active) .app{padding-top:8px;padding-bottom:calc(75px + env(safe-area-inset-bottom))}
-body:has(#view-home.active) .top{margin-bottom:8px;min-height:40px}
-body:has(#view-home.active) #view-home{justify-content:flex-start;gap:10px}
-#view-home #homeAssetHero{flex:0 1 auto;justify-content:initial;gap:8px;padding:16px!important}
-#view-home #homeAssetHero .big{margin:2px 0;font-size:clamp(26px,7vw,36px)}
-#view-home #homeAssetHero>.light.small:nth-of-type(2){display:none}
-#view-home #homeDailyChange{font-size:11px!important;white-space:nowrap;text-overflow:ellipsis;display:block!important;overflow:hidden;line-height:1.3}
-#view-home #homeAssetHero .hero-row{margin:3px 0 0}
-#view-home #homeAssetHero .progress{margin:3px 0;height:6px}
-#view-home #homeAssetHero .fm-fire-eta{display:flex;flex-direction:row;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:3px;padding-top:10px;gap:8px}
-#view-home #homeAssetHero .fm-fire-eta>strong{font-size:clamp(17px,4.8vw,23px);white-space:nowrap}
-#view-home #homeAssetHero .fm-fire-eta>small{display:none}
-#view-home>.hero.fm-expense-hero,#view-home>.hero:nth-child(2){flex:0 1 auto;justify-content:initial;gap:7px;padding:16px!important}
-#view-home .fm-expense-hero .big{font-size:clamp(24px,6.2vw,31px)}
-#view-home .fm-expense-hero .hero-row{margin:3px 0 0}
-#view-home .fm-expense-hero .hero-stat:nth-child(3){display:none}
-#view-home .fm-expense-hero .progress{display:none}
-#view-home .fm-expense-hero #heroCompare{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-}
-@media(max-width:700px) and (max-height:760px){
-#view-home #homeAssetHero{gap:5px;padding:12px!important}
-#view-home>.hero.fm-expense-hero,#view-home>.hero:nth-child(2){gap:5px;padding:12px!important}
-body:has(#view-home.active) #view-home{gap:7px}
-#view-home #homeDailyChange{display:none!important}
-}
-@media(max-width:700px) and (max-height:570px){
-#view-home #homeAssetHero .hero-row{margin:0}
-#view-home #homeAssetHero .fm-fire-eta{padding-top:5px}
-#view-home .fm-expense-hero #heroCompare{display:none}
-#view-home .fm-expense-hero .hero-row{margin:0}
-}
-</style><style id="fm-v3-home-activity">
+ #view-calendar .day .cost,#view-calendar .day .income{font-size:clamp(9px,2.4vw,11px);margin-top:2px;line-height:1.25}\n}\n</style><style id="fm-v3-home-activity">
 @media(max-width:700px){
 body:has(#view-home.active) #view-home>.fm-home-activity{display:block!important;flex:0 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px 15px;overflow:hidden}
 .fm-home-minihead{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:5px}
@@ -213,22 +162,6 @@ body:has(#view-home.active) #view-home>.fm-home-activity{display:block!important
 @media(max-width:700px) and (max-height:780px){.fm-home-spark{height:36px}body:has(#view-home.active) #view-home>.fm-home-activity{padding:9px 12px}}
 @media(max-width:700px) and (max-height:670px){body:has(#view-home.active) #view-home>.fm-home-activity{display:none!important}}
 @media(min-width:701px){#view-home>.fm-home-activity{display:none}}
-</style><style id="fm-v3-home-activity-visibility">
-@media(max-width:700px) and (min-height:671px){
-body:has(#view-home.active) #view-home #fmHomeActivity{display:block!important;visibility:visible!important;flex:0 0 auto!important;max-height:min(240px,30dvh);overflow:hidden}
-}
-@media(max-width:700px) and (max-height:670px){
-body:has(#view-home.active) #view-home #fmHomeActivity{display:none!important}
-}
-</style><style id="fm-v3-activity-final">
-@media(max-width:700px){
-body:has(#view-home.active) #view-home #fmHomeActivity{display:block!important;flex:0 1 auto!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;padding:10px 14px!important}
-body:has(#view-home.active) #view-home{overflow:hidden!important}
-body:has(#view-home.active) #view-home #homeAssetHero{flex-shrink:0}
-body:has(#view-home.active) #view-home>.hero:nth-child(2){flex-shrink:0}
-body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:clamp(26px,5dvh,48px)}
-}
-@media(max-width:700px) and (max-height:690px){body:has(#view-home.active) #view-home #fmHomeActivity{display:none!important}}
 </style><style id="fm-ledger-v4">
 #view-calendar #fmLedgerSearchArea{margin:-3px 0 13px}
 #view-calendar #fmLedgerSearchArea[hidden]{display:none}
@@ -693,22 +626,7 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-home .fm-eta-detail-grid span{color:var(--sub)}
 #view-home .fm-eta-detail-grid strong{text-align:right;overflow-wrap:anywhere}
 #view-home .fm-eta-details p{color:var(--sub);font-size:11px;line-height:1.6;margin:8px 0 2px}
-</style><style id="fm-home-eta-scroll-v151">
-/* Allow the home dashboard to scroll when the FIRE ETA explanation expands. */
-@media(max-width:700px){
-body:has(#view-home.active .fm-eta-details[open]) .app{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
-body:has(#view-home.active .fm-eta-details[open]) #view-home{flex:0 0 auto!important;min-height:auto!important;overflow:visible!important}
-body:has(#view-home.active .fm-eta-details[open]) #homeAssetHero{flex:0 0 auto!important;min-height:auto!important;overflow:visible!important}
-}
-</style><style id="fm-home-always-scroll-v152">
-@media(max-width:700px){
-html:has(#view-home.active),body:has(#view-home.active){height:auto!important;min-height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:auto!important}
-body:has(#view-home.active) .app{height:auto!important;min-height:100dvh!important;overflow:visible!important;display:block!important;padding-bottom:calc(105px + env(safe-area-inset-bottom))!important}
-body:has(#view-home.active) #view-home{display:flex!important;flex-direction:column!important;flex:none!important;min-height:auto!important;overflow:visible!important;gap:12px!important}
-body:has(#view-home.active) #homeAssetHero{flex:none!important;min-height:auto!important;overflow:visible!important;justify-content:flex-start!important;gap:9px!important}
-body:has(#view-home.active) #view-home>.hero.fm-expense-hero,body:has(#view-home.active) #view-home>.hero:nth-child(2){flex:none!important;min-height:auto!important;overflow:visible!important}
-}
-</style><style id="fm-home-cleanup-v154">body:has(#view-home.active) #view-home #fmHomeActivity,body:has(#view-home.active) #view-home>.fm-home-activity,#view-home #fmHomeActivity{display:none!important;visibility:hidden!important;height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important}</style><style id="fm-asset-v193">#view-assets #fmAssetAccountsPanel .fm-account-row{padding:2px 0!important}#view-assets #fmAssetAccountsPanel .fm-account-toggle{min-height:52px!important;padding:10px 2px!important}#view-assets #assetAddChoices[hidden]{display:none!important}#view-assets #assetAddChoices button{min-width:0;padding:12px 7px;font-size:13px}#view-assets #assetAddChoices #addAccount{grid-column:1/-1}</style><style id="fm-str-compact-v267">/* FIRE 전략 비교: 모바일 입력 카드 밀도 조정 (기존 이벤트 및 데이터 구조 유지) */
+</style><style id="fm-asset-v193">#view-assets #fmAssetAccountsPanel .fm-account-row{padding:2px 0!important}#view-assets #fmAssetAccountsPanel .fm-account-toggle{min-height:52px!important;padding:10px 2px!important}#view-assets #assetAddChoices[hidden]{display:none!important}#view-assets #assetAddChoices button{min-width:0;padding:12px 7px;font-size:13px}#view-assets #assetAddChoices #addAccount{grid-column:1/-1}</style><style id="fm-str-compact-v267">/* FIRE 전략 비교: 모바일 입력 카드 밀도 조정 (기존 이벤트 및 데이터 구조 유지) */
 #fmStrDivRows .fm-str-row,#fmStrSaleRows .fm-str-row{padding:9px 10px;margin-bottom:8px}
 #fmStrDivRows .fm-str-row-top,#fmStrSaleRows .fm-str-row-top{gap:7px}
 #fmStrDivRows .fm-str-row-bottom,#fmStrSaleRows .fm-str-row-bottom{gap:8px;margin-top:5px}
@@ -732,20 +650,7 @@ body:has(#view-home.active) #view-home>.hero.fm-expense-hero,body:has(#view-home
 #fmStrDivRows .fm-str-row .mini,#fmStrSaleRows .fm-str-row .mini{font-size:12px;line-height:1.5}
 #fmStrDivRows input,#fmStrSaleRows input{font-size:14px}
 </style>
-<style id="fm-home-layout-stable">
-/* Single final mobile layout rule: no clipped content or forced activity panel. */
-@media(max-width:700px){
- body:has(#view-home.active) #view-home{overflow-y:auto!important;overflow-x:hidden!important;min-height:0;overscroll-behavior:contain}
- body:has(#view-home.active) #view-home #homeAssetHero,
- body:has(#view-home.active) #view-home>.hero:nth-child(2){flex-shrink:0}
- body:has(#view-home.active) #view-home #fmHomeActivity{display:block!important;flex:0 0 auto!important;max-height:none!important;overflow:visible!important}
- body:has(#view-home.active) #view-home #fmHomeActivity .fm-home-spark{height:44px!important}
- body:has(#view-home.active) #view-home #homeAssetHero .fm-eta-details{margin-top:2px}
-}
-@media(max-width:700px) and (max-height:690px){
- body:has(#view-home.active) #view-home #fmHomeActivity{display:none!important}
-}
-</style><style id="fm-v31-ux-polish">
+<style id="fm-v31-ux-polish">
 /* Dashboard readability and touch targets. Existing app logic is unchanged. */
 #view-fire .fm-fire-card-kicker{font-size:11px;letter-spacing:0;color:var(--sub);font-weight:650}
 #view-fire .fm-fire-section-head{align-items:center;gap:10px}

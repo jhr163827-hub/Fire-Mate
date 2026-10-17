@@ -207,6 +207,11 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('.bottomnav [data-view="assets"]').click()
                     page.locator('[data-inline-toggle="demo"]').click()
                     self.assertTrue(page.locator('#fmAccountDetail').is_visible())
+                    sort_box=page.locator('#fmDetailSort').bounding_box()
+                    add_box=page.locator('#fmDetailAdd').bounding_box()
+                    self.assertGreaterEqual(sort_box['height'],44)
+                    self.assertGreaterEqual(add_box['height'],44)
+                    self.assertLessEqual(add_box['x']+add_box['width'],width+2)
                     self.assertIn('최근 +2.50%',page.locator('.fm-market-day').first.inner_text())
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
                     page.locator('[data-fm-holding="h1"]').click()
@@ -905,15 +910,16 @@ class HomeResponsiveTest(unittest.TestCase):
             with self.subTest(width=width):
                 page = self.browser.new_page(viewport={"width": width, "height": 670}, is_mobile=True, has_touch=True)
                 try:
-                    page.goto(URL, wait_until="domcontentloaded")
-                    page.evaluate("""() => {
-                        const key='firemate_smart_v3', value=JSON.parse(localStorage.getItem(key));
+                    page.add_init_script("""(() => {
                         const date=new Date(), day=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
-                        value.tx.push({id:'ledger-mobile-fixture',date:day,type:'expense',amount:123456789,
-                            category:'식비',memo:'아주 긴 거래 설명을 작은 휴대전화에서 끝까지 읽을 수 있는지 확인하는 테스트 거래'});
-                        localStorage.setItem(key,JSON.stringify(value));
-                    }""")
-                    page.reload(wait_until="domcontentloaded")
+                        localStorage.setItem('firemate_smart_v3',JSON.stringify({
+                            tx:[{id:'ledger-mobile-fixture',date:day,type:'expense',amount:123456789,
+                                category:'식비',memo:'아주 긴 거래 설명을 작은 휴대전화에서 끝까지 읽을 수 있는지 확인하는 테스트 거래'}],
+                            rec:[],budgets:{},favorites:[],theme:'dark',holdings:[],
+                            fire:{goal:65000,monthly:300,rate:7},balance:{fx:1400,cash:0,other:0,debt:0}
+                        }));
+                    })()""")
+                    page.goto(URL, wait_until="domcontentloaded")
                     page.locator('.bottomnav [data-view="calendar"]').click()
                     page.locator('#fmModeList').click()
                     group=page.locator('#fmLedgerAllTx details.fm-ledger-day').first
@@ -932,8 +938,12 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertTrue(page.locator('#entryHint').is_visible())
                     self.assertEqual(page.locator('#entryTypes [data-type="transfer"]').get_attribute('aria-pressed'),'true')
                     page.locator('#entryOverlay [data-close]').click()
-                    page.reload(wait_until="domcontentloaded")
-                    self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.filter(x=>x.id==='ledger-mobile-fixture').length"),1)
+                    verify=page.context.new_page()
+                    try:
+                        verify.goto(URL,wait_until="domcontentloaded")
+                        self.assertEqual(verify.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.filter(x=>x.id==='ledger-mobile-fixture').length"),1)
+                    finally:
+                        verify.close()
                 finally:
                     page.close()
 
@@ -951,9 +961,9 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(page.locator('#firePct').is_visible())
                         self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
                         forecast=page.locator('#fmForecastControls')
-                        forecast.locator('summary').click()
+                        forecast.locator(':scope > summary').click()
                         self.assertTrue(forecast.evaluate('(el)=>el.open'))
-                        forecast.locator('summary').click()
+                        forecast.locator(':scope > summary').click()
                         self.assertFalse(forecast.evaluate('(el)=>el.open'))
                         page.locator('#fmFireLifeOpen').click()
                         self.assertTrue(page.locator('#view-retire').is_visible())

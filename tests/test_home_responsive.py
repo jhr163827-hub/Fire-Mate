@@ -112,6 +112,46 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_asset_totals_and_fire_goal_survive_reload(self):
+        # Deterministic mixed-currency fixture: no external quote API needed.
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.add_init_script("""() => {
+                const fixture = {
+                    tx: [], rec: [], budgets: {}, favorites: [], theme: 'dark',
+                    fire: {asset: 0, goal: 100, monthly: 0, rate: 0, withdrawal: 4},
+                    holdings: [
+                        {type: 'USD', qty: 2, price: 100, cost: 80, accountId: 'a'},
+                        {type: 'KRW', qty: 3, price: 10000, cost: 9000, accountId: 'b'}
+                    ],
+                    accounts: [
+                        {id: 'a', name: 'US', kind: 'investment', amount: 5000, fire: true},
+                        {id: 'b', name: 'KR', kind: 'investment', amount: 0, fire: false,
+                         items: [{amount: 7000}]}
+                    ],
+                    balance: {fx: 1400, cash: 10000, other: 2000, debt: 3000}
+                };
+                localStorage.setItem('firemate_smart_v3', JSON.stringify(fixture));
+            }""")
+            expected_net = 2 * 100 * 1400 + 3 * 10000 + 5000 + 7000 + 10000 + 2000 - 3000
+            expected_pct = expected_net / (100 * 10000) * 100
+            for attempt in range(2):
+                page.goto(URL, wait_until="domcontentloaded")
+                page.locator('.bottomnav [data-view="home"]').click()
+                page.wait_for_timeout(120)
+                actual = page.locator("#homeTotalAssets").inner_text()
+                digits = int("".join(ch for ch in actual if ch.isdigit()))
+                self.assertEqual(digits, expected_net, f"Attempt {attempt}: incorrect net assets")
+                self.assertEqual(page.locator("#homeAssetPercent").inner_text(),
+                                 f"{expected_pct:.1f}%")
+                page.locator('.bottomnav [data-view="fire"]').click()
+                self.assertEqual(page.locator("#firePct").inner_text(), f"{expected_pct:.1f}%")
+                saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3'))""")
+                self.assertEqual(saved["holdings"][0]["qty"], 2)
+                self.assertEqual(saved["balance"]["fx"], 1400)
+        finally:
+            page.close()
+
     def test_saved_theme_survives_reload_and_navigation(self):
         # Real UI writes to the app's persisted data; no mocked storage.
         page = self.browser.new_page(viewport={"width": 390, "height": 844})

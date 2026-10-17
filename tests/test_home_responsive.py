@@ -48,6 +48,22 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_home_details_expand_and_collapse(self):
+        page = self.browser.new_page(viewport={"width": 360, "height": 740}, is_mobile=True, has_touch=True)
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="home"]').click()
+            details = page.locator("#view-home details:visible").first
+            if details.count() == 0:
+                self.skipTest("No visible native details control on home")
+            initial = details.evaluate("(el) => el.open")
+            details.locator("summary").click()
+            self.assertNotEqual(initial, details.evaluate("(el) => el.open"))
+            details.locator("summary").click()
+            self.assertEqual(initial, details.evaluate("(el) => el.open"))
+        finally:
+            page.close()
+
     def test_theme_and_navigation(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

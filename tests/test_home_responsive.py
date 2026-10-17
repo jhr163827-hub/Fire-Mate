@@ -39,7 +39,9 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertLessEqual(dimensions["scrollWidth"], dimensions["viewportWidth"] + 2)
                     self.assertGreaterEqual(dimensions["scrollHeight"], dimensions["viewportHeight"])
                     page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
-                    self.assertGreaterEqual(page.evaluate("window.scrollY"), 0)
+                    if dimensions["scrollHeight"] > dimensions["viewportHeight"] + 4:
+                        self.assertGreater(page.evaluate("window.scrollY"), 0,
+                                           "Page has content below fold but cannot scroll")
                 finally:
                     page.close()
 

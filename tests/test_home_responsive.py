@@ -905,6 +905,51 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_settings_mobile_theme_groups_backup_and_focus(self):
+        for width in (320, 390, 430):
+            with self.subTest(width=width):
+                page=self.browser.new_page(viewport={"width":width,"height":568},is_mobile=True,has_touch=True,accept_downloads=True)
+                errors=[]
+                page.on('pageerror',lambda exc: errors.append(str(exc)))
+                try:
+                    page.goto(URL,wait_until='domcontentloaded')
+                    before=page.evaluate("""() => {const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));return JSON.stringify({tx:d.tx,accounts:d.accounts,holdings:d.holdings,fire:d.fire})}""")
+                    trigger=page.locator('#settingsBottom')
+                    trigger.click()
+                    dialog=page.locator('#settingsOverlay [role="dialog"]')
+                    self.assertTrue(dialog.is_visible())
+                    self.assertEqual(trigger.get_attribute('aria-expanded'),'true')
+                    self.assertEqual(dialog.get_attribute('aria-labelledby'),'settingsTitle')
+                    self.assertEqual(page.evaluate('document.activeElement.getAttribute("aria-label")'),'설정 닫기')
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    self.assertLessEqual(dialog.bounding_box()['width'],width+1)
+                    theme=page.locator('#settingsThemeBtn')
+                    self.assertGreaterEqual(theme.bounding_box()['height'],44)
+                    theme.click()
+                    self.assertEqual(page.evaluate('document.documentElement.dataset.theme'),'light')
+                    theme.click()
+                    self.assertEqual(page.evaluate('document.documentElement.dataset.theme'),'dark')
+                    groups=page.locator('#settingsOverlay .fm-settings-group')
+                    self.assertEqual(groups.count(),3)
+                    self.assertTrue(all(not groups.nth(i).evaluate('(el)=>el.open') for i in range(3)))
+                    groups.nth(1).locator(':scope > summary').click()
+                    self.assertTrue(groups.nth(1).evaluate('(el)=>el.open'))
+                    self.assertTrue(page.locator('#export').is_visible())
+                    with page.expect_download() as download_info:
+                        page.locator('#export').click()
+                    self.assertTrue(download_info.value.suggested_filename.startswith('firemate-backup-'))
+                    groups.nth(1).locator(':scope > summary').click()
+                    self.assertFalse(groups.nth(1).evaluate('(el)=>el.open'))
+                    page.keyboard.press('Escape')
+                    self.assertFalse(dialog.is_visible())
+                    self.assertEqual(trigger.get_attribute('aria-expanded'),'false')
+                    self.assertEqual(page.evaluate('document.activeElement.id'),'settingsBottom')
+                    after=page.evaluate("""() => {const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));return JSON.stringify({tx:d.tx,accounts:d.accounts,holdings:d.holdings,fire:d.fire})}""")
+                    self.assertEqual(after,before)
+                    self.assertFalse(errors)
+                finally:
+                    page.close()
+
     def test_ledger_mobile_entry_list_and_data_preservation(self):
         for width in (320, 360, 390, 430):
             with self.subTest(width=width):

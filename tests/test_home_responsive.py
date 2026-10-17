@@ -88,17 +88,16 @@ class HomeResponsiveTest(unittest.TestCase):
             with self.subTest(width=width):
                 page = self.browser.new_page(viewport={"width": width, "height": 720}, is_mobile=True, has_touch=True)
                 try:
-                    page.goto(URL, wait_until="domcontentloaded")
-                    page.evaluate("""() => {
-                        const saved=JSON.parse(localStorage.getItem('firemate_smart_v3'));
+                    page.add_init_script("""(() => {
+                        const saved=JSON.parse(localStorage.getItem('firemate_smart_v3') || '{}');
                         saved.accounts=[{id:'a',name:'투자 계좌',kind:'investment',amount:0,fire:true}];
                         saved.holdings=[
                             {id:'h1',accountId:'a',type:'KRW',ticker:'AAA',name:'알파',qty:2,price:12000,cost:10000},
                             {id:'h2',accountId:'a',type:'KRW',ticker:'BBB',quoteName:'베타',qty:3,price:5000,cost:6000}
                         ];
                         localStorage.setItem('firemate_smart_v3',JSON.stringify(saved));
-                    }""")
-                    page.reload(wait_until='domcontentloaded')
+                    })()""")
+                    page.goto(URL, wait_until="domcontentloaded")
                     page.locator('.bottomnav [data-view="assets"]').click()
                     page.locator('#fmAssetQuickHoldings').click()
                     self.assertTrue(page.locator('#fmAssetHoldingsPanel').is_visible())

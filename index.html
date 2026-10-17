@@ -1620,7 +1620,9 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
   let cash=fairMode?0:Math.max(0,budget-tb),invested=fairMode?budget:tb,cumulativeTax=0;
   const ledger=[],series=[cash+invested];
   for(let y=1;y<=years;y++){
+   const opening=cash+invested,openingInvested=invested;
    invested=Math.max(0,invested*(1+rate));
+   const investmentReturn=invested-openingInvested;
    const cost=(spend+insurance)*Math.pow(1+inflation,y-1);
    const fromCash=Math.min(cash,cost);cash-=fromCash;
    const needed=Math.max(0,cost-fromCash);
@@ -1629,13 +1631,13 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
    const sale=Math.min(invested,Math.max(0,grossNeeded));
    const tax=Math.max(0,sale*gainShare-250)*0.22;
    invested-=sale;cumulativeTax+=tax;
-   ledger.push({year:y,sale,tax,closing:cash+invested,shortfall:Math.max(0,needed-(sale-tax))});
+   ledger.push({year:y,opening,investmentReturn,sale,tax,spending:fromCash+Math.min(needed,Math.max(0,sale-tax)),closing:cash+invested,shortfall:Math.max(0,needed-(sale-tax))});
    series.push(cash+invested);
   }
   return {ledger,series,cumulativeTax};
  };
  const taxed=taxScenario();
- const displayedResults=taxApply?results.map((x,i)=>i===1?{...x,series:taxed.series,ledger:taxed.ledger.map((y,j)=>({...x.ledger[j],closing:y.closing,spending:Math.min((spend+insurance)*Math.pow(1+inflation,j),x.ledger[j].spending),shortfall:y.shortfall,estimatedSaleTax:y.tax,estimatedSale:y.sale,investmentReturn:rate*(j===0?(fairMode?budget:tb):taxed.series[j])})),exhausted:taxed.series.findIndex((v,j)=>j>0&&v<=0)>0?taxed.series.findIndex((v,j)=>j>0&&v<=0):null}:x):results;
+ const displayedResults=taxApply?results.map((x,i)=>i===1?{...x,series:taxed.series,ledger:taxed.ledger.map(y=>({...y,estimatedSaleTax:y.tax,estimatedSale:y.sale,grossDividend:0,netDividend:0,dividendCost:0})),exhausted:taxed.series.findIndex((v,j)=>j>0&&v<=0)>0?taxed.series.findIndex((v,j)=>j>0&&v<=0):null}:x):results;
  const saleTaxLabel=taxApply?'매도세 반영 추정':'매도세 미반영';
 
  const taxPreviewHtml=(taxPreview||taxApply)?'<details open style="margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px"><summary style="cursor:pointer;font-weight:700">해외주식 매도세 추정 · 세금 반영 실험</summary><p class="mini">매도차익 비중 '+(gainShare*100).toFixed(0)+'% · 연 기본공제 250만 원 · 세율 22% 가정. 현금 사용 후 해외주식 매도 시 추정 세금과 세금 납부용 추가 매도를 반영합니다.</p><p class="mini">기존 자가배당 '+fmStrMoney(results[1].series[years])+' → <strong>매도세 반영 '+fmStrMoney(taxed.series[years])+'</strong> · 누적 추정 세금 '+fmStrMoney(taxed.cumulativeTax)+'</p><p class="mini">매도세 반영 비교를 켜면 요약·현금흐름·장기 추이에도 추정 세후 금액을 표시합니다. 실제 취득원가·다른 매도차익·국내 ETF·ISA·건보료는 미반영한 가상 실험입니다.</p><details><summary class="mini" style="cursor:pointer">연도별 추정 세금 (만원)</summary><div style="max-height:230px;overflow:auto"><table style="width:100%;font-size:12px;text-align:right"><thead><tr><th>연도</th><th>매도액</th><th>세금</th><th>연말 자산</th></tr></thead><tbody>'+taxed.ledger.map(y=>'<tr><td>'+y.year+'년</td><td>'+Math.round(y.sale).toLocaleString('ko-KR')+'</td><td>'+Math.round(y.tax).toLocaleString('ko-KR')+'</td><td>'+Math.round(y.closing).toLocaleString('ko-KR')+'</td></tr>').join('')+'</tbody></table></div></details></details>':'';

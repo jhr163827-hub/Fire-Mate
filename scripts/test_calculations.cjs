@@ -51,6 +51,18 @@ assert.equal(estimate(100,200,-10,7),null,'negative contributions rejected');
 const project=(...args)=>fireContext.fmProjectedAsset(...args);
 assert.equal(project(100,10,0,12),220,'12 monthly deposits without growth');
 assert.equal(project(100,10,0,360),3700,'30 year horizon without growth');
+const series=(...args)=>fireContext.fmProjectionSeries(...args);
+assert.equal(series(100,10,0,360).length,361,'30-year chart includes initial month');
+assert.equal(series(100,10,0,360)[360],3700,'30-year chart and projection agree');
+assert.equal(series(100,10,-100,12),null,'chart rejects invalid return');
+assert.equal(series(100,10,7,1201),null,'chart bounds projection horizon');
+assert.equal(series(100,10,7,1.5),null,'chart rejects fractional months');
+for(const rate of [0,4,7,10,15]){
+ const chart=series(15000,300,rate,360);
+ assert.ok(chart&&chart.every(Number.isFinite),'chart has finite points');
+ for(const month of [0,1,12,120,240,360])assert.ok(Math.abs(chart[month]-project(15000,300,rate,month))<0.01,'chart and calculator agree at month '+month);
+}
+assert.ok(html.includes('const values=fmProjectionSeries(initial,monthly,rate,N)'),'forecast uses tested shared projection');
 assert.equal(project(100,10,7,-1),null,'negative projection horizon rejected');
 assert.equal(project(100,10,-100,12),null,'invalid projection return rejected');
 assert.equal(project(100,10,7,1.5),null,'fractional months rejected');

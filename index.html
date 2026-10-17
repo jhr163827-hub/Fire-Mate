@@ -1553,7 +1553,7 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
    const cost=(spend+insurance)*Math.pow(1+inflation,y-1);
    // 배당은 총수익률에 포함되므로 자산에서 차감한 뒤 현금으로 지급한다.
    const grown=Math.max(0,invested*(1+(o.kind==='sale'?rate:divGrowth)));
-   const annualGross=o.kind==='div'&&ta>0?Math.min(grown,Math.max(0,gross*(invested/(fairMode?budget:ta)))):0;
+   const annualGross=o.kind==='div'&&ta>0?Math.min(grown,Math.max(0,gross*(invested/ta))):0;
    const annualNet=o.kind==='div'&&ta>0?annualGross*(gross>0?Math.max(0,Math.min(1,net/gross)):0):0;
    invested=grown-annualGross;
    cash+=annualNet;
@@ -1871,7 +1871,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-260',VERSION='3.0.259';
+ const BUILD='fire-mate-v3-0-260',VERSION='3.0.260';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

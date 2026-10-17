@@ -63,6 +63,7 @@ def main():
                                                  ("dividend", "#fmAssetQuickDividend"),
                                                  ("analysis", "#fmAssetQuickAnalysis")):
                                 page.locator(button).click()
+                                page.wait_for_timeout(250)
                                 page.screenshot(path=str(OUT / f"assets-{pane}-{width}-{theme}.png"), full_page=False)
                             page.locator('#fmAssetQuickAccounts').click()
                     context.close()

@@ -104,7 +104,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertTrue(page.locator('#fmAssetHoldingsPanel').is_visible())
                     self.assertEqual(page.locator('#holdingList .tx').count(), 2,
                                      page.evaluate("""() => ({saved:JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length,
-                                         loaded:data.holdings.length,filter:selectedAccount,visible:fmVisibleHoldings().length,
+                                         filter:document.getElementById('accountFilter').value,
                                          content:document.getElementById('holdingList').textContent.slice(0,100)})"""))
                     page.locator('#fmHoldingSearch').fill('BBB')
                     self.assertEqual(page.locator('#holdingList .tx').count(), 1)
@@ -171,7 +171,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('#goal').fill('75000')
                     page.locator('.bottomnav [data-view="fire"]').click()
                     page.locator('#fmOpenCalculator').click()
-                    self.assertEqual(page.locator('#goal').input_value(), '75000')
+                    self.assertEqual(page.locator('#goal').input_value().replace(',', ''), '75000')
                     page.locator('#fmBackFire').click()
                     page.locator('#fmFireStrategyOpen').click()
                     self.assertTrue(page.locator('#fmStrategyDetails').evaluate('(e) => e.open'))

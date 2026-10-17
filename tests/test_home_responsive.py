@@ -344,6 +344,51 @@ class HomeResponsiveTest(unittest.TestCase):
             page.context.set_offline(False)
             page.close()
 
+    def test_legacy_partial_saved_data_is_normalized(self):
+        for legacy in (
+            {"fire": None, "balance": None, "tx": None, "accounts": None},
+            {"fire": "broken", "budgets": [], "holdings": [], "accounts": []},
+        ):
+            with self.subTest(legacy=legacy):
+                page = self.browser.new_page(viewport={"width": 390, "height": 844})
+                try:
+                    page.add_init_script("""payload => localStorage.setItem('firemate_smart_v3',JSON.stringify(payload))""", legacy)
+                    page.goto(URL, wait_until="domcontentloaded")
+                    self.assertTrue(page.locator("#view-home").count() == 1)
+                    page.locator('.bottomnav [data-view="fire"]').click()
+                    self.assertTrue(page.locator("#view-fire").is_visible())
+                    page.locator('.bottomnav [data-view="assets"]').click()
+                    self.assertTrue(page.locator("#view-assets").is_visible())
+                finally:
+                    page.close()
+
+    def test_backup_validation_rejects_corrupt_financial_fields(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            outcome = page.evaluate("""() => {
+                const data = {
+                    tx:[],rec:[],favorites:[],holdings:[],
+                    accounts:[{id:'account',amount:-500}],fire:{goal:65000},
+                    budgets:{},balance:{fx:1400}
+                };
+                const obj={app:'FIRE MATE',version:5,data};
+                const rejected = candidate => {
+                    try { fmValidateBackup(candidate); return false; } catch { return true; }
+                };
+                const badAccount=rejected(obj);
+                data.accounts=[{id:'account',amount:100}];
+                data.fire={goal:'not-a-number'};
+                const badFire=rejected(obj);
+                data.fire={goal:65000};
+                data.accounts=[{id:'account',items:[{amount:-50}]}];
+                const badOther=rejected(obj);
+                return {badAccount,badFire,badOther};
+            }""")
+            self.assertEqual(outcome, {"badAccount": True, "badFire": True, "badOther": True})
+        finally:
+            page.close()
+
     def test_theme_save_failure_keeps_previous_setting(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

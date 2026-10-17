@@ -1296,6 +1296,7 @@ $('saveAccount').onclick=()=>{
  const name=$('accountName').value.trim(),kind=$('accountKind').value,amount=moneyNumber($('accountAmount').value),fire=$('accountFire').checked;
  if(!name||name.length>40||!['investment','safe','physical','housing','other'].includes(kind)||!Number.isFinite(amount)||amount<0||amount>1e15)return toast('계좌 이름과 금액을 확인해 주세요');
  const old=data.accounts.find(a=>a.id===editingAccount);
+ if(old?.kind==='other'&&kind!=='other'&&Array.isArray(old.items)&&old.items.length)return toast('기타자산 항목을 먼저 정리한 뒤 계좌 종류를 변경해 주세요');
  const previousAccounts=data.accounts;data.accounts=old?previousAccounts.map(a=>a.id===old.id?{...a,name,kind,amount,fire}:a):[...previousAccounts,{id:uid(),name,kind,amount,fire}];
  if(!persist()){data.accounts=previousAccounts;return}modal('accountOverlay',false);render();toast('계좌를 저장했어요');
 };

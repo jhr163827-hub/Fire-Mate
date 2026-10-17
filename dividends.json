@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-16T10:05:11.569873+00:00",
+  "updatedAt": "2026-10-17T01:46:54.644997+00:00",
   "source": "Yahoo Finance chart dividend events (unofficial)",
   "symbols": {
     "JEPQ": {
@@ -1988,5 +1988,144 @@
     "ENPH": "No dividend events",
     "RKLB": "No dividend events",
     "ABSI": "No dividend events"
+  },
+  "symbolStatus": {
+    "JEPQ": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "SCHD": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "JEPI": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "SPY": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "QLD": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "SGOV": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "498400.KS": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "360750.KS": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "SPYM": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "SBUX": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "ENPH": {
+      "status": "unavailable",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "RKLB": {
+      "status": "unavailable",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "ABSI": {
+      "status": "unavailable",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "TSLL": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "AAPL": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "MSFT": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "NVDA": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "KO": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "O": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "VTI": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "VOO": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "QQQ": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "TQQQ": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "SCHG": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "DGRO": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "VYM": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "005930.KS": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    },
+    "000660.KS": {
+      "status": "ok",
+      "checkedAt": "2026-10-17T01:46:54.644997+00:00",
+      "lastSuccessfulAt": "2026-10-17T01:46:54.644997+00:00"
+    }
   }
 }

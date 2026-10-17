@@ -4,11 +4,13 @@ on:
     paths:
       - 'index.html'
       - 'tests/test_home_responsive.py'
+      - 'tests/capture_compact_comparison.py'
       - '.github/workflows/home-responsive.yml'
   pull_request:
     paths:
       - 'index.html'
       - 'tests/test_home_responsive.py'
+      - 'tests/capture_compact_comparison.py'
       - '.github/workflows/home-responsive.yml'
   workflow_dispatch:
 jobs:
@@ -20,7 +22,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install playwright
+      - run: pip install playwright pillow
       - run: python -m playwright install --with-deps chromium
       - name: Serve application
         run: |
@@ -30,3 +32,17 @@ jobs:
         env:
           FIRE_MATE_URL: http://127.0.0.1:8000
         run: python -m unittest discover -s tests -p 'test_home_responsive.py' -v
+      - name: Capture compact UI comparison
+        run: |
+          git fetch --depth=1 origin 4817d7ad0c2ae65fca73f12824306177d9e7b054
+          mkdir -p /tmp/firemate-before
+          git show 4817d7ad0c2ae65fca73f12824306177d9e7b054:index.html > /tmp/firemate-before/index.html
+          python -m http.server 8001 --bind 127.0.0.1 --directory /tmp/firemate-before > /tmp/fire-mate-baseline.log 2>&1 &
+          python tests/capture_compact_comparison.py
+      - name: Save comparison screenshots and measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compact-mobile-comparison
+          path: compact-comparison/
+          if-no-files-found: ignore

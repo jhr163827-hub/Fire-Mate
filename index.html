@@ -1637,6 +1637,15 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
   return {ledger,series,cumulativeTax};
  };
  const taxed=taxScenario();
+ const taxChecks=[
+  ['연도별 잔액 연결',taxed.ledger.every((y,i)=>close(y.opening,taxed.series[i])&&close(y.closing,taxed.series[i+1]))],
+  ['세액 합계',close(taxed.cumulativeTax,taxed.ledger.reduce((n,y)=>n+y.tax,0))],
+  ['매도세 계산',taxed.ledger.every(y=>close(y.tax,Math.max(0,y.sale*gainShare-250)*0.22))],
+  ['연도별 자산 증감',taxed.ledger.every(y=>close(y.closing,y.opening+y.investmentReturn-y.sale))],
+  ['생활비 충당·부족액',taxed.ledger.every(y=>close(y.spending+y.shortfall,(spend+insurance)*Math.pow(1+inflation,y.year-1)))],
+  ['잔여 자산 유한성',taxed.series.every(y=>Number.isFinite(y)&&y>=-0.01)]
+ ];
+ const taxCheckHtml=taxApply?'<p class="mini">'+(taxChecks.every(x=>x[1])?'✓':'⚠')+' 매도세 시나리오 검산 '+taxChecks.filter(x=>x[1]).length+'/'+taxChecks.length+'개 통과</p>':'';
  const displayedResults=taxApply?results.map((x,i)=>i===1?{...x,series:taxed.series,ledger:taxed.ledger.map(y=>({...y,estimatedSaleTax:y.tax,estimatedSale:y.sale,grossDividend:0,netDividend:0,dividendCost:0})),exhausted:taxed.series.findIndex((v,j)=>j>0&&v<=0)>0?taxed.series.findIndex((v,j)=>j>0&&v<=0):null}:x):results;
  const saleTaxLabel=taxApply?'매도세 반영 추정':'매도세 미반영';
 

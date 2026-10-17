@@ -383,6 +383,86 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_projection_and_fire_goal_with_independent_expected_values(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.goto(URL, wait_until="domcontentloaded")
+            actual = page.evaluate("""() => ({
+                noGrowth: fmProjectedAsset(10000,100,0,360),
+                noGrowthSeries: fmProjectionSeries(10000,100,0,360),
+                compound: fmProjectedAsset(10000,0,7,360),
+                compoundSeries: fmProjectionSeries(10000,0,7,360),
+                goalMonths: estimate(10000,13000,100,0),
+                reached: estimate(14000,13000,100,0),
+                invalid: fmProjectedAsset(10000,100,-100,360)
+            })""")
+            self.assertEqual(actual["noGrowth"], 46000)
+            self.assertEqual(len(actual["noGrowthSeries"]), 361)
+            self.assertEqual(actual["noGrowthSeries"][-1], 46000)
+            self.assertAlmostEqual(actual["compound"], 10000 * (1.07 ** 30), delta=0.01)
+            self.assertAlmostEqual(actual["compoundSeries"][-1], 10000 * (1.07 ** 30), delta=0.01)
+            self.assertEqual(actual["goalMonths"], 30)
+            self.assertEqual(actual["reached"], 0)
+            self.assertIsNone(actual["invalid"])
+        finally:
+            page.close()
+
+    def test_quick_dividend_tax_and_same_return_comparison(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.goto(URL, wait_until="domcontentloaded")
+            page.evaluate("""() => {
+                document.getElementById('fmQuickBudget').value='10000';
+                document.getElementById('fmQuickSpend').value='300';
+                document.getElementById('fmQuickYield').value='4';
+                document.getElementById('fmQuickTax').value='15';
+                document.getElementById('fmQuickGain').value='7';
+                fmQuickCompare();
+            }""")
+            result = page.locator("#fmQuickResult").inner_text()
+            # 10,000 x 4% = 400 gross; 15% withholding = 60; net = 340.
+            # Total return already includes dividends; only tax and living expenses reduce capital.
+            self.assertIn("340만 원", result)
+            self.assertIn("400만 원", result)
+            self.assertIn("10,340만 원", result)
+            self.assertIn("10,400만 원", result)
+            self.assertIn("양도세 미계산", result)
+        finally:
+            page.close()
+
+    def test_thirty_year_strategy_tax_and_cashflow_checks(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.goto(URL, wait_until="domcontentloaded")
+            output = page.evaluate("""() => {
+                document.getElementById('fmQuickBudget').value='10000';
+                document.getElementById('fmQuickSpend').value='300';
+                document.getElementById('fmStrYears').value='30';
+                document.getElementById('fmStrInflation').value='0';
+                document.getElementById('fmStrDivGrowth').value='7';
+                document.getElementById('fmStrSameReturn').checked=true;
+                document.getElementById('fmStrFairMode').checked=true;
+                document.getElementById('fmStrTaxApply').checked=true;
+                document.getElementById('fmStrGainShare').value='30';
+                document.getElementById('fmStrDivCost').value='15';
+                document.getElementById('fmStrInsurance').value='0';
+                fmStrVirtual.div=[{name:'TEST',amount:10000,estimatedAnnualMan:400,rate:4}];
+                fmStrVirtual.sale=[{name:'TEST',amount:10000,rate:7}];
+                fmRunStrategyComparison();
+                return document.getElementById('fmStrResult').innerText;
+            }""")
+            self.assertIn("30년", output)
+            self.assertIn("340만", output)
+            self.assertIn("400만", output)
+            self.assertIn("매도세", output)
+            self.assertNotIn("검증 실패", output)
+            self.assertNotIn("계산 불가", output)
+        finally:
+            page.close()
+
     def test_legacy_partial_saved_data_is_normalized(self):
         for legacy in (
             {"fire": None, "balance": None, "tx": None, "accounts": None},

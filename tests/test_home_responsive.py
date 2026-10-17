@@ -900,6 +900,43 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_ledger_mobile_entry_list_and_data_preservation(self):
+        for width in (320, 360, 390, 430):
+            with self.subTest(width=width):
+                page = self.browser.new_page(viewport={"width": width, "height": 670}, is_mobile=True, has_touch=True)
+                try:
+                    page.goto(URL, wait_until="domcontentloaded")
+                    page.evaluate("""() => {
+                        const key='firemate_smart_v3', value=JSON.parse(localStorage.getItem(key));
+                        const date=new Date(), day=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+                        value.tx.push({id:'ledger-mobile-fixture',date:day,type:'expense',amount:123456789,
+                            category:'식비',memo:'아주 긴 거래 설명을 작은 휴대전화에서 끝까지 읽을 수 있는지 확인하는 테스트 거래'});
+                        localStorage.setItem(key,JSON.stringify(value));
+                    }""")
+                    page.reload(wait_until="domcontentloaded")
+                    page.locator('.bottomnav [data-view="calendar"]').click()
+                    page.locator('#fmModeList').click()
+                    group=page.locator('#fmLedgerAllTx details.fm-ledger-day').first
+                    self.assertTrue(group.is_visible())
+                    self.assertTrue(group.evaluate('(el)=>el.open'))
+                    self.assertIn('아주 긴 거래 설명',group.inner_text())
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    group.locator('summary').click()
+                    self.assertFalse(group.evaluate('(el)=>el.open'))
+                    group.locator('summary').click()
+                    group.locator('[data-edit="ledger-mobile-fixture"]').click()
+                    self.assertTrue(page.locator('#entryOverlay').is_visible())
+                    self.assertFalse(page.locator('#entryHint').is_visible())
+                    self.assertLessEqual(page.locator('#entryOverlay .modal').bounding_box()['width'],width+1)
+                    page.locator('#entryTypes [data-type="transfer"]').click()
+                    self.assertTrue(page.locator('#entryHint').is_visible())
+                    self.assertEqual(page.locator('#entryTypes [data-type="transfer"]').get_attribute('aria-pressed'),'true')
+                    page.locator('#entryOverlay [data-close]').click()
+                    page.reload(wait_until="domcontentloaded")
+                    self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.filter(x=>x.id==='ledger-mobile-fixture').length"),1)
+                finally:
+                    page.close()
+
     def test_theme_and_navigation(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

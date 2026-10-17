@@ -214,6 +214,9 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertLessEqual(add_box['x']+add_box['width'],width+2)
                     self.assertIn('최근 +2.50%',page.locator('.fm-market-day').first.inner_text())
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    amount=page.locator('[data-fm-holding="h1"] > span:last-child strong')
+                    self.assertEqual(amount.evaluate('(el)=>getComputedStyle(el).whiteSpace'),'nowrap')
+                    self.assertLessEqual(amount.evaluate('(el)=>el.scrollWidth-el.clientWidth'),2,'Asset value must stay readable without clipping')
                     page.locator('[data-fm-holding="h1"]').click()
                     self.assertTrue(page.locator('#fmAccountDetail').is_visible())
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
@@ -1097,6 +1100,43 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(page.locator('#view-firecalc').is_visible())
                         page.locator('#fmBackFire').click()
                         self.assertTrue(page.locator('#view-fire').is_visible())
+                        self.assertFalse(errors)
+                    finally:
+                        page.close()
+
+    def test_phone_strategy_cashflow_rows_and_buttons(self):
+        for width in (320, 390, 430):
+            for theme in ('dark','light'):
+                with self.subTest(width=width,theme=theme):
+                    page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
+                    errors=[]
+                    page.on('pageerror',lambda exc: errors.append(str(exc)))
+                    try:
+                        page.goto(URL,wait_until='domcontentloaded')
+                        if theme=='light':page.locator('#theme').click()
+                        page.locator('.bottomnav [data-view="fire"]').click()
+                        page.locator('#fmStrategyDetails > summary').click()
+                        page.locator('#fmStrModeDetail').click()
+                        self.assertGreaterEqual(page.locator('#fmStrategyCard .fm-str-row-top button').first.bounding_box()['height'],44)
+                        page.evaluate("""() => {
+                            document.getElementById('fmQuickBudget').value='65000';
+                            document.getElementById('fmQuickSpend').value='2400';
+                            document.getElementById('fmStrYears').value='30';
+                            document.getElementById('fmStrSameReturn').checked=true;
+                            window.__fmFinanceTest.strategy({
+                                div:[{name:'JEPQ',amount:65000,estimatedAnnualMan:3499,rate:10.41}],
+                                sale:[{name:'SPY',amount:65000,rate:7}]
+                            });
+                            document.getElementById('fmCashFlowDetails').parentElement.open=true;
+                        }""")
+                        self.assertGreaterEqual(page.locator('#fmCashFlowDetails [data-fm-cf-kind="div"]').bounding_box()['height'],44)
+                        row=page.locator('#fmCashFlowDetails [data-fm-cf-view] > details').first
+                        self.assertGreaterEqual(row.locator('summary').bounding_box()['height'],44)
+                        row.locator('summary').click()
+                        self.assertTrue(row.evaluate('(el)=>el.open'))
+                        row.locator('summary').click()
+                        self.assertFalse(row.evaluate('(el)=>el.open'))
+                        self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
                         self.assertFalse(errors)
                     finally:
                         page.close()

@@ -158,6 +158,70 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_ledger_crud_persists_after_reload(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**",
+                       lambda route: route.abort("failed"))
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator("#fmLedgerAddBtn").click()
+            page.locator("#entryAmount").fill("12345")
+            page.locator("#entryDate").fill("2026-10-17")
+            page.locator("#entryMemo").fill("Playwright ledger regression")
+            page.locator("#saveEntry").click()
+            self.assertEqual(page.locator("#entryOverlay.show").count(), 0)
+            def entries():
+                return page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).tx
+                    .filter(t => t.memo === 'Playwright ledger regression')""")
+            self.assertEqual(len(entries()), 1)
+            self.assertEqual(entries()[0]["amount"], 12345)
+            page.reload(wait_until="domcontentloaded")
+            self.assertEqual(len(entries()), 1)
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator("#fmModeList").click()
+            page.locator('#fmLedgerAllTx [data-edit]').filter(has_text="Playwright ledger regression").first.click()
+            page.locator("#entryAmount").fill("23456")
+            page.locator("#saveEntry").click()
+            self.assertEqual(entries()[0]["amount"], 23456)
+            page.reload(wait_until="domcontentloaded")
+            self.assertEqual(entries()[0]["amount"], 23456)
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator("#fmModeList").click()
+            page.locator('#fmLedgerAllTx [data-edit]').filter(has_text="Playwright ledger regression").first.click()
+            page.once("dialog", lambda dialog: dialog.accept())
+            page.locator("#deleteEntry").click()
+            self.assertEqual(entries(), [])
+            page.reload(wait_until="domcontentloaded")
+            self.assertEqual(entries(), [])
+        finally:
+            page.close()
+
+    def test_ledger_save_failure_does_not_fake_success(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator("#fmLedgerAddBtn").click()
+            page.locator("#entryAmount").fill("9876")
+            page.locator("#entryMemo").fill("unsaved transaction")
+            before = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).tx""")
+            page.evaluate("""() => {
+                const original = Storage.prototype.setItem;
+                Storage.prototype.setItem = function(key, value) {
+                    if (key === 'firemate_smart_v3') throw new DOMException('Quota exceeded', 'QuotaExceededError');
+                    return original.call(this, key, value);
+                };
+            }""")
+            page.locator("#saveEntry").click()
+            self.assertEqual(page.locator("#entryOverlay.show").count(), 1)
+            after = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).tx""")
+            self.assertEqual(before, after)
+            page.reload(wait_until="domcontentloaded")
+            self.assertEqual(page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).tx"""), before)
+        finally:
+            page.close()
+
     def test_theme_save_failure_keeps_previous_setting(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

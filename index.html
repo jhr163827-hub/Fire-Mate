@@ -725,7 +725,7 @@ body:has(#view-home.active) #view-home>.hero.fm-expense-hero,body:has(#view-home
 <div class="notice" id="fmQuickResult" aria-live="polite">자산과 배당률을 입력한 뒤 비교하기를 눌러주세요.</div>
 <p class="mini">기본 가정: 배당 부담률 20%, 해외주식 양도차익 세율 22%, 연 기본공제 250만 원, 추가 보험료 0원. 단순 비교용이며 실제 세금·건보료와 다를 수 있습니다.</p>
 </div>
-<div id="fmStrDetailPanel" class="stack" hidden>
+<div id="fmStrDetailPanel" class="stack" hidden style="display:none">
 <div class="field"><label>연간 생활비 (만원)</label><input id="fmStrSpend" type="number" min="0" value="2400"></div>
 <div class="field"><label>비교 목표자산 (만원)</label><input id="fmStrBudget" type="number" min="0" value="65000"></div>
 <h3>전략 A · 배당 FIRE</h3><p class="mini">종목 / 투자금(만원) / 연 분배율(%)</p>
@@ -1351,7 +1351,7 @@ function fmStrSetMode(mode){
  const quick=mode==='quick';
  const q=document.getElementById('fmStrQuickPanel'),d=document.getElementById('fmStrDetailPanel');
  if(!q||!d)return;
- q.hidden=!quick;d.hidden=quick;
+ q.hidden=!quick;d.hidden=quick;q.style.display=quick?'':'none';d.style.display=quick?'none':'';
  const qb=document.getElementById('fmStrModeQuick'),db=document.getElementById('fmStrModeDetail');
  qb.className=quick?'primary':'secondary';db.className=quick?'secondary':'primary';
  qb.setAttribute('aria-pressed',String(quick));db.setAttribute('aria-pressed',String(!quick));

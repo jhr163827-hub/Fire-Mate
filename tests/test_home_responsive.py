@@ -222,6 +222,53 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_quote_http_429_preserves_holdings(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.route("https://api.twelvedata.com/**",
+                       lambda route: route.fulfill(status=429, content_type="application/json",
+                                                   headers={"retry-after": "60"},
+                                                   body='{"status":"error","message":"API credits exhausted","code":429}'))
+            page.add_init_script("""(() => {
+                localStorage.setItem('firemate_td_key_v1', 'playwright-test-key');
+                localStorage.setItem('firemate_smart_v3', JSON.stringify({
+                    holdings:[{type:'USD',ticker:'AAPL',qty:3,price:180,cost:150,accountId:'legacy-us'}],
+                    accounts:[{id:'legacy-us',name:'US',kind:'investment',amount:0,fire:true}],
+                    balance:{fx:1400,cash:0,other:0,debt:0,fxCheckedAt:new Date().toISOString().slice(0,10)}
+                }));
+            })()""")
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="assets"]').click()
+            page.once("dialog", lambda dialog: dialog.accept())
+            page.locator("#refreshStocks").click()
+            page.wait_for_function("""() => Number(localStorage.getItem('firemate_quote_cooldown_v1') || 0) > Date.now()""",
+                                   timeout=15000)
+            saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings[0]""")
+            self.assertEqual(saved["price"], 180)
+            self.assertEqual(saved["qty"], 3)
+            page.reload(wait_until="domcontentloaded")
+            saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings[0]""")
+            self.assertEqual((saved["price"], saved["qty"]), (180, 3))
+        finally:
+            page.close()
+
+    def test_pwa_update_decline_preserves_data(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check=*",
+                       lambda route: route.fulfill(status=200, content_type="text/html",
+                                                   body="""const BUILD='fire-mate-v3-4-2'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))
+            page.goto(URL, wait_until="domcontentloaded")
+            before = page.evaluate("""() => localStorage.getItem('firemate_smart_v3')""")
+            page.locator("#fmManualUpdate").click()
+            page.get_by_text("새 업데이트가 준비됐어요").wait_for(timeout=15000)
+            page.get_by_role("button", name="나중에").click()
+            self.assertEqual(page.evaluate("""() => localStorage.getItem('firemate_smart_v3')"""), before)
+            self.assertEqual(page.locator("#fmManualUpdate").count(), 1)
+        finally:
+            page.close()
+
     def test_theme_save_failure_keeps_previous_setting(self):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:

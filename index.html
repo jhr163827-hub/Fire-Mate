@@ -40,7 +40,7 @@
 #view-home .fm-home-wealth::before{content:"";position:absolute;width:210px;height:210px;border-radius:50%;right:-120px;top:-125px;background:var(--green);opacity:.06;pointer-events:none}
 #view-home .fm-home-overline{letter-spacing:1.5px;font-size:10px;font-weight:800;color:var(--green);margin-bottom:7px}
 #view-home .fm-home-section-title{font-size:14px;font-weight:700;color:var(--sub);margin-bottom:5px}
-#view-home #homeTotalAssets{font-variant-numeric:tabular-nums;letter-spacing:-1.2px;overflow-wrap:anywhere}
+#view-home #homeTotalAssets{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 #view-home .fm-home-wealth .fm-quote-refresh{min-height:38px}
 #view-home .hero-row{gap:12px}
 #view-home .hero-stat{min-width:0}
@@ -53,7 +53,7 @@
 @media(max-width:600px){
  #view-home{gap:13px}
  #view-home .fm-home-wealth,#view-home .fm-home-budget{padding:20px 16px;border-radius:20px}
- #view-home #homeTotalAssets{font-size:clamp(27px,8vw,38px);line-height:1.25}
+ #view-home #homeTotalAssets{line-height:1.25}
  #view-home .hero-row{gap:8px}
  #view-home .hero-stat strong{font-size:clamp(14px,4vw,19px)}
  #view-home .home-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
@@ -603,7 +603,7 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 @media(max-width:380px){#view-assets .fm-detail-positions{padding:15px!important}#view-assets .fm-detail-positions .fm-detail-metrics{gap:12px 10px!important}}
 </style></style><style id="fm-home-clarity-v148">
 /* Home-only visual hierarchy. Keep all app logic and storage unchanged. */
-#view-home #homeTotalAssets{font-variant-numeric:tabular-nums;line-height:1.18;font-weight:850}
+#view-home #homeTotalAssets{line-height:1.18;font-weight:850}
 #view-home #homeAssetHero .light.small{line-height:1.5}
 #view-home #homeAssetHero .progress{height:9px;border-radius:999px;overflow:hidden}
 #view-home #homeAssetHero .progress>div{border-radius:999px}

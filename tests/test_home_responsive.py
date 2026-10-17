@@ -94,6 +94,41 @@ class HomeResponsiveTest(unittest.TestCase):
                     finally:
                         page.close()
 
+    def test_phase2_home_navigation_and_no_clipped_content(self):
+        for width in (320,360,390,430):
+            with self.subTest(width=width):
+                page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
+                try:
+                    page.goto(URL,wait_until="domcontentloaded")
+                    page.locator('.bottomnav [data-view="home"]').click()
+                    m=page.evaluate("""() => {
+                        const hero=document.getElementById('homeAssetHero').getBoundingClientRect();
+                        const amount=document.getElementById('homeTotalAssets').getBoundingClientRect();
+                        const nav=document.querySelector('.bottomnav').getBoundingClientRect();
+                        return {
+                            amountSize:parseFloat(getComputedStyle(document.getElementById('homeTotalAssets')).fontSize),
+                            amountRight:amount.right,heroRight:hero.right,navBottom:nav.bottom,
+                            viewport:innerWidth,viewportHeight:innerHeight,
+                            horizontal:document.documentElement.scrollWidth>document.documentElement.clientWidth+2,
+                            scrollHeight:document.documentElement.scrollHeight
+                        };
+                    }""")
+                    self.assertGreaterEqual(m["amountSize"],30)
+                    self.assertLessEqual(m["amountRight"],m["viewport"]+2)
+                    self.assertLessEqual(m["heroRight"],m["viewport"]+2)
+                    self.assertLessEqual(m["navBottom"],m["viewportHeight"]+2)
+                    self.assertFalse(m["horizontal"])
+                    # Small screens may scroll rather than silently clip important content.
+                    if m["scrollHeight"]>m["viewportHeight"]+4:
+                        page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+                        self.assertGreater(page.evaluate("scrollY"),0)
+                    page.locator('.bottomnav [data-view="assets"]').click()
+                    self.assertTrue(page.locator("#view-assets").is_visible())
+                    page.locator('.bottomnav [data-view="home"]').click()
+                    self.assertTrue(page.locator("#homeTotalAssets").is_visible())
+                finally:
+                    page.close()
+
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.
         for width in [320, 360, 375, 390, 430]:

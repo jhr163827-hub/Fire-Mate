@@ -220,6 +220,24 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_navigation_dividend_panel_has_no_page_errors(self):
+        page=self.browser.new_page(viewport={"width":390,"height":844},is_mobile=True,has_touch=True)
+        errors=[]
+        page.on('pageerror',lambda error: errors.append(str(error)))
+        try:
+            page.goto(URL,wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="assets"]').click()
+            page.locator('#fmDividendTab').click()
+            self.assertTrue(page.locator('#fmDividendPanel').is_visible())
+            page.locator('#fmCompositionAccount').click()
+            self.assertFalse(page.locator('#fmDividendPanel').is_visible())
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator('.bottomnav [data-view="fire"]').click()
+            page.locator('.bottomnav [data-view="home"]').click()
+            self.assertEqual(errors,[])
+        finally:
+            page.close()
+
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.
         for width in [320, 360, 375, 390, 430]:

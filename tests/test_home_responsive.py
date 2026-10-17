@@ -136,9 +136,10 @@ class HomeResponsiveTest(unittest.TestCase):
             expected_net = 2 * 100 * 1400 + 3 * 10000 + 5000 + 7000 + 10000 + 2000 - 3000
             expected_pct = expected_net / (100 * 10000) * 100
             for attempt in range(2):
-                page.goto(URL, wait_until="domcontentloaded")
+                page.goto(URL, wait_until="load")
                 page.locator('.bottomnav [data-view="home"]').click()
-                page.wait_for_timeout(120)
+                page.wait_for_function("""() => document.querySelector('#homeTotalAssets')?.textContent?.trim() !== '₩0'""",
+                                       timeout=10000)
                 actual = page.locator("#homeTotalAssets").inner_text()
                 digits = int("".join(ch for ch in actual if ch.isdigit()))
                 self.assertEqual(digits, expected_net, f"Attempt {attempt}: incorrect net assets")

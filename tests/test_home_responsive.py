@@ -5,6 +5,7 @@ Start a local server with: python -m http.server 8000
 """
 import os
 import unittest
+from datetime import date
 from playwright.sync_api import sync_playwright
 
 URL = os.environ.get("FIRE_MATE_URL", "http://localhost:8000")
@@ -24,6 +25,63 @@ class HomeResponsiveTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.browser.close()
         cls.p.stop()
+
+    def test_home_budget_uses_current_ledger_month_and_handles_boundaries(self):
+        current = date.today().strftime('%Y-%m')
+        page = self.browser.new_page(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            page.evaluate("""month => {
+                const saved=JSON.parse(localStorage.getItem('firemate_smart_v3'));
+                saved.tx=[]; saved.budgets={};
+                localStorage.setItem('firemate_smart_v3',JSON.stringify(saved));
+            }""", current)
+            page.reload(wait_until="domcontentloaded")
+            self.assertEqual(page.locator('#heroSpent').inner_text(), '₩0')
+            self.assertEqual(page.locator('#heroBudget').inner_text(), '미설정')
+            self.assertIn('예산 설정', page.locator('#homeBudgetAction').inner_text())
+            page.locator('#homeBudgetAction').click()
+            self.assertTrue(page.locator('#fmLedgerBudgetInline').is_visible())
+            page.locator('#fmLedgerBudgetValue').fill('1500000')
+            page.locator('#fmLedgerBudgetSave').click()
+            self.assertEqual(page.locator('#fmCalendarBudget').inner_text(), '₩1,500,000 남음')
+            page.locator('#fmLedgerAddBtn').click()
+            page.locator('#entryAmount').fill('850000')
+            page.locator('#entryDate').fill(current + '-01')
+            page.locator('#entryMemo').fill('budget scenario')
+            page.locator('#saveEntry').click()
+            self.assertEqual(page.locator('#fmCalendarSpent').inner_text(), '₩850,000')
+            page.locator('.bottomnav [data-view="home"]').click()
+            self.assertEqual(page.locator('#heroSpent').inner_text(), '₩850,000')
+            self.assertEqual(page.locator('#heroBudget').inner_text(), '₩1,500,000')
+            self.assertEqual(page.locator('#heroLeft').inner_text(), '₩650,000')
+            self.assertEqual(page.locator('#heroUsage').inner_text(), '56.7%')
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator('#fmModeList').click()
+            page.locator('#fmLedgerAllTx .tx').filter(has_text='budget scenario').locator('[data-edit]').click()
+            page.locator('#entryAmount').fill('1700000')
+            page.locator('#saveEntry').click()
+            page.locator('.bottomnav [data-view="home"]').click()
+            self.assertEqual(page.locator('#heroLeftLabel').inner_text(), '초과 금액')
+            self.assertEqual(page.locator('#heroLeft').inner_text(), '₩200,000')
+            self.assertEqual(page.locator('#heroUsage').inner_text(), '113.3%')
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator('[data-shift="-1"]').first.click()
+            page.locator('.bottomnav [data-view="home"]').click()
+            self.assertEqual(page.locator('#heroMonth').inner_text(), current)
+            self.assertEqual(page.locator('#heroSpent').inner_text(), '₩1,700,000')
+            page.reload(wait_until='domcontentloaded')
+            self.assertEqual(page.locator('#heroSpent').inner_text(), '₩1,700,000')
+            page.locator('#homeBudgetAction').click()
+            page.locator('#fmModeList').click()
+            page.locator('#fmLedgerAllTx .tx').filter(has_text='budget scenario').locator('[data-edit]').click()
+            page.once('dialog', lambda dialog: dialog.accept())
+            page.locator('#deleteEntry').click()
+            page.locator('.bottomnav [data-view="home"]').click()
+            self.assertEqual(page.locator('#heroSpent').inner_text(), '₩0')
+            self.assertEqual(page.locator('#heroLeft').inner_text(), '₩1,500,000')
+        finally:
+            page.close()
 
     def test_home_layouts(self):
         for width in WIDTHS:

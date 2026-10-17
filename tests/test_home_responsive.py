@@ -908,7 +908,8 @@ class HomeResponsiveTest(unittest.TestCase):
     def test_ledger_mobile_entry_list_and_data_preservation(self):
         for width in (320, 360, 390, 430):
             with self.subTest(width=width):
-                page = self.browser.new_page(viewport={"width": width, "height": 670}, is_mobile=True, has_touch=True)
+                context = self.browser.new_context(viewport={"width": width, "height": 670}, is_mobile=True, has_touch=True)
+                page = context.new_page()
                 try:
                     page.add_init_script("""(() => {
                         const date=new Date(), day=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
@@ -945,7 +946,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     finally:
                         verify.close()
                 finally:
-                    page.close()
+                    context.close()
 
     def test_fire_retirement_mobile_detail_and_navigation(self):
         for width in (320, 375, 430):

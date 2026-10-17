@@ -1357,7 +1357,7 @@ function fmRunStrategyComparison(){
  const net=gross*(1-divCost);
  const gainRatio=B.reduce((n,x)=>n+Math.max(0,Number(x.amount)||0)*Math.min(100,Math.max(0,Number(x.rate)||0))/100,0)/tb;
  const required=spend+insurance;
- const sale=tax*gainRatio>=1?NaN:(required>tax*deduct?(required-tax*deduct)/(1-tax*gainRatio):required);
+ const sale=tax*gainRatio>=1?NaN:(required*gainRatio>deduct?(required-tax*deduct)/(1-tax*gainRatio):required);
  const saleTax=Math.max(0,sale*gainRatio-deduct)*tax;
  const fmt=n=>Number.isFinite(n)?rpFmt(n):'계산 불가';
  const warn=Math.abs(ta-budget)>1||Math.abs(tb-budget)>1?'<p style="color:#e6aa56">⚠ 두 전략 투자금이 목표자산과 달라요. 같은 총액으로 맞춰 비교하세요.</p>':'';

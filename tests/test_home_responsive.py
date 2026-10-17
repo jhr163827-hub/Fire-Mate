@@ -950,6 +950,36 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_shared_form_labels_dialog_names_and_back_navigation(self):
+        for width in (320, 390, 430):
+            with self.subTest(width=width):
+                page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
+                errors=[]
+                page.on('pageerror',lambda exc: errors.append(str(exc)))
+                try:
+                    page.goto(URL,wait_until='domcontentloaded')
+                    for field_id in ('accountName','holdingTicker','goal','rpMonthly','recDay'):
+                        self.assertTrue(page.locator('#'+field_id).evaluate('(el)=>!!el.labels?.length'),field_id)
+                    for dialog_id in ('entryOverlay','accountOverlay','holdingOverlay','recOverlay'):
+                        dialog=page.locator('#'+dialog_id+' [role="dialog"]')
+                        self.assertTrue(dialog.get_attribute('aria-labelledby'),dialog_id)
+                        self.assertIn('닫기',dialog.locator('[data-close]').get_attribute('aria-label'))
+                    self.assertEqual(page.locator('#theme').get_attribute('aria-label'),'라이트 모드로 전환')
+                    page.locator('.bottomnav [data-view="calendar"]').click()
+                    page.locator('#fmLedgerAddBtn').click()
+                    close=page.locator('#entryOverlay [data-close]')
+                    self.assertGreaterEqual(close.bounding_box()['height'],44)
+                    close.click()
+                    page.locator('#view-calendar [data-go="insights"]').click()
+                    self.assertTrue(page.locator('#view-insights').is_visible())
+                    self.assertGreaterEqual(page.locator('#view-insights .monthnav button').first.bounding_box()['height'],44)
+                    page.evaluate('history.back()')
+                    page.wait_for_function("document.querySelector('#view-calendar').classList.contains('active')")
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    self.assertFalse(errors)
+                finally:
+                    page.close()
+
     def test_ledger_mobile_entry_list_and_data_preservation(self):
         for width in (320, 360, 390, 430):
             with self.subTest(width=width):

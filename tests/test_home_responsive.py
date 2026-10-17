@@ -917,10 +917,10 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('.bottomnav [data-view="calendar"]').click()
                     page.locator('#fmModeList').click()
                     group=page.locator('#fmLedgerAllTx details.fm-ledger-day').first
-                    self.assertTrue(group.is_visible())
+                    self.assertTrue(group.is_visible(),page.evaluate("""() => ({active:document.querySelector('#view-calendar').className,paneHidden:document.querySelector('#fmLedgerListPane').hidden,html:document.querySelector('#fmLedgerAllTx').innerHTML.slice(0,300),stored:JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.length})"""))
                     self.assertTrue(group.evaluate('(el)=>el.open'))
                     self.assertIn('아주 긴 거래 설명',group.inner_text())
-                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,page.evaluate("""() => [...document.querySelectorAll('#view-calendar *')].filter(el=>{let r=el.getBoundingClientRect();return r.right>innerWidth+2&&r.width>0}).slice(0,12).map(el=>[el.id||el.className,Math.round(el.getBoundingClientRect().right)])"""))
                     group.locator('summary').click()
                     self.assertFalse(group.evaluate('(el)=>el.open'))
                     group.locator('summary').click()

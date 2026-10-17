@@ -158,6 +158,31 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_theme_save_failure_keeps_previous_setting(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="home"]').click()
+            previous = page.evaluate("""() => ({
+                theme: document.documentElement.dataset.theme,
+                stored: JSON.parse(localStorage.getItem('firemate_smart_v3')).theme
+            })""")
+            page.evaluate("""() => {
+                const original = Storage.prototype.setItem;
+                Storage.prototype.setItem = function(key, value) {
+                    if (key === 'firemate_smart_v3') throw new DOMException('Quota exceeded', 'QuotaExceededError');
+                    return original.call(this, key, value);
+                };
+            }""")
+            page.locator("#theme").click()
+            actual = page.evaluate("""() => ({
+                theme: document.documentElement.dataset.theme,
+                stored: JSON.parse(localStorage.getItem('firemate_smart_v3')).theme
+            })""")
+            self.assertEqual(actual, previous)
+        finally:
+            page.close()
+
     def test_saved_theme_survives_reload_and_navigation(self):
         # Real UI writes to the app's persisted data; no mocked storage.
         page = self.browser.new_page(viewport={"width": 390, "height": 844})

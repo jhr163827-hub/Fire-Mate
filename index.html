@@ -1343,7 +1343,7 @@ async function fmRenderDividends(){
  }
  if(!fmDivFeed)return;
  const now=new Date(),today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),current=today.slice(0,7);
- const year=fmDivSelectedYear;const months=Array.from({length:12},(_,i)=>year+'-'+String(i+1).padStart(2,'0'));const years=$('fmDivYears');years.innerHTML=[2024,2025,2026].map(y=>'<button type="button" class="'+(y===year?'active':'')+'" data-year="'+y+'">'+y+'년</button>').join('');years.querySelectorAll('button').forEach(b=>b.onclick=()=>{fmDivSelectedYear=Number(b.dataset.year);fmDivSelectedMonth=1;fmRenderDividends()});
+ const year=fmDivSelectedYear;const months=Array.from({length:12},(_,i)=>year+'-'+String(i+1).padStart(2,'0'));const years=$('fmDivYears');years.innerHTML=Array.from({length:Math.max(3,new Date().getFullYear()-2024+1)},(_,i)=>2024+i).map(y=>'<button type="button" class="'+(y===year?'active':'')+'" data-year="'+y+'">'+y+'년</button>').join('');years.querySelectorAll('button').forEach(b=>b.onclick=()=>{fmDivSelectedYear=Number(b.dataset.year);fmDivSelectedMonth=1;fmRenderDividends()});
  const totals=Object.fromEntries(months.map(m=>[m,0]));const grossTotals=Object.fromEntries(months.map(m=>[m,0]));
  const fx=Number(data.balance.fx)||0,qtyBySymbol={},namesBySymbol={};
  const fxAt=String(data.balance.fxAt||'').trim();$('fmDivFxBasis').textContent=fx>0?'미국 ETF 배당 환산: 1 USD = '+fx.toLocaleString('ko-KR',{maximumFractionDigits:2})+'원 · 환율 기준 '+(fxAt||'기록 없음'):'미국 ETF 배당 환산 환율이 설정되지 않았습니다.';

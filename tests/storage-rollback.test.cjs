@@ -22,7 +22,7 @@ process.exitCode = failed ? 1 : 0;
 const vm = require('node:vm');
 const storageCases = [
   ['FIRE settings', "const previousFire=data.fire;data.fire=p;if(!persist()){data.fire=previousFire;return}"],
-  ['retirement plan', "const previousRetirement=data.retirement;data.retirement={...previousRetirement,items:previousRetirement.items.map((it,i)=>({...it,amount:vals[i]})),monthly:nums[0],yield:nums[1],priceChange:nums[2],crash:nums[3]};if(!persist()){data.retirement=previousRetirement;return}"],
+  ['retirement plan', "const previousRetirement=data.retirement;data.retirement={...previousRetirement,items:previousRetirement.items.map((it,i)=>({...it,amount:vals[i]})),monthly:nums[0],yield:nums[1],priceChange:nums[2],crash:nums[3],taxRate:nums[4]};if(!persist()){data.retirement=previousRetirement;return}"],
   ['budget', "const previousBudgets={...data.budgets};data.budgets={...previousBudgets,[month]:v};if(!persist()){data.budgets=previousBudgets;return}"],
   ['other asset deletion', "const previousItems=a.items;a.items=a.items.filter(x=>x.id!==item.id);if(!persist()){a.items=previousItems;return}"],
   ['daily record deletion', "const previousDailySnapshots=data.dailySnapshots;data.dailySnapshots=previousDailySnapshots.filter(x=>x.day!==day);if(!persist()){data.dailySnapshots=previousDailySnapshots;return}"],
@@ -36,7 +36,7 @@ for (const [name, fragment] of storageCases) {
     };
     const a={items:[{id:'one',amount:100},{id:'two',amount:200}]};
     const before=JSON.stringify({data,a});
-    const context={data,a,p:{goal:200},vals:[20],nums:[20,5,7,25],month:'2026-10',v:900,
+    const context={data,a,p:{goal:200},vals:[20],nums:[20,5,7,25,20],month:'2026-10',v:900,
       item:{id:'one'},day:'2026-10-17',persist:()=>false};
     vm.runInNewContext('(function(){'+fragment+'})()',context);
     assert.equal(JSON.stringify({data,a}),before,name + ': failed persistence changed state');

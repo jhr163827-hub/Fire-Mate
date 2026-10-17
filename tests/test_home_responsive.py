@@ -83,6 +83,44 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_asset_destinations_search_and_dividend_one_tap(self):
+        for width in (320, 360, 390, 430):
+            with self.subTest(width=width):
+                page = self.browser.new_page(viewport={"width": width, "height": 720}, is_mobile=True, has_touch=True)
+                try:
+                    page.goto(URL, wait_until="domcontentloaded")
+                    page.evaluate("""() => {
+                        const saved=JSON.parse(localStorage.getItem('firemate_smart_v3'));
+                        saved.accounts=[{id:'a',name:'투자 계좌',kind:'investment',amount:0,fire:true}];
+                        saved.holdings=[
+                            {id:'h1',accountId:'a',type:'KRW',ticker:'AAA',name:'알파',qty:2,price:12000,cost:10000},
+                            {id:'h2',accountId:'a',type:'KRW',ticker:'BBB',quoteName:'베타',qty:3,price:5000,cost:6000}
+                        ];
+                        localStorage.setItem('firemate_smart_v3',JSON.stringify(saved));
+                    }""")
+                    page.reload(wait_until='domcontentloaded')
+                    page.locator('.bottomnav [data-view="assets"]').click()
+                    page.locator('#fmAssetQuickHoldings').click()
+                    self.assertTrue(page.locator('#fmAssetHoldingsPanel').is_visible())
+                    self.assertEqual(page.locator('#holdingList .tx').count(), 2)
+                    page.locator('#fmHoldingSearch').fill('BBB')
+                    self.assertEqual(page.locator('#holdingList .tx').count(), 1)
+                    self.assertIn('베타', page.locator('#holdingList').inner_text())
+                    page.locator('#fmHoldingSort').select_option('profit')
+                    page.locator('#fmHoldingSearch').fill('')
+                    self.assertEqual(page.locator('#holdingList .tx').count(), 2)
+                    page.locator('#fmAssetQuickDividend').click()
+                    self.assertTrue(page.locator('#fmAssetAnalysis').evaluate('(e) => e.open'))
+                    self.assertTrue(page.locator('#fmDividendPanel').is_visible())
+                    page.locator('#fmAssetQuickAnalysis').click()
+                    self.assertTrue(page.locator('#fmAssetDonut').is_visible())
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'), width + 2)
+                    page.locator('#fmAssetQuickAccounts').click()
+                    self.assertTrue(page.locator('#fmAssetAccountsPanel').is_visible())
+                    self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length"), 2)
+                finally:
+                    page.close()
+
     def test_home_layouts(self):
         for width in WIDTHS:
             for height in HEIGHTS:

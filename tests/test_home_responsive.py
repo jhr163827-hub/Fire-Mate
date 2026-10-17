@@ -344,6 +344,45 @@ class HomeResponsiveTest(unittest.TestCase):
             page.context.set_offline(False)
             page.close()
 
+    def test_financial_asset_values_and_fire_progress_with_fixed_fx(self):
+        page = self.browser.new_page(viewport={"width": 390, "height": 844})
+        try:
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
+            page.add_init_script("""(() => {
+                const fixture={
+                    tx:[],rec:[],budgets:{},favorites:[],theme:'dark',
+                    fire:{asset:0,goal:100,monthly:0,rate:0,withdrawal:4},
+                    holdings:[
+                        {type:'USD',qty:2,price:100,cost:80,accountId:'a'},
+                        {type:'KRW',qty:3,price:10000,cost:9000,accountId:'b'}
+                    ],
+                    accounts:[
+                        {id:'a',name:'US',kind:'investment',amount:5000,fire:true},
+                        {id:'b',name:'KR',kind:'investment',amount:0,fire:false,items:[{amount:7000}]}
+                    ],
+                    balance:{fx:1400,cash:10000,other:2000,debt:3000,
+                             fxCheckedAt:new Date().toISOString().slice(0,10)}
+                };
+                localStorage.setItem('firemate_smart_v3',JSON.stringify(fixture));
+            })()""")
+            expected_net=331000
+            expected_percent="33.1%"
+            page.goto(URL, wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="home"]').click()
+            page.wait_for_function("""() => document.querySelector('#homeTotalAssets')?.textContent?.includes('331,000')""")
+            self.assertIn("331,000", page.locator("#homeTotalAssets").inner_text())
+            self.assertEqual(page.locator("#homeAssetPercent").inner_text(), expected_percent)
+            page.locator('.bottomnav [data-view="fire"]').click()
+            self.assertEqual(page.locator("#firePct").inner_text(), expected_percent)
+            page.reload(wait_until="domcontentloaded")
+            self.assertIn("331,000", page.locator("#homeTotalAssets").inner_text())
+            saved=page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3'))""")
+            self.assertEqual(saved["balance"]["fx"], 1400)
+            self.assertEqual(saved["balance"]["debt"], 3000)
+            self.assertEqual(saved["holdings"][0]["qty"], 2)
+        finally:
+            page.close()
+
     def test_legacy_partial_saved_data_is_normalized(self):
         for legacy in (
             {"fire": None, "balance": None, "tx": None, "accounts": None},
@@ -352,7 +391,7 @@ class HomeResponsiveTest(unittest.TestCase):
             with self.subTest(legacy=legacy):
                 page = self.browser.new_page(viewport={"width": 390, "height": 844})
                 try:
-                    page.add_init_script("""payload => localStorage.setItem('firemate_smart_v3',JSON.stringify(payload))""", legacy)
+                    page.add_init_script("localStorage.setItem('firemate_smart_v3', " + repr(__import__('json').dumps(legacy)) + ")")
                     page.goto(URL, wait_until="domcontentloaded")
                     self.assertTrue(page.locator("#view-home").count() == 1)
                     page.locator('.bottomnav [data-view="fire"]').click()

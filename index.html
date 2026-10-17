@@ -1001,11 +1001,23 @@ function fmRestoreDryRunTest(){
  let rejected=false;try{fmValidateBackup({...payload,data:{...source,tx:[{date:'2026-02-30',amount:1}]}})}catch{rejected=true}
  if(!rejected)throw Error('손상 백업 차단 검사 실패');
  const existing={sentinel:'keep'},snapshot=JSON.stringify(existing);
- const cancelled=false;
- if(cancelled||JSON.stringify(existing)!==snapshot)throw Error('복원 취소 데이터 보호 실패');
- const mockStore={value:snapshot,setItem(){throw Error('simulated quota error')}};
- try{mockStore.setItem(JSON.stringify(prepared))}catch{}
- if(mockStore.value!==snapshot)throw Error('저장 실패 원본 보호 검사 실패');
+ const restoreToMock=(store,payload,approved)=>{
+  if(!approved)return false;
+  const d=fmValidateBackup(payload),candidate=fmPrepareBackupData(d),prior=store.value;
+  try{store.setItem(JSON.stringify(candidate));return true}
+  catch{store.value=prior;return false}
+ };
+ const store={value:snapshot,setItem(v){this.value=v}};
+ if(restoreToMock(store,payload,false)!==false||store.value!==snapshot)throw Error('복원 취소 데이터 보호 실패');
+ if(!restoreToMock(store,payload,true))throw Error('정상 복원 실행 실패');
+ const roundtrip=JSON.parse(store.value);
+ if(roundtrip.tx.length!==1||roundtrip.accounts[0].id!=='dry-account'||roundtrip.holdings[0].qty!==2)throw Error('정상 복원 저장 결과 불일치');
+ store.value=snapshot;
+ const corrupt={...payload,data:{...source,tx:[{date:'2026-02-30',amount:1}]}};
+ let invalidBlocked=false;try{restoreToMock(store,corrupt,true)}catch{invalidBlocked=true}
+ if(!invalidBlocked||store.value!==snapshot)throw Error('손상 파일 복원 차단 실패');
+ const failedStore={value:snapshot,setItem(){throw Error('simulated quota error')}};
+ if(restoreToMock(failedStore,payload,true)!==false||failedStore.value!==snapshot)throw Error('저장 실패 원본 보호 검사 실패');
  return true;
 }
 function fmBackupSelfTest(){
@@ -2034,7 +2046,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-288',VERSION='3.0.288';
+ const BUILD='fire-mate-v3-0-289',VERSION='3.0.289';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

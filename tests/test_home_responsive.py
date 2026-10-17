@@ -121,6 +121,36 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_ledger_view_preference_search_and_back_restore(self):
+        page = self.browser.new_page(viewport={"width": 360, "height": 720}, is_mobile=True, has_touch=True)
+        try:
+            page.goto(URL, wait_until='domcontentloaded')
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            page.locator('#fmModeList').click()
+            self.assertEqual(page.evaluate("localStorage.getItem('firemate_ledger_view_v1')"), 'list')
+            self.assertTrue(page.locator('#fmLedgerListPane').is_visible())
+            page.locator('#fmLedgerAddBtn').click()
+            page.locator('#entryAmount').fill('13579')
+            page.locator('#entryMemo').fill('작성 중 보존')
+            page.locator('#entryOverlay [data-close]').first.click()
+            page.locator('#fmModeCalendar').click()
+            self.assertEqual(page.evaluate("localStorage.getItem('firemate_ledger_view_v1')"), 'calendar')
+            page.locator('#fmLedgerSearchBtn').click()
+            self.assertTrue(page.locator('#fmLedgerListPane').is_visible())
+            self.assertEqual(page.evaluate("localStorage.getItem('firemate_ledger_view_v1')"), 'calendar')
+            page.locator('.bottomnav [data-view="home"]').click()
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            self.assertTrue(page.locator('#fmLedgerCalendarPane').is_visible())
+            page.locator('#fmModeList').click()
+            page.reload(wait_until='domcontentloaded')
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            self.assertTrue(page.locator('#fmLedgerListPane').is_visible())
+            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'), 362)
+            page.go_back(wait_until='domcontentloaded')
+            self.assertEqual(page.locator('#entryOverlay.show').count(), 0)
+        finally:
+            page.close()
+
     def test_home_layouts(self):
         for width in WIDTHS:
             for height in HEIGHTS:

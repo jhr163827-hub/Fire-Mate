@@ -207,6 +207,19 @@ class HomeResponsiveTest(unittest.TestCase):
                 finally:
                     page.close()
 
+    def test_ledger_and_fire_actions_have_touch_targets(self):
+        page=self.browser.new_page(viewport={"width":320,"height":670},is_mobile=True,has_touch=True)
+        try:
+            page.goto(URL,wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="calendar"]').click()
+            for selector in ('#fmModeCalendar','#fmModeList','#fmLedgerAddBtn','#fmLedgerBudgetEdit'):
+                self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)
+            page.locator('.bottomnav [data-view="fire"]').click()
+            for selector in ('#fmFirePortfolioOpen','#fmFireLifeOpen'):
+                self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)
+        finally:
+            page.close()
+
     def test_home_progress_and_activity_computed_styles(self):
         # Check the actual cascade across narrow mobile widths and short/tall heights.
         for width in [320, 360, 375, 390, 430]:

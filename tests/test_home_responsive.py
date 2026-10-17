@@ -99,6 +99,9 @@ class HomeResponsiveTest(unittest.TestCase):
                     })()""")
                     page.goto(URL, wait_until="domcontentloaded")
                     page.locator('.bottomnav [data-view="assets"]').click()
+                    quick_bottom = page.locator('.fm-asset-jump').bounding_box()['y'] + page.locator('.fm-asset-jump').bounding_box()['height']
+                    accounts_top = page.locator('#fmAssetAccountsPanel').bounding_box()['y']
+                    self.assertLess(quick_bottom, accounts_top, '자산 탐색은 계좌 목록보다 먼저 보여야 합니다')
                     page.locator('#fmAssetQuickHoldings').click()
                     self.assertTrue(page.locator('#fmAssetHoldingsPanel').is_visible())
                     self.assertEqual(page.locator('#holdingList .tx').count(), 2,

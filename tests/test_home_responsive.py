@@ -102,7 +102,10 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('.bottomnav [data-view="assets"]').click()
                     page.locator('#fmAssetQuickHoldings').click()
                     self.assertTrue(page.locator('#fmAssetHoldingsPanel').is_visible())
-                    self.assertEqual(page.locator('#holdingList .tx').count(), 2)
+                    self.assertEqual(page.locator('#holdingList .tx').count(), 2,
+                                     page.evaluate("""() => ({saved:JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length,
+                                         loaded:data.holdings.length,filter:selectedAccount,visible:fmVisibleHoldings().length,
+                                         content:document.getElementById('holdingList').textContent.slice(0,100)})"""))
                     page.locator('#fmHoldingSearch').fill('BBB')
                     self.assertEqual(page.locator('#holdingList .tx').count(), 1)
                     self.assertIn('베타', page.locator('#holdingList').inner_text())
@@ -150,6 +153,34 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(page.locator('#entryOverlay.show').count(), 0)
         finally:
             page.close()
+
+    def test_fire_four_stage_flow_and_unsaved_goal_draft(self):
+        for width in (320, 360, 390, 430):
+            with self.subTest(width=width):
+                page = self.browser.new_page(viewport={"width": width, "height": 720}, is_mobile=True, has_touch=True)
+                try:
+                    page.goto(URL, wait_until='domcontentloaded')
+                    page.locator('.bottomnav [data-view="fire"]').click()
+                    self.assertTrue(page.locator('#firePct').is_visible())
+                    self.assertTrue(page.locator('#fireYears').is_visible())
+                    self.assertIn('배당 FIRE', page.locator('#fmFireStrategyPreview').inner_text())
+                    positions=page.evaluate("""() => ['.fm-fire-hero','.fm-fire-calc-card','.fm-fire-life-card','.fm-fire-strategy-card']
+                        .map(selector => document.querySelector('#view-fire '+selector).getBoundingClientRect().y + scrollY)""")
+                    self.assertEqual(positions, sorted(positions))
+                    page.locator('#fmOpenCalculator').click()
+                    page.locator('#goal').fill('75000')
+                    page.locator('.bottomnav [data-view="fire"]').click()
+                    page.locator('#fmOpenCalculator').click()
+                    self.assertEqual(page.locator('#goal').input_value(), '75000')
+                    page.locator('#fmBackFire').click()
+                    page.locator('#fmFireStrategyOpen').click()
+                    self.assertTrue(page.locator('#fmStrategyDetails').evaluate('(e) => e.open'))
+                    self.assertTrue(page.locator('#fmStrQuickPanel').is_visible())
+                    page.go_back(wait_until='domcontentloaded')
+                    self.assertTrue(page.locator('#view-fire').is_visible())
+                    self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'), width+2)
+                finally:
+                    page.close()
 
     def test_home_layouts(self):
         for width in WIDTHS:

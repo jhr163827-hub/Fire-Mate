@@ -142,7 +142,9 @@ class HomeResponsiveTest(unittest.TestCase):
                                        timeout=10000)
                 actual = page.locator("#homeTotalAssets").inner_text()
                 digits = int("".join(ch for ch in actual if ch.isdigit()))
-                self.assertEqual(digits, expected_net, f"Attempt {attempt}: incorrect net assets")
+                snapshot = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3'))""")
+                self.assertEqual(digits, expected_net,
+                                 f"Attempt {attempt}: incorrect net assets; balance={snapshot.get('balance')}; holdings={snapshot.get('holdings')}")
                 self.assertEqual(page.locator("#homeAssetPercent").inner_text(),
                                  f"{expected_pct:.1f}%")
                 page.locator('.bottomnav [data-view="fire"]').click()

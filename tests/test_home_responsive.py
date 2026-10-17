@@ -1003,7 +1003,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             if theme=='light':
                                 page.locator('#theme').click()
                             page.locator('.bottomnav [data-view="home"]').click()
-                            page.locator('#view-home [data-go="history"]').click()
+                            page.locator('#view-home .home-shortcuts [data-go="history"]').click()
                             self.assertTrue(page.locator('#historyList [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'history')
                             self.assertGreaterEqual(page.locator('#historyList [data-edit="long-mobile-tx"]').bounding_box()['height'],44)

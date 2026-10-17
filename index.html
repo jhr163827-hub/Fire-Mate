@@ -1631,7 +1631,7 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
    const sale=Math.min(invested,Math.max(0,grossNeeded));
    const tax=Math.max(0,sale*share-250)*0.22;
    invested-=sale;cumulativeTax+=tax;
-   ledger.push({year:y,opening,investmentReturn,sale,tax,spending:fromCash+Math.min(needed,Math.max(0,sale-tax)),closing:cash+invested,shortfall:Math.max(0,needed-(sale-tax))});
+   ledger.push({year:y,opening,investmentReturn,fromCash,sale,tax,spending:fromCash+Math.min(needed,Math.max(0,sale-tax)),closing:cash+invested,shortfall:Math.max(0,needed-(sale-tax))});
    series.push(cash+invested);
   }
   return {ledger,series,cumulativeTax};
@@ -1649,7 +1649,7 @@ function fmStrRenderSurvival({budget,ta,tb,gross,net,spend,insurance,B}){
   ['연도별 잔액 연결',taxed.ledger.every((y,i)=>close(y.opening,taxed.series[i])&&close(y.closing,taxed.series[i+1]))],
   ['세액 합계',close(taxed.cumulativeTax,taxed.ledger.reduce((n,y)=>n+y.tax,0))],
   ['매도세 계산',taxed.ledger.every(y=>close(y.tax,Math.max(0,y.sale*gainShare-250)*0.22))],
-  ['연도별 자산 증감',taxed.ledger.every(y=>close(y.closing,y.opening+y.investmentReturn-y.sale))],
+  ['연도별 자산 증감',taxed.ledger.every(y=>close(y.closing,y.opening+y.investmentReturn-y.fromCash-y.sale))],
   ['생활비 충당·부족액',taxed.ledger.every(y=>close(y.spending+y.shortfall,(spend+insurance)*Math.pow(1+inflation,y.year-1)))],
   ['잔여 자산 유한성',taxed.series.every(y=>Number.isFinite(y)&&y>=-0.01)]
  ];
@@ -2006,7 +2006,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-0-283',VERSION='3.0.283';
+ const BUILD='fire-mate-v3-0-284',VERSION='3.0.284';
  let busy=false;
  const button=document.createElement('button');
  button.id='fmManualUpdate';button.className='iconbtn';button.type='button';

@@ -168,3 +168,33 @@ test('production 30-year projection matches independent compound monthly referen
   expect(actual[i].series.at(-1)).toBeCloseTo(expected,6);
  }
 });
+
+for(const width of [320,360,390,430]){
+ for(const theme of ['dark','light']){
+  test('seeded '+width+'px '+theme+' theme retains assets after reload and reopening',async({page,context})=>{
+   await page.setViewportSize({width,height:850});
+   const fixture={theme,tx:[{id:'qa-tx',date:'2026-10-01',type:'expense',category:'식비',amount:9000,memo:'QA'}],holdings:[{id:'qa-us',accountId:'qa-account',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80},{id:'qa-kr',accountId:'qa-account',ticker:'005930',type:'KRW',qty:3,price:10000,cost:9000}],accounts:[{id:'qa-account',name:'QA',kind:'investment',amount:10000,fire:true}],balance:{fx:1400,cash:5000,other:0,debt:0},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4}};
+   await page.goto('/index.html');
+   await page.evaluate(seed=>localStorage.setItem('firemate_smart_v3',JSON.stringify(seed)),fixture);
+   await page.reload();
+   await expect(page.locator('html')).toHaveAttribute('data-theme',theme);
+   await page.locator('button.bottom-item[data-view="assets"]').click();
+   for(const id of ['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickDividend','fmAssetQuickAnalysis']){
+    await page.locator('#'+id).click();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+   }
+   await page.reload();
+   const saved=JSON.parse(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3')));
+   expect(saved.holdings).toEqual(fixture.holdings);
+   expect(saved.tx).toEqual(fixture.tx);
+   expect(saved.balance.fx).toBe(1400);
+   await page.close();
+   const reopened=await context.newPage();
+   await reopened.goto('/index.html');
+   await expect(reopened.locator('html')).toHaveAttribute('data-theme',theme);
+   const reopenedData=JSON.parse(await reopened.evaluate(()=>localStorage.getItem('firemate_smart_v3')));
+   expect(reopenedData.holdings).toEqual(fixture.holdings);
+   expect(reopenedData.tx).toEqual(fixture.tx);
+  });
+ }
+}

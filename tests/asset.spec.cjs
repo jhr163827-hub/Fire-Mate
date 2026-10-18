@@ -27,6 +27,18 @@ for(const width of [320,360,390,430]){
    const after=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
    expect(after).toEqual(before);
   });
+  test('analysis has no duplicate dividend navigation and dividend panel stays separate',async({page})=>{
+   await page.goto('/index.html');
+   await page.locator('button.bottom-item[data-view="assets"]').click();
+   await page.locator('#fmAssetQuickAnalysis').click();
+   await expect(page.locator('#fmAssetAnalysisView')).toBeVisible();
+   await expect(page.locator('#fmAssetAnalysisView #fmDividendTab')).toHaveCount(0);
+   await expect(page.locator('#fmAssetAnalysisView #fmDividendPanel')).toHaveCount(0);
+   await page.locator('#fmAssetQuickDividend').click();
+   await expect(page.locator('#fmAssetDividendView #fmDividendPanel')).toBeVisible();
+   await page.locator('#fmAssetQuickAnalysis').click();
+   await expect(page.locator('#fmAssetDividendView')).toBeHidden();
+  });
   test('dividend rows are accessible when dividend data exists',async({page})=>{
    await page.goto('/index.html');await page.locator('button.bottom-item[data-view="assets"]').click();
    await page.locator('#fmAssetQuickDividend').click();

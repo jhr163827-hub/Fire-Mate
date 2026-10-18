@@ -35,3 +35,21 @@ test('stage10 separates money target completion from retirement spending at mobi
   expect(errors).toEqual([]);await context.close();
  }
 });
+test('stage10 compares drafts, cancels and saves only FIRE settings with real quota rollback',async({browser})=>{
+ test.setTimeout(120000);
+ for(const width of [320,390])for(const theme of ['dark','light']){
+  const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});await context.route('https://api.frankfurter.dev/**',r=>r.abort());const page=await context.newPage();
+  await page.goto('/index.html');await page.evaluate(theme=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=theme;d.accounts=[{id:'cash',amount:150000000,fire:true}];d.holdings=[];d.balance={fx:1400,cash:0,other:0,debt:0};d.fire={asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4};d.retirement={items:[{name:'JEPQ',amount:10000}],monthly:275,yield:4,priceChange:0,crash:25};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))},theme);await page.reload();
+  const read=()=>page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));return {fire:d.fire,retirement:d.retirement,accounts:d.accounts,holdings:d.holdings,tx:d.tx,balance:d.balance,budgets:d.budgets}});const before=await read();
+  await page.locator('.bottomnav [data-view="fire"]').click();await page.locator('#fmOpenCalculator').click();await expect(page.locator('#fmPreviewResult')).toContainText('8년 2개월');
+  await page.locator('#monthly').fill('350');await expect(page.locator('#fmFireDraftStatus')).toContainText('미반영');await expect(page.locator('#fmPreviewResult')).toContainText('7년 5개월');await expect(page.locator('.fm-fire-time-delta')).toContainText('9개월 단축');expect(await read()).toEqual(before);
+  await page.locator('#fmBackFire').click();await expect(page.locator('#fireYears')).toHaveText('8년 2개월');await expect(page.locator('#fmOpenCalculator')).toContainText('미저장');await page.locator('.bottomnav [data-view="assets"]').click();await page.locator('.bottomnav [data-view="fire"]').click();await page.locator('#fmOpenCalculator').click();await expect(page.locator('#monthly')).toHaveValue('350');
+  await page.locator('#fmCancelFireDraft').click();await expect(page.locator('#monthly')).toHaveValue('300');await expect(page.locator('#fmFireDraftStatus')).toContainText('저장된 계획');expect(await read()).toEqual(before);
+  await page.locator('#monthly').fill('350');page.once('dialog',d=>d.dismiss());await page.locator('#saveFire').click();expect(await read()).toEqual(before);
+  await page.evaluate(()=>{window.stage10SetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='firemate_smart_v3')throw new DOMException('Quota exceeded','QuotaExceededError');return window.stage10SetItem.call(this,k,v)}});
+  page.once('dialog',d=>d.accept());await page.locator('#saveFire').click();expect(await read()).toEqual(before);await expect(page.locator('#monthly')).toHaveValue('350');await expect(page.locator('#fmFireDraftStatus')).toContainText('미반영');await page.evaluate(()=>{Storage.prototype.setItem=window.stage10SetItem});
+  await page.setViewportSize({width,height:420});await page.locator('#monthly').focus();await page.locator('#saveFire').scrollIntoViewIfNeeded();const box=await page.locator('#saveFire').boundingBox();expect(box.height).toBeGreaterThanOrEqual(44);expect(box.y).toBeGreaterThanOrEqual(0);expect(box.y+box.height).toBeLessThanOrEqual(421);
+  page.once('dialog',d=>d.accept());await page.locator('#saveFire').click();const after=await read();expect(after.fire).toEqual({...before.fire,monthly:350});for(const key of ['retirement','accounts','holdings','tx','balance','budgets'])expect(after[key]).toEqual(before[key]);
+  await page.reload();await expect(page.locator('#monthly')).toHaveValue('350');expect(await read()).toEqual(after);expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);await context.close();
+ }
+});

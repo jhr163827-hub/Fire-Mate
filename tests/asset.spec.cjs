@@ -64,7 +64,14 @@ for(const width of [320,360,390,430]){
    await expect(page.locator('#view-calendar')).toHaveClass(/active/);
   });
   test('viewport has no horizontal overflow and navigation preserves persisted finance data',async({page})=>{
+   await page.route('https://api.frankfurter.dev/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({date:new Date().toISOString().slice(0,10),rates:{KRW:1400}})}));
    await page.goto('/index.html');
+   // Wait for the application's asynchronous FX refresh before capturing persisted data.
+   // The refresh is legitimate finance data persistence, not navigation data loss.
+   await page.waitForFunction(()=>{
+    const saved=JSON.parse(localStorage.getItem('firemate_smart_v3')||'null');
+    return saved?.balance?.fxCheckedAt===new Date().toISOString().slice(0,10);
+   },null,{timeout:10000});
    const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
    await page.locator('button.bottom-item[data-view="assets"]').click();
    for(const id of ['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickAnalysis']){

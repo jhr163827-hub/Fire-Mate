@@ -1,0 +1,12 @@
+{
+  "name": "fire-mate-quality",
+  "private": true,
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:finance": "node --test tests/finance.test.cjs",
+    "test": "npm run test:finance && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0"
+  }
+}

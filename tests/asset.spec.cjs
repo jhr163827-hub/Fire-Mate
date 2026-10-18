@@ -94,11 +94,12 @@ for(const width of [320,360,390,430]){
    await page.locator('#fmAssetQuickAnalysis').click();
    await expect(page.locator('#fmAssetDividendView')).toBeHidden();
   });
-  test('seeded dividend row opens holding detail by click, Enter and Space, then browser back',async({page})=>{
+  test('seeded dividend row opens holding detail by click, Enter and Space, then browser back',async({page,context})=>{
    const now=new Date();const day=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),'01'].join('-');
    const seed={tx:[{id:'qa-tx',date:day,type:'expense',category:'식비',amount:9000,memo:'QA meal'}],rec:[],budgets:{},theme:'dark',fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:10000,other:2000,debt:3000},accounts:[{id:'qa-us',name:'QA US',kind:'investment',amount:5000,fire:true},{id:'qa-kr',name:'QA KR',kind:'investment',amount:7000,fire:true}],holdings:[{id:'qa-us1',accountId:'qa-us',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80},{id:'qa-us2',accountId:'qa-kr',ticker:'JEPQ',type:'USD',qty:3,price:100,cost:90},{id:'qa-kr1',accountId:'qa-kr',ticker:'005930',type:'KRW',qty:3,price:10000,cost:9000}]};
    await page.addInitScript(value=>localStorage.setItem('firemate_smart_v3',JSON.stringify(value)),seed);
-   await page.route('**/dividends.json?*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({updatedAt:day,symbols:{JEPQ:{currency:'USD',events:[{date:day,amount:0.5}]},'005930.KS':{currency:'KRW',events:[{date:day,amount:100}]}}})}));
+   // Include service-worker-owned fetches and both feed URL forms.
+   await context.route(/\/dividends\.json(?:\?|$)/,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({updatedAt:day,symbols:{JEPQ:{currency:'USD',events:[{date:day,amount:0.5}]},'005930.KS':{currency:'KRW',events:[{date:day,amount:100}]}}})}));
    await page.goto('/index.html');
    await page.locator('button.bottom-item[data-view="assets"]').click();
    await page.locator('#fmAssetQuickDividend').click();
@@ -208,11 +209,12 @@ for(const width of [320,360,390,430]){
  }
 }
 
-test('dividend gross/net totals aggregate USD across accounts and KRW with correct withholding',async({page})=>{
+test('dividend gross/net totals aggregate USD across accounts and KRW with correct withholding',async({page,context})=>{
  const now=new Date(),date=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),'01'].join('-');
  const fixture={theme:'dark',tx:[],rec:[],budgets:{},balance:{fx:1400,fxCheckedAt:[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-'),cash:0,other:0,debt:0},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},accounts:[{id:'a',name:'US A',kind:'investment',amount:0,fire:true},{id:'b',name:'US B',kind:'investment',amount:0,fire:true},{id:'c',name:'KR',kind:'investment',amount:0,fire:true}],holdings:[{id:'a1',accountId:'a',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80},{id:'b1',accountId:'b',ticker:'JEPQ',type:'USD',qty:3,price:100,cost:90},{id:'c1',accountId:'c',ticker:'005930',type:'KRW',qty:3,price:10000,cost:9000}]};
  await page.addInitScript(seed=>localStorage.setItem('firemate_smart_v3',JSON.stringify(seed)),fixture);
- await page.route('**/dividends.json?*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({updatedAt:date,symbols:{JEPQ:{currency:'USD',events:[{date,amount:0.5}]},'005930.KS':{currency:'KRW',events:[{date,amount:100}]}}})}));
+ // Page routes cannot intercept the service worker's forwarded feed request.
+ await context.route(/\/dividends\.json(?:\?|$)/,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({updatedAt:date,symbols:{JEPQ:{currency:'USD',events:[{date,amount:0.5}]},'005930.KS':{currency:'KRW',events:[{date,amount:100}]}}})}));
  await page.goto('/index.html');
  await page.locator('button.bottom-item[data-view="assets"]').click();
  await page.locator('#fmAssetQuickDividend').click();

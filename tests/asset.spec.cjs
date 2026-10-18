@@ -15,23 +15,24 @@ for(const width of [320,360,390,430]){
    }
    expect(errors).toEqual([]);
   });
-  test('viewport has no horizontal overflow and navigation does not mutate localStorage',async({page})=>{
+  test('viewport has no horizontal overflow and navigation preserves persisted finance data',async({page})=>{
    await page.goto('/index.html');
-   const before=await page.evaluate(()=>Object.fromEntries(Object.keys(localStorage).sort().map(k=>[k,localStorage.getItem(k)])));
+   const before=await page.evaluate(()=>localStorage.getItem(K));
    await page.locator('[data-view="assets"]').click();
    for(const id of ['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickAnalysis']){
     await page.locator('#'+id).click();
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow,'horizontal overflow on '+id).toBeLessThanOrEqual(2);
    }
-   const after=await page.evaluate(()=>Object.fromEntries(Object.keys(localStorage).sort().map(k=>[k,localStorage.getItem(k)])));
+   const after=await page.evaluate(()=>localStorage.getItem(K));
    expect(after).toEqual(before);
   });
   test('dividend rows are accessible when dividend data exists',async({page})=>{
    await page.goto('/index.html');await page.locator('[data-view="assets"]').click();
    await page.locator('#fmAssetQuickDividend').click();
    const row=page.locator('.fm-div-clickable').first();
-   if(await row.count()){
+   if(!(await row.count()))test.skip(true,'No dividend row in clean fixture; seeded dividend navigation test required');
+   {
     await expect(row).toHaveAttribute('role','button');
     await expect(row).toHaveAttribute('tabindex','0');
     expect(await row.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);

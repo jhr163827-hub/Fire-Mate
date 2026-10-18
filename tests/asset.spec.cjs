@@ -138,3 +138,33 @@ test('production finance functions agree with independent reference fixture',asy
  expect(result.fire).toBe(292000);
  expect(result.selfTest).toBe(true);
 });
+
+test('theme save failure rolls back UI and preserves original finance data',async({page})=>{
+ const fixture={theme:'dark',tx:[{id:'qa-1',date:'2026-10-01',type:'expense',amount:9000,category:'식비'}],holdings:[{id:'qa-h',accountId:'legacy-us',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80}],balance:{fx:1400,cash:5000,other:0,debt:0},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4}};
+ await page.addInitScript(seed=>localStorage.setItem('firemate_smart_v3',JSON.stringify(seed)),fixture);
+ await page.goto('/index.html');
+ const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
+ await page.evaluate(()=>{
+  const original=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){if(key==='firemate_smart_v3')throw new DOMException('Quota exceeded','QuotaExceededError');return original.call(this,key,value)};
+ });
+ await page.locator('#theme').click();
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).toBe(before);
+ await page.reload();
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).holdings).toEqual(fixture.holdings);
+});
+
+test('production 30-year projection matches independent compound monthly reference',async({page})=>{
+ await page.goto('/index.html');
+ const cases=[{asset:15000,monthly:300,rate:7,months:360},{asset:0,monthly:200,rate:0,months:360},{asset:10000,monthly:0,rate:12,months:360}];
+ const actual=await page.evaluate(cases=>cases.map(c=>window.__fmFinanceTest.projection(c.asset,c.monthly,c.rate,c.months)),cases);
+ for(let i=0;i<cases.length;i++){
+  const c=cases[i],monthlyRate=Math.pow(1+c.rate/100,1/12)-1;
+  let expected=c.asset;
+  for(let month=0;month<c.months;month++)expected=expected*(1+monthlyRate)+c.monthly;
+  expect(actual[i].projected).toBeCloseTo(expected,6);
+  expect(actual[i].series.at(-1)).toBeCloseTo(expected,6);
+ }
+});

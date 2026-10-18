@@ -42,10 +42,13 @@ for(const width of [320,360,390,430]){
 }
 
 test('production finance functions agree with independent reference fixture',async({page})=>{
- await page.goto('/index.html');
- const result=await page.evaluate(()=>{
-  const old=data;
-  try{
+ // Inject a test-only hook inside the existing IIFE; production files remain unchanged.
+ await page.route('**/index.html',async route=>{
+  const response=await route.fetch();
+  let html=await response.text();
+  const marker='function fmAssetMathSelfTest(){';
+  expect(html.includes(marker)).toBe(true);
+  const hook=`window.__fmFinanceFixture=()=>{const old=data;try{
    data={...old,holdings:[
     {id:'qa',accountId:'a',ticker:'QA',type:'USD',qty:2,price:100,cost:80},
     {id:'qb',accountId:'b',ticker:'QA',type:'USD',qty:3,price:100,cost:90},
@@ -53,8 +56,12 @@ test('production finance functions agree with independent reference fixture',asy
    ],accounts:[{id:'a',amount:5000,fire:true},{id:'b',amount:0,fire:false,items:[{amount:7000}]}],balance:{...old.balance,fx:1400,cash:10000,other:2000,debt:3000}};
    const vals=data.holdings.map(h=>({value:assetValue(h),cost:assetCost(h)}));
    return {vals,net:netAsset(),fire:fireLiquid(),selfTest:fmAssetMathSelfTest()};
-  }finally{data=old}
+  }finally{data=old}};\n`;
+  html=html.replace(marker,hook+marker);
+  await route.fulfill({response,body:html});
  });
+ await page.goto('/index.html');
+ const result=await page.evaluate(()=>window.__fmFinanceFixture());
  expect(result.vals).toEqual([{value:280000,cost:224000},{value:420000,cost:378000},{value:30000,cost:27000}]);
  expect(result.net).toBe(751000);
  expect(result.fire).toBe(292000);

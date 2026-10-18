@@ -731,7 +731,7 @@ class HomeResponsiveTest(unittest.TestCase):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:
             page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
-            page.route("https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check=*",
+            page.context.route("**/?fmUpdateCheck=*",
                        lambda route: route.fulfill(status=200, content_type="text/html",
                                                    body="""const BUILD='fire-mate-v99-0-0'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))
             page.goto(URL, wait_until="domcontentloaded")
@@ -748,9 +748,25 @@ class HomeResponsiveTest(unittest.TestCase):
         page = self.browser.new_page(viewport={"width": 390, "height": 844})
         try:
             page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
-            page.route("https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/index.html?check=*",
+            page.context.route("**/?fmUpdateCheck=*",
                        lambda route: route.fulfill(status=200, content_type="text/html",
                                                    body="""const BUILD='fire-mate-v99-0-0'; id="view-home" id="view-assets" id="view-fire" id="settingsOverlay" function renderFire() """ + "x" * 100100))
+            # Unit-level protocol check; the Node lifecycle test uses real workers.
+            page.add_init_script("""(()=>{
+                const worker={postMessage(message,ports){
+                    if(message.type==='GET_BUILD')ports[0].postMessage({build:'fire-mate-v99-0-0'});
+                    if(message.type==='SKIP_WAITING'){
+                        sessionStorage.setItem('stage9-activation-requested','1');
+                        reg.waiting=null;reg.active=worker;controller=worker;
+                        navigator.serviceWorker.dispatchEvent(new Event('controllerchange'));
+                    }
+                }};
+                let controller=worker;
+                const reg={waiting:worker,active:worker,installing:null,update:async()=>{},addEventListener:()=>{}};
+                navigator.serviceWorker.register=async()=>reg;
+                navigator.serviceWorker.getRegistration=async()=>reg;
+                Object.defineProperty(navigator.serviceWorker,'controller',{get:()=>controller});
+            })()""")
             page.goto(URL, wait_until="domcontentloaded")
             page.evaluate("""() => localStorage.setItem('fm-pwa-test-marker', 'keep')""")
             page.locator("#fmManualUpdate").click()
@@ -758,6 +774,7 @@ class HomeResponsiveTest(unittest.TestCase):
             page.get_by_role("button", name="지금 업데이트").click()
             page.wait_for_url("**/index.html?updated=*", timeout=15000)
             self.assertEqual(page.evaluate("""() => localStorage.getItem('fm-pwa-test-marker')"""), "keep")
+            self.assertEqual(page.evaluate("sessionStorage.getItem('stage9-activation-requested')"),"1")
         finally:
             page.close()
 

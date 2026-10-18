@@ -114,6 +114,23 @@ test("merge queue consumes each body once, chains and clears double watermelons"
   expect(w.score).toBe(110);
   expect(w.watermelons).toBe(1);
   w.destroy();
+  const supported = new Game();
+  supported.make(10, 100, 390);
+  supported.make(10, 260, 390);
+  const above = supported.make(0, 180, 250);
+  Matter.Sleeping.set(above, true);
+  supported.advance(2500);
+  expect(supported.bodies).toHaveLength(1);
+  expect(above.position.y).toBeGreaterThan(450);
+  supported.destroy();
+  const wrapped = new Game();
+  const a = wrapped.make(0, 170, 300),
+    b = wrapped.make(0, 190, 300);
+  Matter.Body.setAngle(a, Math.PI * 2 - 0.01);
+  Matter.Body.setAngle(b, 0.01);
+  wrapped.merge(a, b);
+  expect(Math.cos(wrapped.bodies[0].angle)).toBeCloseTo(1, 6);
+  wrapped.destroy();
 });
 
 test("spawn grace, danger recovery and continuous overflow timeout", () => {
@@ -355,11 +372,15 @@ for (const width of [320, 360, 390, 430])
         viewport: { width, height: width === 320 ? 568 : 844 },
         isMobile: true,
         hasTouch: true,
+        deviceScaleFactor: width === 430 ? 3 : 2,
       });
       const page = await context.newPage();
       const errors = [];
       page.on("pageerror", (e) => errors.push(e.message));
       await open(page);
+      expect(await page.locator("#game").evaluate((c) => c.width)).toBe(
+        width === 430 ? 1080 : 720,
+      );
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth),
       ).toBe(width);
@@ -371,7 +392,10 @@ for (const width of [320, 360, 390, 430])
       await page.touchscreen.tap(box.x + box.width * 0.3, box.y + 80);
       await page.touchscreen.tap(box.x + box.width * 0.7, box.y + 80);
       expect(await page.evaluate(() => __watermelon.metrics().inputs)).toBe(1);
-      await page.waitForTimeout(450);
+      await page.waitForFunction(() => {
+        const s = __watermelon.snapshot();
+        return s.elapsed - s.lastDrop >= WatermelonPhysics.C.dropCooldown;
+      });
       await page.touchscreen.tap(box.x + box.width * 0.7, box.y + 80);
       expect(await page.evaluate(() => __watermelon.metrics().inputs)).toBe(2);
       await page.locator("#pause").click();
@@ -399,7 +423,10 @@ for (const width of [320, 360, 390, 430])
         touchPoints: [],
       });
       expect(await page.evaluate(() => __watermelon.metrics().inputs)).toBe(2);
-      await page.waitForTimeout(450);
+      await page.waitForFunction(() => {
+        const s = __watermelon.snapshot();
+        return s.elapsed - s.lastDrop >= WatermelonPhysics.C.dropCooldown;
+      });
       await touch.send("Input.dispatchTouchEvent", {
         type: "touchStart",
         touchPoints: [{ x: box.x + box.width * 0.3, y: box.y + 80 }],

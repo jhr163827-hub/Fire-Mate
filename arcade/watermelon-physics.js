@@ -235,7 +235,7 @@
       this.candidates = new Map();
       this.engine = Engine.create({
         enableSleeping: true,
-        positionIterations: 12,
+        positionIterations: 24,
         velocityIterations: 8,
         constraintIterations: 2,
       });
@@ -345,7 +345,11 @@
           (a.velocity.x * a.mass + b.velocity.x * b.mass) / (a.mass + b.mass),
         vy =
           (a.velocity.y * a.mass + b.velocity.y * b.mass) / (a.mass + b.mass),
-        angle = (a.angle + b.angle) / 2;
+        // Average along the shorter arc: 359° and 1° must not create a 180° flip.
+        angle =
+          a.angle +
+          Math.atan2(Math.sin(b.angle - a.angle), Math.cos(b.angle - a.angle)) /
+            2;
       Composite.remove(this.engine.world, [a, b]);
       this.mergeCount++;
       let points,
@@ -367,6 +371,12 @@
           clamp((a.angularVelocity + b.angularVelocity) / 2, -0.05, 0.05),
         );
       }
+      // Merging changes the support graph, even with zero impact velocity.
+      // Wake the pile so growth can displace neighbours and removing watermelons
+      // cannot leave sleeping fruit suspended above an empty space. No extra impulse.
+      for (const body of this.bodies) {
+        if (body.isSleeping) Sleeping.set(body, false);
+      }
       this.score += points;
       const event = {
         ...point,
@@ -378,13 +388,26 @@
       this.events.push(event);
       this.onMerge(event, next);
     }
-    keepInside(b) {
+    keepInside(b, tolerance = 0) {
+      // Bounds include a velocity margin for broadphase detection. Constrain the
+      // actual silhouette instead, without creating a bounce or extra velocity.
+      let minX = Infinity,
+        maxX = -Infinity,
+        maxY = -Infinity;
+      for (const v of b.vertices) {
+        minX = Math.min(minX, v.x);
+        maxX = Math.max(maxX, v.x);
+        maxY = Math.max(maxY, v.y);
+      }
       let dx = 0,
         dy = 0;
-      if (b.bounds.min.x < C.left) dx = C.left - b.bounds.min.x;
-      else if (b.bounds.max.x > C.right) dx = C.right - b.bounds.max.x;
-      if (b.bounds.max.y > C.floor) dy = C.floor - b.bounds.max.y;
-      if (dx || dy) Body.translate(b, { x: dx, y: dy });
+      if (minX < C.left - tolerance) dx = C.left - minX;
+      else if (maxX > C.right + tolerance) dx = C.right - maxX;
+      if (maxY > C.floor + tolerance) dy = C.floor - maxY;
+      if (dx || dy) {
+        Sleeping.set(b, false);
+        Body.translate(b, { x: dx, y: dy });
+      }
     }
     step(delta = C.step) {
       if (this.over) return;
@@ -412,6 +435,10 @@
       for (const b of this.bodies) {
         if (!finite(b.position.x) || !finite(b.position.y) || !finite(b.angle))
           throw Error("유효하지 않은 물리 상태");
+        // Dense merges can momentarily overwhelm an iterative wall contact.
+        // A container-only safety projection prevents visible wall penetration;
+        // all fruit-to-fruit contacts and motion remain Matter.js calculations.
+        this.keepInside(b, 0.5);
         if (b.bounds.min.y > C.dangerY + 2) b.wm.entered = true;
         if (b.angularSpeed > 0.12)
           Body.setAngularVelocity(b, Math.sign(b.angularVelocity) * 0.12);

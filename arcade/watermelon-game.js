@@ -5,7 +5,8 @@
     STATE = "firemate_arcade_watermelon_state_v1",
     BACKUP = STATE + "_legacy_backup";
   const canvas = $("game"),
-    ctx = canvas.getContext("2d");
+    ctx = canvas.getContext("2d"),
+    renderScale = Math.min(3, Math.max(2, window.devicePixelRatio || 1));
   let P = window.WatermelonPhysics,
     art = window.WatermelonArt,
     game,
@@ -331,7 +332,7 @@
   }
   function draw(time) {
     if (!P || !art || !game) return;
-    ctx.setTransform(2, 0, 0, 2, 0, 0);
+    ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
     boardBackground(time);
     const { C } = P;
     if (!game.over) {
@@ -465,6 +466,8 @@
       throw Error(
         "게임 파일을 불러오지 못했습니다. 온라인에서 다시 열어 주세요.",
       );
+    canvas.width = P.C.width * renderScale;
+    canvas.height = P.C.height * renderScale;
     game = create();
     const evolution = $("evolution");
     for (const f of P.FRUITS) {

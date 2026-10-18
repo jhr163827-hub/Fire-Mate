@@ -940,6 +940,38 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_stage9_goal_notes_use_saved_target_and_signed_net_assets(self):
+        for width in (320,360,390,430):
+            for theme in ('dark','light'):
+                with self.subTest(width=width,theme=theme):
+                    page=self.browser.new_page(viewport={"width":width,"height":844},is_mobile=True,has_touch=True)
+                    try:
+                        page.route("https://api.frankfurter.dev/**",lambda route:route.abort("failed"))
+                        page.goto(URL,wait_until='domcontentloaded')
+                        for goal,cash,debt,expected,remaining in (
+                            (10000,150000000,0,'FIRE 목표 달성!','₩0'),
+                            (80000,700000000,0,'다음 목표 8억까지 10,000만 원','₩100,000,000'),
+                            (65000,0,10000000,'다음 목표 2억까지 21,000만 원','₩660,000,000'),
+                            (65000,0,0,'다음 목표 2억까지 20,000만 원','₩650,000,000'),
+                            (0,0,0,'FIRE 목표 미설정','FIRE 목표 미설정')):
+                            page.evaluate("""v=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=v.theme;d.fire.goal=v.goal;d.holdings=[];d.accounts=[{id:'cash',name:'현금',amount:v.cash}];d.balance={fx:1400,cash:0,other:0,debt:v.debt};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))}""",{'goal':goal,'cash':cash,'debt':debt,'theme':theme})
+                            page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="home"]').tap()
+                            self.assertEqual(page.locator('#fmNextMilestone').inner_text(),expected)
+                            self.assertIn(remaining,page.locator('#fmRemainingGoal').text_content())
+                            quote=page.locator('#homeRefreshStocks').bounding_box();total=page.locator('#homeTotalAssets').bounding_box()
+                            self.assertGreaterEqual(quote['height'],44);self.assertGreaterEqual(total['y'],quote['y']+quote['height'])
+                            for sel in ('.fm-eta-details>summary','.fm-home-activity-details>summary','.fm-secondary-details>summary'):
+                                self.assertGreaterEqual(page.locator('#view-home '+sel).bounding_box()['height'],44)
+                            page.locator('.bottomnav [data-view="assets"]').tap()
+                            self.assertIn(remaining,page.locator('#fmRemainingGoal').inner_text())
+                            self.assertEqual(page.locator('#fmAssetNextMilestone').inner_text(),expected)
+                            self.assertEqual(page.locator('#fmNextMilestone').count(),1)
+                            page.locator('.bottomnav [data-view="home"]').tap()
+                            self.assertEqual(page.locator('#fmNextMilestone').inner_text(),expected)
+                            self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width)
+                    finally:
+                        page.close()
+
     def test_stage86_summary_uses_calculated_data_not_dom_text(self):
         page=self.browser.new_page(viewport={"width":320,"height":844},is_mobile=True,has_touch=True)
         try:

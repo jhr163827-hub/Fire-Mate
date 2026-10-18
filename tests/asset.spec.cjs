@@ -1,4 +1,37 @@
 const {test,expect}=require('@playwright/test');
+test('account detail adds holdings to its own account and preserves existing data',async({page})=>{
+ await page.route('https://api.frankfurter.dev/**',r=>r.fulfill({json:{rates:{KRW:1400},date:'2026-10-18'}}));
+ await page.goto('/index.html');
+ await page.evaluate(()=>{
+  const saved=JSON.parse(localStorage.getItem('firemate_smart_v3'));
+  saved.accounts=[{id:'legacy-us',name:'기본 미국',kind:'investment',amount:100,fire:true},{id:'qa-custom',name:'별도 계좌',kind:'investment',amount:200,fire:true}];
+  saved.holdings=[{id:'qa-existing',accountId:'legacy-us',ticker:'SPY',type:'USD',qty:2,cost:80,price:100}];
+  localStorage.setItem('firemate_smart_v3',JSON.stringify(saved));
+ });
+ await page.reload();
+ const read=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
+ const before=await read();
+ await page.locator('button.bottom-item[data-view="assets"]').click();
+ await page.locator('[data-inline-toggle="qa-custom"]').click();
+ await page.locator('#fmDetailAdd').click();
+ await expect(page.locator('#holdingAccount')).toHaveValue('qa-custom');
+ for(const [id,value] of [['holdingTicker','QQQ'],['holdingQty','3'],['holdingCost','90'],['holdingPrice','110']])await page.locator('#'+id).fill(value);
+ await page.locator('#saveHolding').click();
+ const after=await read();
+ expect(after.holdings).toHaveLength(2);
+ expect(after.holdings[0]).toEqual(before.holdings[0]);
+ expect(after.holdings[1]).toMatchObject({accountId:'qa-custom',ticker:'QQQ',qty:3,cost:90,price:110});
+ for(const key of ['accounts','tx','budgets','fire','retirement','balance'])expect(after[key]).toEqual(before[key]);
+ await page.reload();
+ expect((await read()).holdings).toEqual(after.holdings);
+ await page.locator('button.bottom-item[data-view="assets"]').click();
+ await page.locator('#fmAssetQuickHoldings').click();
+ await page.locator('#accountFilter').selectOption('all');
+ await page.locator('[data-holding="qa-existing"]').click();
+ await expect(page.locator('#holdingAccount')).toHaveValue('legacy-us');
+ await page.locator('[data-close="holdingOverlay"]').first().click();
+ expect((await read()).holdings).toEqual(after.holdings);
+});
 for(const width of [320,360,390,430]){
  test.describe('mobile '+width,()=>{
   test.use({viewport:{width,height:850},isMobile:true,hasTouch:true});

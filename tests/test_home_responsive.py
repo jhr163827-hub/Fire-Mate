@@ -133,10 +133,10 @@ class HomeResponsiveTest(unittest.TestCase):
                                      page.evaluate("""() => ({saved:JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length,
                                          filter:document.getElementById('accountFilter').value,
                                          content:document.getElementById('holdingList').textContent.slice(0,100)})"""))
-                    amount=page.locator('#holdingList .tx > strong').first.evaluate(
+                    amount=page.locator('#holdingList .fm-holding-value').first.evaluate(
                         'e => ({height:e.getBoundingClientRect().height,font:parseFloat(getComputedStyle(e).fontSize)})')
                     self.assertLessEqual(amount['height'],amount['font']*1.6,'종목 평가금액은 한 줄로 보여야 합니다')
-                    self.assertEqual(page.locator('#holdingList .txmain > span').first.evaluate(
+                    self.assertEqual(page.locator('#holdingList .fm-holding-account').first.evaluate(
                         'e => getComputedStyle(e).display'),'block')
                     page.locator('#fmHoldingSearch').fill('BBB')
                     self.assertEqual(page.locator('#holdingList .tx').count(), 1)
@@ -150,7 +150,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertFalse(page.locator('#fmAssetAccountsPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetHoldingsPanel').is_visible())
                     self.assertFalse(page.locator('#assetGrowthChart').is_visible())
-                    self.assertLess(page.locator('#fmAssetAnalysis').bounding_box()['y'],
+                    self.assertLess(page.locator('#fmAssetDividendView').bounding_box()['y'],
                                     page.locator('.fm-asset-jump').bounding_box()['y'] + 90)
                     self.assertEqual(page.locator('#fmAssetQuickDividend').get_attribute('aria-pressed'), 'true')
                     page.locator('.bottomnav [data-view="home"]').click()
@@ -161,12 +161,12 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertTrue(page.locator('#assetGrowthChart').is_visible())
                     self.assertFalse(page.locator('#fmDividendPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetAccountsPanel').is_visible())
-                    self.assertFalse(page.locator('#fmAssetAnalysis .fm-analysis-tabs').is_visible())
+                    self.assertFalse(page.locator('#fmAssetAnalysisView .fm-analysis-tabs').is_visible())
                     self.assertEqual(page.locator('#fmAssetQuickAnalysis').get_attribute('aria-pressed'), 'true')
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'), width + 2)
                     page.locator('#fmAssetQuickAccounts').click()
                     self.assertTrue(page.locator('#fmAssetAccountsPanel').is_visible())
-                    self.assertFalse(page.locator('#fmAssetAnalysis').is_visible())
+                    self.assertFalse(page.locator('#fmAssetAnalysisView').is_visible())
                     self.assertEqual(page.locator('#fmAssetQuickAccounts').get_attribute('aria-pressed'), 'true')
                     self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length"), 2)
                 finally:

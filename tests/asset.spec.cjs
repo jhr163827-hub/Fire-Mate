@@ -11,7 +11,18 @@ for(const width of [320,360,390,430]){
    for(const id of [...ids,...ids]){
     await page.locator('#'+id).click();
     await expect(page.locator('#'+id)).toHaveAttribute('aria-pressed','true');
-    for(const navId of ids)await expect(page.locator('#'+navId)).toBeVisible();
+    for(const navId of ids){
+     const button=page.locator('#'+navId);
+     await expect(button).toBeVisible();
+     expect((await button.boundingBox()).height).toBeGreaterThanOrEqual(44);
+    }
+    const panels=['fmAssetAccountsPanel','fmAssetHoldingsPanel','fmAssetDividendView','fmAssetAnalysisView'];
+    for(let i=0;i<panels.length;i++){
+     if(ids[i]===id)await expect(page.locator('#'+panels[i])).toBeVisible();
+     else await expect(page.locator('#'+panels[i])).toBeHidden();
+    }
+    expect(await page.evaluate(()=>window.scrollY)).toBe(0);
+    if(id==='fmAssetQuickAnalysis')await expect(page.locator('#fmAssetAnalysisView .fm-analysis-tabs')).toBeHidden();
    }
    expect(errors).toEqual([]);
   });

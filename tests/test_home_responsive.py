@@ -940,6 +940,48 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_stage86_summary_uses_calculated_data_not_dom_text(self):
+        page=self.browser.new_page(viewport={"width":320,"height":844},is_mobile=True,has_touch=True)
+        try:
+            page.context.route("https://api.frankfurter.dev/**",lambda route:route.abort("failed"))
+            page.goto(URL,wait_until='domcontentloaded')
+            page.evaluate("""()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));
+                d.holdings=[];d.accounts=[{id:'cash',name:'현금',amount:20000000}];
+                d.balance={fx:1400,cash:0,other:0,debt:0};
+                d.retirement={items:[{name:'JEPQ',amount:10000},{name:'현금',amount:5000}],monthly:100,yield:4,priceChange:0,crash:25,healthInsuranceMonthly:10};
+                localStorage.setItem('firemate_smart_v3',JSON.stringify(d));}""")
+            page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="fire"]').tap()
+            state=page.evaluate('window.fmFireViewState')
+            self.assertAlmostEqual(state['cashflow']['monthlyNetIncome'],10000*0.1146*0.85/12,delta=0.000001)
+            self.assertAlmostEqual(state['cashflow']['monthlyRemaining'],10000*0.1146*0.85/12-100-10*1.1314,delta=0.000001)
+            self.assertAlmostEqual(state['portfolio']['totalPct'],2000/15000*100,delta=0.000001)
+            self.assertEqual(state['portfolio']['gap'],13000)
+            before=page.locator('.fm-fire-overview').inner_text()
+            page.evaluate("""()=>{for(const id of ['fmFireLife','fmFirePortfolioProgress','fmQuickResult','fmFireForecast']){
+                const root=document.getElementById(id);root.querySelectorAll('[style]').forEach(e=>e.removeAttribute('style'));
+                root.querySelectorAll('strong').forEach(e=>e.textContent='표시 문구 변경');
+                }document.dispatchEvent(new Event('fm-fire-view-updated'));}""")
+            self.assertEqual(page.locator('.fm-fire-overview').inner_text(),before)
+            self.assertEqual(page.locator('#fmForecastSummaryValue').inner_text(),state['forecast']['value'])
+            page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="fire"]').tap()
+            self.assertEqual(page.evaluate('window.fmFireViewState.cashflow'),state['cashflow'])
+            page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page)
+            page.locator('#fmStrModeDetail').tap()
+            result=page.evaluate("""()=>{document.getElementById('fmQuickBudget').value='10000';
+                document.getElementById('fmQuickSpend').value='100';
+                window.__fmFinanceTest.strategy({div:[{name:'TEST',amount:10000,estimatedAnnualMan:400}],sale:[{name:'TEST',amount:10000,rate:7}]});
+                return {state:window.fmFireViewState.detail,ledger:window.__fmFinanceLedger};}""")
+            self.assertEqual(result['state']['balances'],[x['series'][30] for x in result['ledger']['displayed']])
+            page.locator('#fmRetireBack').tap()
+            self.assertEqual(page.locator('#fmOverview-strategy').inner_text(),result['state']['text'])
+            page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page)
+            page.locator('#fmQuickSpend').fill('200')
+            self.assertIsNone(page.evaluate('window.fmFireViewState.detail'))
+            page.locator('#fmRetireBack').tap()
+            self.assertIn('조건 확인 후 계산',page.locator('#fmOverview-strategy').inner_text())
+        finally:
+            page.close()
+
     def test_stage85_results_conditions_save_cancel_and_reload(self):
         for width in (320,360,390,430):
             for theme in ('dark','light'):

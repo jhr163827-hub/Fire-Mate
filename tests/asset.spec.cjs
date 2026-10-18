@@ -70,7 +70,7 @@ for(const width of [320,360,390,430]){
    // The refresh is legitimate finance data persistence, not navigation data loss.
    await page.waitForFunction(()=>{
     const saved=JSON.parse(localStorage.getItem('firemate_smart_v3')||'null');
-    return saved?.balance?.fxCheckedAt===new Date().toISOString().slice(0,10);
+    return saved?.balance?.fx===1400 && Boolean(saved?.balance?.fxCheckedAt);
    },null,{timeout:10000});
    const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
    await page.locator('button.bottom-item[data-view="assets"]').click();

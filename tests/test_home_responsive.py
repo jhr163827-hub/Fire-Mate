@@ -1042,6 +1042,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(float(yields.nth(1).input_value()),2)
             page.locator('#fmStrRun').click()
             self.assertTrue(page.locator('.fm-str-model-summary').is_visible())
+            self.open_strategy_settings(page) # Re-enter conditions after successful calculation closes them.
             prices.nth(0).fill('0')
             self.assertIn('입력값이 변경',page.locator('#fmStrResult').inner_text())
             page.locator('#fmStrRun').click()
@@ -1475,6 +1476,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(page.locator('#rpReset').is_visible())
                         toggle.click()
                         self.assertEqual(toggle.get_attribute('aria-expanded'),'false')
+                        toggle.click() # Calculator link belongs to the allocation editor.
                         page.locator('#fmRetireToCalculator').click()
                         self.assertTrue(page.locator('#view-firecalc').is_visible())
                         page.locator('#fmBackFire').click()

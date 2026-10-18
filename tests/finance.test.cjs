@@ -21,6 +21,13 @@ test('production FIRE projection matches independent annuity and goal boundary r
  const start=html.indexOf('function fireMonthlyRate('),end=html.indexOf('function fmReadableMan(',start);
  assert.ok(start>=0&&end>start);
  const app=vm.createContext({});vm.runInContext(html.slice(start,end),app);
+ const moneyStart=html.indexOf('function fmStrMoney('),moneyEnd=html.indexOf('function fmStrUpdatePretty(',moneyStart);
+ vm.runInContext(html.slice(moneyStart,moneyEnd),app);
+ assert.equal(app.fmStrMoney(1/12),'833원','sub-10,000 KRW cashflow cannot appear as zero');
+ assert.equal(app.fmStrMoney(-0.25),'-2,500원');
+ assert.equal(app.fmStrMoney(10000.1234),'1억 1,234원');
+ assert.equal(app.fmStrMoney(10340),'1억 340만 원');
+
  // Closed-form end-of-month annuity, independent of the production recurrence.
  for(const asset of [0,15000])for(const monthly of [0,300])for(const rate of [-30,0,7,40]){
   for(const years of [5,10,20,30]){

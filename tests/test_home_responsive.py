@@ -976,6 +976,7 @@ class HomeResponsiveTest(unittest.TestCase):
         page=self.browser.new_page(viewport={"width":320,"height":844})
         try:
             page.route("https://api.frankfurter.dev/**",lambda route: route.abort("failed"))
+            page.context.route("**/dividends.json*",lambda route: route.fulfill(content_type="application/json",body='{"symbols":{"JEPQ":{"currency":"USD","events":[{"date":"2025-06-01","amount":4}]},"SCHD":{"currency":"USD","events":[{"date":"2025-06-01","amount":1}]}}}'))
             page.goto(URL,wait_until="domcontentloaded")
             for reinvest in (False,True):
                 got=page.evaluate("""reinvest => {
@@ -1018,6 +1019,24 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(field.get_attribute('min'),'-100')
             field.fill('-10')
             self.assertEqual(field.input_value(),'-10')
+            # Existing dividend history can be used without a quote API key via manual price.
+            page.locator('#fmQuickBudget').fill('20000')
+            page.locator('#fmStrYears').evaluate("e=>e.value='30'")
+            prices=page.locator('[data-fms-type="div"][data-fms-field="currentPrice"]')
+            prices.nth(0).fill('100');prices.nth(1).fill('50')
+            yields=page.locator('[data-fms-type="div"][data-fms-field="rate"]')
+            self.assertEqual(float(yields.nth(0).input_value()),4)
+            self.assertEqual(float(yields.nth(1).input_value()),2)
+            page.locator('#fmStrRun').click()
+            self.assertTrue(page.locator('.fm-str-model-summary').is_visible())
+            prices.nth(0).fill('0')
+            self.assertIn('입력값이 변경',page.locator('#fmStrResult').inner_text())
+            page.locator('#fmStrRun').click()
+            self.assertIn('확인 전에는 비교 결과를 계산하지 않습니다',page.locator('#fmStrResult').inner_text())
+            prices.nth(0).fill('100')
+            page.locator('#fmStrRun').click()
+            self.assertTrue(page.locator('.fm-str-model-summary').is_visible())
+
             # The quick model cannot pay dividends beyond available assets after a loss.
             result=page.evaluate("""() => {
                 for(const [id,v] of Object.entries({fmQuickBudget:100,fmQuickSpend:10,fmQuickYield:100,fmQuickGain:-90,fmQuickTax:0}))document.getElementById(id).value=v;
@@ -1391,7 +1410,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     context.close()
 
     def test_fire_retirement_mobile_detail_and_navigation(self):
-        for width in (320, 375, 430):
+        for width in (320, 360, 390, 430):
             for theme in ('dark', 'light'):
                 with self.subTest(width=width, theme=theme):
                     page=self.browser.new_page(viewport={"width":width,"height":670},is_mobile=True,has_touch=True)
@@ -1408,6 +1427,28 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(forecast.evaluate('(el)=>el.open'))
                         forecast.locator(':scope > summary').click()
                         self.assertFalse(forecast.evaluate('(el)=>el.open'))
+                        # Forecast changes must preserve other open sections and unsaved settings.
+                        page.locator('#fmFirePortfolioDetails>summary').click()
+                        page.locator('#fmDividendEditor>summary').click()
+                        dividend=page.locator('[data-fm-div-rate]').first
+                        dividend.fill('8.25')
+                        forecast.locator(':scope > summary').click()
+                        page.locator('[data-forecast-period="30"]').click()
+                        self.assertTrue(page.locator('#fmFirePortfolioDetails').evaluate('(el)=>el.open'))
+                        self.assertEqual(dividend.input_value(),'8.25')
+                        page.locator('#fmForecastInflation').fill('3')
+                        page.locator('#fmForecastInflation').press('Tab')
+                        self.assertIn('연 물가 3%',page.locator('#fmFireForecast').inner_text())
+                        page.locator('#fmForecastPlot').click(position={"x":80,"y":70})
+                        self.assertEqual(dividend.input_value(),'8.25')
+                        self.assertEqual(page.locator('#fmForecastInflation').input_value(),'3')
+                        page.locator('#fmOpenCalculator').click()
+                        saved_fire=page.evaluate("() => JSON.parse(localStorage.getItem('firemate_smart_v3')).fire")
+                        page.locator('#fmPreviewFire').click()
+                        page.locator('#monthly').fill('100')
+                        self.assertIn('월 100만 원',page.locator('#fmPreviewResult').inner_text())
+                        self.assertEqual(saved_fire,page.evaluate("() => JSON.parse(localStorage.getItem('firemate_smart_v3')).fire"))
+                        page.locator('#fmBackFire').click()
                         page.locator('#fmFireLifeOpen').click()
                         self.assertTrue(page.locator('#view-retire').is_visible())
                         self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)

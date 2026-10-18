@@ -94,3 +94,6 @@ Work의 표준 Chromium 다운로드 손상 시 사용했던 임시 대안(커�
 - Node: /tmp/fm-chromium을 지정한 playwright.local.cjs로 npm run test:e2e -- --config playwright.local.cjs
 - Python: PYTHONPATH=/tmp/fm-py-playwright PLAYWRIGHT_CHROMIUM_PATH=/tmp/fm-chromium
 - CI는 임시 대안 없이 표준 Chromium으로 전체 검증했다.
+
+## 후속 8.5단계
+FIRE 메인·상세 정보 구조 재설계는 [STAGE85_STATUS.md](STAGE85_STATUS.md)에 작업 단위별로 기록한다. 기존 8단계 계산 검증 내역은 보존한다.

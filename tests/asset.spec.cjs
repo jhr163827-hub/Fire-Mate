@@ -41,6 +41,28 @@ for(const width of [320,360,390,430]){
    await page.goBack();
    await expect(page.locator('#view-home')).toHaveClass(/active/);
   });
+  test('back and forward traverse actual main tab history',async({page})=>{
+   await page.goto('/index.html');
+   const nav=tab=>page.locator('button.bottom-item[data-view="'+tab+'"]');
+   await nav('assets').click();
+   await nav('fire').click();
+   await page.goBack();
+   await expect(page.locator('#view-assets')).toHaveClass(/active/);
+   await page.goForward();
+   await expect(page.locator('#view-fire')).toHaveClass(/active/);
+   await page.goBack();
+   await expect(page.locator('#view-assets')).toHaveClass(/active/);
+   await page.goBack();
+   await expect(page.locator('#view-home')).toHaveClass(/active/);
+  });
+  test('switching between calendar and fire restores calendar on back',async({page})=>{
+   await page.goto('/index.html');
+   await page.locator('button.bottom-item[data-view="calendar"]').click();
+   await expect(page.locator('#view-calendar')).toHaveClass(/active/);
+   await page.locator('button.bottom-item[data-view="fire"]').click();
+   await page.goBack();
+   await expect(page.locator('#view-calendar')).toHaveClass(/active/);
+  });
   test('viewport has no horizontal overflow and navigation preserves persisted finance data',async({page})=>{
    await page.goto('/index.html');
    const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));

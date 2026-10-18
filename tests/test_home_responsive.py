@@ -982,6 +982,70 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_stage86_scoped_saves_cancels_and_storage_failure(self):
+        for width in (320,360,390,430):
+            for theme in ('dark','light'):
+                with self.subTest(width=width,theme=theme):
+                    page=self.browser.new_page(viewport={"width":width,"height":844},is_mobile=True,has_touch=True)
+                    try:
+                        page.context.route("https://api.frankfurter.dev/**",lambda route:route.abort("failed"))
+                        page.goto(URL,wait_until='domcontentloaded')
+                        page.evaluate("t=>document.documentElement.dataset.theme=t",theme)
+                        saved=lambda:page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).retirement")
+                        original=saved()
+                        page.locator('.bottomnav [data-view="fire"]').tap();page.locator('#fmFireLifeOpen').tap()
+                        # Living-cost settings are reachable without first opening the experiment results.
+                        self.assertFalse(page.locator('#fmLifeScenario').evaluate('(e)=>e.open'))
+                        page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('350')
+                        page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('11000')
+                        self.assertIn('저장된 배분 합계',page.locator('#rpSum').locator('..').inner_text())
+                        self.assertIn('저장 후 결과에 반영',page.locator('#fmRpEditBody').inner_text())
+                        self.assertEqual(page.evaluate('window.fmFireViewState.cashflow.spend'),300)
+                        self.assertEqual(page.locator('#rpSave').inner_text(),'목표 배분만 저장')
+                        page.locator('#rpSave').tap()
+                        current=saved();expected={**original,'items':[{**x,'amount':11000 if i==0 else x['amount']} for i,x in enumerate(original['items'])]}
+                        self.assertEqual(current,expected)
+                        self.assertEqual(page.locator('#rpMonthly').input_value(),'350','unrelated unsaved draft must remain a draft')
+                        self.assertEqual(page.locator('#rpSave').inner_text(),'생활 조건만 저장')
+                        page.locator('#fmRetireCancel').tap()
+                        self.assertEqual(page.locator('#rpMonthly').input_value(),'300')
+                        self.assertEqual(saved(),expected)
+                        # Saving living conditions must not save an allocation draft, and cancel must restore only it.
+                        page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('12000')
+                        page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('325')
+                        page.locator('#rpSave').tap()
+                        expected={**expected,'monthly':325,'taxRate':20}
+                        self.assertEqual(saved(),expected)
+                        self.assertEqual(page.locator('[data-rp="0"]').input_value(),'12000')
+                        self.assertIn('생활비 325만',page.locator('#fmFireLife').inner_text())
+                        page.locator('#fmRetireCancel').tap()
+                        self.assertEqual(page.locator('[data-rp="0"]').input_value(),'11000')
+                        # Dividend/insurance cancellation does not alter any persisted settings.
+                        page.locator('#fmDividendEditor>summary').tap();rate=page.locator('[data-fm-div-rate]').first
+                        original_rate=rate.input_value();rate.fill('8.25')
+                        page.locator('#fmCancelDividendRates').tap()
+                        self.assertEqual(rate.input_value(),original_rate);self.assertEqual(saved(),expected)
+                        # Reset is also allocation-only, preserving a living-condition draft.
+                        page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('375')
+                        page.locator('#fmRpEditToggle').tap()
+                        page.once('dialog',lambda dialog:dialog.accept());page.locator('#rpReset').tap()
+                        expected={**expected,'items':original['items']}
+                        self.assertEqual(saved(),expected);self.assertEqual(page.locator('#rpMonthly').input_value(),'375')
+                        page.locator('#fmRetireCancel').tap()
+                        # Real browser quota failure: keep saved model and leave pending editor open.
+                        page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('13000')
+                        page.evaluate("""()=>{window.fmOriginalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='firemate_smart_v3')throw new DOMException('Quota exceeded','QuotaExceededError');return window.fmOriginalSetItem.call(this,k,v)}}""")
+                        page.locator('#rpSave').tap()
+                        self.assertEqual(saved(),expected);self.assertTrue(page.locator('#fmRpEditBody').is_visible())
+                        self.assertEqual(page.locator('[data-rp="0"]').input_value(),'13000')
+                        page.evaluate('()=>{Storage.prototype.setItem=window.fmOriginalSetItem}')
+                        page.locator('#fmRetireCancel').tap()
+                        page.reload(wait_until='domcontentloaded')
+                        self.assertEqual(saved(),expected)
+                        self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width)
+                    finally:
+                        page.close()
+
     def test_stage85_results_conditions_save_cancel_and_reload(self):
         for width in (320,360,390,430):
             for theme in ('dark','light'):
@@ -1014,7 +1078,6 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertFalse(page.locator('#fmRpEditBody').is_visible())
                         self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).retirement.items[0].amount"),11000)
                         self.assertIn('6,000만',page.locator('#rpSum').inner_text())
-                        page.locator('#fmLifeScenario>summary').tap()
                         page.locator('#fmLifeConditions>summary').tap()
                         page.locator('#rpMonthly').fill('325')
                         page.locator('#rpYield').fill('4.5')

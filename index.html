@@ -2116,8 +2116,14 @@ async function fmHoldingChartLoad(x,period='1M'){
     const isKr=x.type==='KRW';
     const symbol=String(x.ticker||'').toUpperCase();
     if(isKr?!/^[0-9]{6}$/.test(symbol):!/^[A-Z][A-Z0-9.-]{0,14}$/.test(symbol))throw Error('종목 코드가 올바르지 않아요.');
-    const res=await fetch('./chart-data/'+(isKr?'KR-':'')+encodeURIComponent(symbol)+'.json',{cache:'no-store'});
-    if(!res.ok)throw Error(res.status===404?'아직 해당 종목의 차트 데이터가 준비되지 않았어요. 종목코드가 수집 목록에 있는지 확인해 주세요.':'저장된 차트 데이터를 불러오지 못했어요.');
+    const chartName=(isKr?'KR-':'')+encodeURIComponent(symbol)+'.json';
+    let res=await fetch('./chart-data/'+chartName,{cache:'no-store'});
+    if(!res.ok){
+     // GitHub Pages 배포 파일 누락 시 저장소의 원본 시세 파일을 읽는다.
+     const backup=await fetch('https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/chart-data/'+chartName,{cache:'no-store'});
+     if(backup.ok)res=backup;
+     else throw Error(res.status===404?'해당 종목의 과거 시세 파일을 찾을 수 없어요.':'저장된 차트 데이터를 불러오지 못했어요.');
+    }
     const j=await res.json();
     if(j.symbol!==symbol||!Array.isArray(j.points))throw Error('차트 데이터 형식 오류');
     rows=j.points.map(v=>({date:v.date,close:+v.close,high:+v.high,low:+v.low}));

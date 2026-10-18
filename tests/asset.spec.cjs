@@ -15,6 +15,18 @@ for(const width of [320,360,390,430]){
    }
    expect(errors).toEqual([]);
   });
+  test('viewport has no horizontal overflow and navigation does not mutate localStorage',async({page})=>{
+   await page.goto('/index.html');
+   const before=await page.evaluate(()=>Object.fromEntries(Object.keys(localStorage).sort().map(k=>[k,localStorage.getItem(k)])));
+   await page.locator('[data-view="assets"]').click();
+   for(const id of ['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickAnalysis']){
+    await page.locator('#'+id).click();
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+    expect(overflow,'horizontal overflow on '+id).toBeLessThanOrEqual(2);
+   }
+   const after=await page.evaluate(()=>Object.fromEntries(Object.keys(localStorage).sort().map(k=>[k,localStorage.getItem(k)])));
+   expect(after).toEqual(before);
+  });
   test('dividend rows are accessible when dividend data exists',async({page})=>{
    await page.goto('/index.html');await page.locator('[data-view="assets"]').click();
    await page.locator('#fmAssetQuickDividend').click();

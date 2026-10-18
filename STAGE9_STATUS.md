@@ -1,7 +1,7 @@
 # FIRE MATE 9단계 진행 기록
 
-상태: 홈/자산 목표 표시·터치와 PWA 갱신 완료(v3.5.42~43). 계좌 종목 추가 오류 수정(v3.5.44), 최종 전체 회귀·CI/배포 검증 진행 중.
-현재/마지막 정상 앱: v3.5.41 / d4fd41f4fb966c31e6d4b1d916bec32b9c8211b1.
+상태: 9단계 완료. 계좌 종목 추가 오류 수정(v3.5.44), 로컬/CI 전체102개 및 safety/Pages/실제 배포 바이트 검증 완료.
+현재/마지막 정상 앱: v3.5.44 / a6a3c68af342b1c6d24f12e4da6281bee28346c3.
 시작 main: 420818444c83ba7d16ab439af72b2c4d93864c7b. a5e0eef 이후 차트 데이터121파일 갱신만 추가, 앱/테스트/SW는 동일. 최신 데이터를 그대로 가져옴.
 STAGE86_STATUS.md 확인. 기존 localStorage 키/구조·금융 수식·API 제한·FIRE 구조 보호. Android 뒤로가기는 별도 과제 유지.
 
@@ -84,3 +84,22 @@ jhr163827-hub/Fire-Mate의 최신 main을 fetch하고 STAGE9_STATUS.md, STAGE86_
 - 금융3 + E2E50(1.0분) + Python49(239.000초) =102 통과 / 실패0 / 건너뜀0.
 - 기존101개 전부 유지 + 계좌 오류 회귀1개만 추가. 정적/금융/저장 롤백/PWA 보호 검사도 통과.
 - 다음 단계: 이 소스의 main 커밋 SHA로 quality/전체회귀/safety/Pages 및 실제 배포 바이트 확인. 현재 CI/배포는 아직 완료로 선언하지 않음.
+
+
+## 9단계 최종 완료 — v3.5.44
+검증 앱/테스트 소스: a6a3c68af342b1c6d24f12e4da6281bee28346c3. 이후 완료 문서는 앱/테스트를 변경하지 않는다.
+- 로컬 금융3/E2E50/Python49 =102 통과, 실패0/skip0. 기존101개 유지 + 계좌 오류1개.
+- GitHub quality 금융3/E2E50(27.0초) 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39112178423
+- GitHub 전체 Python49(196.892초) 및 비교 캡처/아티팩트 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39112178447
+- safety 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39112178439
+- Pages 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39112178052
+- 실제 https://jhr163827-hub.github.io/Fire-Mate/index.html 및 sw.js 모두HTTP200, v3.5.44/fire-mate-v3-5-44. 검증 소스와 바이트 완전 일치(SHA256):
+  - index.html: 08951a8b5823702e220c24968d174f2059560faab153d04d85bd8de6abdd9e84
+  - sw.js: 75c668ffd3431b6f0543c53a9d2bbcfbeec216258602debadfc5693269402209
+- 배포 진행 중 처음 조회는 이전 버전 바이트였으며, Pages 성공 이후 다시 확인해 위 최종 일치를 확인했다. 구버전을 최신 배포로 보고하지 않았다.
+- 이번 수정에서 기존 종목/계좌/잔액/가계부/예산/FIRE/은퇴 설정을 자동 수정하거나 이동하지 않았다. 기존 금융 수식과 저장 구조·키·API 제한 모두 유지.
+- 9단계 구현·필수 테스트·CI·Pages 검증에 남은 작업 없음. 앞부분의 '예정/다음 시작점'은 당시 기록이며 이 최종 완료 결과가 우선한다.
+- 미검증: 실제 휴대전화의 설치형 PWA/OS 키보드. Chromium 실제 worker 수명주기와 모바일4너비×2테마 및 기존 전체 회귀는 통과. Android 네이티브 뒤로가기는 기존 별도 과제 유지.
+
+### 다음 세션 재개 지점
+최신 main과 본 최종 완료 절을 먼저 확인한다. 9단계는 완료되어 반복 구현/전체 검사를 무작정 추가하지 않는다. 현재 검증 앱은v3.5.44/a6a3c68이다. 새로운 사용자 요청 또는 실제 기기에서 재현된 문제만 다음 과제로 진행한다. 기존 데이터·금융 수식·저장 키와 구조는 유지한다.

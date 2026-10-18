@@ -1,6 +1,6 @@
 # FIRE MATE 6단계 진행 기록
-업데이트: 2026-10-18 11:17 KST
-상태: 자산 UI 구현/필수 테스트 통과. 추가 전체 회귀 검사 확인 중. 최종 완료 아님.
+업데이트: 2026-10-18 11:19 KST
+상태: 자산 UI 구현/필수 테스트 통과/Pages 반영 완료. 범위 외 기존 회귀 실패 2건으로 전체 완료 보류.
 
 ## 고정 범위
 - 자산 탭만 개선. 금융 계산/localStorage 키·구조/API 제한 변경 금지.
@@ -34,12 +34,15 @@
 
 ## 현재 실행과 다음 작업
 - 최신 앱 코드 커밋(테스트 수정만 포함): 5f9c30c0bf4d0d00993df77e5a98417c97bf82d3
-- 최신 quality: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488498
-- 최신 Home regression: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488587
+- 최신 앱/테스트 변경 커밋 quality 성공(금융 2/2, E2E 48/48): https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488498
+- 최신 Home regression: 43개 중 41 통과, 2 실패, 0 skip. 자산 관련 검사 통과. https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488587
 - 최신 Pages: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089487722 (성공)
 - 최신 main을 다시 fetch한 후 위 실행 상태/로그부터 확인.
-- 로컬 전체 Python 43개 검사는 /tmp/fm-python-full.log에 실행 중(세션 71950); 로컬 결과만 믿지 말고 Actions 확인.
-- 모든 필수 결과가 확인되기 전 6단계 완료로 표기하지 않는다.
+- 로컬 전체 Python 43개는 40 통과/3 실패. CI의 위 2건 외에 홈 갱신 버튼과 금액 사이 1px 겹침 검사가 실패했다. 동일한 로컬 환경에서 5단계 기준 cdbd786을 직접 열어 3건 모두 똑같이 재현했다. 앱에서 새로 발생한 문제로 취급하지 않는다.
+- 자산 작업 자체는 구현/검증/배포됨. 그러나 모든 Actions 성공 조건은 미충족이므로 6단계 전체 완료라고 하지 않는다.
+- 남은 제품 수정은 가계부 버튼 터치 영역 40→44px이며 사용자 지시의 자산 외 변경 금지에 걸린다. 홈 예산 테스트는 이전 인라인 편집기 대신 현재 예산 모달과 분리된 남은 금액 라벨에 맞는 흐름을 검증해야 한다. 기대값 완화/skip으로 우회 금지.
+- 범위 외 홈/가계부 앱 수정은 수행하지 않았다. 해당 범위가 허용되면 이 두 건부터 해결하고 Home responsive regression, quality, Pages 결과를 다시 확인한다.
+- 문서 체크포인트 9e96890d748ec65aeef8da2ae9e6d01796766805 이후에는 상태 문서만 갱신한다. 재개 시 문서의 과거 SHA를 덮어쓰지 말고 최신 main을 확인한다.
 
 ## 재개 명령
 ```sh

@@ -87,16 +87,27 @@ for(const width of [320,360,390,430]){
    await page.locator('#fmAssetQuickAnalysis').click();
    await expect(page.locator('#fmAssetDividendView')).toBeHidden();
   });
-  test('dividend rows are accessible when dividend data exists',async({page})=>{
-   await page.goto('/index.html');await page.locator('button.bottom-item[data-view="assets"]').click();
+  test('seeded dividend row opens holding detail by click, Enter and Space, then browser back',async({page})=>{
+   const now=new Date();const day=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),'01'].join('-');
+   const seed={tx:[{id:'qa-tx',date:day,type:'expense',category:'식비',amount:9000,memo:'QA meal'}],rec:[],budgets:{},theme:'dark',fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:10000,other:2000,debt:3000},accounts:[{id:'qa-us',name:'QA US',kind:'investment',amount:5000,fire:true},{id:'qa-kr',name:'QA KR',kind:'investment',amount:7000,fire:true}],holdings:[{id:'qa-us1',accountId:'qa-us',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80},{id:'qa-us2',accountId:'qa-kr',ticker:'JEPQ',type:'USD',qty:3,price:100,cost:90},{id:'qa-kr1',accountId:'qa-kr',ticker:'005930',type:'KRW',qty:3,price:10000,cost:9000}]};
+   await page.addInitScript(value=>localStorage.setItem('firemate_smart_v3',JSON.stringify(value)),seed);
+   await page.route('**/dividends.json?*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({updatedAt:day,symbols:{JEPQ:{currency:'USD',events:[{date:day,amount:0.5}]},'005930.KS':{currency:'KRW',events:[{date:day,amount:100}]}}})}));
+   await page.goto('/index.html');
+   await page.locator('button.bottom-item[data-view="assets"]').click();
    await page.locator('#fmAssetQuickDividend').click();
-   const row=page.locator('.fm-div-clickable').first();
-   if(!(await row.count()))test.skip(true,'No dividend row in clean fixture; seeded dividend navigation test required');
-   {
-    await expect(row).toHaveAttribute('role','button');
-    await expect(row).toHaveAttribute('tabindex','0');
-    expect(await row.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+   const row=page.locator('#fmAssetDividendView .fm-div-clickable').first();
+   await expect(row).toBeVisible();
+   await expect(row).toHaveAttribute('role','button');
+   await expect(row).toHaveAttribute('tabindex','0');
+   expect(await row.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+   for(const action of ['click','Enter','Space']){
+    if(action==='click')await row.click();else{await row.focus();await page.keyboard.press(action)}
+    await expect(page.locator('#fmAccountDetail')).toBeVisible();
+    await page.goBack();
+    await expect(page.locator('#fmAssetDividendView')).toBeVisible();
+    await expect(row).toBeVisible();
    }
+   expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).holdings).toEqual(seed.holdings);
   });
  });
 }

@@ -68,7 +68,7 @@ test('production finance functions agree with independent reference fixture',asy
    ],accounts:[{id:'a',amount:5000,fire:true},{id:'b',amount:0,fire:false,items:[{amount:7000}]}],balance:{...old.balance,fx:1400,cash:10000,other:2000,debt:3000}};
    const vals=data.holdings.map(h=>({value:assetValue(h),cost:assetCost(h)}));
    return {vals,net:netAsset(),fire:fireLiquid(),selfTest:fmAssetMathSelfTest()};
-  }finally{data=old}};\n`;
+  }finally{data=old}};`;
   html=html.replace(marker,hook+marker);
   await route.fulfill({response,body:html});
  });

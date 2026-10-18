@@ -66,7 +66,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(page.locator('#heroBudget').inner_text(), '미설정')
             self.assertIn('예산 설정', page.locator('#homeBudgetAction').inner_text())
             page.locator('#homeBudgetAction').click()
-            self.assertTrue(page.locator('#fmLedgerBudgetInline').is_visible())
+            self.assertTrue(page.locator('#fmLedgerBudgetOverlay').is_visible())
             page.locator('#fmLedgerBudgetValue').fill('1500000')
             page.locator('#fmLedgerBudgetSave').click()
             self.assertEqual(page.locator('#fmCalendarBudget').inner_text(), '₩1,500,000 남음')

@@ -1,48 +1,40 @@
-# FIRE MATE 6단계 진행 기록
-업데이트: 2026-10-18 11:19 KST
-상태: 자산 UI 구현/필수 테스트 통과/Pages 반영 완료. 범위 외 기존 회귀 실패 2건으로 전체 완료 보류.
+# FIRE MATE 6단계 최종 마무리 기록
+상태: 최소 수정 및 실패 3개 재검증 완료. 전체 테스트/CI/Pages 최종 확인 중.
+업데이트: 2026-10-18 11:26 KST
 
-## 고정 범위
-- 자산 탭만 개선. 금융 계산/localStorage 키·구조/API 제한 변경 금지.
-- 다른 메인 탭의 앱 코드는 변경하지 않는다.
-- 실패한 검증 삭제·skip·기대값 완화 금지.
+## 승인된 범위와 보존 조건
+- 사용자 2026-10-18 11:23 요청에 따라 홈·가계부의 확인된 기존 오류만 최소 수정 허용.
+- 기존 자산 UI 개선, 계산 로직, localStorage 키/저장 구조, API 제한은 변경 금지.
+- 검증 삭제/skip/기대값 완화 금지. 실제 휴대전화 검증은 완료로 주장하지 않는다.
 
-## 작업 단위별 원격 커밋
+## 원격 작업 이력
 - 5단계 기준: cdbd7861e4b26660d050ac116099c9a59e02392c
-- 자산 UI/버전/자산 E2E 검증 강화: 0eba3a6f951e3bb64cad8b201db17e09c13c131c
-- 기존 Python 자산 회귀 테스트의 오래된 DOM 선택자 수정: 5f9c30c0bf4d0d00993df77e5a98417c97bf82d3
-- 앱/서비스워커 버전: v3.5.32 / fire-mate-v3-5-32
+- 자산 UI: 0eba3a6f951e3bb64cad8b201db17e09c13c131c
+- 기존 자산 회귀 선택자 교정: 5f9c30c0bf4d0d00993df77e5a98417c97bf82d3
+- 이번 작업 시작 기준: 630ef40ab06aa8a85289ced384beef7a2c910094
+- 이 문서와 함께 홈·가계부 최소 CSS 및 예산 테스트 선택자 교정을 커밋한다.
 
-## 완료 사항
-- 4개 하위 탭·패널 분리와 기존 전환 로직 유지.
-- 자산 전용 CSS: 요약 지표 2열, 금액/갱신 버튼 배치, 고정 선택 탭, 계좌 손익 행, 목록 밀도, 44px 터치 영역.
-- 분석에서 CSS가 hidden을 덮어써 나타나던 중복 구성 버튼 제거.
-- 배당의 긴 환율/자료 설명은 기존 계산 기준 접기 영역에 이동. 데이터/계산/상태 요소 ID 유지.
-- 자산 4너비(320/360/390/430) × 2테마 × 4패널 = 32조합 화면/터치 검증. 가로 넘침 없음. 스크롤 중 고정 탭 전환·조회 설명 펼치기 검증.
-- 로컬 npm 금융 2/2, E2E 48/48 통과. 삭제/skip 없음.
-- 0eba3a6 커밋 quality 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089265300
-- 0eba3a6 안전성 검사 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089265322
-- Pages HTML/SW HTTP 200, v3.5.32 실제 응답 확인.
-- 테스트 선택자 수정 후 자산 Python 회귀 1개(4너비) 로컬 통과.
+## 실제 로그와 5단계 비교
+CI 로그: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488587
+- CI 43개 중 41 통과/2 실패/0 skip: 예산 편집기 선택자와 버튼 높이.
+- 로컬 43개 중 40 통과/3 실패/0 skip: 위 두 건 및 320px 홈 요약의 1px 겹침.
+- 5단계 cdbd786의 원본 index.html/sw.js를 별도 서버에서 열어 동일한 세 테스트를 다시 실행했고 3개 모두 같은 지점에서 실패했다. 신규 자산 개선의 회귀가 아니다.
 
-## 추가 회귀에서 확인된 남은 문제
-기존 Home responsive regression은 금융/E2E 50개와 별도인 43개 검사다.
-0eba3a6 실행 로그: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089265321
-1. 자산 테스트가 제거된 DOM을 찾음: 선택자 수정 완료(5f9c30c).
-2. 홈 예산 테스트가 예전 인라인 편집기를 기대함. 실제 앱은 fmOpenBudgetEditor를 통해 모달을 연다. 앱의 새 UX에 맞게 테스트 흐름 확인 필요.
-3. 가계부 예산 수정 버튼 높이가 기존 CSS에서 40px이나 검사 기준은 44px. 이번 자산 CSS는 이 버튼을 변경하지 않았다. 기대값을 낮춰 통과시키지 말 것. 다른 탭 수정 금지 범위와 구분할 것.
+## 원인별 최소 수정 (v3.5.33)
+1. 테스트 오류: 예산 편집 UI는 모달인데 테스트가 폐기된 fmLedgerBudgetInline을 기대했다. fmLedgerBudgetOverlay 선택자만 수정했다. 모든 금액·비율·CRUD 기대값은 그대로다.
+2. 실제 UI 오류: 가계부 예산 수정 아이콘의 CSS가 36×40px로 44px 터치 기준을 덮어썼다. 해당 버튼만 44×44px로 수정.
+3. 실제 UI 오류: 350px 이하 홈 요약에서 금액 상단과 갱신 버튼 하단이 로컬 글꼴 환경에서 1px 겹쳤다. 기존 작은 화면 여백 16px→20px만 조정.
+4. 앱 버전 및 서비스워커 캐시 동시 증가: v3.5.33 / fire-mate-v3-5-33.
+- 자산 탭 CSS/HTML/전환/금융 계산/저장 구조는 변경하지 않았다.
+- 실패했던 3개 테스트를 수정 후 로컬에서 재실행: 3 통과/0 실패/0 skip.
 
-## 현재 실행과 다음 작업
-- 최신 앱 코드 커밋(테스트 수정만 포함): 5f9c30c0bf4d0d00993df77e5a98417c97bf82d3
-- 최신 앱/테스트 변경 커밋 quality 성공(금융 2/2, E2E 48/48): https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488498
-- 최신 Home regression: 43개 중 41 통과, 2 실패, 0 skip. 자산 관련 검사 통과. https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488587
-- 최신 Pages: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089487722 (성공)
-- 최신 main을 다시 fetch한 후 위 실행 상태/로그부터 확인.
-- 로컬 전체 Python 43개는 40 통과/3 실패. CI의 위 2건 외에 홈 갱신 버튼과 금액 사이 1px 겹침 검사가 실패했다. 동일한 로컬 환경에서 5단계 기준 cdbd786을 직접 열어 3건 모두 똑같이 재현했다. 앱에서 새로 발생한 문제로 취급하지 않는다.
-- 자산 작업 자체는 구현/검증/배포됨. 그러나 모든 Actions 성공 조건은 미충족이므로 6단계 전체 완료라고 하지 않는다.
-- 남은 제품 수정은 가계부 버튼 터치 영역 40→44px이며 사용자 지시의 자산 외 변경 금지에 걸린다. 홈 예산 테스트는 이전 인라인 편집기 대신 현재 예산 모달과 분리된 남은 금액 라벨에 맞는 흐름을 검증해야 한다. 기대값 완화/skip으로 우회 금지.
-- 범위 외 홈/가계부 앱 수정은 수행하지 않았다. 해당 범위가 허용되면 이 두 건부터 해결하고 Home responsive regression, quality, Pages 결과를 다시 확인한다.
-- 문서 체크포인트 9e96890d748ec65aeef8da2ae9e6d01796766805 이후에는 상태 문서만 갱신한다. 재개 시 문서의 과거 SHA를 덮어쓰지 말고 최신 main을 확인한다.
+## 완료 확인 전 남은 작업
+- npm run test:finance
+- npm run test:e2e
+- Python 추가 회귀 43개 전체 실행
+- 최신 앱 커밋의 quality / Home responsive regression / safety / Pages 결과 확인
+- 실제 Pages HTML 및 sw.js 응답에서 v3.5.33 확인
+- 모두 통과하면 이 문서의 결과를 갱신하고 6단계 완료 처리
 
 ## 재개 명령
 ```sh
@@ -53,9 +45,15 @@ npm run test:finance
 npm run test:e2e
 pip install playwright pillow
 python -m playwright install --with-deps chromium
-# 별도 터미널에서 python3 -m http.server 8000 --bind 127.0.0.1 실행 후:
+# 별도 터미널:
+python3 -m http.server 8000 --bind 127.0.0.1
+# 테스트 터미널:
 FIRE_MATE_URL=http://127.0.0.1:8000 python -m unittest discover -s tests -p test_home_responsive.py -v
 ```
+이 환경에서는 표준 Chromium 다운로드 응답이 손상되어, 임시 Chromium /tmp/fm-chromium으로 로컬 검증한다.
+- Node: npm run test:e2e -- --config playwright.local.cjs
+- Python: PYTHONPATH=/tmp/fm-py-playwright PLAYWRIGHT_CHROMIUM_PATH=/tmp/fm-chromium 으로 위 unittest 실행.
+- 임시 설정/브라우저/의존성은 저장소에 커밋하지 않는다. GitHub Actions는 표준 Chromium으로 별도 확인한다.
 
-## 실제 기기 미검증
-사용자 Android에 설치된 PWA의 실제 제스처, 기기 캐시 교체/업데이트 팝업, 사용자 원본 저장 데이터는 직접 확인하지 않았다. 에뮬레이션과 fixture 데이터 보존만 검증했다.
+## 실제 기기 한계
+실제 Android 설치형 PWA의 제스처/기기 캐시 교체/사용자 원본 저장 데이터는 직접 확인하지 않았다. 기존 32개 모바일 화면 조합 및 fixture 금융 데이터 보존 검증은 유지한다.

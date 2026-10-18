@@ -6,7 +6,7 @@ for(const width of [320,360,390,430]){
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('/index.html');
    await expect(page.locator('#view-home')).toHaveClass(/active/);
-   await page.locator('[data-view="assets"]').click();
+   await page.locator('button.bottom-item[data-view="assets"]').click();
    const ids=['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickDividend','fmAssetQuickAnalysis'];
    for(const id of [...ids,...ids]){
     await page.locator('#'+id).click();
@@ -17,18 +17,18 @@ for(const width of [320,360,390,430]){
   });
   test('viewport has no horizontal overflow and navigation preserves persisted finance data',async({page})=>{
    await page.goto('/index.html');
-   const before=await page.evaluate(()=>localStorage.getItem(K));
-   await page.locator('[data-view="assets"]').click();
+   const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
+   await page.locator('button.bottom-item[data-view="assets"]').click();
    for(const id of ['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickAnalysis']){
     await page.locator('#'+id).click();
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow,'horizontal overflow on '+id).toBeLessThanOrEqual(2);
    }
-   const after=await page.evaluate(()=>localStorage.getItem(K));
+   const after=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
    expect(after).toEqual(before);
   });
   test('dividend rows are accessible when dividend data exists',async({page})=>{
-   await page.goto('/index.html');await page.locator('[data-view="assets"]').click();
+   await page.goto('/index.html');await page.locator('button.bottom-item[data-view="assets"]').click();
    await page.locator('#fmAssetQuickDividend').click();
    const row=page.locator('.fm-div-clickable').first();
    if(!(await row.count()))test.skip(true,'No dividend row in clean fixture; seeded dividend navigation test required');

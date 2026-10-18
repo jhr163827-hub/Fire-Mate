@@ -198,3 +198,28 @@ for(const width of [320,360,390,430]){
   });
  }
 }
+
+test('dividend gross/net totals aggregate USD across accounts and KRW with correct withholding',async({page})=>{
+ const now=new Date(),date=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),'01'].join('-');
+ const fixture={theme:'dark',tx:[],rec:[],budgets:{},balance:{fx:1400,cash:0,other:0,debt:0},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},accounts:[{id:'a',name:'US A',kind:'investment',amount:0,fire:true},{id:'b',name:'US B',kind:'investment',amount:0,fire:true},{id:'c',name:'KR',kind:'investment',amount:0,fire:true}],holdings:[{id:'a1',accountId:'a',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80},{id:'b1',accountId:'b',ticker:'JEPQ',type:'USD',qty:3,price:100,cost:90},{id:'c1',accountId:'c',ticker:'005930',type:'KRW',qty:3,price:10000,cost:9000}]};
+ await page.addInitScript(seed=>localStorage.setItem('firemate_smart_v3',JSON.stringify(seed)),fixture);
+ await page.route('**/dividends.json?*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({updatedAt:date,symbols:{JEPQ:{currency:'USD',events:[{date,amount:0.5}]},'005930.KS':{currency:'KRW',events:[{date,amount:100}]}}})}));
+ await page.goto('/index.html');
+ await page.locator('button.bottom-item[data-view="assets"]').click();
+ await page.locator('#fmAssetQuickDividend').click();
+ const rows=page.locator('#fmAssetDividendView .fm-div-clickable');
+ await expect(rows).toHaveCount(2);
+ const detail=page.locator('#fmDivHoldings .fm-div-detail-title');
+ await expect(detail).toContainText('세전 ₩3,800');
+ await expect(detail).toContainText('세후 ₩3,229');
+ await expect(page.locator('#fmDivMonth')).toContainText('₩3,800');
+ await expect(page.locator('#fmDivYear')).toContainText('₩3,229');
+ const usd=rows.filter({hasText:'JEPQ'});
+ await expect(usd).toContainText('5주');
+ await expect(usd).toContainText('세전 ₩3,500');
+ await expect(usd).toContainText('₩2,975');
+ const krw=rows.filter({hasText:'005930'});
+ await expect(krw).toContainText('세전 ₩300');
+ await expect(krw).toContainText('₩254');
+ expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).holdings).toEqual(fixture.holdings);
+});

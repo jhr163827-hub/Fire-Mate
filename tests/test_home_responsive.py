@@ -930,6 +930,48 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_stage8_portfolio_duplicate_targets_and_remaining_allocation(self):
+        page=self.browser.new_page(viewport={"width":320,"height":844},is_mobile=True,has_touch=True)
+        try:
+            page.route("https://api.frankfurter.dev/**",lambda route: route.abort("failed"))
+            page.goto(URL,wait_until="domcontentloaded")
+            original=page.evaluate("""() => {
+                const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));
+                d.holdings=[{id:'j',name:'JEPQ',ticker:'JEPQ',type:'KRW',qty:10,price:10000,cost:9000,accountId:'legacy-kr'}];
+                d.balance={fx:1400,cash:0,other:0,debt:0};
+                d.retirement.items=[{name:'JEPQ',amount:20},{name:'JEPQ',amount:30},{name:'SGOV',amount:50}];
+                localStorage.setItem('firemate_smart_v3',JSON.stringify(d));
+                return {holdings:d.holdings,accounts:d.accounts,balance:d.balance,retirement:d.retirement};
+            }""")
+            page.reload(wait_until="domcontentloaded")
+            page.locator('.bottomnav [data-view="fire"]').tap()
+            page.locator('#fmFirePortfolioDetails>summary').tap()
+            rows=page.locator('[data-target-name="JEPQ"]')
+            self.assertEqual(rows.count(),1)
+            self.assertIn('20.0%',rows.inner_text()) # 10 owned / aggregated target 50, not counted twice
+            self.assertIn('부족',rows.inner_text())
+            self.assertIn('40만',rows.inner_text())
+            self.assertIn('목표 비중 50.0%',rows.inner_text())
+            self.assertIn('인정 보유액 10만',page.locator('#fmFirePortfolioProgress').inner_text())
+            page.locator('#fmFireStrategyOpen').tap();page.locator('#fmStrModeDetail').tap()
+            page.locator('#fmQuickBudget').fill('1000')
+            fields=page.locator('[data-fms-type="sale"][data-fms-field="amount"]')
+            fields.nth(0).fill('100');fields.nth(1).fill('200')
+            page.locator('#fmStrFillSale').tap()
+            amounts=[float(x) for x in fields.evaluate_all('(es)=>es.map(e=>e.value)')]
+            self.assertAlmostEqual(sum(amounts),1000,delta=0.000001)
+            self.assertAlmostEqual(amounts[0],333.33,delta=0.000001)
+            self.assertAlmostEqual(amounts[1],666.67,delta=0.000001)
+            page.locator('#fmStrFillSale').tap()
+            self.assertEqual(amounts,[float(x) for x in fields.evaluate_all('(es)=>es.map(e=>e.value)')])
+            for field in (fields.nth(0),fields.nth(1)): field.fill('0')
+            page.locator('#fmStrFillSale').tap()
+            self.assertEqual(fields.evaluate_all('(es)=>es.map(e=>Number(e.value))'),[500,500])
+            saved=page.evaluate("""() => {const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));return {holdings:d.holdings,accounts:d.accounts,balance:d.balance,retirement:d.retirement}}""")
+            self.assertEqual(saved,original)
+        finally:
+            page.close()
+
     def test_stage8_strategy_reinvestment_period_and_negative_input(self):
         page=self.browser.new_page(viewport={"width":320,"height":844})
         try:

@@ -73,3 +73,6 @@ Work 로컬 표준 브라우저 다운로드가 손상될 경우 기존 임시 /
 - Node: npm run test:e2e -- --config playwright.local.cjs
 - Python: PYTHONPATH=/tmp/fm-py-playwright PLAYWRIGHT_CHROMIUM_PATH=/tmp/fm-chromium 으로 unittest 실행.
 - 임시 브라우저·의존성·캡처·설정은 커밋하지 않는다. CI는 표준 Chromium으로 검증한다.
+
+## 후속 단계
+8단계 FIRE 계산기·은퇴 시뮬레이션 작업의 완료/검증/작업 단위별 커밋/재개 명령은 [STAGE8_STATUS.md](STAGE8_STATUS.md)를 참조한다. 7단계 원본 완료 내역은 위 기록대로 유지한다.

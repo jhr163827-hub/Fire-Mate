@@ -20,3 +20,18 @@ test('stage10 uses saved plan defaults without overwriting independent saved or 
  page.once('dialog',d=>d.accept());await page.locator('#fmUseSavedPlan').click();await expect(page.locator('#fmQuickBudget')).toHaveValue('80000');await expect(page.locator('#fmQuickSpend')).toHaveValue('3300');
  expect(await read()).toEqual(before);await page.reload();expect(await read()).toEqual(before);
 });
+test('stage10 separates money target completion from retirement spending at mobile sizes',async({browser})=>{
+ test.setTimeout(90000);
+ for(const width of [320,360,390,430])for(const theme of ['dark','light']){
+  const context=await browser.newContext({viewport:{width,height:670},isMobile:true,hasTouch:true,serviceWorkers:'block'});await context.route('https://api.frankfurter.dev/**',r=>r.abort());const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('/index.html');await page.evaluate(theme=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=theme;d.accounts=[{id:'cash',amount:20000000,fire:true}];d.holdings=[];d.balance={fx:1400,cash:0,other:0,debt:0};d.fire={...d.fire,goal:1000,monthly:300,rate:7};d.retirement={items:[{name:'JEPQ',amount:10000}],monthly:300,yield:4,priceChange:0,crash:25};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))},theme);await page.reload();await page.locator('.bottomnav [data-view="fire"]').click();
+  await expect(page.locator('#firePct')).toHaveText('200.0%');await expect(page.locator('#fireYears')).toHaveText('달성!');await expect(page.locator('#fmOverview-cashflow')).toContainText('부족');await expect(page.locator('.fm-fire-scope')).toContainText('목표 배분 완성 시');await expect(page.locator('#fmFirePlanDifference')).toBeVisible();
+  await expect(page.locator('#fmOverview-strategy')).not.toContainText('월 세후 배당');expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+  for(const id of ['fmOpenCalculator','fmFireLifeOpen','fmFireStrategyOpen','fmFirePortfolioOpen'])expect((await page.locator('#'+id).boundingBox()).height).toBeGreaterThanOrEqual(44);
+  if(width===320&&theme==='dark'){
+   await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.accounts.forEach(a=>a.amount=0);d.balance.debt=10000000;localStorage.setItem('firemate_smart_v3',JSON.stringify(d))});await page.reload();
+   await expect(page.locator('#fireAsset')).toContainText('-');await expect(page.locator('#fmFireBasisNote')).toContainText('0으로 가정');
+  }
+  expect(errors).toEqual([]);await context.close();
+ }
+});

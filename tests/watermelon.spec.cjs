@@ -68,6 +68,24 @@ test('quota failure is visible while previous save and ranks remain byte-for-byt
  await expect(page.locator('#saveStatus')).toContainText('저장 공간 부족');expect(await page.evaluate(k=>localStorage.getItem(k),STATE)).toBe(raw);
 });
 
+test('migration backup failure protects v1 raw data while allowing in-memory resume',async({page})=>{
+ await page.addInitScript(({STATE,legacy})=>{localStorage.setItem(STATE,JSON.stringify(legacy));Storage.prototype.setItem=function(){throw new DOMException('quota','QuotaExceededError')}},{STATE,legacy});
+ await open(page);expect(await page.evaluate(()=>__watermelon.metrics().saveBlocked)).toBe(true);await page.locator('#resume').click();await page.locator('#pause').click();
+ expect(await page.evaluate(k=>localStorage.getItem(k),STATE)).toBe(JSON.stringify(legacy));expect((await page.evaluate(()=>__watermelon.snapshot())).balls).toHaveLength(3);
+});
+
+test('browser overflow ends once, preserves existing rankings and resumes ended state',async({page})=>{
+ await open(page);await page.evaluate(({RANK})=>{
+  localStorage.setItem(RANK,JSON.stringify([{score:9999,date:'old'}]));const g=new WatermelonPhysics.Game();g.score=123;const b=g.make(0,100,55,{entered:true});Matter.Body.setStatic(b,true);
+  const s=g.snapshot();s.balls[0].sleeping=true;s.balls[0].contacted=true;__watermelon.scene(s);
+ },{RANK});
+ // Freeze a fruit in the overflow zone through a high, sleeping stack fixture.
+ await page.evaluate(()=>{const s=__watermelon.snapshot();s.danger=WatermelonPhysics.C.dangerGrace-1;__watermelon.scene(s);__watermelon.advance(10)});
+ await expect(page.locator('#overlayTitle')).toHaveText('123점');expect(await page.evaluate(()=>__watermelon.snapshot().over)).toBe(true);
+ const list=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),RANK);expect(list.map(x=>x.score)).toEqual([9999,123]);
+ await page.reload();await page.waitForFunction(()=>window.watermelonReady);expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),RANK)).toEqual(list);await expect(page.locator('#resume')).toHaveText('다시 한 판');
+});
+
 for(const width of [320,360,390,430])test('mobile '+width+'px touch, cooldown, cancel, pause and dialog controls',async({browser})=>{
  const context=await browser.newContext({viewport:{width,height:width===320?568:844},isMobile:true,hasTouch:true});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await open(page);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(width);
@@ -78,7 +96,10 @@ for(const width of [320,360,390,430])test('mobile '+width+'px touch, cooldown, c
  await page.locator('#pause').click();const s=await page.evaluate(()=>__watermelon.snapshot());await page.waitForTimeout(200);expect(await page.evaluate(()=>__watermelon.snapshot().balls)).toEqual(s.balls);
  await page.locator('#resume').click();await page.locator('#rankToggle').click();expect(await page.evaluate(()=>__watermelon.metrics().paused)).toBe(true);await page.locator('#rankClose').click();expect(await page.evaluate(()=>__watermelon.metrics().paused)).toBe(false);
  const touch=await context.newCDPSession(page);await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width/2,y:box.y+80}]});await touch.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
- expect(await page.evaluate(()=>__watermelon.metrics().inputs)).toBe(2);expect(errors).toEqual([]);await context.close();
+ expect(await page.evaluate(()=>__watermelon.metrics().inputs)).toBe(2);await page.waitForTimeout(450);
+ await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width*.3,y:box.y+80}]});await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:box.x+box.width*.7,y:box.y+80}]});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ expect(await page.evaluate(()=>__watermelon.metrics().inputs)).toBe(3);const dropped=await page.evaluate(()=>__watermelon.snapshot().balls.at(-1));expect(dropped.x).toBeCloseTo(252,0);
+ expect(errors).toEqual([]);await context.close();
 });
 
 test('installed PWA caches every game dependency for offline resume',async({page,context})=>{

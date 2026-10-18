@@ -1020,7 +1020,7 @@ class HomeResponsiveTest(unittest.TestCase):
                 root.querySelectorAll('strong').forEach(e=>e.textContent='표시 문구 변경');
                 }document.dispatchEvent(new Event('fm-fire-view-updated'));}""")
             self.assertEqual(page.locator('.fm-fire-overview').inner_text(),before)
-            self.assertEqual(page.locator('#fmForecastSummaryValue').inner_text(),state['forecast']['value'])
+            self.assertEqual(page.locator('#fmForecastSummaryValue').inner_text(),state['forecast']['summaryValue'])
             page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="fire"]').tap()
             self.assertEqual(page.evaluate('window.fmFireViewState.cashflow'),state['cashflow'])
             page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page)

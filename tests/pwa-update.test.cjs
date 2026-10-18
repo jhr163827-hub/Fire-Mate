@@ -7,7 +7,7 @@ const updater=html.split('<script id="fm-pwa-updates">')[1]?.split('</script>')[
 const tests=[
  ['matching build',()=>assert.equal(html.match(/const BUILD='([^']+)'/)?.[1],sw.match(/const CACHE='([^']+)'/)?.[1])],
  ['manual update button',()=>assert.match(updater,/fmManualUpdate/)],
- ['no automatic update dialog',()=>assert.doesNotMatch(updater,/fmPwaDialog|window\.addEventListener\('pageshow',check\)/)],
+ ['no automatic update dialog',()=>{assert.doesNotMatch(updater,/fmPwaDialog/);const check=updater.split('const check=async()=>')[1]?.split('button.onclick=async()=>')[0];assert.ok(check);assert.doesNotMatch(check,/modal\(|SKIP_WAITING|location\.replace/)}],
  ['no automatic activation',()=>assert.doesNotMatch(sw.split("self.addEventListener('install'")[1].split("self.addEventListener('activate'")[0],/skipWaiting\s*\(/)],
  ['explicit activation only',()=>assert.match(updater,/waiting\.postMessage\(\{type:'SKIP_WAITING'\}\)/)],
  ['preflight before activation',()=>{const check=updater.indexOf("html.includes('id=\"view-home\"')");assert.ok(check>0);assert.ok(check<updater.indexOf('waiting.postMessage('))}],

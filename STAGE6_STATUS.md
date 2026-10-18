@@ -1,6 +1,6 @@
 # FIRE MATE 6단계 최종 마무리 기록
-상태: 최소 수정 및 실패 3개 재검증 완료. 전체 테스트/CI/Pages 최종 확인 중.
-업데이트: 2026-10-18 11:26 KST
+상태: 6단계 완료. 로컬/CI의 필수 50개와 추가 회귀 43개 전부 통과. 안전성 검사와 Pages 배포 성공.
+최종 확인: 2026-10-18 (KST)
 
 ## 승인된 범위와 보존 조건
 - 사용자 2026-10-18 11:23 요청에 따라 홈·가계부의 확인된 기존 오류만 최소 수정 허용.
@@ -12,7 +12,8 @@
 - 자산 UI: 0eba3a6f951e3bb64cad8b201db17e09c13c131c
 - 기존 자산 회귀 선택자 교정: 5f9c30c0bf4d0d00993df77e5a98417c97bf82d3
 - 이번 작업 시작 기준: 630ef40ab06aa8a85289ced384beef7a2c910094
-- 이 문서와 함께 홈·가계부 최소 CSS 및 예산 테스트 선택자 교정을 커밋한다.
+- 홈·가계부 최소 CSS 및 예산 테스트 선택자 교정: ffd6311b9fe17beabac5f4aa4a69ea0d35431d70
+- 최종 검증 결과와 재개 절차는 후속 문서 커밋으로 보존한다.
 
 ## 실제 로그와 5단계 비교
 CI 로그: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488587
@@ -28,13 +29,23 @@ CI 로그: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39089488587
 - 자산 탭 CSS/HTML/전환/금융 계산/저장 구조는 변경하지 않았다.
 - 실패했던 3개 테스트를 수정 후 로컬에서 재실행: 3 통과/0 실패/0 skip.
 
-## 완료 확인 전 남은 작업
-- npm run test:finance
-- npm run test:e2e
-- Python 추가 회귀 43개 전체 실행
-- 최신 앱 커밋의 quality / Home responsive regression / safety / Pages 결과 확인
-- 실제 Pages HTML 및 sw.js 응답에서 v3.5.33 확인
-- 모두 통과하면 이 문서의 결과를 갱신하고 6단계 완료 처리
+## 최종 검증 결과
+수정 커밋 ffd6311b9fe17beabac5f4aa4a69ea0d35431d70 기준:
+- 로컬/CI 모두: 금융 2 통과, E2E 48 통과, 추가 Python 회귀 43 통과. 합계 93 통과/0 실패/0 skip.
+- 로컬 추가 검사: 정적 무결성, 금융 계산, 저장 롤백, PWA 업데이트 검사 전부 통과.
+- quality 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39090037530
+- Home responsive regression 성공(43개 및 화면 캡처/아티팩트 생성 포함): https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39090037600
+- safety 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39090037588
+- Pages 성공: https://github.com/jhr163827-hub/Fire-Mate/actions/runs/39090037537
+- 실제 배포 HTML/SW 모두 HTTP 200 및 v3.5.33 / fire-mate-v3-5-33 응답 확인.
+- 기존 자산 전용 스타일은 직전 버전과 바이트 단위 동일함을 확인했다.
+- 앱 JavaScript 8개 블록은 출시 버전 문자열을 제외하면 직전 버전과 동일함을 확인했다. 금융 데이터 저장 구조/계산/시세/API 제한 변경 없음.
+- 남은 코드 수정/실패 테스트 없음. 6단계 완료.
+
+## 중단 또는 후속 작업 재개
+- 먼저 최신 main 및 이 문서를 읽고, 과거 완료 작업을 다시 수정하지 않는다.
+- 위 CI 실행은 검증한 앱 소스 커밋의 결과다. 후속 문서 커밋은 앱/테스트 파일을 바꾸지 않는다.
+- 재실행이 필요할 때만 아래 명령을 사용한다. 새로운 기능 개발은 이 단계에 포함하지 않는다.
 
 ## 재개 명령
 ```sh

@@ -3083,7 +3083,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-55',VERSION='3.5.55';
+ const BUILD='fire-mate-v3-5-56',VERSION='3.5.56';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3139,7 +3139,7 @@ syncRecurring();recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_a
   finally{busy=false;button.disabled=false;refresh(registration);reset()}
  };
  window.addEventListener('load',async()=>{try{watch(await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}))}catch(e){console.warn('Worker registration:',e)}});
- window.addEventListener('focus',check);window.addEventListener('online',check);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check()});
+ window.addEventListener('focus',check);window.addEventListener('online',check);window.addEventListener('pageshow',check);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check()});
 })();
 </script><script id="fm-layout">
 document.addEventListener('DOMContentLoaded',()=>{

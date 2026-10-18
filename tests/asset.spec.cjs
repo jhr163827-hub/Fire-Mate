@@ -174,6 +174,8 @@ for(const width of [320,360,390,430]){
   test('seeded '+width+'px '+theme+' theme retains assets after reload and reopening',async({page,context})=>{
    await page.setViewportSize({width,height:850});
    const fixture={theme,tx:[{id:'qa-tx',date:'2026-10-01',type:'expense',category:'식비',amount:9000,memo:'QA'}],holdings:[{id:'qa-us',accountId:'qa-account',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80},{id:'qa-kr',accountId:'qa-account',ticker:'005930',type:'KRW',qty:3,price:10000,cost:9000}],accounts:[{id:'qa-account',name:'QA',kind:'investment',amount:10000,fire:true}],balance:{fx:1400,cash:5000,other:0,debt:0},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4}};
+   // Deterministic FX: production auto-refresh otherwise overwrites the seeded 1400 KRW/USD.
+   await page.route('https://api.frankfurter.dev/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({date:'2026-10-16',rates:{KRW:1400}})}));
    await page.goto('/index.html');
    await page.evaluate(seed=>localStorage.setItem('firemate_smart_v3',JSON.stringify(seed)),fixture);
    await page.reload();

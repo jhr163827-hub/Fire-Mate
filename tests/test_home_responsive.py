@@ -30,7 +30,16 @@ class HomeResponsiveTest(unittest.TestCase):
         fold=page.locator('#fmForecastDisclosure')
         if not fold.evaluate('(e)=>e.open'): fold.locator(':scope>summary').click()
 
+    def fire_screen(self,page,target):
+        page.locator('.view.active .fm-fire-screen-nav [data-fire-screen="'+target+'"]').click()
+
+    def open_portfolio(self,page):
+        self.fire_screen(page,'retire')
+        fold=page.locator('#fmPortfolioDisclosure')
+        if not fold.evaluate('(e)=>e.open'): fold.locator(':scope>summary').click()
+
     def open_strategy_settings(self,page):
+        self.fire_screen(page,'retire')
         fold=page.locator('#fmStrategyDetails')
         if not fold.evaluate('(e)=>e.open'): fold.locator(':scope>summary').click()
 
@@ -219,8 +228,8 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('.bottomnav [data-view="fire"]').click()
                     self.assertTrue(page.locator('#firePct').is_visible())
                     self.assertTrue(page.locator('#fireYears').is_visible())
-                    self.assertIn('배당', page.locator('#fmOverview-strategy').inner_text())
-                    positions=page.evaluate("""() => ['.fm-fire-hero','.fm-fire-calc-card','.fm-fire-life-card','.fm-fire-strategy-card']
+                    self.assertEqual(page.locator('#view-fire .fm-fire-screen-nav button').count(),4)
+                    positions=page.evaluate("""() => ['.fm-fire-screen-nav','.fm-fire-hero','.fm-fire-overview','#fmForecastDisclosure']
                         .map(selector => document.querySelector('#view-fire '+selector).getBoundingClientRect().y + scrollY)""")
                     self.assertEqual(positions, sorted(positions))
                     page.locator('#fmOpenCalculator').click()
@@ -466,7 +475,7 @@ class HomeResponsiveTest(unittest.TestCase):
             for selector in ('#fmModeCalendar','#fmModeList','#fmLedgerAddBtn','#fmLedgerBudgetEdit'):
                 self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)
             page.locator('.bottomnav [data-view="fire"]').click()
-            for selector in ('#fmFirePortfolioOpen','#fmFireLifeOpen'):
+            for selector in ('#fmFireStrategyOpen','#fmFireLifeOpen'):
                 self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)
         finally:
             page.close()
@@ -1021,12 +1030,12 @@ class HomeResponsiveTest(unittest.TestCase):
                 window.__fmFinanceTest.strategy({div:[{name:'TEST',amount:10000,estimatedAnnualMan:400}],sale:[{name:'TEST',amount:10000,rate:7}]});
                 return {state:window.fmFireViewState.detail,ledger:window.__fmFinanceLedger};}""")
             self.assertEqual(result['state']['balances'],[x['series'][30] for x in result['ledger']['displayed']])
-            page.locator('#fmRetireBack').tap()
+            page.locator('.view.active [data-fire-screen="fire"]').tap()
             self.assertEqual(page.locator('#fmOverview-strategy').inner_text(),result['state']['text'])
             page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page)
             page.locator('#fmQuickSpend').fill('200')
             self.assertIsNone(page.evaluate('window.fmFireViewState.detail'))
-            page.locator('#fmRetireBack').tap()
+            page.locator('.view.active [data-fire-screen="fire"]').tap()
             self.assertIn('조건 확인 후 계산',page.locator('#fmOverview-strategy').inner_text())
         finally:
             page.close()
@@ -1045,8 +1054,8 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.locator('.bottomnav [data-view="fire"]').tap();page.locator('#fmFireLifeOpen').tap()
                         # Living-cost settings are reachable without first opening the experiment results.
                         self.assertFalse(page.locator('#fmLifeScenario').evaluate('(e)=>e.open'))
-                        page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('350')
-                        page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('11000')
+                        self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('350')
+                        self.open_portfolio(page);page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('11000')
                         self.assertIn('저장된 배분 합계',page.locator('#rpSum').locator('..').inner_text())
                         self.assertIn('저장 후 결과에 반영',page.locator('#fmRpEditBody').inner_text())
                         self.assertEqual(page.evaluate('window.fmFireViewState.cashflow.spend'),300)
@@ -1055,34 +1064,36 @@ class HomeResponsiveTest(unittest.TestCase):
                         current=saved();expected={**original,'items':[{**x,'amount':11000 if i==0 else x['amount']} for i,x in enumerate(original['items'])]}
                         self.assertEqual(current,expected)
                         self.assertEqual(page.locator('#rpMonthly').input_value(),'350','unrelated unsaved draft must remain a draft')
+                        self.fire_screen(page,'firelife')
                         self.assertEqual(page.locator('#rpSave').inner_text(),'생활 조건만 저장')
                         page.locator('#fmRetireCancel').tap()
                         self.assertEqual(page.locator('#rpMonthly').input_value(),'300')
                         self.assertEqual(saved(),expected)
                         # Saving living conditions must not save an allocation draft, and cancel must restore only it.
-                        page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('12000')
-                        page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('325')
+                        self.open_portfolio(page);page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('12000')
+                        self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('325')
                         page.locator('#rpSave').tap()
                         expected={**expected,'monthly':325,'taxRate':20}
                         self.assertEqual(saved(),expected)
                         self.assertEqual(page.locator('[data-rp="0"]').input_value(),'12000')
                         self.assertIn('생활비 325만',page.locator('#fmFireLife').inner_text())
+                        self.open_portfolio(page)
                         page.locator('#fmRetireCancel').tap()
                         self.assertEqual(page.locator('[data-rp="0"]').input_value(),'11000')
                         # Dividend/insurance cancellation does not alter any persisted settings.
-                        page.locator('#fmDividendEditor>summary').tap();rate=page.locator('[data-fm-div-rate]').first
+                        self.fire_screen(page,'firelife');page.locator('#fmDividendEditor>summary').tap();rate=page.locator('[data-fm-div-rate]').first
                         original_rate=rate.input_value();rate.fill('8.25')
                         page.locator('#fmCancelDividendRates').tap()
                         self.assertEqual(rate.input_value(),original_rate);self.assertEqual(saved(),expected)
                         # Reset is also allocation-only, preserving a living-condition draft.
-                        page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('375')
-                        page.locator('#fmRpEditToggle').tap()
+                        self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('375')
+                        self.open_portfolio(page);page.locator('#fmRpEditToggle').tap()
                         page.once('dialog',lambda dialog:dialog.accept());page.locator('#rpReset').tap()
                         expected={**expected,'items':original['items']}
                         self.assertEqual(saved(),expected);self.assertEqual(page.locator('#rpMonthly').input_value(),'375')
-                        page.locator('#fmRetireCancel').tap()
+                        self.fire_screen(page,'firelife');page.locator('#fmRetireCancel').tap()
                         # Real browser quota failure: keep saved model and leave pending editor open.
-                        page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('13000')
+                        self.open_portfolio(page);page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('13000')
                         page.evaluate("""()=>{window.fmOriginalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='firemate_smart_v3')throw new DOMException('Quota exceeded','QuotaExceededError');return window.fmOriginalSetItem.call(this,k,v)}}""")
                         page.locator('#rpSave').tap()
                         self.assertEqual(saved(),expected);self.assertTrue(page.locator('#fmRpEditBody').is_visible())
@@ -1113,7 +1124,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.open_forecast(page)
                         self.assertTrue(page.locator('#fmForecastPlot').is_visible())
                         page.locator('#fmForecastDisclosure>summary').tap()
-                        page.locator('#fmFirePortfolioOpen').tap()
+                        self.open_portfolio(page)
                         self.assertTrue(page.locator('#fmQuickResult').is_visible())
                         self.assertFalse(page.locator('#rpMonthly').is_visible())
                         self.assertFalse(page.locator('#fmQuickBudget').is_visible())
@@ -1127,7 +1138,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertFalse(page.locator('#fmRpEditBody').is_visible())
                         self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).retirement.items[0].amount"),11000)
                         self.assertIn('6,000만',page.locator('#rpSum').inner_text())
-                        page.locator('#fmLifeConditions>summary').tap()
+                        self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap()
                         page.locator('#rpMonthly').fill('325')
                         page.locator('#rpYield').fill('4.5')
                         page.set_viewport_size({"width":width,"height":420})
@@ -1141,7 +1152,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.set_viewport_size({"width":width,"height":844})
                         self.assertEqual(page.locator('#rpMonthly').input_value(),'300')
                         self.assertEqual(page.locator('#rpYield').input_value(),'4')
-                        page.locator('#fmLifeConditions>summary').tap()
+                        self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap()
                         page.locator('#rpMonthly').fill('325');page.locator('#rpSave').tap()
                         self.assertIn('생활비 325만',page.locator('#fmFireLife').inner_text())
                         self.assertEqual(page.locator('#rpSpend').inner_text(),'325만 원')
@@ -1170,8 +1181,8 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(page.locator('.fm-str-model-summary').is_visible())
                         ledger=page.evaluate('window.__fmFinanceLedger')
                         self.assertTrue(ledger['sameReturn']);self.assertTrue(ledger['reinvest']);self.assertEqual(ledger['years'],30)
-                        page.locator('#fmRetireBack').tap()
-                        self.assertIn('30년 후',page.locator('#fmOverview-strategy').inner_text())
+                        page.locator('.view.active [data-fire-screen="fire"]').tap()
+                        self.assertIn('30년 후',page.evaluate('window.fmFireViewState.detail.text'))
                         page.reload(wait_until='domcontentloaded')
                         after=page.evaluate("""()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));return {tx:d.tx,holdings:d.holdings,accounts:d.accounts,balance:d.balance,goal:d.fire.goal,monthly:d.fire.monthly,rate:d.fire.rate,withdrawal:d.fire.withdrawal}}""")
                         self.assertEqual(after,original)
@@ -1195,7 +1206,7 @@ class HomeResponsiveTest(unittest.TestCase):
             }""")
             page.reload(wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="fire"]').tap()
-            page.locator('#fmFirePortfolioOpen').tap()
+            self.open_portfolio(page)
             page.locator('#fmFirePortfolioDetails>summary').tap()
             rows=page.locator('[data-target-name="JEPQ"]')
             self.assertEqual(rows.count(),1)
@@ -1683,9 +1694,9 @@ class HomeResponsiveTest(unittest.TestCase):
                         forecast.locator(':scope > summary').click()
                         self.assertFalse(forecast.evaluate('(el)=>el.open'))
                         # Forecast changes must preserve other open sections and unsaved settings.
-                        page.locator('#fmFirePortfolioOpen').click()
+                        self.open_portfolio(page)
                         page.locator('#fmFirePortfolioDetails>summary').click()
-                        page.locator('#fmDividendEditor>summary').click()
+                        self.fire_screen(page,'firelife');page.locator('#fmDividendEditor>summary').click()
                         dividend=page.locator('[data-fm-div-rate]').first
                         dividend.fill('8.25')
                         page.locator('.bottomnav [data-view="fire"]').click()
@@ -1707,7 +1718,8 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertEqual(saved_fire,page.evaluate("() => JSON.parse(localStorage.getItem('firemate_smart_v3')).fire"))
                         page.locator('#fmBackFire').click()
                         page.locator('#fmFireLifeOpen').click()
-                        self.assertTrue(page.locator('#view-retire').is_visible())
+                        self.assertTrue(page.locator('#view-firelife').is_visible())
+                        self.open_portfolio(page)
                         self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
                         self.assertFalse(page.locator('#rpReset').is_visible())
                         toggle=page.locator('#fmRpEditToggle')
@@ -1736,7 +1748,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.goto(URL,wait_until='domcontentloaded')
                         if theme=='light':page.locator('#theme').click()
                         page.locator('.bottomnav [data-view="fire"]').click()
-                        page.locator('#fmFireLifeOpen').click()
+                        page.locator('#fmFireStrategyOpen').click()
                         self.assertTrue(page.locator('#view-retire').is_visible())
                         page.locator('#fmStrategyDetails > summary').click()
                         page.locator('#fmStrModeDetail').click()

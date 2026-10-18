@@ -930,6 +930,61 @@ class HomeResponsiveTest(unittest.TestCase):
         finally:
             page.close()
 
+    def test_stage8_strategy_reinvestment_period_and_negative_input(self):
+        page=self.browser.new_page(viewport={"width":320,"height":844})
+        try:
+            page.route("https://api.frankfurter.dev/**",lambda route: route.abort("failed"))
+            page.goto(URL,wait_until="domcontentloaded")
+            for reinvest in (False,True):
+                got=page.evaluate("""reinvest => {
+                    const set=(id,v)=>document.getElementById(id).value=String(v);
+                    set('fmQuickBudget',10000);set('fmQuickSpend',100);
+                    set('fmStrYears',30);set('fmStrInflation',2);set('fmStrDivGrowth',7);
+                    set('fmStrDivCost',15);set('fmStrInsurance',0);
+                    document.getElementById('fmStrSameReturn').checked=true;
+                    document.getElementById('fmStrFairMode').checked=true;
+                    document.getElementById('fmStrReinvest').checked=reinvest;
+                    window.__fmFinanceTest.strategy({div:[{name:'TEST',amount:10000,estimatedAnnualMan:400}],sale:[{name:'TEST',amount:10000,rate:7}]});
+                    return window.__fmFinanceLedger;
+                }""",reinvest)
+                invested=10000.0;cash=0.0
+                for year in range(1,31):
+                    cost=100*1.02**(year-1)
+                    dividend=min(invested*1.07,invested*0.04)
+                    net=dividend*0.85
+                    invested=invested*1.07-dividend;cash+=net
+                    take=min(cash,cost);cash-=take
+                    sold=min(invested,max(0,cost-take));invested-=sold
+                    reinvested=min(cash,max(0,net-cost)) if reinvest else 0
+                    cash-=reinvested;invested+=reinvested
+                    row=got['baseline'][0]['ledger'][year-1]
+                    self.assertAlmostEqual(row['closing'],cash+invested,delta=0.00001)
+                    self.assertAlmostEqual(row['reinvested'],reinvested,delta=0.00001)
+                    self.assertAlmostEqual(row['closing'],row['opening']+row['investmentReturn']-row['dividendCost']-row['spending'],delta=0.00001)
+                summary=page.locator('.fm-str-model-summary').inner_text()
+                for text in ('10년 잔액','20년 잔액','30년 잔액','현재 구매력','확률을 계산하지 않습니다'):
+                    self.assertIn(text,summary)
+            invalid=page.evaluate("""() => {
+                document.getElementById('fmStrYears').value='10.5';
+                return window.__fmFinanceTest.strategy({div:[{name:'TEST',amount:10000,estimatedAnnualMan:400}],sale:[{name:'TEST',amount:10000,rate:7}]});
+            }""")
+            self.assertIn('정수로 입력',invalid)
+            page.locator('.bottomnav [data-view="fire"]').click()
+            page.locator('#fmFireStrategyOpen').click()
+            page.locator('#fmStrModeDetail').click()
+            field=page.locator('[data-fms-type="sale"][data-fms-field="rate"]').first
+            self.assertEqual(field.get_attribute('min'),'-100')
+            field.fill('-10')
+            self.assertEqual(field.input_value(),'-10')
+            # The quick model cannot pay dividends beyond available assets after a loss.
+            result=page.evaluate("""() => {
+                for(const [id,v] of Object.entries({fmQuickBudget:100,fmQuickSpend:10,fmQuickYield:100,fmQuickGain:-90,fmQuickTax:0}))document.getElementById(id).value=v;
+                window.__fmFinanceTest.quick();return document.getElementById('fmQuickResult').innerText;
+            }""")
+            self.assertIn('배당 총액 10만 원',result)
+        finally:
+            page.close()
+
     def test_thirty_year_ledger_against_independent_annual_model(self):
         # Independent Python recurrence, compared with the app's actual year-by-year ledger.
         for scenario in (

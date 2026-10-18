@@ -377,24 +377,19 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.goto(URL,wait_until="domcontentloaded")
                         page.evaluate("theme => document.documentElement.setAttribute('data-theme',theme)",theme)
                         page.locator('.bottomnav [data-view="home"]').click()
-                        activity=page.locator("#view-home .fm-home-activity-details")
-                        self.assertEqual(activity.count(),1)
-                        self.assertFalse(activity.evaluate("(el)=>el.open"))
-                        activity.locator("summary").click()
-                        self.assertTrue(activity.evaluate("(el)=>el.open"))
-                        self.assertTrue(page.locator("#fmHomeActivity").is_visible())
-                        activity.locator("summary").click()
-                        self.assertFalse(activity.evaluate("(el)=>el.open"))
-                        self.assertTrue(page.locator("#homeTotalAssets").is_visible())
-                        self.assertTrue(page.locator("#homeDailyChange").is_visible())
-                        self.assertTrue(page.locator("#homeAssetPercent").is_visible())
-                        self.assertTrue(page.locator("#homeFireEta").is_visible())
-                        self.assertTrue(page.locator("#heroSpent").is_visible())
-                        budget_details=page.locator("#view-home .fm-secondary-details")
-                        self.assertFalse(page.locator("#fmBudgetExpense").is_visible())
-                        budget_details.locator("summary").click()
-                        self.assertTrue(page.locator("#fmBudgetExpense").is_visible())
-                        budget_details.locator("summary").click()
+                        self.assertEqual(page.locator('#view-home .home-shortcuts button').count(),2)
+                        self.assertEqual(page.locator('#view-home .fm-secondary-details').count(),0)
+                        for ident in ('homeTotalAssets','homeDailyChange','heroSpent','heroBudget','heroLeft','homeAssetPercent','homeFireEta'):
+                            self.assertTrue(page.locator('#'+ident).is_visible())
+                        page.locator('#fmSpendingOpen').click()
+                        self.assertTrue(page.locator('#view-insights').is_visible())
+                        self.assertTrue(page.locator('#sixChart').is_visible())
+                        self.assertTrue(page.locator('#recent').is_visible())
+                        page.locator('#fmInsightsBack').click()
+                        page.wait_for_selector('#view-home.active')
+                        page.locator('.bottomnav [data-view="assets"]').click()
+                        page.locator('#fmAssetQuickAnalysis').click()
+                        self.assertTrue(page.locator('#assetGrowthChart').is_visible())
                         self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"),width+2)
                     finally:
                         page.close()
@@ -461,7 +456,8 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertTrue(page.locator(f'#view-{view}').is_visible())
                         self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,view)
                     page.locator('.bottomnav [data-view="home"]').click()
-                    page.locator('#view-home [data-go="retire"]').click()
+                    page.locator('.bottomnav [data-view="fire"]').click()
+                    self.fire_screen(page,'retire')
                     self.assertTrue(page.locator('#view-retire').is_visible())
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'retire')
                 finally:
@@ -511,7 +507,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.wait_for_timeout(100)
                         computed = page.evaluate("""() => {
                             const progress = document.querySelector('#homeAssetPercent');
-                            const activity = document.querySelector('#fmHomeActivity');
+                            const activity = document.querySelector('#view-home .home-shortcuts');
                             const pct = getComputedStyle(progress);
                             const act = getComputedStyle(activity);
                             const box = activity.getBoundingClientRect();
@@ -986,7 +982,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').text_content())
                             quote=page.locator('#homeRefreshStocks').bounding_box();total=page.locator('#homeTotalAssets').bounding_box()
                             self.assertGreaterEqual(quote['height'],44);self.assertGreaterEqual(total['y'],quote['y']+quote['height'])
-                            for sel in ('.fm-eta-details>summary','.fm-home-activity-details>summary','.fm-secondary-details>summary'):
+                            for sel in ('.fm-eta-details>summary','#fmMonthlyOpen','#fmSpendingOpen'):
                                 self.assertGreaterEqual(page.locator('#view-home '+sel).bounding_box()['height'],44)
                             page.locator('.bottomnav [data-view="assets"]').tap()
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').inner_text())
@@ -1593,7 +1589,8 @@ class HomeResponsiveTest(unittest.TestCase):
                             if theme=='light':
                                 page.locator('#theme').click()
                             page.locator('.bottomnav [data-view="home"]').click()
-                            page.locator('#view-home .home-shortcuts [data-go="history"]').click()
+                            page.locator('#fmSpendingOpen').click()
+                            page.locator('#view-insights .fm-home-transactions [data-go="history"]').click()
                             self.assertTrue(page.locator('#historyList [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'history')
                             self.assertGreaterEqual(page.locator('#historyList [data-edit="long-mobile-tx"]').bounding_box()['height'],44)

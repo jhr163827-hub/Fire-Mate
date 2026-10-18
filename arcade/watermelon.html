@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111327"><title>FIRE MATE ARCADE · 수박게임</title><style>*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#28325e,#101225 65%);color:#f9faff;font-family:system-ui,sans-serif;min-height:100dvh}main{max-width:470px;margin:auto;padding:14px}header{display:flex;align-items:center;justify-content:space-between;gap:8px}a,button{color:white;background:#323b69;border:1px solid #6571aa;border-radius:12px;padding:10px 14px;text-decoration:none;font-weight:700}h1{font-size:23px;margin:12px 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.stat{background:#222a4c;border:1px solid #414d7a;border-radius:14px;padding:9px;text-align:center}.stat small{display:block;color:#bac3e5}.stat strong{font-size:21px}canvas{display:block;width:100%;touch-action:none;border:3px solid #6874ab;border-radius:16px;background:linear-gradient(#191e39,#272342);box-shadow:0 14px 35px #070817aa}.controls{display:flex;gap:8px;justify-content:space-between;margin:12px 0}.hint{font-size:13px;color:#bdc5e7;line-height:1.5}.rank{background:#202847;border-radius:14px;padding:12px;margin-top:14px}.rank h2{font-size:16px;margin:0 0 8px}.rank ol{margin:0;padding-left:24px;font-size:14px;line-height:1.9}.rank li span{float:right;color:#b8c2e6}#rankDialog{background:#202847;color:#fff;border:1px solid #6571aa;border-radius:18px;padding:22px;width:min(90vw,380px);max-height:75dvh;overflow:auto}#rankDialog::backdrop{background:#050717bd}#rankDialog h2{font-size:20px;margin:0 0 12px}#rankDialog ol{padding-left:28px;line-height:2}#rankDialog li span{float:right;color:#b8c2e6}#rankClose{width:100%;margin-top:12px}#notice{font-size:14px;min-height:21px;color:#fcd57a}</style></head><body><main><header><a href="./index.html">← 게임 아케이드</a><span>🎮 ARCADE 01</span></header><h1>🍉 수박게임</h1><div class="stats"><div class="stat"><small>점수</small><strong id="score">0</strong></div><div class="stat"><small>최고 기록</small><strong id="best">0</strong></div><div class="stat"><small>다음 과일</small><strong id="next">🍒</strong></div></div><div id="evolution" style="display:flex;gap:5px;overflow-x:auto;padding:8px 0 12px"></div><canvas id="game" width="360" height="390" aria-label="수박게임 플레이 영역"></canvas><div class="controls"><button id="restart">↻ 다시 시작</button><button id="rankToggle" type="button">🏆 랭킹 보기</button></div><div id="notice">손가락으로 위치를 정하고 떼면 과일이 떨어져요!</div><p class="hint">같은 과일끼리 닿으면 더 큰 과일로 합쳐져요. 과일이 위쪽 위험선에 오래 닿으면 게임 종료! 기록은 이 기기에 저장됩니다.</p><dialog id="rankDialog" aria-labelledby="rankTitle"><h2 id="rankTitle">🏆 최고 점수 TOP 10</h2><ol id="scores"></ol><button type="button" id="rankClose">닫기</button></dialog></main><script>
 (()=>{'use strict';
-const W=360,H=390,canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id),KEY='firemate_arcade_watermelon_scores_v1',STATE_KEY='firemate_arcade_watermelon_state_v1',DANGER_Y=62;
+const W=360,H=390,canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id),KEY='firemate_arcade_watermelon_scores_v1',STATE_KEY='firemate_arcade_watermelon_state_v1',DANGER_Y=42;
 const fruits=[['🍒',11,2],['🍓',14,4],['🍇',18,8],['🍊',23,16],['🍋',28,32],['🍎',34,64],['🍐',40,128],['🍑',47,256],['🍍',55,512],['🍈',64,1024],['🍉',74,2048]];
 let balls=[],score=0,aim=180,next=0,over=false,last=0,dropAt=0,uid=0, danger=0, raf=0,dragging=false,particles=[],savedAt=0;
 function records(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a.filter(x=>Number.isFinite(x.score)).slice(0,10):[]}catch{return []}}
@@ -13,7 +13,42 @@ function update(){ $('score').textContent=score.toLocaleString();$('next').textC
 function reset(){balls=[];score=0;aim=180;next=Math.floor(Math.random()*4);over=false;danger=0;dropAt=0;particles=[];$('notice').textContent='화면을 터치해서 과일을 떨어뜨려 봐!';update();saveState(true)}
 function drop(){if(over||performance.now()-dropAt<360)return;const r=fruits[next][1];balls.push({id:++uid,x:Math.max(r+2,Math.min(W-r-2,aim)),y:40,r,level:next,vx:0,vy:0,age:0,angle:0,spin:0});next=Math.floor(Math.random()*4);dropAt=performance.now();update();saveState(true)}
 function merge(a,b){if(a.level!==b.level||a.level>=fruits.length-1)return false;const level=a.level+1,r=fruits[level][1],x=(a.x+b.x)/2,y=(a.y+b.y)/2;balls=balls.filter(o=>o!==a&&o!==b);balls.push({id:++uid,x:Math.max(r,Math.min(W-r,x)),y:Math.max(r,y),r,level,vx:(a.vx+b.vx)/2,vy:-2,age:0,angle:(a.angle+b.angle)/2||0,spin:((a.spin||0)+(b.spin||0))/2});score+=fruits[level][2];saveState(true);particles.push({x,y,points:fruits[level][2],life:55});update();return true}
-function physics(dt){const steps=5;for(let z=0;z<steps;z++){const t=Math.min(dt,2)/steps;for(const b of balls){b.age+=t;b.vy+=0.26*t;b.x+=b.vx*t;b.y+=b.vy*t;b.spin=(b.spin||0)*0.8;if(Math.abs(b.vx)<0.16&&Math.abs(b.vy)<0.3)b.spin=0;if(Math.abs(b.spin)<0.003)b.spin=0;b.angle=(b.angle||0)+b.spin*t;b.vx*=0.997;b.vy*=0.999;if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx)*0.35}if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx)*0.35}if(b.y>H-b.r){b.y=H-b.r;b.vy=-Math.abs(b.vy)*0.22;b.vx*=0.985;b.vx*=0.82;if(Math.abs(b.vx)<0.16)b.vx=0;b.spin=b.vx===0?0:Math.max(-0.025,Math.min(0.025,b.vx/b.r*0.18))}}let didMerge=false;for(let i=0;i<balls.length&&!didMerge;i++)for(let j=i+1;j<balls.length;j++){const a=balls[i],b=balls[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||0.01,min=a.r+b.r;if(d>=min)continue;if(a.level===b.level&&a.age>6&&b.age>6&&merge(a,b)){didMerge=true;break}const nx=dx/d,ny=dy/d,overlap=min-d,wa=b.r*b.r/(a.r*a.r+b.r*b.r),wb=1-wa;a.x-=nx*overlap*wa;a.y-=ny*overlap*wa;b.x+=nx*overlap*wb;b.y+=ny*overlap*wb;const rel=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rel<0){const ma=a.r*a.r,mb=b.r*b.r,invA=1/ma,invB=1/mb;const impulse=-(1+0.23)*rel/(invA+invB);a.vx-=nx*impulse*invA;a.vy-=ny*impulse*invA;b.vx+=nx*impulse*invB;b.vy+=ny*impulse*invB;const tx=-ny,ty=nx,slip=(b.vx-a.vx)*tx+(b.vy-a.vy)*ty;const friction=Math.max(-Math.abs(impulse)*0.28,Math.min(Math.abs(impulse)*0.28,-slip/(invA+invB)));a.vx-=tx*friction*invA;a.vy-=ty*friction*invA;b.vx+=tx*friction*invB;b.vy+=ty*friction*invB;a.spin=Math.max(-0.025,Math.min(0.025,(a.spin||0)-friction*a.r*invA*0.008));b.spin=Math.max(-0.025,Math.min(0.025,(b.spin||0)-friction*b.r*invB*0.008))}}}}
+function physics(dt){
+ const steps=6,step=Math.min(dt,2)/steps;
+ for(let z=0;z<steps;z++){
+  for(const b of balls){
+   b.age+=step;b.vy+=0.26*step;b.vx*=0.996;b.vy*=0.999;
+   b.x+=b.vx*step;b.y+=b.vy*step;
+   b.spin=(b.spin||0)*0.89;
+   if(Math.abs(b.spin)<0.0015)b.spin=0;
+   b.angle=(b.angle||0)+b.spin*step;
+   if(b.x<b.r){b.x=b.r;b.vx=Math.max(0,-b.vx*0.15);b.spin*=0.5}
+   if(b.x>W-b.r){b.x=W-b.r;b.vx=Math.min(0,-b.vx*0.15);b.spin*=0.5}
+   if(b.y>H-b.r){b.y=H-b.r;b.vy=Math.abs(b.vy)<0.35?0:-b.vy*0.12;b.vx*=0.82;if(Math.abs(b.vx)<0.09)b.vx=0;b.spin=b.vx===0?0:Math.max(-0.035,Math.min(0.035,b.vx/b.r*0.5))}
+  }
+  let merged=false;
+  for(let i=0;i<balls.length&&!merged;i++)for(let j=i+1;j<balls.length;j++){
+   const a=balls[i],b=balls[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||0.001,min=a.r+b.r;
+   if(d>=min)continue;
+   if(a.level===b.level&&a.age>6&&b.age>6&&merge(a,b)){merged=true;break}
+   const nx=dx/d,ny=dy/d,ma=a.r*a.r,mb=b.r*b.r,ia=1/ma,ib=1/mb,inv=ia+ib;
+   const correction=(min-d+0.01)*0.82;
+   a.x-=nx*correction*ia/inv;a.y-=ny*correction*ia/inv;
+   b.x+=nx*correction*ib/inv;b.y+=ny*correction*ib/inv;
+   const rvx=b.vx-a.vx,rvy=b.vy-a.vy,vn=rvx*nx+rvy*ny;
+   if(vn<0){
+    const jn=-(1+0.08)*vn/inv;
+    a.vx-=nx*jn*ia;a.vy-=ny*jn*ia;b.vx+=nx*jn*ib;b.vy+=ny*jn*ib;
+    const tx=-ny,ty=nx,vt=rvx*tx+rvy*ty;
+    const jt=Math.max(-jn*0.38,Math.min(jn*0.38,-vt/inv));
+    a.vx-=tx*jt*ia;a.vy-=ty*jt*ia;b.vx+=tx*jt*ib;b.vy+=ty*jt*ib;
+    a.spin=Math.max(-0.04,Math.min(0.04,(a.spin||0)-jt*ia*0.09));
+    b.spin=Math.max(-0.04,Math.min(0.04,(b.spin||0)+jt*ib*0.09));
+   }
+  }
+  for(const b of balls){b.x=Math.max(b.r,Math.min(W-b.r,b.x));b.y=Math.min(H-b.r,b.y);if(Math.abs(b.vx)<0.035)b.vx=0;if(Math.abs(b.vy)<0.035)b.vy=0}
+ }
+}
 function drawFruit(level,x,y,r,alpha=1,angle=0){ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(angle);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=Math.round(r*1.92)+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.fillText(fruits[level][0],0,1);ctx.restore()}
 function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#fb6d8d';ctx.fillRect(0,DANGER_Y-1,W,2);ctx.fillStyle='#ffb7c8';ctx.textAlign='left';ctx.font='12px system-ui';ctx.fillText('위험선',8,DANGER_Y-7);
 for(const b of balls)drawFruit(b.level,b.x,b.y,b.r,1,b.angle||0);

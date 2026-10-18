@@ -15,6 +15,14 @@ for(const width of [320,360,390,430]){
    }
    expect(errors).toEqual([]);
   });
+  test('restored main tab remains correct after first navigation and browser back',async({page})=>{
+   await page.addInitScript(()=>sessionStorage.setItem('firemate_last_tab_v1','assets'));
+   await page.goto('/index.html');
+   await expect(page.locator('#view-assets')).toHaveClass(/active/);
+   await page.locator('button.bottom-item[data-view="fire"]').click();
+   await page.goBack();
+   await expect(page.locator('#view-assets')).toHaveClass(/active/);
+  });
   test('browser back returns to immediately previous main tab',async({page})=>{
    await page.goto('/index.html');
    const nav=tab=>page.locator('button.bottom-item[data-view="'+tab+'"]');

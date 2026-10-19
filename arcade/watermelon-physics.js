@@ -533,7 +533,7 @@
           x = legacy ? C.left + (old.x / 360) * (C.right - C.left) : old.x,
           y = legacy
             ? C.dangerY + ((old.y - 27) / (390 - 27)) * (C.floor - C.dangerY)
-            : C.floor - (oldFloor - old.y);
+            : oldHeight === C.height ? old.y : C.floor - (oldFloor - old.y);
         const age = finite(old.age)
           ? Math.max(0, old.age) * (legacy ? 1000 / 60 : 1)
           : 0;

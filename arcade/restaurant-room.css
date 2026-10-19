@@ -84,3 +84,16 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 @media(prefers-reduced-motion:reduce){.room-posture{transition:none}}
 
 @media(orientation:landscape) and (min-width:560px) and (max-height:350px){.restaurant-status{bottom:62px;max-width:220px;font-size:9px;line-height:1.4}}
+
+/* v1.6: reuse scene food art in the recipe book and make active choices readable. */
+#recipeDialog .recipe-choice{display:flex;align-items:center;gap:12px;padding:12px;background:#fffdf0;min-height:132px}
+.recipe-art{display:flex!important;align-items:center;justify-content:center;flex:0 0 66px;width:66px;height:72px;border-radius:14px;background:radial-gradient(#fff5cf,#ead7aa);margin:0!important}
+.recipe-art svg{display:block;width:100%;height:100%}.recipe-copy{flex:1;min-width:0;margin:0!important}.recipe-copy strong{font-size:15px}.recipe-copy small{font-weight:500;line-height:1.45}
+#recipeDialog .recipe-choice:disabled{opacity:.7;background:#ede8d8}.recipe-choice:disabled .recipe-art{filter:grayscale(.7)}
+#recipeDialog .recipe-choice:not(:disabled):active{background:#f5dfac;border-color:#94723c}
+.cookbook-open{width:100%;background:#f1e6c7}.cookbook-entry{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #d8c89f}.cookbook-entry>div{flex:1;min-width:0}.cookbook-entry h3{margin:0;font-size:15px}.cookbook-entry p{margin:5px 0;font-size:12px;line-height:1.45}.cookbook-entry .mastery-label{color:#786223;font-weight:750}.cookbook-entry progress{width:100%;height:7px;accent-color:#758c48}.cookbook-entry:last-child{border-bottom:0}
+@media(orientation:landscape) and (min-width:560px){#recipeDialog{width:min(92vw,650px);display:grid;grid-template-columns:1fr 1fr;gap:10px}#recipeDialog:not([open]){display:none}#recipeDialog>h2,#recipeDialog>button:last-child{grid-column:1/-1}#recipeDialog .recipe-choice{margin:0;font-size:12px;gap:9px;padding:10px;min-height:130px}#recipeDialog .recipe-art{flex-basis:55px;width:55px;height:64px}.recipe-copy strong{font-size:14px}}
+/* SVG touch targets use the existing scene selection ring, without oversized browser tap flashes. */
+.restaurant-app button,#restaurantRoom [role=button]{-webkit-tap-highlight-color:transparent}
+.recipe-copy small{font-size:12px}
+.cookbook-entry p{word-break:keep-all;overflow-wrap:anywhere}

@@ -1,7 +1,6 @@
 const {test,expect}=require('@playwright/test');
-const {resolve}=require('node:path');
-const {pathToFileURL}=require('node:url');
-const url=process.env.NIGHTFALL_URL||pathToFileURL(resolve(__dirname,'nightfall.html')).href;
+// Serve repository root over HTTP, e.g. python3 -m http.server 4173
+const url=process.env.NIGHTFALL_URL||'http://127.0.0.1:4173/arcade/nightfall.html';
 for(const width of [320,360,390,430])test('Nightfall mobile '+width,async({browser})=>{
 const context=await browser.newContext({viewport:{width,height:720},isMobile:true,hasTouch:true});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));

@@ -1,4 +1,4 @@
-/* Restaurant 1.4: cooking -> counter -> automatic table service -> payment.
+/* Restaurant 1.5: cooking -> counter -> automatic table service -> payment.
  * Existing recipe indexes, durations, costs and total batch rewards are preserved.
  * Service timings are implementation calibration, not recovered original constants.
  */
@@ -98,7 +98,7 @@ window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{
  inventory,
  progress:()=>({...progress(),supported:growthSupported(),unlockedLevel:unlockedLevel()}),
  setSuspended:value=>{suspended=!!value;setActive()},
- serviceMotion:()=>({progress:[0,1].map(i=>{const g=data.service?.guests?.[i];return g?Math.min(1,(phaseElapsed.get(i)||0)/(durations[g.phase]||1)):0})})
+ serviceMotion:()=>({progress:[0,1].map(i=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})})
 });
 if(lastStored===null)save();paint();setActive();
 })();

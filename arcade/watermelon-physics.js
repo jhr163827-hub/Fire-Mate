@@ -12,10 +12,10 @@
   const { Engine, Bodies, Body, Composite, Events, Vertices, Sleeping } = M;
   const C = Object.freeze({
     width: 360,
-    height: 500,
+    height: 450,
     left: 12,
     right: 348,
-    floor: 488,
+    floor: 438,
     dangerY: 60,
     spawnY: 27,
     step: 1000 / 120,
@@ -249,8 +249,8 @@
         label: "garden-wall",
       };
       Composite.add(this.engine.world, [
-        Bodies.rectangle(C.left - 30, 260, 60, 620, wall),
-        Bodies.rectangle(C.right + 30, 260, 60, 620, wall),
+        Bodies.rectangle(C.left - 30, C.height / 2, 60, C.height + 120, wall),
+        Bodies.rectangle(C.right + 30, C.height / 2, 60, C.height + 120, wall),
         Bodies.rectangle(180, C.floor + 40, 420, 80, wall),
       ]);
       const collect = (e) => {
@@ -528,10 +528,12 @@
       this.events = [];
       for (const old of s.balls) {
         const legacy = s.version === 1,
+          oldHeight = s.version === 2 && finite(s.arena?.height) ? s.arena.height : 500,
+          oldFloor = oldHeight - 12,
           x = legacy ? C.left + (old.x / 360) * (C.right - C.left) : old.x,
           y = legacy
             ? C.dangerY + ((old.y - 27) / (390 - 27)) * (C.floor - C.dangerY)
-            : old.y;
+            : oldHeight === C.height ? old.y : C.floor - (oldFloor - old.y);
         const age = finite(old.age)
           ? Math.max(0, old.age) * (legacy ? 1000 / 60 : 1)
           : 0;
@@ -542,7 +544,7 @@
           contacted: legacy ? age > 500 : !!old.contacted,
         });
         Body.setAngle(b, finite(old.angle) ? old.angle : 0);
-        if (legacy) this.keepInside(b);
+        if (legacy || oldHeight !== C.height) this.keepInside(b);
         Body.setVelocity(b, {
           x: clamp(old.vx * (legacy ? (C.right - C.left) / 360 : 1), -28, 28),
           y: clamp(

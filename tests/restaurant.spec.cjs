@@ -9,7 +9,7 @@ test('restaurant quarter-view stoves preserve jobs, update real time, cook and s
  for(const width of [320,390,430]){
  const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();const now=await page.evaluate(()=>Date.now());const state={...seed,stoves:[{recipe:0,ends:now+2000},null,null]};await load(page,state);
  expect(await read(page)).toEqual(state);await expect(page.locator('#restaurantRoom .room-cell')).toHaveCount(64);await expect(page.locator('[data-room-stove="0"]')).toHaveAttribute('aria-label',/조리 중/);
- await page.clock.fastForward(3000);await expect(page.locator('[data-room-stove="0"]')).toHaveAttribute('aria-label',/완성/);await page.locator('[data-room-stove="0"]').click();expect(await read(page)).toEqual({...state,coins:512,served:8,stoves:[null,null,null]});
+ await page.clock.fastForward(3000);await expect(page.locator('[data-room-stove="0"]')).toHaveAttribute('aria-label',/완성/);await page.locator('[data-room-stove="0"]').click();const transferred=await read(page);expect(transferred.coins).toBe(500);expect(transferred.served).toBe(7);expect(transferred.stoves).toEqual([null,null,null]);expect(transferred.service.stock[0]).toMatchObject({recipe:0,value:12});await page.clock.runFor(14500);expect((await read(page)).coins).toBe(512);expect((await read(page)).served).toBe(8);
  await page.locator('[data-room-stove="1"]').click();await expect(page.locator('#recipeDialog')).toBeVisible();await page.locator('#recipeDialog').getByRole('button',{name:/주먹밥/}).click();await expect(page.locator('#recipeDialog')).toBeHidden();const started=await read(page);expect(started.coins).toBe(509);expect(started.stoves[1].recipe).toBe(0);expect(started.stoves[1].ends).toBeGreaterThan(now+60000);expect(started.custom).toEqual(state.custom);
  await page.reload();expect((await read(page)).stoves[1]).toEqual(started.stoves[1]);await page.clock.fastForward(61000);await expect(page.locator('[data-room-stove="1"]')).toHaveAttribute('aria-label',/완성/);expect(await page.evaluate(()=>localStorage.getItem('restaurant-finance-sentinel'))).toBe('preserve');expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);expect(errors).toEqual([]);await context.close();
  }
@@ -36,4 +36,29 @@ test('restaurant failed cooking, sale, expansion and reset writes retain both pe
  await page.locator('[data-room-stove="1"]').click();await page.locator('#recipeDialog').getByRole('button',{name:/주먹밥/}).click();await expect(page.locator('#recipeDialog')).toBeVisible();expect(await read(page)).toEqual(initial);expect(await page.evaluate(()=>window.restaurantRoomBridge.snapshot())).toEqual(initial);await page.locator('#recipeDialog').getByRole('button',{name:'취소',exact:true}).click();
  await page.locator('#openExpansion').click();await page.locator('#upgrade').click();await expect(page.locator('#level')).toHaveText('3');expect(await read(page)).toEqual(initial);expect(await page.evaluate(()=>window.restaurantRoomBridge.snapshot())).toEqual(initial);await page.locator('#expansionDialog [data-dialog-close]').click();
  await page.locator('.restaurant-about>summary').click();page.once('dialog',d=>d.accept());await page.locator('#newGame').click();expect(await read(page)).toEqual(initial);expect(await page.evaluate(()=>window.restaurantRoomBridge.snapshot())).toEqual(initial);
+});
+
+test('restaurant serving queues batches, pauses in dialogs, resumes without duplicate payment and preserves old rewards',async({page})=>{
+ await page.clock.install();const initial={...seed,stoves:[{recipe:0,ends:0},{recipe:1,ends:0},{recipe:0,ends:0}]};await load(page,initial);
+ await page.locator('[data-room-stove="0"]').click();await page.locator('[data-room-stove="1"]').click();const two=await read(page);expect(two.coins).toBe(initial.coins);expect(two.served).toBe(initial.served);expect(two.service.stock.filter(Boolean)).toHaveLength(2);
+ await page.locator('[data-room-stove="2"]').click();await expect(page.locator('#status')).toContainText('가득');expect((await read(page)).stoves[2]).toEqual(initial.stoves[2]);
+ await page.locator('#openKitchen').click();const paused=await read(page);await page.clock.runFor(20000);expect(await read(page)).toEqual(paused);await page.locator('#kitchenDialog [data-dialog-close]').click();
+ await page.clock.runFor(4500);expect((await read(page)).service.stock.filter(Boolean).length).toBeLessThan(2);await page.locator('[data-room-stove="2"]').click();expect((await read(page)).stoves).toEqual([null,null,null]);
+ await page.reload();await page.clock.runFor(30000);const complete=await read(page);expect(complete.coins).toBe(initial.coins+12+35+12);expect(complete.served).toBe(initial.served+3);expect(complete.custom).toEqual(initial.custom);
+ await page.reload();await page.clock.runFor(20000);expect((await read(page)).coins).toBe(complete.coins);expect((await read(page)).served).toBe(complete.served);expect(await page.evaluate(()=>localStorage.getItem('restaurant-finance-sentinel'))).toBe('preserve');
+});
+
+test('restaurant payout retries quota failure once and unknown service versions remain untouched',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true});const page=await context.newPage();await page.clock.install();
+ const batch={id:'saved-batch',recipe:0,value:12};const initial={...seed,service:{version:1,stock:[null,null],guests:[{id:batch.id,table:0,counter:0,phase:'eating',batch},null]}};
+ await load(page,initial);await page.evaluate(()=>{window.restoreGameStorage=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='firemate_arcade_restaurant_v2')throw new DOMException('quota','QuotaExceededError');return window.restoreGameStorage.call(this,k,v)}});
+ await page.clock.runFor(6000);expect(await read(page)).toEqual(initial);await expect(page.locator('#status')).toContainText('저장하지 못');await page.evaluate(()=>Storage.prototype.setItem=window.restoreGameStorage);await page.clock.runFor(2000);expect((await read(page)).coins).toBe(initial.coins+12);expect((await read(page)).served).toBe(initial.served+1);
+ await page.reload();await page.clock.runFor(15000);expect((await read(page)).coins).toBe(initial.coins+12);expect((await read(page)).served).toBe(initial.served+1);await context.close();
+ const futureContext=await browser.newContext();const futurePage=await futureContext.newPage();const future={...seed,stoves:[{recipe:0,ends:0},null],service:{version:99,stock:['future'],custom:'preserve'}};await load(futurePage,future);await futurePage.locator('[data-room-stove="0"]').click();await expect(futurePage.locator('#status')).toContainText('지원하지 않는 서빙 기록');expect(await read(futurePage)).toEqual(future);await futureContext.close();
+});
+
+test('restaurant new room controls remain compatible with an in-flight pre-upgrade HTML document',async({page})=>{
+ const old=require('node:fs').readFileSync(require('node:path').join(__dirname,'fixtures/restaurant-v1.html'),'utf8');
+ await page.route('**/arcade/restaurant.html',r=>r.fulfill({contentType:'text/html',body:old}));const errors=[];page.on('pageerror',e=>errors.push(e.message));await load(page,{...seed,stoves:[{recipe:0,ends:0},null,null]});
+ await page.locator('#openKitchen').click();await page.goBack();await expect(page.locator('#kitchenDialog')).toBeHidden();await page.locator('[data-room-stove="0"]').click();expect((await read(page)).coins).toBe(512);expect(errors).toEqual([]);
 });

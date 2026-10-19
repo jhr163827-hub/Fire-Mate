@@ -1,4 +1,4 @@
-/* Restaurant 1.5: cooking -> counter -> automatic table service -> payment.
+/* Restaurant 1.6: cooking -> counter -> automatic table service -> payment.
  * Existing recipe indexes, durations, costs and total batch rewards are preserved.
  * Service timings are implementation calibration, not recovered original constants.
  */
@@ -22,6 +22,14 @@ const milestones=[0,4,12,24];
 function growthSupported(){return data.growth===undefined||!!data.growth&&data.growth.version===1&&Number.isSafeInteger(data.growth.xp)&&data.growth.xp>=0}
 function progress(){const xp=growthSupported()?(data.growth?.xp||0):0;let level=1;for(let i=1;i<milestones.length;i++)if(xp>=milestones[i])level=i+1;return {xp,level,next:milestones[level]??null,base:milestones[level-1]}}
 const unlockedLevel=()=>Math.max(data.level,progress().level);
+// Own mastery balance. A successful completed-batch transfer counts once; no retrospective guesswork.
+function cookbookSupported(){const book=data.cookbook;return book===undefined||!!book&&book.version===1&&Array.isArray(book.recipes)&&book.recipes.length===recipes.length&&book.recipes.every(x=>x&&Number.isSafeInteger(x.completed)&&x.completed>=0)}
+function mastery(n){const completed=cookbookSupported()?(data.cookbook?.recipes[n]?.completed||0):0;return {completed,stage:completed>=10?2:completed>=3?1:0,next:completed>=10?null:completed>=3?10:3}}
+function recordCooking(d,n){d.cookbook??={version:1,recipes:recipes.map(()=>({completed:0}))};d.cookbook.recipes[n].completed=Math.min(Number.MAX_SAFE_INTEGER,d.cookbook.recipes[n].completed+1)}
+let cookbookMarkup='';
+function paintCookbook(){const list=$('cookbookList');if(!list)return;const unknown=!cookbookSupported();$('cookbookSummary').textContent=unknown?'지원하지 않는 요리 기록을 보존하고 있어요. 새 기록을 덮어쓰지 않습니다.':recipes.filter((_,n)=>mastery(n).stage===2).length+' / '+recipes.length+' 요리 마스터 · 완성 요리를 서빙대로 옮길 때 기록돼요.';
+ const html=recipes.map((r,n)=>{const m=mastery(n),locked=unlockedLevel()<r.lv;return '<article class="cookbook-entry"><span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><div><h3>'+r.name+(locked?' · 잠김':'')+'</h3><p>'+r.plates+'접시 · '+fmt(r.ms)+' · 재료 '+r.cost+'코인</p><p class="mastery-label">'+(unknown?'숙련 기록 확인 필요':m.stage===2?'★★ 마스터':m.stage===1?'★ 익숙한 요리':'처음 배우는 요리')+'</p><p>'+(unknown?'저장 원본 유지':m.completed+'회 완성'+(m.next===null?' · 도감 배지 획득':' · 다음 단계까지 '+(m.next-m.completed)+'회'))+'</p><progress aria-label="'+r.name+' 숙련 진행" max="'+(m.next||10)+'" value="'+Math.min(m.completed,10)+'"></progress></div></article>'}).join('');if(cookbookMarkup!==html){cookbookMarkup=html;list.innerHTML=html;window.dispatchEvent(new Event('restaurant-recipe-art'))}}
+
 function validBatch(x){return x&&typeof x.id==='string'&&Number.isInteger(x.recipe)&&!!recipes[x.recipe]&&x.value===recipes[x.recipe].sell}
 function validPlate(x){return x&&x.kind==='plate'&&typeof x.id==='string'&&Number.isInteger(x.recipe)&&!!recipes[x.recipe]&&x.value===recipes[x.recipe].sell/recipes[x.recipe].plates&&x.origin&&typeof x.origin.id==='string'&&Number.isInteger(x.origin.ordinal)&&x.origin.ordinal>=1&&x.origin.ordinal<=recipes[x.recipe].plates&&x.id===x.origin.id+'/plate-'+x.origin.ordinal}
 const validMeal=x=>validBatch(x)||validPlate(x);
@@ -49,10 +57,10 @@ function inventory(){return [0,1].map(i=>{if(!supported(data.service))return nul
 const durations={entering:2500,waiting:0,serving:3000,eating:4500,leaving:2500};
 let phaseElapsed=new Map(),lastTick=performance.now(),timer=null,suspended=false;
 function transfer(i){const job=data.stoves[i];if(!known(job)||Date.now()<job.ends)return;
- if(!supported(data.service)||!growthSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
+ if(!supported(data.service)||!growthSupported()||!cookbookSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
  const stock=inventory();let slot=stock.findIndex(x=>x?.recipe===job.recipe);if(slot<0)slot=stock.findIndex(x=>!x);if(slot<0){notify('서빙대가 가득 찼어요. 같은 요리는 보충할 수 있고, 다른 요리는 빈 서빙대가 필요해요.');return}
  const batch={id:'batch-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),recipe:job.recipe,value:recipes[job.recipe].sell};
- if(transaction(d=>{const service=upgradeService(d);if(service.stock[slot])service.stock[slot].batches.push(asLot(batch));else service.stock[slot]={recipe:job.recipe,batches:[asLot(batch)]};d.stoves[i]=null}))notify(recipes[job.recipe].name+' 보충 완료 · '+inventory()[slot].remaining+'접시 남았어요.');
+ if(transaction(d=>{const service=upgradeService(d);if(service.stock[slot])service.stock[slot].batches.push(asLot(batch));else service.stock[slot]={recipe:job.recipe,batches:[asLot(batch)]};d.stoves[i]=null;recordCooking(d,job.recipe)}))notify(recipes[job.recipe].name+' 보충 완료 · '+inventory()[slot].remaining+'접시 남았어요.');
 }
 function paint(){const now=Date.now();$('coins').textContent=Math.floor(data.coins).toLocaleString();$('served').textContent=data.served;$('level').textContent=data.level;const gp=progress();if($('chefLevel')){$('chefLevel').textContent=growthSupported()?'셰프 Lv'+gp.level:'경험치 기록 확인';$('chefXp').textContent=growthSupported()?(gp.next===null?gp.xp+' XP · 최고 단계':gp.xp+' / '+gp.next+' XP'):'';$('chefProgress').max=gp.next===null?1:gp.next-gp.base;$('chefProgress').value=gp.next===null?1:gp.xp-gp.base;const nextRecipe=recipes.find(r=>r.lv>unlockedLevel());$('chefNext').textContent=nextRecipe?'다음 셰프 Lv'+nextRecipe.lv+' · '+nextRecipe.name+' 해금':'기존 요리 모두 사용 가능 · 시설 확장은 별도';}if(!readable){$('coins').textContent='—';$('served').textContent='—';$('level').textContent='—';}
  const kitchen=$('kitchen');if(kitchen.children.length!==data.stoves.length)kitchen.replaceChildren();
@@ -64,13 +72,14 @@ function paint(){const now=Date.now();$('coins').textContent=Math.floor(data.coi
  $('upgrade').textContent='식당 확장 · '+data.level*150+'코인';$('upgrade').disabled=!readable||!supported(data.service)||!growthSupported()||data.coins<data.level*150||data.level>=5;
  const ready=data.stoves.filter(x=>known(x)&&x.ends<=now).length;$('progress').style.width=(ready/data.stoves.length*100)+'%';$('cookTime').textContent=ready+'개 완성';
  const service=data.service,available=supported(service),stock=inventory(),remaining=stock.reduce((n,x)=>n+(x?.remaining||0),0);$('serviceSummary').textContent=!readable?'읽을 수 없는 저장 기록 보존 중 · 초기화 전 원본을 확인하세요':!available||!growthSupported()?'확인되지 않은 영업 기록 보존 중':service?'재고 '+remaining+'접시 · 응대 '+service.guests.filter(Boolean).length+'/2':'완성 요리를 서빙대로 옮겨 영업을 시작하세요';
- window.dispatchEvent(new Event('restaurant-painted'));
+ paintCookbook();window.dispatchEvent(new Event('restaurant-painted'));
 }
 function showRecipes(i){const box=$('recipeDialog');box.replaceChildren();const h=document.createElement('h2');h.textContent=(i+1)+'번 조리대 · 요리 선택';box.append(h);
- recipes.forEach((r,n)=>{const locked=unlockedLevel()<r.lv;const btn=document.createElement('button');btn.type='button';btn.className='recipe-choice';btn.innerHTML='<strong>'+r.name+(locked?' · 잠김':'')+'</strong><span>'+fmt(r.ms)+' · 재료 '+r.cost+'코인</span><small>'+r.plates+'접시 × '+r.sell/r.plates+'코인 · 총 '+r.sell+'코인</small><small>'+(locked?'셰프 Lv'+r.lv+' 또는 시설 '+r.lv+'단계 필요':'판매 접시당 +1 XP')+'</small>';btn.disabled=locked||!readable||!supported(data.service)||!growthSupported()||data.coins<r.cost;
+ recipes.forEach((r,n)=>{const locked=unlockedLevel()<r.lv;const btn=document.createElement('button');btn.type='button';btn.className='recipe-choice';btn.innerHTML='<span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><span class="recipe-copy"><strong>'+r.name+(locked?' · 잠김':'')+'</strong><span>'+fmt(r.ms)+' · 재료 '+r.cost+'코인</span><small>'+r.plates+'접시 × '+r.sell/r.plates+'코인 · 총 '+r.sell+'코인</small><small>'+(locked?'셰프 Lv'+r.lv+' 또는 시설 '+r.lv+'단계 필요':'판매 접시당 +1 XP')+'</small><small>'+(!cookbookSupported()?'숙련 기록 확인 필요':mastery(n).completed+'회 완성 · '+(mastery(n).stage===2?'마스터':mastery(n).stage===1?'숙련 중':'배우는 중'))+'</small></span>';btn.disabled=locked||!cookbookSupported()||!readable||!supported(data.service)||!growthSupported()||data.coins<r.cost;
  btn.onclick=()=>{if(data.stoves[i]||unlockedLevel()<r.lv)return;if(!transaction(d=>{d.coins-=r.cost;d.stoves[i]={recipe:n,ends:Date.now()+r.ms}}))return;box.close();notify(r.name+' 조리 시작 · 완성되면 서빙대로 옮겨 주세요.')};box.append(btn)});
- const close=document.createElement('button');close.type='button';close.textContent='취소';close.onclick=()=>box.close();box.append(close);window.restaurantRoomUI?window.restaurantRoomUI.open(box):box.showModal();
+ const close=document.createElement('button');close.type='button';close.textContent='취소';close.onclick=()=>box.close();box.append(close);window.dispatchEvent(new Event('restaurant-recipe-art'));window.restaurantRoomUI?window.restaurantRoomUI.open(box):box.showModal();
 }
+if($('openCookbook'))$('openCookbook').onclick=()=>{paintCookbook();window.restaurantRoomUI?window.restaurantRoomUI.open($('cookbookDialog')):$('cookbookDialog').showModal()};
 $('upgrade').onclick=()=>{const cost=data.level*150;if(data.coins<cost||data.level>=5)return;if(transaction(d=>{d.coins-=cost;d.level++;if(d.stoves.length<4)d.stoves.push(null)}))notify('식당을 확장했어요. 새 조리대와 요리를 확인하세요.')};
 $('newGame').onclick=()=>{if(!confirm('레스토랑의 코인·요리·레벨을 모두 초기화할까요?'))return;const previous=data,previousReadable=readable;readable=true;data={coins:150,served:0,level:1,stoves:[null,null],decor:0};if(!save()){data=previous;readable=previousReadable;paint();return}phaseElapsed.clear();paint()};
 function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-lastTick));lastTick=now;

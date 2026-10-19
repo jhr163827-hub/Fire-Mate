@@ -42,3 +42,19 @@ await expect(page.locator('#panel')).toBeHidden();
 await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
 await expect(page.locator('#title')).toContainText('일시정지');
 });
+
+test('Nightfall saved upgrades survive reload',async({page})=>{
+await page.goto(url);
+await page.evaluate(()=>localStorage.setItem('nightfall_progress_v1',JSON.stringify({gold:100,levels:{power:2,health:1,speed:0},unlocks:{ranger:false},selected:'mage',totalKills:4})));
+await page.reload();
+await page.getByRole('button',{name:'영구 강화 상점'}).click();
+await expect(page.getByRole('button',{name:/마법 공격력 Lv 2\/5/})).toBeVisible();
+await expect(page.getByRole('button',{name:/최대 체력 Lv 1\/5/})).toBeVisible();
+});
+test('Nightfall keyboard pause and resume',async({page})=>{
+await page.goto(url);await page.getByRole('button',{name:'생존 시작'}).click();
+await page.keyboard.press('Escape');
+await expect(page.locator('#title')).toContainText('일시정지');
+await page.getByRole('button',{name:'계속하기'}).click();
+await expect(page.locator('#panel')).toBeHidden();
+});

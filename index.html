@@ -3530,7 +3530,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script><script id="fm-monthly-settlement-v350">/* Monthly report is initialized inside the application scope. */</script><script>document.getElementById('fmArcadeOpen')?.addEventListener('click',()=>{window.location.assign(new URL('./arcade/index.html',document.baseURI).href)});</script><style id="fm-premium-finance">
 /* Shared financial decision surfaces; no new calculation or storage owner. */
 .fm-fire-screen-nav{position:sticky;top:0;z-index:7;box-shadow:0 6px 16px color-mix(in srgb,var(--bg) 80%,transparent)}
-.fm-fire-screen-nav button{font-size:12px;min-width:0;white-space:normal;line-height:1.3}
+.fm-fire-screen-nav button{font-size:12px;min-width:0;white-space:nowrap;line-height:1.3;padding:8px 2px!important}
 #view-fire.fm-fire-premium{gap:10px}
 #view-fire .fm-fire-hero{padding:17px 16px;border-radius:20px}
 #view-fire .fm-fire-eta-visible{margin-top:16px}
@@ -3586,7 +3586,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* Dialogs always cover sticky in-page navigation and save bars. */
 .modalbg{z-index:40}
 /* Compact dashboard and stable interaction hierarchy across financial tabs. */
-.bottom-item{transition:none}
+.bottom-item,#view-assets .fm-asset-jump button,.fm-fire-screen-nav button{transition:none}
 #view-home .fm-home-budget{padding:12px 14px!important}
 #view-home .fm-home-budget-total{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:2px 0 6px}
 #view-home .fm-home-budget-total .big{font-size:clamp(27px,7.5vw,32px)!important;margin:0!important;line-height:1.2}
@@ -3604,6 +3604,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 #view-home .fm-home-fire-head .fm-eta-details[open]{grid-column:1/-1;grid-row:2}
 #view-home .fm-home-fire .hero-row{margin-top:0;gap:8px}
 #view-home .fm-home-fire #homeAssetPercent{font-size:23px}
+#view-home .fm-home-fire #homeAssetGoal{font-size:clamp(15px,4.25vw,17px)}
 #view-home .fm-home-fire .fm-fire-eta{margin-top:4px;padding-top:6px}
 #view-home .fm-home-fire .fm-fire-eta>strong{font-size:19px}
 #view-home .fm-home-fire .fm-fire-eta>small{font-size:10px;line-height:1.5}

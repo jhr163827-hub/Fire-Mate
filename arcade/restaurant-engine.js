@@ -1,4 +1,4 @@
-/* Restaurant 1.6: cooking -> counter -> automatic table service -> payment.
+/* Restaurant 1.7: cooking -> counter -> automatic table service -> payment.
  * Existing recipe indexes, durations, costs and total batch rewards are preserved.
  * Service timings are implementation calibration, not recovered original constants.
  */
@@ -30,6 +30,12 @@ let cookbookMarkup='';
 function paintCookbook(){const list=$('cookbookList');if(!list)return;const unknown=!cookbookSupported();$('cookbookSummary').textContent=unknown?'지원하지 않는 요리 기록을 보존하고 있어요. 새 기록을 덮어쓰지 않습니다.':recipes.filter((_,n)=>mastery(n).stage===2).length+' / '+recipes.length+' 요리 마스터 · 완성 요리를 서빙대로 옮길 때 기록돼요.';
  const html=recipes.map((r,n)=>{const m=mastery(n),locked=unlockedLevel()<r.lv;return '<article class="cookbook-entry"><span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><div><h3>'+r.name+(locked?' · 잠김':'')+'</h3><p>'+r.plates+'접시 · '+fmt(r.ms)+' · 재료 '+r.cost+'코인</p><p class="mastery-label">'+(unknown?'숙련 기록 확인 필요':m.stage===2?'★★ 마스터':m.stage===1?'★ 익숙한 요리':'처음 배우는 요리')+'</p><p>'+(unknown?'저장 원본 유지':m.completed+'회 완성'+(m.next===null?' · 도감 배지 획득':' · 다음 단계까지 '+(m.next-m.completed)+'회'))+'</p><progress aria-label="'+r.name+' 숙련 진행" max="'+(m.next||10)+'" value="'+Math.min(m.completed,10)+'"></progress></div></article>'}).join('');if(cookbookMarkup!==html){cookbookMarkup=html;list.innerHTML=html;window.dispatchEvent(new Event('restaurant-recipe-art'))}}
 
+// Own staff balance, not original constants. Existing players keep their free base server.
+const SERVER_COST=180;
+function staffSupported(){const s=data.staff;return s===undefined||!!s&&s.version===1&&[1,2].includes(s.servers)&&(s.assignments===undefined||!!s.assignments&&typeof s.assignments==='object'&&!Array.isArray(s.assignments)&&Object.values(s.assignments).every(w=>Number.isInteger(w)&&w>=0&&w<s.servers))}
+const serverCount=()=>staffSupported()?(data.staff?.servers||1):1;
+const serverFor=g=>data.staff?.assignments?.[g.id]??0;
+function paintStaff(){if(!$('hireServer'))return;const count=serverCount(),locked=unlockedLevel()<2,valid=readable&&staffSupported()&&supported(data.service)&&growthSupported();$('staffSummary').textContent=staffSupported()?'서빙 직원 '+count+'명 · 동시에 '+count+'테이블 운반':'지원하지 않는 직원 기록 보존 중';$('hireServer').textContent=count===2?'서빙 직원 2명 고용 완료':'서빙 직원 1명 고용 · '+SERVER_COST+'코인';$('hireServer').disabled=!valid||count===2||locked||data.coins<SERVER_COST;$('staffHint').textContent=!staffSupported()?'저장된 직원 기록을 덮어쓰지 않아요.':count===2?'두 직원이 각자 한 접시를 운반해요. 기존 요리 시간·접시 보상·XP는 그대로예요.':locked?'셰프 Lv2 또는 시설 2단계에서 추가 직원을 고용할 수 있어요.':data.coins<SERVER_COST?'추가 고용까지 '+(SERVER_COST-data.coins)+'코인이 더 필요해요.':'한 번 고용하면 계속 함께해요. 기본 직원은 무료로 유지됩니다.'}
 function validBatch(x){return x&&typeof x.id==='string'&&Number.isInteger(x.recipe)&&!!recipes[x.recipe]&&x.value===recipes[x.recipe].sell}
 function validPlate(x){return x&&x.kind==='plate'&&typeof x.id==='string'&&Number.isInteger(x.recipe)&&!!recipes[x.recipe]&&x.value===recipes[x.recipe].sell/recipes[x.recipe].plates&&x.origin&&typeof x.origin.id==='string'&&Number.isInteger(x.origin.ordinal)&&x.origin.ordinal>=1&&x.origin.ordinal<=recipes[x.recipe].plates&&x.id===x.origin.id+'/plate-'+x.origin.ordinal}
 const validMeal=x=>validBatch(x)||validPlate(x);
@@ -57,7 +63,7 @@ function inventory(){return [0,1].map(i=>{if(!supported(data.service))return nul
 const durations={entering:2500,waiting:0,serving:3000,eating:4500,leaving:2500};
 let phaseElapsed=new Map(),lastTick=performance.now(),timer=null,suspended=false;
 function transfer(i){const job=data.stoves[i];if(!known(job)||Date.now()<job.ends)return;
- if(!supported(data.service)||!growthSupported()||!cookbookSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
+ if(!supported(data.service)||!growthSupported()||!cookbookSupported()||!staffSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
  const stock=inventory();let slot=stock.findIndex(x=>x?.recipe===job.recipe);if(slot<0)slot=stock.findIndex(x=>!x);if(slot<0){notify('서빙대가 가득 찼어요. 같은 요리는 보충할 수 있고, 다른 요리는 빈 서빙대가 필요해요.');return}
  const batch={id:'batch-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),recipe:job.recipe,value:recipes[job.recipe].sell};
  if(transaction(d=>{const service=upgradeService(d);if(service.stock[slot])service.stock[slot].batches.push(asLot(batch));else service.stock[slot]={recipe:job.recipe,batches:[asLot(batch)]};d.stoves[i]=null;recordCooking(d,job.recipe)}))notify(recipes[job.recipe].name+' 보충 완료 · '+inventory()[slot].remaining+'접시 남았어요.');
@@ -72,27 +78,28 @@ function paint(){const now=Date.now();$('coins').textContent=Math.floor(data.coi
  $('upgrade').textContent='식당 확장 · '+data.level*150+'코인';$('upgrade').disabled=!readable||!supported(data.service)||!growthSupported()||data.coins<data.level*150||data.level>=5;
  const ready=data.stoves.filter(x=>known(x)&&x.ends<=now).length;$('progress').style.width=(ready/data.stoves.length*100)+'%';$('cookTime').textContent=ready+'개 완성';
  const service=data.service,available=supported(service),stock=inventory(),remaining=stock.reduce((n,x)=>n+(x?.remaining||0),0);$('serviceSummary').textContent=!readable?'읽을 수 없는 저장 기록 보존 중 · 초기화 전 원본을 확인하세요':!available||!growthSupported()?'확인되지 않은 영업 기록 보존 중':service?'재고 '+remaining+'접시 · 응대 '+service.guests.filter(Boolean).length+'/2':'완성 요리를 서빙대로 옮겨 영업을 시작하세요';
- paintCookbook();window.dispatchEvent(new Event('restaurant-painted'));
+ paintCookbook();paintStaff();window.dispatchEvent(new Event('restaurant-painted'));
 }
 function showRecipes(i){const box=$('recipeDialog');box.replaceChildren();const h=document.createElement('h2');h.textContent=(i+1)+'번 조리대 · 요리 선택';box.append(h);
- recipes.forEach((r,n)=>{const locked=unlockedLevel()<r.lv;const btn=document.createElement('button');btn.type='button';btn.className='recipe-choice';btn.innerHTML='<span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><span class="recipe-copy"><strong>'+r.name+(locked?' · 잠김':'')+'</strong><span>'+fmt(r.ms)+' · 재료 '+r.cost+'코인</span><small>'+r.plates+'접시 × '+r.sell/r.plates+'코인 · 총 '+r.sell+'코인</small><small>'+(locked?'셰프 Lv'+r.lv+' 또는 시설 '+r.lv+'단계 필요':'판매 접시당 +1 XP')+'</small><small>'+(!cookbookSupported()?'숙련 기록 확인 필요':mastery(n).completed+'회 완성 · '+(mastery(n).stage===2?'마스터':mastery(n).stage===1?'숙련 중':'배우는 중'))+'</small></span>';btn.disabled=locked||!cookbookSupported()||!readable||!supported(data.service)||!growthSupported()||data.coins<r.cost;
+ recipes.forEach((r,n)=>{const locked=unlockedLevel()<r.lv;const btn=document.createElement('button');btn.type='button';btn.className='recipe-choice';btn.innerHTML='<span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><span class="recipe-copy"><strong>'+r.name+(locked?' · 잠김':'')+'</strong><span>'+fmt(r.ms)+' · 재료 '+r.cost+'코인</span><small>'+r.plates+'접시 × '+r.sell/r.plates+'코인 · 총 '+r.sell+'코인</small><small>'+(locked?'셰프 Lv'+r.lv+' 또는 시설 '+r.lv+'단계 필요':'판매 접시당 +1 XP')+'</small><small>'+(!cookbookSupported()?'숙련 기록 확인 필요':mastery(n).completed+'회 완성 · '+(mastery(n).stage===2?'마스터':mastery(n).stage===1?'숙련 중':'배우는 중'))+'</small></span>';btn.disabled=locked||!staffSupported()||!cookbookSupported()||!readable||!supported(data.service)||!growthSupported()||data.coins<r.cost;
  btn.onclick=()=>{if(data.stoves[i]||unlockedLevel()<r.lv)return;if(!transaction(d=>{d.coins-=r.cost;d.stoves[i]={recipe:n,ends:Date.now()+r.ms}}))return;box.close();notify(r.name+' 조리 시작 · 완성되면 서빙대로 옮겨 주세요.')};box.append(btn)});
  const close=document.createElement('button');close.type='button';close.textContent='취소';close.onclick=()=>box.close();box.append(close);window.dispatchEvent(new Event('restaurant-recipe-art'));window.restaurantRoomUI?window.restaurantRoomUI.open(box):box.showModal();
 }
 if($('openCookbook'))$('openCookbook').onclick=()=>{paintCookbook();window.restaurantRoomUI?window.restaurantRoomUI.open($('cookbookDialog')):$('cookbookDialog').showModal()};
+if($('hireServer'))$('hireServer').onclick=()=>{if(!readable||!staffSupported()||!supported(data.service)||!growthSupported()||serverCount()>=2||unlockedLevel()<2||data.coins<SERVER_COST)return;if(transaction(d=>{d.coins-=SERVER_COST;d.staff={...d.staff,version:1,servers:2,assignments:{...d.staff?.assignments}}}))notify('새 서빙 직원이 합류했어요. 두 테이블을 동시에 서빙합니다.')};
 $('upgrade').onclick=()=>{const cost=data.level*150;if(data.coins<cost||data.level>=5)return;if(transaction(d=>{d.coins-=cost;d.level++;if(d.stoves.length<4)d.stoves.push(null)}))notify('식당을 확장했어요. 새 조리대와 요리를 확인하세요.')};
 $('newGame').onclick=()=>{if(!confirm('레스토랑의 코인·요리·레벨을 모두 초기화할까요?'))return;const previous=data,previousReadable=readable;readable=true;data={coins:150,served:0,level:1,stoves:[null,null],decor:0};if(!save()){data=previous;readable=previousReadable;paint();return}phaseElapsed.clear();paint()};
 function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-lastTick));lastTick=now;
- if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!data.service)return;
+ if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!staffSupported()||!data.service)return;
  for(let i=0;i<2;i++){const s=data.service,guest=s.guests[i];
   if(!guest){const reserved=[0,1].map(n=>s.guests.filter(g=>g&&['entering','waiting'].includes(g.phase)&&g.counter===n).length);const counter=s.stock.findIndex((_,n)=>remaining(s,n)>reserved[n]);
    if(counter>=0&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,counter))){const id=lots(s,counter)[0].source.id+'/guest-'+i;if(transaction(d=>{upgradeService(d).guests[i]={id,phase:'entering',counter,table:i}}))phaseElapsed.set(i,0)}else if(counter>=0)notify('가구가 손님 길을 막고 있어요. 가구 옮기기에서 출입구와 좌석 사이를 비워 주세요.');continue}
   if(window.restaurantRoomUI?.canServe&&!window.restaurantRoomUI.canServe(i,guest.counter)){notify('서빙 길이 막혔어요. 가구 배치를 바꾸면 남은 재고와 응대를 이어가요.');continue}
   const elapsed=(phaseElapsed.get(i)||0)+dt;phaseElapsed.set(i,elapsed);if(elapsed<durations[guest.phase])continue;
   if(guest.phase==='entering'){if(transaction(d=>{upgradeService(d).guests[i].phase='waiting'}))phaseElapsed.set(i,0)}
-  else if(guest.phase==='waiting'){if(s.guests.some((g,j)=>j!==i&&g?.phase==='serving'))continue;const lot=lots(s,guest.counter)[0];if(!lot)continue;
-   if(transaction(d=>{const service=upgradeService(d),slot=service.stock[guest.counter];const lot=slot.batches[0],ordinal=lot.total-lot.remaining+1;service.guests[i].batch={id:lot.source.id+'/plate-'+ordinal,recipe:lot.source.recipe,value:lot.price,kind:'plate',origin:{id:lot.source.id,ordinal}};lot.remaining--;if(!lot.remaining)slot.batches.shift();if(!slot.batches.length)service.stock[guest.counter]=null;service.guests[i].phase='serving'}))phaseElapsed.set(i,0)}
-  else if(guest.phase==='serving'){if(transaction(d=>{upgradeService(d).guests[i].phase='eating'}))phaseElapsed.set(i,0)}
+  else if(guest.phase==='waiting'){const occupied=new Set(s.guests.filter((g,j)=>j!==i&&g?.phase==='serving').map(serverFor)),worker=Array.from({length:serverCount()},(_,n)=>n).find(n=>!occupied.has(n)&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,guest.counter,n)));if(worker===undefined)continue;const lot=lots(s,guest.counter)[0];if(!lot)continue;
+   if(transaction(d=>{const service=upgradeService(d),slot=service.stock[guest.counter];const lot=slot.batches[0],ordinal=lot.total-lot.remaining+1;service.guests[i].batch={id:lot.source.id+'/plate-'+ordinal,recipe:lot.source.recipe,value:lot.price,kind:'plate',origin:{id:lot.source.id,ordinal}};lot.remaining--;if(!lot.remaining)slot.batches.shift();if(!slot.batches.length)service.stock[guest.counter]=null;service.guests[i].phase='serving';if(d.staff){d.staff.assignments??={};d.staff.assignments[service.guests[i].id]=worker}}))phaseElapsed.set(i,0)}
+  else if(guest.phase==='serving'){if(transaction(d=>{const g=upgradeService(d).guests[i];g.phase='eating';if(d.staff?.assignments)delete d.staff.assignments[g.id]}))phaseElapsed.set(i,0)}
   else if(guest.phase==='eating'){const batch=guest.batch;if(!validMeal(batch))continue;const before=progress(),plate=validPlate(batch);
    if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
   else if(guest.phase==='leaving'){if(transaction(d=>{upgradeService(d).guests[i]=null}))phaseElapsed.delete(i)}
@@ -102,7 +109,7 @@ function setActive(){clearInterval(timer);timer=null;lastTick=performance.now();
 document.addEventListener('visibilitychange',()=>{setActive();if(!document.hidden)paint()});window.addEventListener('pagehide',()=>{clearInterval(timer);timer=null});window.addEventListener('pageshow',setActive);
 window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{if(Number.isInteger(i)&&i>=0&&i<data.stoves.length)document.querySelector('#kitchen [data-slot="'+i+'"]')?.click()},
  saveLayout:layout=>transaction(d=>{d.roomLayout=layout}),
- serviceAvailable:()=>supported(data.service)&&growthSupported(),
+ serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported(),
  pendingValue:i=>supported(data.service)?data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0:0,
  inventory,
  progress:()=>({...progress(),supported:growthSupported(),unlockedLevel:unlockedLevel()}),

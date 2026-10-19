@@ -97,3 +97,6 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .restaurant-app button,#restaurantRoom [role=button]{-webkit-tap-highlight-color:transparent}
 .recipe-copy small{font-size:12px}
 .cookbook-entry p{word-break:keep-all;overflow-wrap:anywhere}
+
+/* Staff management shares the existing restaurant-management entry point. */
+.staff-panel{border-top:1px solid #d2b57d;margin-top:14px;padding-top:14px}.staff-panel h3{font-size:16px;margin:0 0 10px}.staff-panel>p{font-size:13px;line-height:1.6}.staff-panel button{width:100%;background:#e0e9c7;border-color:#8b9c65}.staff-panel small{display:block;color:#7a6043;font-size:11px;line-height:1.6}

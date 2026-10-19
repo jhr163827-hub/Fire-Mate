@@ -39,6 +39,9 @@ test("decision overview links exact saved baselines, portfolio and independent s
     localStorage.getItem("firemate_smart_v3"),
   );
   await page.locator('.bottomnav [data-view="fire"]').click();
+  const tabs = await page.locator('#view-fire .fm-fire-screen-nav button').evaluateAll(es=>es.map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,align:getComputedStyle(e).textAlign})));
+  expect(tabs).toHaveLength(4);
+  for(const tab of tabs){expect(tab.height).toBe(44);expect(Math.abs(tab.width-tabs[0].width)).toBeLessThan(0.1);expect(tab.align).toBe('center');}
   const state = await page.evaluate(() => window.fmFireViewState);
   const months = state.forecast.baselineMonthsToGoal,
     date = new Date();
@@ -49,6 +52,10 @@ test("decision overview links exact saved baselines, portfolio and independent s
   );
   await expect(page.locator("#fireYears")).toHaveText("8년 2개월");
   await expect(page.locator("#fmFirePortfolioOpen")).toBeVisible();
+  await expect(page.locator("#fmCashflowLimits")).toContainText("보험료 미입력 · 차감 전");
+  await expect(page.locator("#fmOverview-cashflow")).toContainText("(가정)");
+  expect(await page.locator("#fmOverview-cashflow").evaluate(el=>!!el.closest("button"))).toBe(false);
+  expect(await page.locator("#fmOverview-portfolio").evaluate(el=>!!el.closest("button"))).toBe(false);
   await page.locator("#fmFirePortfolioOpen").click();
   await expect(page.locator("#fmPortfolioDisclosure")).toHaveAttribute(
     "open",
@@ -164,9 +171,11 @@ test("compact dashboard keeps all seven metrics and exposes report shortcuts on 
           expect(b.y + b.height).toBeLessThanOrEqual(nav.y);
         }
       }
-      await page.locator(".fm-eta-details>summary").click();
-      await expect(page.locator("#homeEtaPrincipal")).toBeVisible();
-      await page.locator(".fm-eta-details>summary").click();
+      const nav = await page.locator('.bottom-item').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().toJSON()));
+      for(const item of nav){expect(item.height).toBe(52);expect(item.y).toBe(nav[0].y);expect(Math.abs(item.width-nav[0].width)).toBeLessThan(0.1);}
+      await expect(page.locator("#view-home .fm-eta-details")).toHaveCount(0);
+      await expect(page.locator("#homeEtaPrincipal")).toBeHidden();
+      await expect(page.locator("#homeFireEtaNote")).toContainText("실제 결과는 달라질 수");
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth - innerWidth,

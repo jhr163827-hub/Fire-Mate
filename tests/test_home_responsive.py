@@ -533,19 +533,21 @@ class HomeResponsiveTest(unittest.TestCase):
                     finally:
                         page.close()
 
-    def test_home_details_expand_and_collapse(self):
+    def test_home_fire_summary_links_to_plan_without_duplicate_inputs(self):
         page = self.browser.new_page(viewport={"width": 360, "height": 740}, is_mobile=True, has_touch=True)
         try:
             page.goto(URL, wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="home"]').click()
-            details = page.locator("#view-home details:visible").first
-            if details.count() == 0:
-                self.skipTest("No visible native details control on home")
-            initial = details.evaluate("(el) => el.open")
-            details.locator("summary").click()
-            self.assertNotEqual(initial, details.evaluate("(el) => el.open"))
-            details.locator("summary").click()
-            self.assertEqual(initial, details.evaluate("(el) => el.open"))
+            self.assertEqual(page.locator('#view-home .fm-eta-details').count(), 0)
+            self.assertFalse(page.locator('#homeEtaPrincipal').is_visible())
+            self.assertIn('실제 결과는 달라질 수', page.locator('#homeFireEtaNote').inner_text())
+            before = page.evaluate("localStorage.getItem('firemate_smart_v3')")
+            page.locator('.fm-home-fire-head [data-go="fire"]').tap()
+            self.assertTrue(page.locator('#view-fire').is_visible())
+            self.assertTrue(page.locator('#fireAsset').is_visible())
+            page.locator('.bottomnav [data-view="home"]').tap()
+            self.assertTrue(page.locator('#homeFireEta').is_visible())
+            self.assertEqual(before, page.evaluate("localStorage.getItem('firemate_smart_v3')"))
         finally:
             page.close()
 
@@ -982,7 +984,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').text_content())
                             quote=page.locator('#homeRefreshStocks').bounding_box();total=page.locator('#homeTotalAssets').bounding_box()
                             self.assertGreaterEqual(quote['height'],44);self.assertGreaterEqual(total['y'],quote['y']+quote['height'])
-                            for sel in ('.fm-eta-details>summary','#fmMonthlyOpen','#fmSpendingOpen'):
+                            for sel in ('.fm-home-fire-head>button','#fmMonthlyOpen','#fmSpendingOpen'):
                                 self.assertGreaterEqual(page.locator('#view-home '+sel).bounding_box()['height'],44)
                             page.locator('.bottomnav [data-view="assets"]').tap()
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').inner_text())

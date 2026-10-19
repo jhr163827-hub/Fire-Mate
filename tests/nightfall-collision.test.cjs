@@ -1,0 +1,12 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync('arcade/nightfall.html','utf8');
+const start=html.indexOf('function segmentHitsCircle('),end=html.indexOf('function tick(dt)',start);
+assert.ok(start>=0&&end>start,'collision helper must be present');
+const context=vm.createContext({});
+vm.runInContext(html.slice(start,end),context);
+const hit=(...args)=>vm.runInContext('segmentHitsCircle('+args.join(',')+')',context);
+test('projectile crossing enemy between frames registers a hit',()=>assert.equal(hit(0,0,100,0,50,0,10),true));
+test('projectile narrowly missing enemy does not register',()=>assert.equal(hit(0,0,100,0,50,20,10),false));
+test('projectile beyond end of segment does not register',()=>assert.equal(hit(0,0,100,0,120,0,10),false));
+test('stationary projectile collision works',()=>{assert.equal(hit(0,0,0,0,3,4,6),true);assert.equal(hit(0,0,0,0,30,40,6),false)});
+test('projectile collision is symmetric across movement direction',()=>assert.equal(hit(100,0,0,0,50,4,5),hit(0,0,100,0,50,4,5)));

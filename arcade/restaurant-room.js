@@ -112,7 +112,15 @@ function paintService(state,list,positions){
  advanceVisualClock();const layer=$('roomServiceActors');if(!layer||motionPaused)return;
  if(bridge.serviceAvailable&&!bridge.serviceAvailable()){layer.querySelectorAll('[data-actor]').forEach(el=>el.remove());return}
  const guests=[1,2,3].includes(state.service?.version)?state.service.guests:[],motion=bridge.serviceMotion?.()||{progress:[0,0]},wanted=new Set();
- guests.forEach((g,i)=>{if(!g){visualProgress.delete(i);return}const token=g.id+':'+g.phase+':'+(g.batch?.id||''),last=visualProgress.get(i);if(last?.token===token)motion.progress[i]=Math.max(last.progress,motion.progress[i]);visualProgress.set(i,{token,progress:motion.progress[i]})});
+ guests.forEach((g,i)=>{
+  if(!g){visualProgress.delete(i);return}
+  const token=g.id+':'+g.phase+':'+(g.batch?.id||''),last=visualProgress.get(i);
+  // The engine paints a committed phase before clearing the previous phase's elapsed time.
+  // Never latch that stale elapsed value as completion of a newly displayed phase.
+  if(last?.token===token)motion.progress[i]=Math.max(last.progress,motion.progress[i]);
+  else if(last)motion.progress[i]=0;
+  visualProgress.set(i,{token,progress:motion.progress[i]});
+ });
  for(let i=0;i<guests.length;i++){
   const g=guests[i];if(!g)continue;const paths=servicePaths(list,positions,i,g.counter),id='guest-'+i;
   let xy=poses.get(id)||[6.5,.5];

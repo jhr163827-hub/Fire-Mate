@@ -18,3 +18,41 @@
 @keyframes restaurant-steam{50%{transform:translateY(-3px);opacity:.45}}
 .restaurant-paused .room-steam{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.room-steam{animation:none!important}}
+
+/* v1.2: landscape-first game scene. Rules and saved cell coordinates are unchanged. */
+body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
+.restaurant-header{flex-wrap:wrap}.restaurant-header>div{flex:1}.restaurant-header h1{font-size:16px}.restaurant-header small{font-size:10px}
+#restaurantFullscreen{min-width:44px;font-size:12px;background:#fff8de;padding:8px 12px;box-shadow:0 2px 0 #94723c33}
+.orientation-hint{margin:0;padding:8px 10px;background:#f7f4d9;border:1px solid #d5c58b;border-radius:10px;font-size:12px;color:#6d603e}
+.restaurant-world{border-radius:12px;background:radial-gradient(ellipse at 50% 55%,#d9e8ba,#a2c580);border-color:#8fab74;box-shadow:inset 0 0 30px #69965d33}
+.restaurant-world figcaption strong{background:#fffae5eb;color:#785733;box-shadow:0 1px 4px #6e61372b;border:1px solid #d7c590}
+.room-cell{stroke:#9c6a48;stroke-width:.6}.room-stove-badge-bg{fill:#fff6d9;stroke:#9f7845;stroke-width:1}.room-stove-badge{font-size:12px;fill:#72512d}
+.room-cooked-dish{opacity:.65}.ready .room-cooked-dish{opacity:1}.restaurant-dock button{border:2px solid #ad8045;background:linear-gradient(#fff2b9,#ebc981);box-shadow:0 3px 0 #8b633a;min-height:46px;font-size:13px}.restaurant-dock button:first-child{background:linear-gradient(#ffe39a,#e5b65b)}
+.service-summary{background:#fffbe9e8}.restaurant-status{font-size:12px}.restaurant-about{border-top:1px solid #b8ac7d}.restaurant-about summary{color:#645c3c}
+@media(orientation:landscape) and (min-width:560px){
+ html,body{width:100%;height:100%;overflow:hidden}
+ .restaurant-app{position:relative;isolation:isolate;width:100%;max-width:1600px;height:100svh;height:100dvh;min-height:0;padding:0;display:block;overflow:hidden;background:#b8d899}
+ .restaurant-world{position:absolute;inset:0;aspect-ratio:auto;border:0;border-radius:0;z-index:-1;box-shadow:none}
+ .restaurant-world svg{height:100%;width:100%;touch-action:manipulation}
+ .restaurant-world figcaption{top:auto;bottom:64px;left:max(12px,env(safe-area-inset-left));right:auto}
+ .restaurant-header{position:absolute;top:max(7px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));height:44px;flex-wrap:nowrap;gap:10px;align-items:center}
+ .restaurant-header>a{padding:0 12px;border:1px solid #c7ae71;background:#fff8e8ee;border-radius:12px;font-size:12px;box-shadow:0 2px 0 #80643133}
+ .restaurant-header>div{flex:0 1 auto;border-radius:10px;padding:5px 9px;background:#fff8e8e6}.restaurant-header h1{font-size:13px}.restaurant-header small{font-size:9px}
+ #restaurantFullscreen{margin-left:auto;min-height:44px}
+ .restaurant-hud{position:absolute;right:max(10px,env(safe-area-inset-right));top:59px;width:132px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+ .restaurant-hud>div{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:31px;padding:4px 9px;border-radius:16px;background:#fff9e6ed;border:2px solid #b89453;box-shadow:0 2px 0 #8e73482b}
+ .restaurant-hud small{font-size:10px;color:#74603d;white-space:nowrap}.restaurant-hud strong{font-size:15px;margin:0;line-height:1.1}
+ .orientation-hint{display:none}
+ .restaurant-dock,.restaurant-editbar{position:absolute;right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));gap:7px}
+ .restaurant-dock{width:292px}.restaurant-dock button{min-height:46px;font-size:12px;padding:7px 9px}.restaurant-editbar{width:230px}
+ .service-summary{position:absolute;left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));margin:0;width:min(31vw,300px);padding:7px 10px;border-color:#c5b27e;border-radius:10px;font-size:10px;min-height:44px;display:flex;align-items:center}
+ .restaurant-status{position:absolute;left:max(10px,env(safe-area-inset-left));bottom:116px;max-width:190px;background:#fff9e8e8;border:1px solid #c7b17d;border-radius:10px;font-size:10px;padding:6px 9px;min-height:0;line-height:1.45;margin:0;pointer-events:none}
+ .restaurant-about{position:absolute;left:max(10px,env(safe-area-inset-left));top:59px;max-width:min(300px,48vw);border:0;z-index:3}
+ .restaurant-about summary{background:#fff8e8ed;border:1px solid #c7b17d;border-radius:10px;padding:9px 11px;font-size:10px;min-height:36px;width:max-content;max-width:100%}
+ .restaurant-about[open]{padding:9px;background:#fff8e8;border:1px solid #c7b17d;border-radius:12px;max-height:calc(100dvh - 130px);overflow:auto;box-shadow:0 8px 30px #56462633}
+ .restaurant-about p{font-size:11px;margin:8px 0}.restaurant-about button{min-height:44px}
+ .restaurant-note{position:absolute;left:max(10px,env(safe-area-inset-left));bottom:62px;background:#fff8e8ee;padding:8px;border-radius:10px;max-width:250px;font-size:10px}
+ dialog{max-height:calc(100svh - 24px);max-height:calc(100dvh - 24px)}
+}
+@media(orientation:landscape) and (max-height:350px) and (min-width:560px){.restaurant-header small{display:none}.restaurant-hud{top:56px}.restaurant-status{bottom:107px}.restaurant-world figcaption{display:none}}
+@media(orientation:landscape) and (min-width:560px){.restaurant-world figcaption{display:none}}

@@ -54,7 +54,7 @@ function route(from,to,list,positions){
 function along(path,t){if(!path?.length)return [6.5,.5];const p=Math.max(0,Math.min(path.length-1,t*(path.length-1))),i=Math.floor(p),a=path[i],b=path[Math.min(i+1,path.length-1)];return [a[0]+(b[0]-a[0])*(p-i),a[1]+(b[1]-a[1])*(p-i)]}
 function servicePaths(list,positions,table,counter){const seat=positions['chair-'+(table===0?1:3)],c=positions['counter-'+counter];if(!seat||!c)return null;return {guest:route([6.5,.5],[seat.x+.5,seat.y+.5],list,positions),waiter:route([c.x+.5,c.y+.5],[seat.x+.5,seat.y+.5],list,positions)}}
 function canServe(table,counter){const state=bridge.snapshot(),list=items(state),positions=savedPositions(state,list),paths=servicePaths(list,positions,table,counter);return !!(paths?.guest&&paths?.waiter)}
-function paintService(state,list,positions){const layer=$('roomServiceActors');if(!layer)return;if(!bridge.serviceAvailable()){layer.replaceChildren();return;}const guests=state.service?.version===1?state.service.guests:[],motion=bridge.serviceMotion();
+function paintService(state,list,positions){const layer=$('roomServiceActors');if(!layer)return;if(bridge.serviceAvailable&&!bridge.serviceAvailable()){layer.replaceChildren();return;}const guests=state.service?.version===1?state.service.guests:[],motion=bridge.serviceMotion?.()||{progress:[0,0]};
  const wanted=new Set();
  const actor=(id,xy,color,waiter=false)=>{wanted.add(id);let el=layer.querySelector('[data-actor="'+id+'"]');if(!el){el=document.createElementNS('http://www.w3.org/2000/svg','g');el.dataset.actor=id;el.classList.add('room-actor');el.innerHTML=person(0,0,color,false).replace('transform="translate(300 86)"','')+(waiter?'<ellipse cy="-18" rx="13" ry="5" fill="#fff8e6"/><ellipse cy="-20" rx="9" ry="4" fill="#d99737"/>':'');layer.append(el)}const p=point(...xy);el.setAttribute('transform','translate('+p[0]+' '+(p[1]-6)+')')};
  guests?.forEach((g,i)=>{if(!g)return;const paths=servicePaths(list,positions,i,g.counter);if(!paths?.guest||!paths?.waiter)return;const t=motion.progress[i],path=paths.guest,seat=path.at(-1);actor('guest-'+i,g.phase==='entering'?along(path,t):g.phase==='leaving'?along([...path].reverse(),t):seat,i?'#9a78b7':'#db9c61');if(g.phase==='serving')actor('waiter-'+i,along(paths.waiter,t),'#547e83',true)});
@@ -79,6 +79,6 @@ for(const dialog of document.querySelectorAll('dialog')){
 }
 window.addEventListener('popstate',e=>{restoring=true;const target=e.state?.restaurantDialog;while(stack.length&&stack.at(-1)!==target){const id=stack.pop();$(id).close()}if(editing&&!target&&!e.state?.restaurantEditing)cancelEdit();restoring=false;historyBusy=false;document.querySelectorAll('#roomDock button').forEach(b=>b.disabled=false)});
 $('openKitchen').onclick=()=>openDialog($('kitchenDialog'));$('openExpansion').onclick=()=>openDialog($('expansionDialog'));
-function syncActivity(){const paused=editing||document.hidden||!!document.querySelector('dialog[open]');document.body.classList.toggle('restaurant-paused',paused);bridge.setSuspended(paused)}
+function syncActivity(){const paused=editing||document.hidden||!!document.querySelector('dialog[open]');document.body.classList.toggle('restaurant-paused',paused);bridge.setSuspended?.(paused)}
 document.addEventListener('visibilitychange',syncActivity);window.addEventListener('restaurant-painted',paint);paint();
 })();

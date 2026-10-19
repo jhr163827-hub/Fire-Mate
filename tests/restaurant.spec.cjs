@@ -56,3 +56,9 @@ test('restaurant payout retries quota failure once and unknown service versions 
  await page.reload();await page.clock.runFor(15000);expect((await read(page)).coins).toBe(initial.coins+12);expect((await read(page)).served).toBe(initial.served+1);await context.close();
  const futureContext=await browser.newContext();const futurePage=await futureContext.newPage();const future={...seed,stoves:[{recipe:0,ends:0},null],service:{version:99,stock:['future'],custom:'preserve'}};await load(futurePage,future);await futurePage.locator('[data-room-stove="0"]').click();await expect(futurePage.locator('#status')).toContainText('지원하지 않는 서빙 기록');expect(await read(futurePage)).toEqual(future);await futureContext.close();
 });
+
+test('restaurant new room controls remain compatible with an in-flight pre-upgrade HTML document',async({page})=>{
+ const old=require('node:fs').readFileSync(require('node:path').join(__dirname,'fixtures/restaurant-v1.html'),'utf8');
+ await page.route('**/arcade/restaurant.html',r=>r.fulfill({contentType:'text/html',body:old}));const errors=[];page.on('pageerror',e=>errors.push(e.message));await load(page,{...seed,stoves:[{recipe:0,ends:0},null,null]});
+ await page.locator('#openKitchen').click();await page.goBack();await expect(page.locator('#kitchenDialog')).toBeHidden();await page.locator('[data-room-stove="0"]').click();expect((await read(page)).coins).toBe(512);expect(errors).toEqual([]);
+});

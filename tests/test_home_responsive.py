@@ -1063,7 +1063,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertEqual(current,expected)
                         self.assertEqual(page.locator('#rpMonthly').input_value(),'350','unrelated unsaved draft must remain a draft')
                         self.fire_screen(page,'firelife')
-                        self.assertEqual(page.locator('#rpSave').inner_text(),'생활 조건만 저장')
+                        self.assertEqual(page.locator('#rpSave').inner_text(),'월 생활비 저장')
                         page.locator('#fmRetireCancel').tap()
                         self.assertEqual(page.locator('#rpMonthly').input_value(),'300')
                         self.assertEqual(saved(),expected)
@@ -1071,7 +1071,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.open_portfolio(page);page.locator('#fmRpEditToggle').tap();page.locator('[data-rp="0"]').fill('12000')
                         self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('325')
                         page.locator('#rpSave').tap()
-                        expected={**expected,'monthly':325,'taxRate':20}
+                        expected={**expected,'monthly':325}
                         self.assertEqual(saved(),expected)
                         self.assertEqual(page.locator('[data-rp="0"]').input_value(),'12000')
                         self.assertIn('생활비 325만',page.locator('#fmFireLife').inner_text())
@@ -1138,8 +1138,6 @@ class HomeResponsiveTest(unittest.TestCase):
                         self.assertIn('6,000만',page.locator('#rpSum').inner_text())
                         self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap()
                         page.locator('#rpMonthly').fill('325')
-                        page.locator('#fmUniformExperimentInputs>summary').tap()
-                        page.locator('#rpYield').fill('4.5')
                         page.set_viewport_size({"width":width,"height":420})
                         page.locator('#rpMonthly').focus()
                         page.locator('#rpSave').scroll_into_view_if_needed()

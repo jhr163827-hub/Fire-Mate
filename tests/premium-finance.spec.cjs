@@ -76,9 +76,11 @@ test("decision overview links exact saved baselines, portfolio and independent s
     monthlyAfter: 130,
     monthlyGap: -170,
   });
-  await page.locator(".fm-stress-edit").click();
-  await expect(page.locator("#view-firelife")).toBeVisible();
-  await expect(page.locator("#rpCrash")).toBeFocused();
+  await page.locator("#fmUniformExperimentInputs>summary").click();
+  await page.locator("#rpAdvancedSettings>summary").click();
+  await expect(page.locator("#view-retire")).toBeVisible();
+  await expect(page.locator("#rpCrash")).toBeVisible();
+  await expect(page.locator("#fmModelValues")).toContainText("생활비 화면");
   expect(
     await page.evaluate(() => localStorage.getItem("firemate_smart_v3")),
   ).toBe(before);

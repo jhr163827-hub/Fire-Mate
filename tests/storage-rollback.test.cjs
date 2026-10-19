@@ -22,7 +22,7 @@ process.exitCode = failed ? 1 : 0;
 const vm = require('node:vm');
 const storageCases = [
   ['FIRE settings', "const previousFire=data.fire;data.fire=p;if(!persist()){data.fire=previousFire;return}"],
-  ['retirement plan', "const previousRetirement=data.retirement;data.retirement=scope==='portfolio'?{...previousRetirement,items:previousRetirement.items.map((it,i)=>({...it,amount:vals[i]}))}:{...previousRetirement,monthly:nums[0],yield:nums[1],priceChange:nums[2],crash:nums[3],taxRate:nums[4]};if(!persist()){data.retirement=previousRetirement;return}"],
+  ['retirement plan', "const previousRetirement=data.retirement;data.retirement=scope==='portfolio'?{...previousRetirement,items:previousRetirement.items.map((it,i)=>({...it,amount:vals[i]}))}:scope==='life'?{...previousRetirement,monthly:nums[0]}:{...previousRetirement,yield:nums[1],priceChange:nums[2],crash:nums[3],taxRate:nums[4]};if(!persist()){data.retirement=previousRetirement;return}"],
   ['budget', "const previousBudgets={...data.budgets};data.budgets={...previousBudgets,[month]:v};if(!persist()){data.budgets=previousBudgets;return}"],
   ['other asset deletion', "const previousItems=a.items;a.items=a.items.filter(x=>x.id!==item.id);if(!persist()){a.items=previousItems;return}"],
   ['daily record deletion', "const previousDailySnapshots=data.dailySnapshots;data.dailySnapshots=previousDailySnapshots.filter(x=>x.day!==day);if(!persist()){data.dailySnapshots=previousDailySnapshots;return}"],
@@ -50,6 +50,15 @@ for (const [name, fragment] of storageCases) {
       vm.runInNewContext('(function(){'+fragment+'})()',context);
       assert.equal(JSON.stringify(data.retirement.items),items,'living-condition save must preserve allocations');
       assert.equal(data.retirement.monthly,20);
+      assert.equal(data.retirement.taxRate,undefined,'expense save must not save experiment defaults');
+      context.scope='experiment';context.nums=[999,5,7,25,20];
+      const beforeExperiment=JSON.stringify(data.retirement);context.persist=()=>false;
+      vm.runInNewContext('(function(){'+fragment+'})()',context);
+      assert.equal(JSON.stringify(data.retirement),beforeExperiment,'experiment quota failure must roll back');
+      context.persist=()=>true;vm.runInNewContext('(function(){'+fragment+'})()',context);
+      assert.equal(data.retirement.monthly,20,'experiment save must not save expense drafts');
+      assert.equal(data.retirement.taxRate,20);
+      assert.equal(JSON.stringify(data.retirement.items),items);
     }
     console.log('PASS simulated failure/success:',name);
   } catch (error) {

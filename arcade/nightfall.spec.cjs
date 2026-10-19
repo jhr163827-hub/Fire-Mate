@@ -26,3 +26,19 @@ expect(await page.evaluate(()=>localStorage.getItem('nightfall_best_v1'))).toBeN
 expect(await page.evaluate(()=>localStorage.getItem('fire_mate_regression_sentinel'))).toBe('keep');
 expect(errors).toEqual([]);
 });
+test('Nightfall cancel reset leaves records untouched',async({page})=>{
+await page.goto(url);
+await page.evaluate(()=>{localStorage.setItem('nightfall_progress_v1',JSON.stringify({gold:77,levels:{power:0,health:0,speed:0},unlocks:{ranger:false},selected:'mage',totalKills:9}));localStorage.setItem('nightfall_best_v1','21')});
+await page.reload();await page.getByRole('button',{name:'영구 강화 상점'}).click();
+await page.getByRole('button',{name:'NIGHTFALL 진행 데이터 초기화'}).click();
+page.once('dialog',d=>d.dismiss());await page.getByRole('button',{name:'모든 NIGHTFALL 기록 영구 삭제'}).click();
+expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('nightfall_progress_v1')).gold)).toBe(77);
+expect(await page.evaluate(()=>localStorage.getItem('nightfall_best_v1'))).toBe('21');
+});
+test('Nightfall background pauses active gameplay',async({page})=>{
+await page.goto(url);await page.getByRole('button',{name:'생존 시작'}).click();
+await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
+await expect(page.locator('#panel')).toBeHidden();
+await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+await expect(page.locator('#title')).toContainText('일시정지');
+});

@@ -100,3 +100,9 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 
 /* Staff management shares the existing restaurant-management entry point. */
 .staff-panel{border-top:1px solid #d2b57d;margin-top:14px;padding-top:14px}.staff-panel h3{font-size:16px;margin:0 0 10px}.staff-panel>p{font-size:13px;line-height:1.6}.staff-panel button{width:100%;background:#e0e9c7;border-color:#8b9c65}.staff-panel small{display:block;color:#7a6043;font-size:11px;line-height:1.6}
+
+/* The shop reuses the exact scene artwork; management remains scrollable on short screens. */
+.furniture-tabs{display:flex;gap:8px;margin:10px 0}.furniture-tabs button{flex:1}.furniture-tabs [aria-pressed="true"]{background:#3d7867;color:#fff}
+.furniture-card{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:12px;border:1px solid #b7b49b;border-radius:14px;padding:12px;margin:10px 0;background:#fffaf0;color:#354a3e}.furniture-card svg{width:76px;height:105px}.furniture-card h3{margin:0 0 6px;font-size:16px}.furniture-card p{margin:4px 0;font-size:13px}.furniture-card small{font-size:12px}.furniture-card button{min-height:44px;margin-top:8px;font-size:13px}.furniture-actions{display:flex;flex-wrap:wrap;gap:6px}.furniture-actions button{flex:1}.furniture-card div{min-width:0}#furnitureFeedback{font-size:13px;min-height:1.5em;line-height:1.5}.room-placement.forbidden{fill:#cc6767;opacity:.45}.room-placement.permitted{fill:#84e4ad}.warehouse-empty{padding:24px 12px;line-height:1.7}
+#roomDock{grid-template-columns:repeat(4,minmax(0,1fr))}#roomDock button{min-width:0}
+@media(max-width:400px){#roomDock button{font-size:11px;padding:8px 3px}.furniture-card{grid-template-columns:58px minmax(0,1fr);gap:8px;padding:10px}.furniture-card svg{width:58px}}

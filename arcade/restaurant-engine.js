@@ -1,4 +1,4 @@
-/* Restaurant 1.7: cooking -> counter -> automatic table service -> payment.
+/* Restaurant 1.8: cooking -> counter -> automatic table service -> payment.
  * Existing recipe indexes, durations, costs and total batch rewards are preserved.
  * Service timings are implementation calibration, not recovered original constants.
  */
@@ -14,7 +14,16 @@ if(!localStorage.getItem(KEY)){try{const old=JSON.parse(localStorage.getItem(OLD
 const copy=x=>JSON.parse(JSON.stringify(x));
 const notify=msg=>{if($('status').textContent!==msg)$('status').textContent=msg};
 const save=()=>{try{if(!readable){notify('읽을 수 없는 레스토랑 저장 기록을 보존하고 있어요. 원본을 확인해 주세요.');return false}if(localStorage.getItem(KEY)!==lastStored){notify('다른 창에서 진행이 바뀌었어요. 새로고침하면 저장된 진행을 이어갈 수 있어요.');return false}const raw=JSON.stringify(data);localStorage.setItem(KEY,raw);lastStored=raw;return true}catch{notify('저장하지 못했어요. 저장 공간과 브라우저 설정을 확인해 주세요.');return false}};
-function transaction(change){const previous=copy(data);change(data);if(!save()){data=previous;paint();return false}paint();return true}
+function transaction(change){if(!furnitureSupported()){notify('지원하지 않는 가구 기록을 보존하고 있어요.');return false}const previous=copy(data);change(data);if(!save()){data=previous;paint();return false}paint();return true}
+// Own decorative catalogue. Purchased objects never stand in for working service furniture.
+const catalogue=Object.freeze([{sku:'leaf',name:'초록 화분',price:30,type:'plant'},{sku:'flower',name:'꽃 화분',price:50,type:'flower'},{sku:'lamp',name:'따뜻한 조명',price:80,type:'lamp'}]);
+function furnitureSupported(){const f=data.furniture;if(f===undefined)return true;if(!f||f.version!==1||!Number.isSafeInteger(f.nextId)||f.nextId<1||!Array.isArray(f.items))return false;const ids=new Set();return f.items.every(o=>{if(!o||!/^furn-[1-9][0-9]*$/.test(o.id)||ids.has(o.id)||!catalogue.some(c=>c.sku===o.sku&&c.price===o.paid)||!['warehouse','placed','sold'].includes(o.location))return false;ids.add(o.id);const n=Number(o.id.slice(5));return Number.isSafeInteger(n)&&n<f.nextId&&(o.location==='placed'?o.position&&Number.isInteger(o.position.x)&&Number.isInteger(o.position.y)&&o.position.x>=0&&o.position.y>=0&&o.position.x<8&&o.position.y<8:true)})}
+function furnitureAction(action,id){if(!readable||!furnitureSupported()){notify('지원하지 않는 가구 기록을 보존하고 있어요.');return false}
+ if(action==='buy'){const c=catalogue.find(c=>c.sku===id);if(!c||data.coins<c.price||data.furniture?.nextId===Number.MAX_SAFE_INTEGER)return false;return transaction(d=>{d.furniture??={version:1,nextId:1,items:[]};d.coins-=c.price;d.furniture.items.push({id:'furn-'+d.furniture.nextId++,sku:c.sku,paid:c.price,location:'warehouse',position:null})})}
+ const o=data.furniture?.items.find(o=>o.id===id);if(!o||o.location==='sold')return false;
+ if(action==='store')return transaction(d=>{const item=d.furniture.items.find(o=>o.id===id);item.location='warehouse'});
+ if(action==='sell')return transaction(d=>{const item=d.furniture.items.find(o=>o.id===id);d.coins+=Math.floor(item.paid/2);item.location='sold'});return false;
+}
 const fmt=ms=>{const sec=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return (h?h+'시간 ':'')+(m?m+'분 ':'')+(!h||!m?ss+'초':'')};
 const known=job=>!!job&&Number.isInteger(job.recipe)&&!!recipes[job.recipe]&&Number.isFinite(job.ends);
 // Temporary balance, NOT original game constants. Every batch keeps its previous total reward.
@@ -88,9 +97,9 @@ function showRecipes(i){const box=$('recipeDialog');box.replaceChildren();const 
 if($('openCookbook'))$('openCookbook').onclick=()=>{paintCookbook();window.restaurantRoomUI?window.restaurantRoomUI.open($('cookbookDialog')):$('cookbookDialog').showModal()};
 if($('hireServer'))$('hireServer').onclick=()=>{if(!readable||!staffSupported()||!supported(data.service)||!growthSupported()||serverCount()>=2||unlockedLevel()<2||data.coins<SERVER_COST)return;if(transaction(d=>{d.coins-=SERVER_COST;d.staff={...d.staff,version:1,servers:2,assignments:{...d.staff?.assignments}}}))notify('새 서빙 직원이 합류했어요. 두 테이블을 동시에 서빙합니다.')};
 $('upgrade').onclick=()=>{const cost=data.level*150;if(data.coins<cost||data.level>=5)return;if(transaction(d=>{d.coins-=cost;d.level++;if(d.stoves.length<4)d.stoves.push(null)}))notify('식당을 확장했어요. 새 조리대와 요리를 확인하세요.')};
-$('newGame').onclick=()=>{if(!confirm('레스토랑의 코인·요리·레벨을 모두 초기화할까요?'))return;const previous=data,previousReadable=readable;readable=true;data={coins:150,served:0,level:1,stoves:[null,null],decor:0};if(!save()){data=previous;readable=previousReadable;paint();return}phaseElapsed.clear();paint()};
+$('newGame').onclick=()=>{if(!confirm('레스토랑의 코인·요리·레벨·구매 가구를 모두 초기화할까요?'))return;const previous=data,previousReadable=readable;readable=true;data={coins:150,served:0,level:1,stoves:[null,null],decor:0};if(!save()){data=previous;readable=previousReadable;paint();return}phaseElapsed.clear();paint()};
 function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-lastTick));lastTick=now;
- if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!staffSupported()||!data.service)return;
+ if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!staffSupported()||!furnitureSupported()||!data.service)return;
  for(let i=0;i<2;i++){const s=data.service,guest=s.guests[i];
   if(!guest){const reserved=[0,1].map(n=>s.guests.filter(g=>g&&['entering','waiting'].includes(g.phase)&&g.counter===n).length);const counter=s.stock.findIndex((_,n)=>remaining(s,n)>reserved[n]);
    if(counter>=0&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,counter))){const id=lots(s,counter)[0].source.id+'/guest-'+i;if(transaction(d=>{upgradeService(d).guests[i]={id,phase:'entering',counter,table:i}}))phaseElapsed.set(i,0)}else if(counter>=0)notify('가구가 손님 길을 막고 있어요. 가구 옮기기에서 출입구와 좌석 사이를 비워 주세요.');continue}
@@ -108,8 +117,10 @@ function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-last
 function setActive(){clearInterval(timer);timer=null;lastTick=performance.now();if(!document.hidden)timer=setInterval(()=>{tick();paint()},250)}
 document.addEventListener('visibilitychange',()=>{setActive();if(!document.hidden)paint()});window.addEventListener('pagehide',()=>{clearInterval(timer);timer=null});window.addEventListener('pageshow',setActive);
 window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{if(Number.isInteger(i)&&i>=0&&i<data.stoves.length)document.querySelector('#kitchen [data-slot="'+i+'"]')?.click()},
- saveLayout:layout=>transaction(d=>{d.roomLayout=layout}),
- serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported(),
+ saveLayout:(layout,placement)=>{if(placement&&!data.furniture?.items.some(o=>o.id===placement&&o.location!=='sold'))return false;if(!window.restaurantRoomUI?.validFurnitureLayout?.(layout,placement)){notify('가구 배치나 영업 경로를 다시 확인해 주세요.');return false};return transaction(d=>{d.roomLayout=layout;if(d.furniture)for(const o of d.furniture.items){if(o.location==='placed'||o.id===placement){const p=layout.positions[o.id];if(p){o.location='placed';o.position={...o.position,...p}}}}})},
+ furniture:()=>({supported:furnitureSupported(),catalogue:copy(catalogue)}),
+ furnitureAction,
+ serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported()&&furnitureSupported(),
  pendingValue:i=>supported(data.service)?data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0:0,
  inventory,
  progress:()=>({...progress(),supported:growthSupported(),unlockedLevel:unlockedLevel()}),

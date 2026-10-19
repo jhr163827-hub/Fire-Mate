@@ -56,3 +56,12 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 }
 @media(orientation:landscape) and (max-height:350px) and (min-width:560px){.restaurant-header small{display:none}.restaurant-hud{top:56px}.restaurant-status{bottom:107px}.restaurant-world figcaption{display:none}}
 @media(orientation:landscape) and (min-width:560px){.restaurant-world figcaption{display:none}}
+
+/* Inventory belongs to the serving counter, not a separate game menu. */
+.room-stock-badge{pointer-events:none}.room-stock-badge rect{fill:#fff9dd;stroke:#b49560;stroke-width:1}.room-stock-badge text{font-size:10px;fill:#73512d;text-anchor:middle;font-weight:750}
+.room-actor .room-person-bob{animation:none}.room-actor.room-walking .room-person-bob{animation:restaurant-bob .55s ease-in-out infinite}
+#counterStockDetails{font-weight:750;font-size:15px;line-height:1.7;margin:18px 0}
+@media(prefers-reduced-motion:reduce){.room-actor.room-walking .room-person-bob{animation:none}}
+.restaurant-paused .room-actor.room-walking .room-person-bob{animation-play-state:paused}
+
+.room-placement{fill:#bde2b7;stroke:#397f60;stroke-width:2;cursor:pointer;pointer-events:all}.room-placement:hover{fill:#e5f5ca}

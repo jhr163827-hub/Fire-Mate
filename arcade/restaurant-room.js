@@ -97,9 +97,9 @@ function servicePaths(list,positions,table,counter){
  for(const pickup of pickupOptions){for(const drop of dropOptions){const waiter=route(pickup,drop,list,positions);if(guest&&waiter){result={guest,waiter,pickup,drop,table:[tablePos.x+.5,tablePos.y+.5]};break}}if(result)break}
  pathsCache.set(id,result);return result;
 }
-function canServe(table,counter){const state=bridge.snapshot(),list=items(state),positions=savedPositions(state,list);return !!servicePaths(list,positions,table,counter)}
+function canServe(table,counter,workerIndex){const state=bridge.snapshot(),list=items(state),positions=savedPositions(state,list),paths=servicePaths(list,positions,table,counter);if(!paths)return false;if(workerIndex===undefined)return true;const home=servicePaths(list,positions,workerIndex,workerIndex)?.pickup,from=workers[workerIndex]?.xy||home;return !!from&&!!route(from,paths.pickup,list,positions)}
 let scene=null,frame=null,lastFrame=0,visualClock=0,visualLast=performance.now(),motionPaused=false,touchFeedback=null;
-const visualProgress=new Map(),actorElements=new Map(),poses=new Map(),worker={xy:null,task:null,delivery:null,returning:null,layout:null};
+const visualProgress=new Map(),actorElements=new Map(),poses=new Map(),workers=Array.from({length:2},()=>({xy:null,task:null,delivery:null,returning:null,layout:null}));
 function actorNode(layer,id){let el=actorElements.get(id);if(!el?.isConnected){el=layer.querySelector('[data-actor="'+id+'"]')}if(!el){el=document.createElementNS('http://www.w3.org/2000/svg','g');el.dataset.actor=id;el.classList.add('room-actor');layer.append(el)}actorElements.set(id,el);return el}
 function putPerson(layer,id,xy,color,walking=false,pose='standing',variant=0){
  const el=actorNode(layer,id);if(!el.firstElementChild)el.innerHTML=person(0,0,color,false,variant).replace('transform="translate(300 86)"','');
@@ -134,10 +134,12 @@ function paintService(state,list,positions){
   const walking=!!paths&&['entering','leaving'].includes(g.phase);putPerson(layer,id,xy,i?'#aa7793':'#cb985a',walking,g.phase==='eating'?'eating':['waiting','serving'].includes(g.phase)?'seated':'standing',i);wanted.add(id);
   if(g.phase==='eating'&&g.batch){const table=positions['table-'+i];putFood(layer,'meal-'+i,paths?.table||[table.x+.5,table.y+.5],g.batch.recipe);wanted.add('meal-'+i)}
  }
- const layoutKey=JSON.stringify(positions),base=servicePaths(list,positions,0,0)?.pickup||worker.xy;
+ const layoutKey=JSON.stringify(positions),count=state.staff?.version===1?state.staff.servers:1;
+ for(let w=count;w<workers.length;w++)Object.assign(workers[w],{xy:null,task:null,delivery:null,returning:null,layout:null});
+ for(let w=0;w<count;w++){const worker=workers[w],base=servicePaths(list,positions,w,w)?.pickup||worker.xy;
  if(base){
   if(worker.layout!==layoutKey){worker.xy=base;worker.task=null;worker.delivery=null;worker.returning=null;worker.layout=layoutKey}
-  const serving=guests.findIndex(g=>g?.phase==='serving'),g=guests[serving],paths=g?servicePaths(list,positions,serving,g.counter):null;
+  const serving=guests.findIndex(g=>g?.phase==='serving'&&(state.staff?.assignments?.[g.id]??0)===w),g=guests[serving],paths=g?servicePaths(list,positions,serving,g.counter):null;
   let walking=false;
   if(g&&paths){
    const task=(g.batch?.id||g.id)+':'+serving;
@@ -152,12 +154,13 @@ function paintService(state,list,positions){
    if(worker.delivery){worker.returning={path:route(worker.xy,base,list,positions)||[worker.xy],started:visualClock};worker.delivery=null;worker.task=null}
    if(worker.returning){const t=Math.min(1,(visualClock-worker.returning.started)/1800);worker.xy=along(worker.returning.path,t);walking=t<1&&worker.returning.path.length>1;if(t===1)worker.returning=null}
   }
-  putPerson(layer,'waiter-service',worker.xy||base,'#558b86',walking,g&&paths?'carrying':'standing');wanted.add('waiter-service');
+  const id=w?'waiter-service-'+w:'waiter-service';let xy=worker.xy||base;if(count>1&&walking){const offset=w?.12:-.12;xy=[xy[0]+offset,xy[1]-offset]}putPerson(layer,id,xy,w?'#b17a52':'#558b86',walking,g&&paths?'carrying':'standing',w);wanted.add(id);
+ }
  }
  for(const el of layer.querySelectorAll('[data-actor]'))if(!wanted.has(el.dataset.actor)){poses.delete(el.dataset.actor);actorElements.delete(el.dataset.actor);el.remove()}
  const ordered=[...layer.children].sort((a,b)=>Number(a.dataset.depth)-Number(b.dataset.depth));ordered.forEach((el,i)=>{if(layer.children[i]!==el)layer.insertBefore(el,layer.children[i]||null)});
 }
-function motionNeeded(){return worker.returning||scene?.state.service?.guests?.some(g=>g&&['entering','serving','leaving'].includes(g.phase))}
+function motionNeeded(){return workers.some(w=>w.returning)||scene?.state.service?.guests?.some(g=>g&&['entering','serving','leaving'].includes(g.phase))}
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');reducedMotion.addEventListener('change',()=>syncFrames());
 function syncFrames(){
  if(editing||motionPaused||document.hidden||reducedMotion.matches||!scene||!motionNeeded()){if(frame!==null)cancelAnimationFrame(frame);frame=null;lastFrame=0;return}

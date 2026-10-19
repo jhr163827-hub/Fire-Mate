@@ -188,7 +188,7 @@ h1 {
 }
 .board-shell {
   position: relative;
-  width: min(100%, calc((100svh - 394px) * 0.72));
+  width: min(100%, calc((100svh - 394px) * 0.8));
   min-width: 220px;
   max-width: 360px;
   margin: auto;
@@ -203,7 +203,7 @@ h1 {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 360/500;
+  aspect-ratio: 360/450;
   border-radius: 20px;
   touch-action: none;
   outline-offset: 5px;
@@ -428,7 +428,7 @@ dialog::backdrop {
     font-size: 24px;
   }
   .board-shell {
-    width: min(100%, calc((100svh - 360px) * 0.72));
+    width: min(100%, calc((100svh - 360px) * 0.8));
   }
   #notice {
     margin: 7px 0 5px;

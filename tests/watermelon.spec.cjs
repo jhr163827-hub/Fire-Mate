@@ -121,7 +121,7 @@ test("merge queue consumes each body once, chains and clears double watermelons"
   Matter.Sleeping.set(above, true);
   supported.advance(2500);
   expect(supported.bodies).toHaveLength(1);
-  expect(above.position.y).toBeGreaterThan(450);
+  expect(above.position.y).toBeGreaterThan(C.floor - 25);
   supported.destroy();
   const wrapped = new Game();
   const a = wrapped.make(0, 170, 300),
@@ -473,7 +473,7 @@ test("installed PWA caches every game dependency for offline resume", async ({
       page.evaluate(
         async () =>
           !!(await caches.match(
-            location.origin + "/arcade/watermelon-game.js?v=2.0.0",
+            location.origin + "/arcade/watermelon-game.js?v=2.0.1",
           )),
       ),
     )

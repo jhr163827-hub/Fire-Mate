@@ -350,3 +350,23 @@ test('Nightfall visual assets and locked region selection remain functional',asy
  await expect(page.locator('#title')).toContainText('생존 모드');
  expect(errors).toEqual([]);
 });
+
+test('Nightfall achievement gold is claimed once and persists after reload',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.evaluate(()=>{const p=JSON.parse(localStorage.getItem('nightfall_progress_v1')||'{}');p.totalKills=100;p.gold=0;p.claimedAchievements={};localStorage.setItem('nightfall_progress_v1',JSON.stringify(p))});
+ await page.reload();
+ await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
+ await page.getByRole('button',{name:'업적'}).click();
+ await page.getByRole('button',{name:/첫 사냥.*보상 받기/}).click();
+ let first=await page.evaluate(()=>JSON.parse(localStorage.getItem('nightfall_progress_v1')));
+ expect(first.gold).toBe(50);
+ expect(first.claimedAchievements['10']).toBe(true);
+ await page.reload();
+ await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
+ await page.getByRole('button',{name:'업적'}).click();
+ await page.getByRole('button',{name:/첫 사냥.*수령 완료/}).click();
+ let second=await page.evaluate(()=>JSON.parse(localStorage.getItem('nightfall_progress_v1')));
+ expect(second.gold).toBe(50);
+ expect(errors).toEqual([]);
+});

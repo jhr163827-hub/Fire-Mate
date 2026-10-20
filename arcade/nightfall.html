@@ -3,7 +3,7 @@
 if((location.hostname==='localhost'||location.hostname==='127.0.0.1')&&new URLSearchParams(location.search).has('nightfall_test')){
   window.__nightfallTest={
     snapshot:()=>({state,elapsed,level,kills,enemyCount:enemy.length,boltCount:bolts.length,particleCount:particles.length,bossSpawned,bossKills,gold:progress.gold,hp:player?.hp}),
-    advance:(seconds)=>{if(state!=='play')return;for(let remaining=Math.min(600,Math.max(0,seconds));remaining>0&&state==='play';remaining-=.04)tick(Math.min(.04,remaining))},
+    advance:(seconds)=>{if(state!=='play')return;for(let remaining=Math.min(600,Math.max(0,seconds));remaining>0;remaining-=.04){if(state==='pause'&&title.textContent.startsWith('LEVEL')){choices.querySelector('button')?.click()}if(state!=='play')break;tick(Math.min(.04,remaining))}},
     populate:(count)=>{if(state!=='play')return;enemy=Array.from({length:Math.min(160,Math.max(0,count))},(_,i)=>({x:player.x+350+(i%20)*30,y:player.y+350+Math.floor(i/20)*30,hp:100,max:100,type:'fiend',speed:0,radius:17,hit:0,knockX:0,knockY:0,slow:0}))},
     invincible:()=>{if(state==='play'){player.hp=1e9;player.max=1e9;player.inv=1e9}}
   };

@@ -29,6 +29,8 @@ const SEAT_COST=120;
 function seatingSupported(){const s=data.seating;return s===undefined||!!s&&s.version===1&&typeof s.owned==='boolean'&&['warehouse','placed','sold'].includes(s.location)&&(!s.owned?s.location==='sold':s.location!=='sold')&&(!s.position||Number.isInteger(s.position.x)&&Number.isInteger(s.position.y)&&s.position.x>=0&&s.position.x<8&&s.position.y>=0&&s.position.y<8)}
 function seatingAction(action){if(!readable||!seatingSupported()||!furnitureSupported()||!supported(data.service)||!growthSupported()){notify('지원하지 않는 좌석 또는 영업 기록을 보존하고 있어요.');return false}
  if(action==='buy'){if(data.seating!==undefined||data.coins<SEAT_COST||unlockedLevel()<2)return false;return transaction(d=>{d.coins-=SEAT_COST;d.seating={version:1,owned:true,location:'warehouse',position:null}})}
+ if(action==='place'){if(!data.seating?.owned||data.seating.location!=='warehouse'||!window.restaurantRoomUI?.validSeatPlacement?.())return false;return transaction(d=>{d.seating.location='placed';d.seating.position={x:4,y:7};if(d.service&&d.service.guests.length===2)d.service.guests.push(null)})}
+ if(action==='store'||action==='sell'){if(!data.seating?.owned||data.service?.guests?.[2]||data.seating.location!=='placed'&&action==='store')return false;return transaction(d=>{if(action==='sell'){d.coins+=60;d.seating.owned=false;d.seating.location='sold'}else d.seating.location='warehouse'})}
  return false;
 }
 const fmt=ms=>{const sec=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return (h?h+'시간 ':'')+(m?m+'분 ':'')+(!h||!m?ss+'초':'')};
@@ -61,25 +63,26 @@ const remaining=(service,i)=>lots(service,i).reduce((n,lot)=>n+lot.remaining,0);
 function validLot(lot){return lot&&validBatch(lot.source)&&lot.total===recipes[lot.source.recipe].plates&&Number.isInteger(lot.remaining)&&lot.remaining>0&&lot.remaining<=lot.total&&lot.price*lot.total===lot.source.value}
 function supported(service){
  if(service===undefined)return true;
- if(!service||![1,2,3].includes(service.version)||!Array.isArray(service.stock)||service.stock.length!==2||!Array.isArray(service.guests)||service.guests.length!==2)return false;
+ if(!service||![1,2,3].includes(service.version)||!Array.isArray(service.stock)||service.stock.length!==2||!Array.isArray(service.guests)||![2,3].includes(service.guests.length))return false;
  if(!service.stock.every(x=>!x||(service.version===1?validBatch(x):Number.isInteger(x.recipe)&&!!recipes[x.recipe]&&Array.isArray(x.batches)&&x.batches.length>0&&x.batches.every(b=>service.version===2?validBatch(b)&&b.recipe===x.recipe:validLot(b)&&b.source.recipe===x.recipe))))return false;
- if(!service.guests.every(x=>!x||typeof x.id==='string'&&Number.isInteger(x.counter)&&x.counter>=0&&x.counter<2&&Number.isInteger(x.table)&&x.table>=0&&x.table<2&&['entering','waiting','serving','eating','leaving'].includes(x.phase)&&(!x.batch||(service.version===3?validMeal(x.batch):validBatch(x.batch)))))return false;
+ if(!service.guests.every(x=>!x||typeof x.id==='string'&&Number.isInteger(x.counter)&&x.counter>=0&&x.counter<2&&Number.isInteger(x.table)&&x.table>=0&&x.table<service.guests.length&&['entering','waiting','serving','eating','leaving'].includes(x.phase)&&(!x.batch||(service.version===3?validMeal(x.batch):validBatch(x.batch)))))return false;
  const ids=[...service.stock.flatMap((_,i)=>lots(service,i).map(lot=>lot.source)),...service.guests.flatMap(g=>g?.batch?[g.batch]:[])].map(b=>b.id);
  if(new Set(ids).size!==ids.length)return false;
  // A pending plate must already have been removed from any remaining source lot.
  return service.guests.every(g=>!g?.batch||!validPlate(g.batch)||!service.stock.some((_,i)=>lots(service,i).some(lot=>lot.source.id===g.batch.origin.id&&g.batch.origin.ordinal>lot.total-lot.remaining)));
 }
 function upgradeService(d){
- if(!d.service)d.service={version:3,stock:[null,null],guests:[null,null]};
+ if(!d.service)d.service={version:3,stock:[null,null],guests:d.seating?.location==='placed'?[null,null,null]:[null,null]};
  else if(d.service.version===1)d.service={...d.service,version:3,stock:d.service.stock.map(b=>b?{recipe:b.recipe,batches:[asLot(b)]}:null)};
  else if(d.service.version===2)d.service={...d.service,version:3,stock:d.service.stock.map(slot=>slot?{...slot,batches:slot.batches.map(asLot)}:null)};
+ if(d.seating?.location==='placed'&&d.service.guests.length===2)d.service.guests.push(null);
  return d.service;
 }
 function inventory(){return [0,1].map(i=>{if(!supported(data.service))return null;const list=lots(data.service,i),recipe=list[0]?.source.recipe,pending=data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0;return list.length?{recipe,name:recipes[recipe].name,remaining:remaining(data.service,i),value:list.reduce((sum,lot)=>sum+lot.remaining*lot.price,0),price:list[0].price,pendingValue:pending}:null})}
 const durations={entering:2500,waiting:0,serving:3000,eating:4500,leaving:2500};
 let phaseElapsed=new Map(),lastTick=performance.now(),timer=null,suspended=false;
 function transfer(i){const job=data.stoves[i];if(!known(job)||Date.now()<job.ends)return;
- if(!supported(data.service)||!growthSupported()||!cookbookSupported()||!staffSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
+ if(!supported(data.service)||!growthSupported()||!cookbookSupported()||!staffSupported()||!seatingSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
  const stock=inventory();let slot=stock.findIndex(x=>x?.recipe===job.recipe);if(slot<0)slot=stock.findIndex(x=>!x);if(slot<0){notify('서빙대가 가득 찼어요. 같은 요리는 보충할 수 있고, 다른 요리는 빈 서빙대가 필요해요.');return}
  const batch={id:'batch-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),recipe:job.recipe,value:recipes[job.recipe].sell};
  if(transaction(d=>{const service=upgradeService(d);if(service.stock[slot])service.stock[slot].batches.push(asLot(batch));else service.stock[slot]={recipe:job.recipe,batches:[asLot(batch)]};d.stoves[i]=null;recordCooking(d,job.recipe)}))notify(recipes[job.recipe].name+' 보충 완료 · '+inventory()[slot].remaining+'접시 남았어요.');
@@ -93,7 +96,7 @@ function paint(){const now=Date.now();$('coins').textContent=Math.floor(data.coi
  if(!card.isConnected)kitchen.append(card)});
  $('upgrade').textContent='식당 확장 · '+data.level*150+'코인';$('upgrade').disabled=!readable||!supported(data.service)||!growthSupported()||data.coins<data.level*150||data.level>=5;
  const ready=data.stoves.filter(x=>known(x)&&x.ends<=now).length;$('progress').style.width=(ready/data.stoves.length*100)+'%';$('cookTime').textContent=ready+'개 완성';
- const service=data.service,available=supported(service),stock=inventory(),remaining=stock.reduce((n,x)=>n+(x?.remaining||0),0);$('serviceSummary').textContent=!readable?'읽을 수 없는 저장 기록 보존 중 · 초기화 전 원본을 확인하세요':!available||!growthSupported()?'확인되지 않은 영업 기록 보존 중':service?'재고 '+remaining+'접시 · 응대 '+service.guests.filter(Boolean).length+'/2':'완성 요리를 서빙대로 옮겨 영업을 시작하세요';
+ const service=data.service,available=supported(service),stock=inventory(),remaining=stock.reduce((n,x)=>n+(x?.remaining||0),0);$('serviceSummary').textContent=!readable?'읽을 수 없는 저장 기록 보존 중 · 초기화 전 원본을 확인하세요':!available||!growthSupported()?'확인되지 않은 영업 기록 보존 중':service?'재고 '+remaining+'접시 · 응대 '+service.guests.filter(Boolean).length+'/'+service.guests.length:'완성 요리를 서빙대로 옮겨 영업을 시작하세요';
  paintCookbook();paintStaff();window.dispatchEvent(new Event('restaurant-painted'));
 }
 function showRecipes(i){const box=$('recipeDialog');box.replaceChildren();const h=document.createElement('h2');h.textContent=(i+1)+'번 조리대 · 요리 선택';box.append(h);
@@ -106,8 +109,8 @@ if($('hireServer'))$('hireServer').onclick=()=>{if(!readable||!staffSupported()|
 $('upgrade').onclick=()=>{const cost=data.level*150;if(data.coins<cost||data.level>=5)return;if(transaction(d=>{d.coins-=cost;d.level++;if(d.stoves.length<4)d.stoves.push(null)}))notify('식당을 확장했어요. 새 조리대와 요리를 확인하세요.')};
 $('newGame').onclick=()=>{if(!confirm('레스토랑의 코인·요리·레벨·구매 가구를 모두 초기화할까요?'))return;const previous=data,previousReadable=readable;readable=true;data={coins:150,served:0,level:1,stoves:[null,null],decor:0};if(!save()){data=previous;readable=previousReadable;paint();return}phaseElapsed.clear();paint()};
 function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-lastTick));lastTick=now;
- if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!staffSupported()||!furnitureSupported()||!data.service)return;
- for(let i=0;i<2;i++){const s=data.service,guest=s.guests[i];
+ if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!staffSupported()||!furnitureSupported()||!seatingSupported()||!data.service)return;
+ for(let i=0;i<data.service.guests.length;i++){const s=data.service,guest=s.guests[i];if(i===2&&data.seating?.location!=='placed')continue;
   if(!guest){const reserved=[0,1].map(n=>s.guests.filter(g=>g&&['entering','waiting'].includes(g.phase)&&g.counter===n).length);const counter=s.stock.findIndex((_,n)=>remaining(s,n)>reserved[n]);
    if(counter>=0&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,counter))){const id=lots(s,counter)[0].source.id+'/guest-'+i;if(transaction(d=>{upgradeService(d).guests[i]={id,phase:'entering',counter,table:i}}))phaseElapsed.set(i,0)}else if(counter>=0)notify('가구가 손님 길을 막고 있어요. 가구 옮기기에서 출입구와 좌석 사이를 비워 주세요.');continue}
   if(window.restaurantRoomUI?.canServe&&!window.restaurantRoomUI.canServe(i,guest.counter)){notify('서빙 길이 막혔어요. 가구 배치를 바꾸면 남은 재고와 응대를 이어가요.');continue}
@@ -129,12 +132,12 @@ window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{
  furnitureAction,
  seating:()=>({supported:seatingSupported(),owned:!!data.seating?.owned,location:data.seating?.location||null,price:SEAT_COST,unlocked:unlockedLevel()>=2}),
  seatingAction,
- serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported()&&furnitureSupported(),
+ serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported()&&furnitureSupported()&&seatingSupported(),
  pendingValue:i=>supported(data.service)?data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0:0,
  inventory,
  progress:()=>({...progress(),supported:growthSupported(),unlockedLevel:unlockedLevel()}),
  setSuspended:value=>{suspended=!!value;setActive()},
- serviceMotion:()=>({progress:[0,1].map(i=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})})
+ serviceMotion:()=>({progress:data.service?.guests.map((_,i)=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})||[0,0],unused:[0,1].map(i=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})})
 });
 if(lastStored===null)save();paint();setActive();
 })();

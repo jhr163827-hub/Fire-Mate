@@ -209,3 +209,21 @@ test('Nightfall phase 6 game over rewards saved and isolated',async({page})=>{
  await expect(page.locator('#title')).toContainText('GAME OVER');
  expect(errors).toEqual([]);
 });
+
+test('Nightfall phase 7 twelve weapons and ultimate evolutions survive 160 enemy stress',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).click();
+ const result=await page.evaluate(()=>{
+  const api=window.__nightfallTest;
+  const names=['arcane','fire','ice','lightning','poison','wind','scythe','missile','summon','laser','quake','storm'];
+  const applied=names.map(name=>api.setSkill(name,5,true));
+  api.invincible();api.populate(160);api.advance(8);
+  return {names,applied,skills:api.skills(),snapshot:api.snapshot()};
+ });
+ expect(result.applied.every(Boolean)).toBe(true);
+ for(const name of result.names){expect(result.skills.weapons[name]).toBe(5);expect(result.skills.evolved[name]).toBe(true)}
+ expect(result.snapshot.enemyCount).toBeLessThanOrEqual(160);
+ expect(result.snapshot.particleCount).toBeLessThanOrEqual(180);
+ expect(errors).toEqual([]);
+});

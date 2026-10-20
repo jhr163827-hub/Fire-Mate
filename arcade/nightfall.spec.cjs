@@ -145,3 +145,30 @@ test('Nightfall ten-minute combat and five-minute boss spawn',async({page})=>{
   expect(third.enemyCount).toBeLessThanOrEqual(161);
   expect(errors).toEqual([]);
 });
+
+test('Nightfall phase 5 weapon impact balance and enemy knockback rules',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).click();
+ const result=await page.evaluate(()=>{
+  const api=window.__nightfallTest;api.invincible();
+  api.populate(160);api.advance(2);
+  return api.snapshot();
+ });
+ expect(result.enemyCount).toBeLessThanOrEqual(160);
+ expect(result.particleCount).toBeLessThanOrEqual(180);
+ expect(result.boltCount).toBeLessThanOrEqual(160);
+ expect(errors).toEqual([]);
+});
+test('Nightfall phase 5 responsive menu remains inside small viewport',async({browser})=>{
+ for(const width of [320,360,375,390,430]){
+  const context=await browser.newContext({viewport:{width,height:568},isMobile:true,hasTouch:true});
+  const page=await context.newPage();await page.goto(url);
+  await page.getByRole('button',{name:'영구 강화 상점'}).click();
+  const dimensions=await page.locator('.card').evaluate(el=>({scroll:el.scrollHeight,client:el.clientHeight,rect:el.getBoundingClientRect().toJSON()}));
+  expect(dimensions.rect.left).toBeGreaterThanOrEqual(0);
+  expect(dimensions.rect.right).toBeLessThanOrEqual(width+1);
+  expect(dimensions.client).toBeLessThanOrEqual(568);
+  await context.close();
+ }
+});

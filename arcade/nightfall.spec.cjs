@@ -78,7 +78,7 @@ test('Nightfall deterministic boss threshold and 160 enemy stress',async({page})
     let html=await response.text();
     const anchor='requestAnimationFrame(frame)})();';
     expect(html.includes(anchor)).toBe(true);
-    html=html.replace(anchor,"window.__nightfallPhase4={tick,draw,enemy,player,advance:(seconds)=>{elapsed=seconds;},snapshot:()=>({elapsed,bossSpawned,bossCount:enemy.filter(e=>e.type==='boss').length,enemyCount:enemy.length,kills})};requestAnimationFrame(frame)})();");
+    html=html.replace(anchor,"window.__nightfallPhase4={tick,draw,get enemy(){return enemy},get player(){return player},advance:(seconds)=>{elapsed=seconds;},snapshot:()=>({elapsed,bossSpawned,bossCount:enemy.filter(e=>e.type==='boss').length,enemyCount:enemy.length,kills})};requestAnimationFrame(frame)})();");
     await route.fulfill({response,body:html});
   });
   await page.goto(url);

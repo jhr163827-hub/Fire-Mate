@@ -264,12 +264,22 @@ test('Nightfall five characters and six survival modes are available',async({pag
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
  await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
- await expect(page.locator('#choices button')).toHaveCount(7);
+ await expect(page.locator('#choices button')).toHaveCount(8);
  await page.getByRole('button',{name:'생존 모드 선택'}).click();
  await expect(page.locator('#choices button')).toHaveCount(7);
  await page.getByRole('button',{name:'악몽 · 20분'}).click();
  const snapshot=await page.evaluate(()=>window.__nightfallTest.snapshot());
  expect(snapshot.runMode).toBe('nightmare');
  expect(snapshot.runLength).toBe(1200);
+ expect(errors).toEqual([]);
+});
+
+test('Nightfall new ranged bomber elite enemies render without crashing after 4 minutes',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ const snapshot=await page.evaluate(()=>{const api=window.__nightfallTest;api.invincible();api.advance(240);return api.snapshot()});
+ expect(snapshot.elapsed).toBeGreaterThanOrEqual(239);
+ await page.waitForTimeout(250);
  expect(errors).toEqual([]);
 });

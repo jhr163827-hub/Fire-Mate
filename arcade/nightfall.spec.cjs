@@ -378,7 +378,7 @@ test('Nightfall account and mastery progression grant persistent combat stats',a
  await page.reload();
  await page.getByRole('button',{name:'생존 시작'}).first().click();
  const snap=await page.evaluate(()=>window.__nightfallTest.snapshot());
- expect(snap.player.max).toBeGreaterThan(100);
+ expect(snap.maxHp).toBeGreaterThan(100);
  await page.evaluate(()=>window.__nightfallTest.finish());
  await page.getByRole('button',{name:'영구 성장 기록'}).click();
  await expect(page.locator('#desc')).toContainText('시작 HP');

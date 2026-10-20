@@ -264,7 +264,7 @@ test('Nightfall five characters and six survival modes are available',async({pag
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
  await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
- await expect(page.locator('#choices button')).toHaveCount(9);
+ await expect(page.locator('#choices button')).toHaveCount(10);
  await page.getByRole('button',{name:'생존 모드 선택'}).click();
  await expect(page.locator('#choices button')).toHaveCount(7);
  await page.getByRole('button',{name:'악몽 · 20분'}).click();
@@ -317,7 +317,7 @@ test('Nightfall permanent progression persists account experience and weapon mas
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
  await page.getByRole('button',{name:'생존 시작'}).first().click();
- const saved=await page.evaluate(()=>{const api=window.__nightfallTest;api.invincible();api.advance(45);api.finish();return JSON.parse(localStorage.getItem('nightfall_progress_v1'))});
+ const saved=await page.evaluate(()=>{const api=window.__nightfallTest;api.invincible();api.advance(120);api.finish();return JSON.parse(localStorage.getItem('nightfall_progress_v1'))});
  expect(saved.runs).toBeGreaterThanOrEqual(1);
  expect(saved.accountXp).toBeGreaterThan(0);
  expect(saved.mastery.arcane).toBeGreaterThan(0);

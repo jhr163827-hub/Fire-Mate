@@ -1,0 +1,33 @@
+name: NIGHTFALL isolated verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'arcade/nightfall*'
+      - '.github/workflows/nightfall.yml'
+  pull_request:
+    paths:
+      - 'arcade/nightfall*'
+      - '.github/workflows/nightfall.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  nightfall:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: NIGHTFALL Playwright only
+        run: npx playwright test arcade/nightfall.spec.cjs
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: nightfall-test-results
+          path: test-results/
+          retention-days: 7

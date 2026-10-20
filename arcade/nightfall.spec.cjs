@@ -283,3 +283,17 @@ test('Nightfall new ranged bomber elite enemies render without crashing after 4 
  await page.waitForTimeout(250);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall animation loop survives a recoverable drawing exception',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ const result=await page.evaluate(async()=>{
+   const api=window.__nightfallTest;api.invincible();api.advance(245);
+   const before=api.snapshot().elapsed;
+   await new Promise(resolve=>setTimeout(resolve,180));
+   return {before,after:api.snapshot().elapsed};
+ });
+ expect(result.after).toBeGreaterThan(result.before);
+ expect(errors).toEqual([]);
+});

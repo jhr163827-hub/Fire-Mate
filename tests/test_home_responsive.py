@@ -976,9 +976,9 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.goto(URL,wait_until='domcontentloaded')
                         for goal,cash,debt,expected,remaining in (
                             (10000,150000000,0,'FIRE 목표 달성!','₩0'),
-                            (80000,700000000,0,'다음 목표 8억까지 10,000만 원','₩100,000,000'),
-                            (65000,0,10000000,'다음 목표 2억까지 21,000만 원','₩660,000,000'),
-                            (65000,0,0,'다음 목표 2억까지 20,000만 원','₩650,000,000'),
+                            (80000,700000000,0,'다음 목표 8억까지 1억 원','₩100,000,000'),
+                            (65000,0,10000000,'다음 목표 2억까지 2억 1,000만 원','₩660,000,000'),
+                            (65000,0,0,'다음 목표 2억까지 2억 원','₩650,000,000'),
                             (0,0,0,'FIRE 목표 미설정','FIRE 목표 미설정')):
                             page.evaluate("""v=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=v.theme;d.fire.goal=v.goal;d.holdings=[];d.accounts=[{id:'cash',name:'현금',amount:v.cash}];d.balance={fx:1400,cash:0,other:0,debt:v.debt};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))}""",{'goal':goal,'cash':cash,'debt':debt,'theme':theme})
                             page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="home"]').tap()

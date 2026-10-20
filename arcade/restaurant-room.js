@@ -221,7 +221,7 @@ $('furnitureList').onclick=async e=>{const button=e.target.closest('button');if(
 // Each modal gets one history entry. Back closes the modal before leaving the game.
 const stack=[];let restoring=false,historyBusy=false;
 function openDialog(dialog){if(dialog.open)return;dialog.setAttribute('aria-label',dialog.getAttribute('aria-label')||dialog.querySelector('h2')?.textContent||'레스토랑');dialog.showModal();syncActivity();stack.push(dialog.id);history.pushState({...history.state,restaurantDialog:dialog.id},'',location.href)}
-window.restaurantRoomUI=Object.freeze({open:openDialog,canServe,validFurnitureLayout});
+window.restaurantRoomUI=Object.freeze({open:openDialog,canServe,validSeatPlacement,validFurnitureLayout});
 for(const dialog of document.querySelectorAll('dialog')){
  dialog.querySelectorAll('[data-dialog-close]').forEach(button=>button.onclick=()=>dialog.close());
  dialog.addEventListener('close',()=>{syncActivity();const index=stack.indexOf(dialog.id);if(index>=0)stack.splice(index,1);if(!restoring&&history.state?.restaurantDialog===dialog.id)backWithinGame()});

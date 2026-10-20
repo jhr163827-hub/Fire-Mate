@@ -259,3 +259,17 @@ test('Nightfall phase 8-11 10-minute final boss and expanded enemy roster',async
  expect(result.enemyCount).toBeLessThanOrEqual(162);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall five characters and six survival modes are available',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
+ await expect(page.locator('#choices button')).toHaveCount(7);
+ await page.getByRole('button',{name:'생존 모드 선택'}).click();
+ await expect(page.locator('#choices button')).toHaveCount(7);
+ await page.getByRole('button',{name:'악몽 · 20분'}).click();
+ const snapshot=await page.evaluate(()=>window.__nightfallTest.snapshot());
+ expect(snapshot.runMode).toBe('nightmare');
+ expect(snapshot.runLength).toBe(1200);
+ expect(errors).toEqual([]);
+});

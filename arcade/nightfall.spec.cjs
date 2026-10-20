@@ -245,3 +245,17 @@ test('Nightfall phase 7 five cross-weapon synergies activate under combat load',
  expect(result.snapshot.enemyCount).toBeLessThanOrEqual(160);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall phase 8-11 10-minute final boss and expanded enemy roster',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).click();
+ const result=await page.evaluate(()=>{
+  const api=window.__nightfallTest;api.invincible();api.advance(600);
+  return api.snapshot();
+ });
+ expect(result.elapsed).toBeGreaterThanOrEqual(599);
+ expect(result.finalBossSpawned).toBe(true);
+ expect(result.enemyCount).toBeLessThanOrEqual(162);
+ expect(errors).toEqual([]);
+});

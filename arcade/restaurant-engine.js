@@ -14,7 +14,7 @@ if(!localStorage.getItem(KEY)){try{const old=JSON.parse(localStorage.getItem(OLD
 const copy=x=>JSON.parse(JSON.stringify(x));
 const notify=msg=>{if($('status').textContent!==msg)$('status').textContent=msg};
 const save=()=>{try{if(!readable){notify('읽을 수 없는 레스토랑 저장 기록을 보존하고 있어요. 원본을 확인해 주세요.');return false}if(localStorage.getItem(KEY)!==lastStored){notify('다른 창에서 진행이 바뀌었어요. 새로고침하면 저장된 진행을 이어갈 수 있어요.');return false}const raw=JSON.stringify(data);localStorage.setItem(KEY,raw);lastStored=raw;return true}catch{notify('저장하지 못했어요. 저장 공간과 브라우저 설정을 확인해 주세요.');return false}};
-function transaction(change){if(!furnitureSupported()){notify('지원하지 않는 가구 기록을 보존하고 있어요.');return false}const previous=copy(data);change(data);if(!save()){data=previous;paint();return false}paint();return true}
+function transaction(change){if(!furnitureSupported()||!seatingSupported()){notify('지원하지 않는 가구 기록을 보존하고 있어요.');return false}const previous=copy(data);change(data);if(!save()){data=previous;paint();return false}paint();return true}
 // Own decorative catalogue. Purchased objects never stand in for working service furniture.
 const catalogue=Object.freeze([{sku:'leaf',name:'초록 화분',price:30,type:'plant'},{sku:'flower',name:'꽃 화분',price:50,type:'flower'},{sku:'lamp',name:'따뜻한 조명',price:80,type:'lamp'}]);
 function furnitureSupported(){const f=data.furniture;if(f===undefined)return true;if(!f||f.version!==1||!Number.isSafeInteger(f.nextId)||f.nextId<1||!Array.isArray(f.items))return false;const ids=new Set();return f.items.every(o=>{if(!o||!/^furn-[1-9][0-9]*$/.test(o.id)||ids.has(o.id)||!catalogue.some(c=>c.sku===o.sku&&c.price===o.paid)||!['warehouse','placed','sold'].includes(o.location))return false;ids.add(o.id);const n=Number(o.id.slice(5));return Number.isSafeInteger(n)&&n<f.nextId&&(o.location==='placed'?o.position&&Number.isInteger(o.position.x)&&Number.isInteger(o.position.y)&&o.position.x>=0&&o.position.y>=0&&o.position.x<8&&o.position.y<8:true)})}
@@ -23,6 +23,13 @@ function furnitureAction(action,id){if(!readable||!furnitureSupported()){notify(
  const o=data.furniture?.items.find(o=>o.id===id);if(!o||o.location==='sold')return false;
  if(action==='store')return transaction(d=>{const item=d.furniture.items.find(o=>o.id===id);item.location='warehouse'});
  if(action==='sell')return transaction(d=>{const item=d.furniture.items.find(o=>o.id===id);d.coins+=Math.floor(item.paid/2);item.location='sold'});return false;
+}
+// Functional seating ownership is separate from decorative furniture. Never infer a purchase from legacy layouts.
+const SEAT_COST=120;
+function seatingSupported(){const s=data.seating;return s===undefined||!!s&&s.version===1&&typeof s.owned==='boolean'&&['warehouse','placed','sold'].includes(s.location)&&(!s.owned?s.location==='sold':s.location!=='sold')&&(!s.position||Number.isInteger(s.position.x)&&Number.isInteger(s.position.y)&&s.position.x>=0&&s.position.x<8&&s.position.y>=0&&s.position.y<8)}
+function seatingAction(action){if(!readable||!seatingSupported()||!furnitureSupported()||!supported(data.service)||!growthSupported()){notify('지원하지 않는 좌석 또는 영업 기록을 보존하고 있어요.');return false}
+ if(action==='buy'){if(data.seating!==undefined||data.coins<SEAT_COST||unlockedLevel()<2)return false;return transaction(d=>{d.coins-=SEAT_COST;d.seating={version:1,owned:true,location:'warehouse',position:null}})}
+ return false;
 }
 const fmt=ms=>{const sec=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return (h?h+'시간 ':'')+(m?m+'분 ':'')+(!h||!m?ss+'초':'')};
 const known=job=>!!job&&Number.isInteger(job.recipe)&&!!recipes[job.recipe]&&Number.isFinite(job.ends);
@@ -120,6 +127,8 @@ window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{
  saveLayout:(layout,placement)=>{if(placement&&!data.furniture?.items.some(o=>o.id===placement&&o.location!=='sold'))return false;if(!window.restaurantRoomUI?.validFurnitureLayout?.(layout,placement)){notify('가구 배치나 영업 경로를 다시 확인해 주세요.');return false};return transaction(d=>{d.roomLayout=layout;if(d.furniture)for(const o of d.furniture.items){if(o.location==='placed'||o.id===placement){const p=layout.positions[o.id];if(p){o.location='placed';o.position={...o.position,...p}}}}})},
  furniture:()=>({supported:furnitureSupported(),catalogue:copy(catalogue)}),
  furnitureAction,
+ seating:()=>({supported:seatingSupported(),owned:!!data.seating?.owned,location:data.seating?.location||null,price:SEAT_COST,unlocked:unlockedLevel()>=2}),
+ seatingAction,
  serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported()&&furnitureSupported(),
  pendingValue:i=>supported(data.service)?data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0:0,
  inventory,

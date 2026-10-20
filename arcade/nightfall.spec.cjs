@@ -121,3 +121,27 @@ for(const count of [50,100,160])test('Nightfall enemy stress '+count,async({page
   expect(result.durationMs).toBeLessThan(15000);
   expect(errors).toEqual([]);
 });
+
+// Advance the existing game clock in small deterministic steps, not real-time waiting.
+test('Nightfall ten-minute combat and five-minute boss spawn',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+  await page.getByRole('button',{name:'생존 시작'}).click();
+  const first=await page.evaluate(()=>{
+    const h=window.__nightfallTest;h.invincible();h.advance(299);
+    return h.snapshot();
+  });
+  expect(first.elapsed).toBeGreaterThanOrEqual(298);
+  expect(first.bossSpawned).toBe(false);
+  const second=await page.evaluate(()=>{
+    const h=window.__nightfallTest;h.advance(2);return h.snapshot();
+  });
+  expect(second.bossSpawned).toBe(true);
+  expect(second.elapsed).toBeGreaterThanOrEqual(300);
+  const third=await page.evaluate(()=>{
+    const h=window.__nightfallTest;h.advance(299);return h.snapshot();
+  });
+  expect(third.elapsed).toBeGreaterThanOrEqual(599);
+  expect(third.enemyCount).toBeLessThanOrEqual(161);
+  expect(errors).toEqual([]);
+});

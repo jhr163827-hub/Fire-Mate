@@ -101,3 +101,23 @@ test('Nightfall deterministic boss threshold and 160 enemy stress',async({page})
   expect(result.durationMs).toBeLessThan(30000);
   expect(errors).toEqual([]);
 });
+
+// Diagnostics are deliberately available only on localhost with explicit opt-in.
+for(const count of [50,100,160])test('Nightfall enemy stress '+count,async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+  await page.getByRole('button',{name:'생존 시작'}).click();
+  const result=await page.evaluate(count=>{
+    const h=window.__nightfallTest;
+    if(!h)throw new Error('Missing local diagnostic hook');
+    h.invincible();h.populate(count);
+    const before=h.snapshot();
+    const started=performance.now();h.advance(5);
+    return {before,after:h.snapshot(),durationMs:performance.now()-started};
+  },count);
+  expect(result.before.enemyCount).toBe(count);
+  expect(result.after.enemyCount).toBeLessThanOrEqual(160);
+  expect(result.after.elapsed).toBeGreaterThanOrEqual(4.9);
+  expect(result.durationMs).toBeLessThan(15000);
+  expect(errors).toEqual([]);
+});

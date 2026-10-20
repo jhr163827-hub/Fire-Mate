@@ -172,3 +172,40 @@ test('Nightfall phase 5 responsive menu remains inside small viewport',async({br
   await context.close();
  }
 });
+
+test('Nightfall phase 6 all six skills unlock and evolve without errors',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).click();
+ const result=await page.evaluate(()=>{
+  const api=window.__nightfallTest;
+  const names=['arcane','fire','ice','lightning','poison','wind'];
+  const applied=names.map(name=>api.setSkill(name,5,true));
+  api.invincible();api.populate(100);api.advance(4);
+  return {applied,skills:api.skills(),snapshot:api.snapshot()};
+ });
+ expect(result.applied).toEqual([true,true,true,true,true,true]);
+ for(const name of ['arcane','fire','ice','lightning','poison','wind']){
+  expect(result.skills.weapons[name]).toBe(5);
+  expect(result.skills.evolved[name]).toBe(true);
+ }
+ expect(result.snapshot.enemyCount).toBeLessThanOrEqual(160);
+ expect(errors).toEqual([]);
+});
+test('Nightfall phase 6 game over rewards saved and isolated',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.evaluate(()=>localStorage.setItem('fire_mate_regression_sentinel','keep'));
+ await page.getByRole('button',{name:'생존 시작'}).click();
+ const result=await page.evaluate(()=>{
+  const api=window.__nightfallTest;api.invincible();api.advance(12);
+  const before=api.snapshot();api.finish();
+  return {before,after:api.snapshot(),saved:JSON.parse(localStorage.getItem('nightfall_progress_v1')),sentinel:localStorage.getItem('fire_mate_regression_sentinel')};
+ });
+ expect(result.after.state).toBe('pause');
+ expect(result.saved.gold).toBeGreaterThanOrEqual(0);
+ expect(result.saved.totalKills).toBeGreaterThanOrEqual(result.before.kills);
+ expect(result.sentinel).toBe('keep');
+ await expect(page.locator('#title')).toContainText('GAME OVER');
+ expect(errors).toEqual([]);
+});

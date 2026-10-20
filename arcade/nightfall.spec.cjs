@@ -70,3 +70,34 @@ test('Nightfall paused simulation keeps its survival clock frozen',async({page})
   await page.getByRole('button',{name:'계속하기'}).click();
   await expect(page.locator('#panel')).toBeHidden();
 });
+
+test('Nightfall deterministic boss threshold and 160 enemy stress',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.route('**/arcade/nightfall.html',async route=>{
+    const response=await route.fetch();
+    let html=await response.text();
+    const anchor='requestAnimationFrame(frame)})();';
+    expect(html.includes(anchor)).toBe(true);
+    html=html.replace(anchor,"window.__nightfallPhase4={tick,draw,enemy,player,advance:(seconds)=>{elapsed=seconds;},snapshot:()=>({elapsed,bossSpawned,bossCount:enemy.filter(e=>e.type==='boss').length,enemyCount:enemy.length,kills})};requestAnimationFrame(frame)})();");
+    await route.fulfill({response,body:html});
+  });
+  await page.goto(url);
+  await page.getByRole('button',{name:'생존 시작'}).click();
+  const result=await page.evaluate(()=>{
+    const api=window.__nightfallPhase4;
+    api.player.inv=999;
+    api.advance(299.99);
+    api.tick(.02);
+    const boss=api.snapshot();
+    api.enemy.length=0;
+    for(let i=0;i<160;i++)api.enemy.push({x:api.player.x+400+i*3,y:api.player.y+400,hp:50,max:50,type:'wraith',speed:50,radius:13,hit:0,death:0,knockX:0,knockY:0,slow:0});
+    const start=performance.now();
+    for(let i=0;i<120;i++){api.tick(.016);api.draw()}
+    return {boss,stress:api.snapshot(),durationMs:performance.now()-start};
+  });
+  expect(result.boss.bossSpawned).toBe(true);
+  expect(result.boss.bossCount).toBe(1);
+  expect(result.stress.enemyCount).toBeLessThanOrEqual(160);
+  expect(result.durationMs).toBeLessThan(30000);
+  expect(errors).toEqual([]);
+});

@@ -370,3 +370,28 @@ test('Nightfall achievement gold is claimed once and persists after reload',asyn
  expect(second.gold).toBe(50);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall account and mastery progression grant persistent combat stats',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.evaluate(()=>{let p=JSON.parse(localStorage.getItem('nightfall_progress_v1')||'{}');p.accountXp=320;p.mastery={arcane:270};localStorage.setItem('nightfall_progress_v1',JSON.stringify(p))});
+ await page.reload();
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ const snap=await page.evaluate(()=>window.__nightfallTest.snapshot());
+ expect(snap.maxHp).toBeGreaterThan(100);
+ await page.evaluate(()=>window.__nightfallTest.finish());
+ await page.getByRole('button',{name:'영구 성장 기록'}).click();
+ await expect(page.locator('#desc')).toContainText('시작 HP');
+ await expect(page.locator('#choices')).toContainText('피해 +');
+ expect(errors).toEqual([]);
+});
+
+test('Nightfall boss warning and impact visuals remain safe during accelerated play',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ await page.evaluate(()=>{window.__nightfallTest.invincible();window.__nightfallTest.advance(305)});
+ const snap=await page.evaluate(()=>window.__nightfallTest.snapshot());
+ expect(snap.elapsed).toBeGreaterThanOrEqual(300);
+ expect(errors).toEqual([]);
+});

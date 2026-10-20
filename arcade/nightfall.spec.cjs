@@ -327,3 +327,11 @@ test('Nightfall permanent progression persists account experience and weapon mas
  await expect(page.locator('#title')).toContainText('영구 성장');
  expect(errors).toEqual([]);
 });
+
+test('Nightfall loads five distinct hero SVG sprites without missing resources',async({page})=>{
+ const missing=[];page.on('response',r=>{if(r.url().includes('nightfall-')&&r.url().endsWith('.svg')&&r.status()>=400)missing.push(r.url())});
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ const result=await page.evaluate(async()=>{const ids=['mage','ranger','guardian','stormcaller','alchemist'];return Promise.all(ids.map(async id=>{let r=await fetch('./nightfall-'+id+'.svg');return {id,status:r.status,content:(await r.text()).includes('<svg')}}))});
+ expect(result.every(r=>r.status===200&&r.content)).toBe(true);
+ expect(missing).toEqual([]);
+});

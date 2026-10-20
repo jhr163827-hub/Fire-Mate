@@ -150,14 +150,15 @@ class HomeResponsiveTest(unittest.TestCase):
                                      page.evaluate("""() => ({saved:JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length,
                                          filter:document.getElementById('accountFilter').value,
                                          content:document.getElementById('holdingList').textContent.slice(0,100)})"""))
-                    # The list can re-render (e.g. after dividend data loads); measure a rendered node, not a detached one.
-                    page.wait_for_function("""() => {const e=document.querySelector('#holdingList .fm-holding-value');
-                        return !!e&&e.isConnected&&e.getBoundingClientRect().height>0}""")
-                    amount=page.locator('#holdingList .fm-holding-value').first.evaluate(
-                        'e => ({height:e.getBoundingClientRect().height,font:parseFloat(getComputedStyle(e).fontSize)})')
-                    self.assertLessEqual(amount['height'],amount['font']*1.6,'종목 평가금액은 한 줄로 보여야 합니다')
-                    self.assertEqual(page.locator('#holdingList .fm-holding-account').first.evaluate(
-                        'e => getComputedStyle(e).display'),'block')
+                    # The list can re-render (e.g. after dividend data loads), so read both values from one
+                    # connected, laid-out row in a single step instead of two separate element lookups.
+                    row=page.wait_for_function("""() => {const v=document.querySelector('#holdingList .fm-holding-value'),
+                        a=document.querySelector('#holdingList .fm-holding-account');
+                        if(!v||!a||!v.isConnected||!a.isConnected||!v.getBoundingClientRect().height)return null;
+                        return {height:v.getBoundingClientRect().height,font:parseFloat(getComputedStyle(v).fontSize),
+                            account:getComputedStyle(a).display}}""").json_value()
+                    self.assertLessEqual(row['height'],row['font']*1.6,'종목 평가금액은 한 줄로 보여야 합니다')
+                    self.assertEqual(row['account'],'block')
                     page.locator('#fmHoldingSearch').fill('BBB')
                     self.assertEqual(page.locator('#holdingList .tx').count(), 1)
                     self.assertIn('베타', page.locator('#holdingList').inner_text())

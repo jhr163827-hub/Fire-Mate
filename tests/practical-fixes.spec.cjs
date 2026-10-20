@@ -26,7 +26,7 @@ test('saved plans keep the original note and holdings make the quote button prim
  await expect(page.locator('.fm-backup-nudge')).toBeHidden();
 });
 
-test('backup nudge appears for unbacked data, backs up, and snoozes without touching finance data',async({page})=>{
+test('backup nudge appears for unbacked data, backs up, and snoozes without touching finance data (download fallback)',async({page})=>{
  await open(page,longTimeUser);
  const nudge=page.locator('.fm-backup-nudge');
  await expect(nudge).toBeVisible();
@@ -74,4 +74,33 @@ test('secondary text and selected tabs meet 4.5:1 contrast in both themes',async
   expect(ratios.sub,theme+' secondary').toBeGreaterThanOrEqual(4.5);
   expect(ratios.tab,theme+' selected tab').toBeGreaterThanOrEqual(4.5);
  }
+});
+
+test('mail backup shares a validated .txt file and restore accepts it',async({page})=>{
+ await page.addInitScript(()=>{window.__shared=[];navigator.canShare=d=>Array.isArray(d?.files)&&d.files.every(f=>f.name.endsWith('.txt'));navigator.share=async d=>{window.__shared.push({title:d.title,name:d.files[0].name,type:d.files[0].type,text:await d.files[0].text()})}});
+ await open(page,longTimeUser);
+ await page.locator('#fmBackupNow').click();
+ await expect.poll(()=>page.evaluate(()=>window.__shared.length)).toBe(1);
+ const shared=await page.evaluate(()=>window.__shared[0]);
+ expect(shared.name).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}\.txt$/);
+ expect(shared.type).toBe('text/plain');
+ const payload=JSON.parse(shared.text);
+ expect(payload.app).toBe('FIRE MATE');
+ expect(payload.data.tx).toEqual(longTimeUser.tx);
+ await expect(page.locator('.fm-backup-nudge')).toBeHidden();
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_last_backup_v1'))).toBeTruthy();
+ expect(await page.locator('#importFile').getAttribute('accept')).toContain('.txt');
+ // The shared file restores through the normal validated path.
+ page.on('dialog',dialog=>dialog.accept());
+ await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.tx=[];localStorage.setItem('firemate_smart_v3',JSON.stringify(d))});
+ await page.reload();
+ await page.locator('#importFile').setInputFiles({name:shared.name,mimeType:'text/plain',buffer:Buffer.from(shared.text)});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.length)).toBe(longTimeUser.tx.length);
+});
+
+test('without file sharing the mail button falls back to a .json download',async({page})=>{
+ await page.addInitScript(()=>{navigator.canShare=()=>false});
+ await open(page,longTimeUser);
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#exportShare').evaluate(b=>b.click())]);
+ expect(download.suggestedFilename()).toMatch(/\.json$/);
 });

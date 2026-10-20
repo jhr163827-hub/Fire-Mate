@@ -395,3 +395,14 @@ test('Nightfall boss warning and impact visuals remain safe during accelerated p
  expect(snap.elapsed).toBeGreaterThanOrEqual(300);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall remaster effects remain stable with 160 enemies',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ await page.evaluate(()=>{window.__nightfallTest.invincible();window.__nightfallTest.populate(160);window.__nightfallTest.setSkill('fire',5);window.__nightfallTest.setSkill('ice',5)});
+ await page.waitForTimeout(1200);
+ const snap=await page.evaluate(()=>window.__nightfallTest.snapshot());
+ expect(snap.enemyCount).toBeLessThanOrEqual(160);
+ expect(errors).toEqual([]);
+});

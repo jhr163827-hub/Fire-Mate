@@ -227,3 +227,21 @@ test('Nightfall phase 7 twelve weapons and ultimate evolutions survive 160 enemy
  expect(result.snapshot.particleCount).toBeLessThanOrEqual(180);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall phase 7 five cross-weapon synergies activate under combat load',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).click();
+ const result=await page.evaluate(()=>{
+  const api=window.__nightfallTest;
+  const baseline=api.skills().synergies;
+  for(const name of ['arcane','fire','ice','lightning','poison','wind','summon','quake','storm'])api.setSkill(name,1,false);
+  const active=api.skills().synergies;
+  api.invincible();api.populate(160);api.advance(3);
+  return {baseline,active,snapshot:api.snapshot()};
+ });
+ expect(Object.values(result.baseline).some(Boolean)).toBe(false);
+ expect(Object.values(result.active).every(Boolean)).toBe(true);
+ expect(result.snapshot.enemyCount).toBeLessThanOrEqual(160);
+ expect(errors).toEqual([]);
+});

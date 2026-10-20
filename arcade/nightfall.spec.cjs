@@ -312,3 +312,18 @@ test('Nightfall premium achievement codex and permanent talent menus work',async
  await expect(page.getByRole('button',{name:/행운 특성/})).toBeVisible();
  expect(errors).toEqual([]);
 });
+
+test('Nightfall permanent progression persists account experience and weapon mastery',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ const saved=await page.evaluate(()=>{const api=window.__nightfallTest;api.invincible();api.advance(45);api.finish();return JSON.parse(localStorage.getItem('nightfall_progress_v1'))});
+ expect(saved.runs).toBeGreaterThanOrEqual(1);
+ expect(saved.accountXp).toBeGreaterThan(0);
+ expect(saved.mastery.arcane).toBeGreaterThan(0);
+ await page.reload();
+ await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
+ await page.getByRole('button',{name:'영구 성장 기록'}).click();
+ await expect(page.locator('#title')).toContainText('영구 성장');
+ expect(errors).toEqual([]);
+});

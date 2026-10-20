@@ -150,6 +150,9 @@ class HomeResponsiveTest(unittest.TestCase):
                                      page.evaluate("""() => ({saved:JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length,
                                          filter:document.getElementById('accountFilter').value,
                                          content:document.getElementById('holdingList').textContent.slice(0,100)})"""))
+                    # The list can re-render (e.g. after dividend data loads); measure a rendered node, not a detached one.
+                    page.wait_for_function("""() => {const e=document.querySelector('#holdingList .fm-holding-value');
+                        return !!e&&e.isConnected&&e.getBoundingClientRect().height>0}""")
                     amount=page.locator('#holdingList .fm-holding-value').first.evaluate(
                         'e => ({height:e.getBoundingClientRect().height,font:parseFloat(getComputedStyle(e).fontSize)})')
                     self.assertLessEqual(amount['height'],amount['font']*1.6,'종목 평가금액은 한 줄로 보여야 합니다')

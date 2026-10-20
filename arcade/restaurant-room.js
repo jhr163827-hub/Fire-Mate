@@ -9,6 +9,7 @@ const labels={stove:'조리대',counter:'서빙대',table:'식탁',chair:'의자
 function items(state){
  const list=state.stoves.map((_,i)=>({id:'stove-'+i,type:'stove',slot:i,x:1+i*2,y:1}));
  const fixed=list.concat([{id:'counter-0',type:'counter',x:2,y:3},{id:'counter-1',type:'counter',x:3,y:3},{id:'table-0',type:'table',x:2,y:5},{id:'chair-0',type:'chair',x:1,y:5},{id:'chair-1',type:'chair',x:2,y:6},{id:'table-1',type:'table',x:5,y:5},{id:'chair-2',type:'chair',x:4,y:5},{id:'chair-3',type:'chair',x:5,y:6},{id:'plant-0',type:'plant',x:0,y:6},{id:'plant-1',type:'plant',x:7,y:6}]);
+ if(state.seating?.location==='placed'){fixed.push({id:'table-2',type:'table',x:4,y:7},{id:'chair-4',type:'chair',x:5,y:7})}
  const info=bridge.furniture?.();if(!info?.supported)return fixed;
  for(const o of state.furniture?.items||[])if(o.location==='placed'||o.id===placing){const c=info.catalogue.find(c=>c.sku===o.sku);fixed.push({id:o.id,type:c.type,purchased:true,...(o.position||{x:-1,y:-1})})}return fixed;
 }
@@ -93,7 +94,7 @@ let pathsKey='',pathsObject=null,pathsCache=new Map();
 function servicePaths(list,positions,table,counter){
  if(positions!==pathsObject){const key=JSON.stringify([list.map(a=>a.id),positions]);pathsObject=positions;if(key!==pathsKey){pathsKey=key;pathsCache.clear()}}
  const id=table+','+counter;if(pathsCache.has(id))return pathsCache.get(id);
- const seat=positions['chair-'+(table===0?1:3)],c=positions['counter-'+counter],tablePos=positions['table-'+table];if(!seat||!c||!tablePos)return null;
+ const seat=positions['chair-'+(table===0?1:table===1?3:4)],c=positions['counter-'+counter],tablePos=positions['table-'+table];if(!seat||!c||!tablePos)return null;
  const guest=route([6.5,.5],[seat.x+.5,seat.y+.5],list,positions),chef=chefPosition(list,positions).map(Math.floor).join(',');
  const pickupOptions=freeNeighbors(c,list,positions).filter(p=>p.map(Math.floor).join(',')!==chef).sort((a,b)=>a[1]-b[1]);
  const dropOptions=freeNeighbors(tablePos,list,positions).filter(p=>p.map(Math.floor).join(',')!==chef);
@@ -136,7 +137,7 @@ function paintService(state,list,positions){
    if(['entering','leaving'].includes(g.phase)){const amount=Math.sin(Math.PI*motion.progress[i])*(i?.1:-.1);xy=[xy[0]+amount,xy[1]-amount]}
   }
   const walking=!!paths&&['entering','leaving'].includes(g.phase);putPerson(layer,id,xy,i?'#aa7793':'#cb985a',walking,g.phase==='eating'?'eating':['waiting','serving'].includes(g.phase)?'seated':'standing',i);wanted.add(id);
-  if(g.phase==='eating'&&g.batch){const table=positions['table-'+i];putFood(layer,'meal-'+i,paths?.table||[table.x+.5,table.y+.5],g.batch.recipe);wanted.add('meal-'+i)}
+  if(g.phase==='eating'&&g.batch){const table=positions['table-'+i];if(!table)continue;putFood(layer,'meal-'+i,paths?.table||[table.x+.5,table.y+.5],g.batch.recipe);wanted.add('meal-'+i)}
  }
  const layoutKey=JSON.stringify(positions),count=state.staff?.version===1?state.staff.servers:1;
  for(let w=count;w<workers.length;w++)Object.assign(workers[w],{xy:null,task:null,delivery:null,returning:null,layout:null});
@@ -190,18 +191,21 @@ function placementValid(positions,list){if(!valid(positions,list))return false;
  const purchased=list.filter(a=>a.purchased);if(!purchased.length)return true;
  const actorCells=new Set([...poses.values()].map(p=>p.map(Math.floor).join(',')));const chef=chefPosition(list,positions).map(Math.floor).join(',');
  if(purchased.some(a=>{const p=positions[a.id];return actorCells.has(p.x+','+p.y)||chef===p.x+','+p.y}))return false;
- for(let t=0;t<2;t++)for(let c=0;c<2;c++)if(!servicePaths(list,positions,t,c))return false;
+ for(let t=0;t<(list.some(a=>a.id==='table-2')?3:2);t++)for(let c=0;c<2;c++)if(!servicePaths(list,positions,t,c))return false;
  const entrance=[6.5,.5];return list.filter(a=>a.type==='stove').every(a=>freeNeighbors(positions[a.id],list,positions).some(p=>route(entrance,p,list,positions,false)));
 }
+function validSeatPlacement(){const state=bridge.snapshot();if(state.seating?.location!=='warehouse')return false;const list=items({...state,seating:{...state.seating,location:'placed'}}),positions=savedPositions(state,list);return placementValid(positions,list)}
 function validFurnitureLayout(layout,placement){const state=bridge.snapshot();if(!bridge.furniture?.().supported)return false;const old=placing;placing=placement||null;const list=items(state);placing=old;return !!layout&&layout.version===1&&placementValid(layout.positions,list)}
 function preview(sku){const c=bridge.furniture().catalogue.find(c=>c.sku===sku);return '<svg viewBox="-38 -80 76 105" aria-hidden="true">'+artwork(c.type)+'</svg>'}
 function furnitureMessage(message){$('furnitureFeedback').textContent=message;status(message)}
 function paintFurniture(){if(!$('furnitureList'))return;const state=bridge.snapshot(),info=bridge.furniture();const objects=info.supported?(state.furniture?.items||[]).filter(o=>o.location!=='sold'):[];
  $('furnitureSummary').textContent=info.supported?state.coins.toLocaleString()+'코인 · 창고 '+objects.filter(o=>o.location==='warehouse').length+'개 · 배치 '+objects.filter(o=>o.location==='placed').length+'개':'지원하지 않는 가구 기록 보존 중 · 구매·배치·판매를 중지했어요.';
  $('showFurnitureShop').setAttribute('aria-pressed',furnitureTab==='shop');$('showFurnitureWarehouse').setAttribute('aria-pressed',furnitureTab==='warehouse');
+ const seat=bridge.seating?.(),seatOwned=seat?.owned;const seatMarkup=seat?.supported?'<article class="furniture-card"><div><h3>식탁 + 의자 · 좌석 세트</h3><p>120코인 구매 · 판매 60코인 · 추가 손님 1명</p><small>'+(seatOwned?(seat.location==='placed'?'배치 완료':'창고 보관'):(seat.location==='sold'?'판매 완료':'셰프 Lv2 또는 시설 2단계 해금'))+'</small><div class="furniture-actions">'+(!seatOwned&&seat.location!=='sold'?'<button data-seat-action="buy" '+(!seat.unlocked||state.coins<120?'disabled':'')+'>120코인 구매</button>':seatOwned?seat.location==='warehouse'?'<button data-seat-action="place">좌석 세트 배치</button><button data-seat-action="sell">60코인 판매</button>':'<button data-seat-action="store" '+(state.service?.guests?.[2]?'disabled':'')+'>창고 보관</button><button data-seat-action="sell" '+(state.service?.guests?.[2]?'disabled':'')+'>60코인 판매</button>':'')+'</div></div></article>':'';if($('seatingShop'))$('seatingShop').innerHTML=seatMarkup;
  const html=!info.supported?'<p>저장된 원본 기록을 덮어쓰지 않습니다.</p>':furnitureTab==='shop'?info.catalogue.map(c=>'<article class="furniture-card">'+preview(c.sku)+'<div><h3>'+c.name+'</h3><p>'+c.price+'코인 · 판매 '+c.price/2+'코인</p><small>보유 '+objects.filter(o=>o.sku===c.sku).length+'개 · 장식</small><button type="button" data-furniture-buy="'+c.sku+'" '+(state.coins<c.price?'disabled':'')+'>'+c.price+'코인 구매 → 창고</button></div></article>').join(''):objects.length?objects.map(o=>{const c=info.catalogue.find(c=>c.sku===o.sku);return '<article class="furniture-card" data-owned-id="'+o.id+'">'+preview(o.sku)+'<div><h3>'+c.name+' <small>#'+o.id.slice(5)+'</small></h3><p>'+(o.location==='placed'?'식당에 배치됨':'창고 보관 중')+' · 판매 '+o.paid/2+'코인</p><div class="furniture-actions"><button type="button" data-furniture-place="'+o.id+'">'+(o.location==='placed'?'위치 바꾸기':'무료로 꺼내기')+'</button>'+(o.location==='placed'?'<button type="button" data-furniture-store="'+o.id+'">창고에 보관</button>':'')+'<button type="button" data-furniture-sell="'+o.id+'">판매 확인</button></div></div></article>'}).join(''):'<p class="warehouse-empty">아직 구매한 장식이 없어요. 상점에서 고르면 창고에 보관돼요.</p>';
  if(html!==furnitureMarkup){furnitureMarkup=html;$('furnitureList').innerHTML=html}
 }
+if($('seatingShop'))$('seatingShop').onclick=e=>{const action=e.target.closest('[data-seat-action]')?.dataset.seatAction;if(!action)return;if(action==='sell'&&!confirm('좌석 세트를 60코인에 판매할까요?'))return;if(bridge.seatingAction(action)){paintFurniture();paint();furnitureMessage('좌석 세트 '+({buy:'구매',place:'배치',store:'보관',sell:'판매'}[action])+' 완료')}else furnitureMessage('좌석 배치 공간·손님 이용 상태·해금 조건을 확인해 주세요.')};
 if($('openFurniture')){$('openFurniture').onclick=()=>{furnitureMessage('구매한 장식은 창고에서 무료로 꺼낼 수 있어요.');paintFurniture();openDialog($('furnitureDialog'))};
 $('showFurnitureShop').onclick=()=>{furnitureTab='shop';paintFurniture()};$('showFurnitureWarehouse').onclick=()=>{furnitureTab='warehouse';paintFurniture()};
 $('furnitureList').onclick=async e=>{const button=e.target.closest('button');if(!button||button.disabled)return;const state=bridge.snapshot(),{furnitureBuy:buy,furnitureStore:store,furnitureSell:sell,furniturePlace:place}=button.dataset;
@@ -217,7 +221,7 @@ $('furnitureList').onclick=async e=>{const button=e.target.closest('button');if(
 // Each modal gets one history entry. Back closes the modal before leaving the game.
 const stack=[];let restoring=false,historyBusy=false;
 function openDialog(dialog){if(dialog.open)return;dialog.setAttribute('aria-label',dialog.getAttribute('aria-label')||dialog.querySelector('h2')?.textContent||'레스토랑');dialog.showModal();syncActivity();stack.push(dialog.id);history.pushState({...history.state,restaurantDialog:dialog.id},'',location.href)}
-window.restaurantRoomUI=Object.freeze({open:openDialog,canServe,validFurnitureLayout});
+window.restaurantRoomUI=Object.freeze({open:openDialog,canServe,validSeatPlacement,validFurnitureLayout});
 for(const dialog of document.querySelectorAll('dialog')){
  dialog.querySelectorAll('[data-dialog-close]').forEach(button=>button.onclick=()=>dialog.close());
  dialog.addEventListener('close',()=>{syncActivity();const index=stack.indexOf(dialog.id);if(index>=0)stack.splice(index,1);if(!restoring&&history.state?.restaurantDialog===dialog.id)backWithinGame()});

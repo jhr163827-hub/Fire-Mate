@@ -536,6 +536,8 @@ class HomeResponsiveTest(unittest.TestCase):
     def test_home_fire_summary_links_to_plan_without_duplicate_inputs(self):
         page = self.browser.new_page(viewport={"width": 360, "height": 740}, is_mobile=True, has_touch=True)
         try:
+            # A live FX response can land mid-test and legitimately save a new rate.
+            page.route("https://api.frankfurter.dev/**", lambda route: route.abort("failed"))
             page.goto(URL, wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="home"]').click()
             self.assertEqual(page.locator('#view-home .fm-eta-details').count(), 0)

@@ -335,3 +335,18 @@ test('Nightfall loads five distinct hero SVG sprites without missing resources',
  expect(result.every(r=>r.status===200&&r.content)).toBe(true);
  expect(missing).toEqual([]);
 });
+
+test('Nightfall visual assets and locked region selection remain functional',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ const assets=await page.evaluate(async()=>Promise.all(['runner','brute','ranged','bomber','elite','boss'].map(async name=>{let r=await fetch('./nightfall-'+name+'.svg');return r.ok&&(await r.text()).includes('<svg')})));
+ expect(assets.every(Boolean)).toBe(true);
+ await page.getByRole('button',{name:/영구 강화 상점/}).first().click().catch(()=>{});
+ await page.getByRole('button',{name:'지역 선택'}).click();
+ await expect(page.locator('#title')).toContainText('지역 선택');
+ await page.getByRole('button',{name:/붉은 황무지/}).click();
+ await expect(page.locator('#title')).toContainText('지역 선택');
+ await page.getByRole('button',{name:/잊힌 숲/}).click();
+ await expect(page.locator('#title')).toContainText('생존 모드');
+ expect(errors).toEqual([]);
+});

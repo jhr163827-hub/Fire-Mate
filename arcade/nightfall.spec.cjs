@@ -406,3 +406,13 @@ test('Nightfall remaster effects remain stable with 160 enemies',async({page})=>
  expect(snap.enemyCount).toBeLessThanOrEqual(160);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall level-up prioritization does not break 10-minute accelerated combat',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
+ await page.getByRole('button',{name:'생존 시작'}).first().click();
+ await page.evaluate(()=>{const api=window.__nightfallTest;api.invincible();api.setSkill('fire',2);api.setSkill('ice',1);api.advance(30)});
+ expect(errors).toEqual([]);
+ const snap=await page.evaluate(()=>window.__nightfallTest.snapshot());
+ expect(snap.elapsed).toBeGreaterThanOrEqual(30);
+});

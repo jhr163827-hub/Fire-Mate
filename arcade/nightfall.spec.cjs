@@ -264,7 +264,7 @@ test('Nightfall five characters and six survival modes are available',async({pag
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(url+(url.includes('?')?'&':'?')+'nightfall_test=1');
  await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
- await expect(page.locator('#choices button')).toHaveCount(8);
+ await expect(page.locator('#choices button')).toHaveCount(9);
  await page.getByRole('button',{name:'생존 모드 선택'}).click();
  await expect(page.locator('#choices button')).toHaveCount(7);
  await page.getByRole('button',{name:'악몽 · 20분'}).click();
@@ -295,5 +295,20 @@ test('Nightfall animation loop survives a recoverable drawing exception',async({
    return {before,after:api.snapshot().elapsed};
  });
  expect(result.after).toBeGreaterThan(result.before);
+ expect(errors).toEqual([]);
+});
+
+test('Nightfall premium achievement codex and permanent talent menus work',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url);
+ await page.getByRole('button',{name:/캐릭터 선택/}).first().click();
+ await page.getByRole('button',{name:'업적'}).click();
+ await expect(page.locator('#title')).toContainText('업적');
+ await page.getByRole('button',{name:'캐릭터 선택'}).click();
+ await page.getByRole('button',{name:'도감'}).click();
+ await expect(page.locator('#title')).toContainText('도감');
+ await page.getByRole('button',{name:'영구 강화 상점'}).click();
+ await expect(page.getByRole('button',{name:/공격 가속/})).toBeVisible();
+ await expect(page.getByRole('button',{name:/행운 특성/})).toBeVisible();
  expect(errors).toEqual([]);
 });

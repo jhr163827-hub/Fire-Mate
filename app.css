@@ -2007,3 +2007,18 @@ html,body{overscroll-behavior-y:contain}
 #view-calendar #dayTx .txamount.red,#view-calendar #fmLedgerAllTx .txamount.red,#historyList .txamount.red,#view-insights .txamount.red{color:var(--txt)!important}
 #view-calendar .day .income{font-size:max(10px,min(2.6vw,11px))!important}
 #fmHideTinyIncome{margin-top:6px}
+/* ---- fm-design-v3596 ---- */
+/* 1. The home card shows the total, the status line and the daily change; progress stays on 자산. */
+#homeQuoteProgress{display:none!important}
+.fm-approx{font-size:12px;font-weight:600;color:var(--sub);white-space:nowrap}
+/* 2. Quote failures: one short line until opened. */
+#fmQuoteFailures,#fmQuoteFailuresTitle{font-size:12px!important}
+#fmQuoteFailures{padding:6px 10px!important;margin:6px 0!important}
+#fmQuoteFailures #retryStocks{margin-top:8px;width:100%;min-height:44px}
+/* 5. Readable secondary text on the main explanations. */
+#homeLastQuote,#assetsLastQuote{font-size:12px!important}
+#view-fire .mini,#view-firelife .mini,#view-retire .mini,#view-fire .fm-fire-scope{font-size:13px!important;line-height:1.55}
+/* 6. Cards added over time share one title size, weight and spacing. */
+.fm-card-x h3,#fmMonthReport h3,#fmWeekReport h3,#fmMilestone h3,#fmTrendCard h3,#fmUncatFold>summary,#fmHealthCalc>summary{font-size:16px!important;font-weight:800!important;letter-spacing:-.01em}
+.fm-card-x .mini,#fmMonthReport .fm-mr-row,#fmWeekReport .fm-wr-row{font-size:13px}
+.fm-card-x,#fmMonthReport,#fmWeekReport,#fmMilestone,#fmHealthCalc{margin-top:12px}

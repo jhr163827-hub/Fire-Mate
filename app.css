@@ -2000,3 +2000,10 @@ html,body{overscroll-behavior-y:contain}
 .fm-fixed-hide{min-height:32px!important;padding:0 6px!important;background:none!important;border:0!important;box-shadow:none!important;color:var(--sub)!important;font-size:12px!important;font-weight:600!important;text-decoration:underline}
 #fmUncatFold>summary{min-height:44px;display:flex;align-items:center;font-size:15px;font-weight:800;cursor:pointer}
 #fmAutoCatNote button{min-height:36px;padding:0 10px;margin-left:6px;font-size:12px}
+/* ---- fm-design-v3595 ---- */
+/* Spending is everyday, not an alarm: neutral amounts, red only for 초과·부족 messages. */
+#view-calendar .day .cost{color:var(--txt)!important;opacity:.78;font-size:max(10px,min(2.6vw,11px))!important;font-weight:700}
+#view-calendar .day.selected .cost{opacity:1}
+#view-calendar #dayTx .txamount.red,#view-calendar #fmLedgerAllTx .txamount.red,#historyList .txamount.red,#view-insights .txamount.red{color:var(--txt)!important}
+#view-calendar .day .income{font-size:max(10px,min(2.6vw,11px))!important}
+#fmHideTinyIncome{margin-top:6px}

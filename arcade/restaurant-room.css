@@ -106,3 +106,21 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .furniture-card{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:12px;border:1px solid #b7b49b;border-radius:14px;padding:12px;margin:10px 0;background:#fffaf0;color:#354a3e}.furniture-card svg{width:76px;height:105px}.furniture-card h3{margin:0 0 6px;font-size:16px}.furniture-card p{margin:4px 0;font-size:13px}.furniture-card small{font-size:12px}.furniture-card button{min-height:44px;margin-top:8px;font-size:13px}.furniture-actions{display:flex;flex-wrap:wrap;gap:6px}.furniture-actions button{flex:1}.furniture-card div{min-width:0}#furnitureFeedback{font-size:13px;min-height:1.5em;line-height:1.5}.room-placement.forbidden{fill:#cc6767;opacity:.45}.room-placement.permitted{fill:#84e4ad}.warehouse-empty{padding:24px 12px;line-height:1.7}
 #roomDock{grid-template-columns:repeat(4,minmax(0,1fr))}#roomDock button{min-width:0}
 @media(max-width:400px){#roomDock button{font-size:11px;padding:8px 3px}.furniture-card{grid-template-columns:58px minmax(0,1fr);gap:8px;padding:10px}.furniture-card svg{width:58px}}
+
+/* v1.10: the room is the hero. Short dock labels, one right-hand column for status, no stacked
+   cards over the floor, and empty counters show no "0접시" badge. */
+.room-stock-badge.empty{display:none}
+#roomDock button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;white-space:nowrap;line-height:1.15}
+#roomDock button span{font-size:17px;line-height:1}
+@media(orientation:landscape) and (min-width:560px){
+ .restaurant-dock{width:auto;display:flex!important;gap:6px}
+ #roomDock button{min-width:62px;min-height:52px;padding:5px 10px;font-size:12px}
+ .restaurant-about{top:auto;left:auto;right:max(10px,env(safe-area-inset-right));bottom:calc(max(10px,env(safe-area-inset-bottom)) + 62px);max-width:min(320px,44vw)}
+ .restaurant-about summary{margin-left:auto;padding:8px 12px;min-height:40px;font-size:12px;font-weight:700}
+ .restaurant-about:not([open]){width:auto}
+ .chef-card{top:59px!important;left:auto!important;right:max(10px,env(safe-area-inset-right));width:132px!important;padding:6px 9px!important;border-radius:14px}
+ .chef-card small{display:none}
+ .restaurant-hud{top:112px!important}
+ .restaurant-status{bottom:auto!important;top:59px;left:max(10px,env(safe-area-inset-left));max-width:min(210px,26vw)!important;font-size:10px!important}
+ .service-summary{width:min(30vw,280px)}
+}

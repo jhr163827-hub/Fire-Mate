@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.95</title><link rel="stylesheet" href="./app.css?v=3.5.95"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-95">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.96</title><link rel="stylesheet" href="./app.css?v=3.5.96"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-96">
 
 
 
@@ -306,7 +306,7 @@ function renderCal(){
  $('fmCalendarBudgetTotal').textContent=budget?won(budget):'미설정';$('fmCalendarBudgetLabel').textContent=budget&&budgetState.remaining<0?'초과 금액':'남은 예산';$('fmCalendarBudget').textContent=budget?(budgetState.remaining<0?won(-budgetState.remaining)+' 초과':won(budgetState.remaining)+' 남음'):'미설정';$('fmCalendarUsage').textContent=budget?budgetState.usage.toFixed(1)+'%':'예산 설정 후 표시';$('fmCalendarProgress').setAttribute('aria-valuenow',budget?String(Math.min(100,Math.round(budgetState.usage))):'0');$('fmCalendarProgress').setAttribute('aria-valuetext',budget?'예산 사용률 '+budgetState.usage.toFixed(1)+'%':'예산 미설정');$('fmCalendarProgressFill').style.width=(budget?Math.min(100,budgetState.usage):0)+'%';$('fmCalendarProgressFill').style.background=budgetState.remaining<0&&budget?'var(--red)':'';
  $('fmCalendarBudget').style.color=budget&&budget<t.expense?'var(--red)':'var(--green)';if(document.activeElement!==$('fmLedgerBudgetValue'))$('fmLedgerBudgetValue').value=budget?moneyFormat(budget):'';
  $('fmLedgerCompare').textContent=prev.expense?'지난달보다 '+won(Math.abs(t.expense-prev.expense))+(t.expense>prev.expense?' 더 지출':t.expense<prev.expense?' 덜 지출':' 동일'):'이번 달 지출을 한눈에 확인하세요';
- const dailyRows=data.tx.filter(t=>t.date===selected&&t.type!=='transfer');const dailyExpense=dailyRows.filter(t=>t.type==='expense').reduce((n,t)=>n+(Number(t.amount)||0),0);$('selectedTitle').textContent=selected+' 거래 · '+dailyRows.length+'건'+(dailyExpense?' · 지출 '+won(dailyExpense):'');
+ const dailyRows=data.tx.filter(t=>t.date===selected&&t.type!=='transfer'&&!fmTinyIncome(t));const dailyExpense=dailyRows.filter(t=>t.type==='expense').reduce((n,t)=>n+(Number(t.amount)||0),0);$('selectedTitle').textContent=selected+' 거래 · '+dailyRows.length+'건'+(dailyExpense?' · 지출 '+won(dailyExpense):'');
  listTo($('dayTx'),dailyRows);
  fmLedgerSetMode(fmLedgerMode);fmLedgerAnalytics();
 }
@@ -1499,7 +1499,7 @@ function fmSetQuoteCooldown(response,reason){if(response?.status!==429&&!/credit
 function fmRestoreQuoteFailures(){try{const v=JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null');failedSymbols=Array.isArray(v?.failureDetails)?v.failureDetails.map(x=>String(x.symbol||'')):[];retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none'}catch{}}
 
 function quoteProgress(done,total){const pct=total?Math.round(done/total*100):0;$('quoteProgress').style.display='block';$('quoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목'+(done===total?' 완료':' 진행 중');$('quoteProgressPercent').textContent=pct+'%';$('quoteProgressBar').style.width=pct+'%';const home=$('homeQuoteProgress');if(home){home.hidden=false;home.style.display='block';$('homeQuoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목';$('homeQuoteProgressPercent').textContent=pct+'%';$('homeQuoteProgressBar').style.width=pct+'%'}}
-const retryStocks=document.createElement('button');retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
+const retryStocks=document.createElement('button');retryStocks.id='retryStocks';retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
 retryStocks.onclick=()=>{fmSetQuoteAttempt('실패 종목 재시도 요청');refreshStockPrices(true).catch(e=>{fmQuoteNotice(String(e?.message||e));toast('조회 오류가 발생했어요')})};
 fmRestoreQuoteFailures();
 $('homeRefreshStocks').onclick=()=>$('refreshStocks').click();
@@ -1745,7 +1745,7 @@ window.fmRefreshNetWorth=async()=>{if(!navigator.onLine){toast('인터넷 연결
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-95',VERSION='3.5.95';
+ const BUILD='fire-mate-v3-5-96',VERSION='3.5.96';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3070,6 +3070,28 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Home-screen shortcuts.
   const action=new URLSearchParams(location.search).get('action');
   if(action){history.replaceState(history.state,'',location.pathname);setTimeout(()=>{if(action==='import')window.fmImportFromHome?.();else if(action==='record')window.fmOpenEntry?.()},300)}
+ });
+})();
+</script><script id="fm-design-v3596">
+/* Design pass: one quiet home total, short quote failures on 자산, an approximate 만/억 reading
+   next to the two big totals, and a softer colour for planned shortfalls on FIRE. */
+(()=>{
+ 'use strict';
+ document.addEventListener('DOMContentLoaded',()=>{
+  const $=id=>document.getElementById(id);
+  const approx=n=>{const v=Math.round(Math.abs(n)/10000);if(!v)return '';const e=Math.floor(v/10000),m=v%10000;return (n<0?'-':'')+(e?e+'억'+(m?' ':''):'')+(m?m.toLocaleString('ko-KR')+'만':'')+' 원'};
+  // 3. "약 9,467만 원" rides on the label line, so card heights do not change.
+  for(const id of ['homeTotalAssets','netWorth']){
+   const big=$(id),card=big?.closest('.card,.hero');if(!big||!card)continue;
+   const label=[...card.querySelectorAll('span,small,div,strong,p')].find(e=>e.childElementCount===0&&e.textContent.trim()==='전체 순자산');if(!label)continue;
+   const tag=document.createElement('span');tag.className='fm-approx';label.append(tag);
+   const sync=()=>{const raw=String(big.textContent||'').replace(/[^\d-]/g,'');const n=Number(raw);tag.textContent=raw&&Number.isFinite(n)&&Math.abs(n)>=10000?' · 약 '+approx(n):''};
+   new MutationObserver(sync).observe(big,{childList:true,characterData:true,subtree:true});sync();
+  }
+  // 2. The retry button lives inside the failure details instead of under the summary.
+  const retry=$('retryStocks'),list=$('fmQuoteFailuresList');if(retry&&list)list.after(retry);
+  // 4. A planned shortfall is a warning, not an error.
+  const cash=$('fmOverview-cashflow');if(cash){const tone=()=>{const v=cash.querySelector('strong');if(v&&/부족/.test(v.textContent)&&v.style.color!=='var(--yellow)')v.style.color='var(--yellow)'};new MutationObserver(tone).observe(cash,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style']});tone()}
  });
 })();
 </script></body></html>

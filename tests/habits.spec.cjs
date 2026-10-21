@@ -64,6 +64,10 @@ test('tiny interest credits stay saved but are left out of the ledger until the 
  await page.evaluate(()=>window.fmGo('history'));
  await expect(page.locator('#historyList [data-edit]')).toHaveCount(1);
  await expect(page.locator('#historySummary')).toContainText('수입 ₩3,000,000');
+ // The calendar's selected-day list leaves them out too.
+ await page.evaluate(()=>window.fmGo('calendar'));
+ await expect(page.locator('#dayTx [data-edit]')).toHaveCount(1);
+ await expect(page.locator('#selectedTitle')).toContainText('1건');
  expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx).toHaveLength(3);
  await page.locator('#settingsBottom').click();
  await page.evaluate(()=>window.fmOpenImport());

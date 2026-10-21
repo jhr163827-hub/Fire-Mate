@@ -33,7 +33,7 @@ test('backup nudge appears for unbacked data, backs up, and snoozes without touc
  await expect(page.locator('#fmBackupNudgeText')).toContainText('아직 백업한 적이 없어요');
  const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#fmBackupNow').click()]);
- expect(download.suggestedFilename()).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}\.json$/);
+ expect(download.suggestedFilename()).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}-\d{4}\.json$/);
  await expect(nudge).toBeHidden();
  expect(Date.now()-Date.parse(await page.evaluate(()=>localStorage.getItem('firemate_last_backup_v1')))).toBeLessThan(60000);
  const after=JSON.parse(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))),was=JSON.parse(before);
@@ -82,7 +82,7 @@ test('mail backup shares a validated .txt file and restore accepts it',async({pa
  await page.locator('#fmBackupNow').click();
  await expect.poll(()=>page.evaluate(()=>window.__shared.length)).toBe(1);
  const shared=await page.evaluate(()=>window.__shared[0]);
- expect(shared.name).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}\.txt$/);
+ expect(shared.name).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);
  expect(shared.type).toBe('text/plain');
  const payload=JSON.parse(shared.text);
  expect(payload.app).toBe('FIRE MATE');

@@ -102,3 +102,30 @@ test('rarely used import options stay folded',async({page})=>{
  await page.locator('#fmSyncOptions > summary').click();
  await expect(page.locator('#fmZipRemember')).toBeVisible();
 });
+
+test('from home a found batch is offered in a small 예/아니오 sheet',async({page})=>{
+ await page.goto('/index.html');
+ // Stand in for the Gmail download: keep the Gmail button busy and feed the same file input it uses.
+ const start=async()=>{
+  await page.evaluate(()=>{window.fmImportFromHome();document.getElementById('bankGmailImport').disabled=true});
+  await page.locator('#bankExcelFile').setInputFiles({name:'banksalad.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:workbook()});
+ };
+ const bankTx=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.filter(t=>t.bankExcelKey).length);
+ // Gmail import is triggered by fmImportFromHome; the aborted network makes it fail fast, so mark busy first.
+ await page.evaluate(()=>{const b=document.getElementById('bankGmailImport');b.click=()=>{}});
+ await start();
+ await expect(page.locator('#fmAsk')).toBeVisible();
+ await expect(page.locator('#fmAskText')).toContainText('새 거래 2건');
+ await expect(page.locator('#fmAskOk')).toHaveText('예');
+ await expect(page.locator('#fmAskCancel')).toHaveText('아니오');
+ await expect(page.locator('#settingsOverlay')).not.toHaveClass(/show/);
+ await page.locator('#fmAskCancel').click();
+ await expect(page.locator('#fmHomeImport #bankExcelPreview')).toContainText('가져오기를 취소했어요');
+ expect(await bankTx()).toBe(0);
+ await page.evaluate(()=>{document.getElementById('bankGmailImport').disabled=false});
+ await start();
+ await page.locator('#fmAskOk').click();
+ await expect.poll(bankTx).toBe(2);
+ await expect(page.locator('#fmHomeImport #bankExcelPreview')).toContainText('2건을 가계부에 추가했어요');
+ await expect(page.locator('#fmHomeImport #bankImportUndo')).toBeVisible();
+});

@@ -192,6 +192,8 @@ test('production finance functions agree with independent reference fixture',asy
 });
 
 test('theme save failure rolls back UI and preserves original finance data',async({page})=>{
+ // Keep live quotes/FX from rewriting the record while the save is being blocked.
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort());
  const fixture={theme:'dark',tx:[{id:'qa-1',date:'2026-10-01',type:'expense',amount:9000,category:'식비'}],holdings:[{id:'qa-h',accountId:'legacy-us',ticker:'JEPQ',type:'USD',qty:2,price:100,cost:80}],balance:{fx:1400,cash:5000,other:0,debt:0},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4}};
  await page.addInitScript(seed=>localStorage.setItem('firemate_smart_v3',JSON.stringify(seed)),fixture);
  await page.goto('/index.html');

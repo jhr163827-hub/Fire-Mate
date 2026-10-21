@@ -17,7 +17,7 @@ test('multi-account aggregation and gross/net dividend reference',()=>{
 
 test('production FIRE projection matches independent annuity and goal boundary references',()=>{
  const fs=require('node:fs'),vm=require('node:vm');
- const html=fs.readFileSync('index.html','utf8');
+ const html=require('./app-source.cjs')();
  const start=html.indexOf('function fireMonthlyRate('),end=html.indexOf('function fmReadableMan(',start);
  assert.ok(start>=0&&end>start);
  const app=vm.createContext({});vm.runInContext(html.slice(start,end),app);

@@ -9,7 +9,7 @@ test.use({viewport:{width:360,height:740},isMobile:true,hasTouch:true});
 const txCount=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.length);
 
 test('the finance app no longer calls browser confirm or alert',()=>{
- const html=fs.readFileSync(require('path').join(__dirname,'..','index.html'),'utf8');
+ const html=require('./app-source.cjs')();
  expect(html.match(/(?<![\w.])(confirm|alert)\(/g)||[]).toEqual([]);
 });
 

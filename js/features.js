@@ -8,22 +8,21 @@
 //   5. fm-home-onboarding — 홈 · 시작 안내
 //   6. fm-strategy-conclusion — FIRE · 전략 비교
 //   7. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
-//   8. fm-quick-entry — 가계부 · 빠른 입력
-//   9. fm-home-record — 홈 · 기록 버튼
-//  10. fm-settings-order — 설정 · 순서
-//  11. fm-assets-balance-row — 자산 · 현금·기타·부채
-//  12. fm-ledger-sync — 설정 · Gmail·파일 가져오기
-//  13. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
-//  14. fm-daily-fixes-v3586 — 가계부 · 목록, 소액 수입
-//  15. fm-plan-v3587 — 가계부 · 분석(고정비, 예산, 추이)
-//  16. fm-polish-v3588 — 공통 · 다듬기
-//  17. fm-feedback-v3589 — 공통 · 알림(fmToast)
-//  18. fm-health-calc-v3590 — 설정 · 건보료 계산기
-//  19. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  20. fm-search-report-v3593 — 가계부·홈 · 검색, 월간 리포트
-//  21. fm-habits-v3594 — 홈 · 습관(오늘, 주간, 무지출)
-//  22. fm-design-v3596 — 공통 · 디자인
-//  23. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//   8. fm-home-record — 홈 · 기록 버튼
+//   9. fm-settings-order — 설정 · 순서
+//  10. fm-assets-balance-row — 자산 · 현금·기타·부채
+//  11. fm-ledger-sync — 설정 · Gmail·파일 가져오기
+//  12. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
+//  13. fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리
+//  14. fm-plan-v3587 — 가계부 · 분석(고정비, 예산, 추이)
+//  15. fm-polish-v3588 — 공통 · 다듬기
+//  16. fm-feedback-v3589 — 공통 · 알림(fmToast)
+//  17. fm-health-calc-v3590 — 설정 · 건보료 계산기
+//  18. fm-safety-v3592 — 설정 · 저장 보호, 분류
+//  19. fm-search-report-v3593 — 가계부·홈 · 검색, 월간 리포트
+//  20. fm-habits-v3594 — 홈 · 습관(오늘, 주간, 무지출)
+//  21. fm-design-v3596 — 공통 · 디자인
+//  22. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — 공통 · 화면 배치 =====
@@ -561,59 +560,6 @@ try{
 }catch(e){console.error('fm-practical-fixes',e)}
 
 
-// ===== fm-quick-entry — 가계부 · 빠른 입력 =====
-try{
-/* One-tap suggestions in the new-transaction dialog: the user's most frequent recent entries
-   (or the app's default favorites before any history). Tapping only fills the form; saving
-   still goes through the existing 저장하기 button. Reads saved data, writes nothing. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const overlay=$('entryOverlay'),types=$('entryTypes');
-  if(!overlay||!types)return;
-  const box=document.createElement('div');box.id='fmQuickEntry';box.className='fm-quick-entry';box.setAttribute('role','group');box.setAttribute('aria-labelledby','fmQuickEntryLabel');box.hidden=true;
-  types.after(box);
-  const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
-  const suggestions=type=>{
-   let d=fmLiveData();
-   const since=new Date(Date.now()-120*86400000).toISOString().slice(0,10),seen=new Map();
-   for(const t of Array.isArray(d.tx)?d.tx:[]){
-    const amount=Number(t?.amount);
-    if(t?.type!==type||typeof t.date!=='string'||t.date<since||!Number.isSafeInteger(amount)||amount<=0)continue;
-    const memo=String(t.memo||'').trim(),key=[t.category,memo,amount].join('|');
-    const row=seen.get(key)||{category:t.category,memo,amount,count:0,last:''};row.count++;if(t.date>row.last)row.last=t.date;seen.set(key,row);
-   }
-   const frequent=[...seen.values()].filter(r=>r.count>=2).sort((a,b)=>b.count-a.count||b.last.localeCompare(a.last)).slice(0,4);
-   if(frequent.length||type!=='expense')return {title:'자주 쓰는 거래',items:frequent};
-   const favorites=(Array.isArray(d.favorites)?d.favorites:[]).filter(f=>Number.isSafeInteger(Number(f?.amount))&&Number(f.amount)>0).slice(0,4);
-   return {title:'빠른 입력',items:favorites.map(f=>({category:f.category,memo:String(f.name||'').trim(),amount:Number(f.amount),emoji:f.emoji}))};
-  };
-  const render=()=>{
-   const isNew=$('entryTitle')?.textContent==='거래 기록',type=types.querySelector('button.active')?.dataset.type||'expense';
-   const {title,items}=isNew?suggestions(type):{items:[]};
-   box.replaceChildren();box.hidden=!items.length;
-   if(!items.length)return;
-   const label=document.createElement('span');label.id='fmQuickEntryLabel';label.textContent=title;box.append(label);
-   for(const item of items){
-    const button=document.createElement('button');button.type='button';button.setAttribute('aria-pressed','false');
-    button.textContent=(item.emoji?item.emoji+' ':'')+(item.memo||item.category||'거래')+' '+won(item.amount);
-    button.onclick=()=>{
-     const cat=$('entryCat');if([...cat.options].some(o=>o.value===item.category))cat.value=item.category;
-     $('entryAmount').value=item.amount.toLocaleString('ko-KR');$('entryAmount').dispatchEvent(new Event('input',{bubbles:true}));
-     $('entryMemo').value=item.memo;
-     for(const other of box.querySelectorAll('button'))other.setAttribute('aria-pressed',String(other===button));
-    };
-    box.append(button);
-   }
-  };
-  new MutationObserver(()=>{if(overlay.classList.contains('show'))render()}).observe(overlay,{attributes:true,attributeFilter:['class']});
-  types.addEventListener('click',()=>setTimeout(render,0));
- });
-})();
-}catch(e){console.error('fm-quick-entry',e)}
-
-
 // ===== fm-home-record — 홈 · 기록 버튼 =====
 try{
 /* Record a transaction straight from home: opens the existing entry dialog and stays on home. */
@@ -812,7 +758,7 @@ try{
 }catch(e){console.error('fm-in-app-confirm',e)}
 
 
-// ===== fm-daily-fixes-v3586 — 가계부 · 목록, 소액 수입 =====
+// ===== fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리 =====
 try{
 (()=>{
  'use strict';
@@ -820,20 +766,6 @@ try{
   const $=id=>document.getElementById(id);
   const saved=fmLiveData;
   const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
-  const WEEK='일월화수목금토';
-  // Day headers with totals; rows stay as rendered, so ids, handlers and tests keep working.
-  const group=list=>{
-   if(!list||list.querySelector(':scope>.fm-tx-day'))return;
-   const rows=[...list.querySelectorAll(':scope>.tx')];if(!rows.length)return;
-   const byId=new Map((saved().tx||[]).map(t=>[String(t.id),t]));
-   const days=new Map();
-   for(const row of rows){const t=byId.get(row.querySelector('[data-edit]')?.dataset.edit||'');if(!t||typeof t.date!=='string')return;row.dataset.day=t.date;const d=days.get(t.date)||{first:row,out:0,in:0};if(t.type==='expense')d.out+=Number(t.amount)||0;if(t.type==='income')d.in+=Number(t.amount)||0;days.set(t.date,d)}
-   for(const [day,d] of days){const [y,m,dd]=day.split('-').map(Number);const head=document.createElement('div');head.className='fm-tx-day';
-    const sums=[d.out?'지출 '+won(d.out):'',d.in?'수입 '+won(d.in):''].filter(Boolean).join(' · ');
-    head.innerHTML='<strong></strong><span></span>';head.firstChild.textContent=m+'월 '+dd+'일 ('+WEEK[new Date(y,m-1,dd).getDay()]+')';head.lastChild.textContent=sums;
-    d.first.before(head)}
-  };
-  for(const id of ['fmLedgerAllTx','historyList']){const el=$(id);if(!el)continue;group(el);new MutationObserver(()=>group(el)).observe(el,{childList:true})}
   // Fold accounts that hold nothing, but only once some account has value (new profiles keep the starter list).
   const fold=()=>{
    const holder=$('accountSummary');if(!holder||holder.querySelector(':scope>.fm-empty-accounts'))return;

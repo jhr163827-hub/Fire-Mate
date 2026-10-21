@@ -3,30 +3,27 @@
 //
 //   1. fm-layout — 공통 · 화면 배치
 //   2. fm-home-improvements-20261016 — 홈
-//   3. fm-ledger-keyboard-safe-v3517 — 가계부 · 입력 키보드
-//   4. fm-ledger-entry-keyboard-v3534 — 가계부 · 입력 키보드
-//   5. fm-arcade-link — 설정 · 게임
-//   6. fm-premium-finance-ui — 공통 · 카드 디자인
-//   7. fm-home-onboarding — 홈 · 시작 안내
-//   8. fm-strategy-conclusion — FIRE · 전략 비교
-//   9. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
-//  10. fm-quick-entry — 가계부 · 빠른 입력
-//  11. fm-home-record — 홈 · 기록 버튼
-//  12. fm-ledger-analysis-tab — 가계부 · 분석 탭
-//  13. fm-settings-order — 설정 · 순서
-//  14. fm-assets-balance-row — 자산 · 현금·기타·부채
-//  15. fm-ledger-sync — 설정 · Gmail·파일 가져오기
-//  16. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
-//  17. fm-daily-fixes-v3586 — 가계부 · 목록, 소액 수입
-//  18. fm-plan-v3587 — 가계부 · 분석(고정비, 예산, 추이)
-//  19. fm-polish-v3588 — 공통 · 다듬기
-//  20. fm-feedback-v3589 — 공통 · 알림(fmToast)
-//  21. fm-health-calc-v3590 — 설정 · 건보료 계산기
-//  22. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  23. fm-search-report-v3593 — 가계부·홈 · 검색, 월간 리포트
-//  24. fm-habits-v3594 — 홈 · 습관(오늘, 주간, 무지출)
-//  25. fm-design-v3596 — 공통 · 디자인
-//  26. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//   3. fm-ledger-keyboard — 가계부 · 입력 키보드
+//   4. fm-premium-finance-ui — 공통 · 카드 디자인
+//   5. fm-home-onboarding — 홈 · 시작 안내
+//   6. fm-strategy-conclusion — FIRE · 전략 비교
+//   7. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
+//   8. fm-quick-entry — 가계부 · 빠른 입력
+//   9. fm-home-record — 홈 · 기록 버튼
+//  10. fm-settings-order — 설정 · 순서
+//  11. fm-assets-balance-row — 자산 · 현금·기타·부채
+//  12. fm-ledger-sync — 설정 · Gmail·파일 가져오기
+//  13. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
+//  14. fm-daily-fixes-v3586 — 가계부 · 목록, 소액 수입
+//  15. fm-plan-v3587 — 가계부 · 분석(고정비, 예산, 추이)
+//  16. fm-polish-v3588 — 공통 · 다듬기
+//  17. fm-feedback-v3589 — 공통 · 알림(fmToast)
+//  18. fm-health-calc-v3590 — 설정 · 건보료 계산기
+//  19. fm-safety-v3592 — 설정 · 저장 보호, 분류
+//  20. fm-search-report-v3593 — 가계부·홈 · 검색, 월간 리포트
+//  21. fm-habits-v3594 — 홈 · 습관(오늘, 주간, 무지출)
+//  22. fm-design-v3596 — 공통 · 디자인
+//  23. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — 공통 · 화면 배치 =====
@@ -247,34 +244,18 @@ try{
 }catch(e){console.error('fm-home-improvements-20261016',e)}
 
 
-// ===== fm-ledger-keyboard-safe-v3517 — 가계부 · 입력 키보드 =====
+// ===== fm-ledger-keyboard — 가계부 · 입력 키보드 =====
 try{
-/* visualViewport reflects the visible region when Android's keyboard is open. */
-(()=>{const overlay=document.getElementById('fmLedgerBudgetOverlay');if(!overlay)return;
- const viewport=window.visualViewport;
- const sync=()=>{if(!overlay.classList.contains('show'))return;
-   if(viewport){overlay.style.top=viewport.offsetTop+'px';overlay.style.height=viewport.height+'px';overlay.style.bottom='auto'}
- };
- const reset=()=>{overlay.style.top='';overlay.style.height='';overlay.style.bottom=''};
- if(viewport){viewport.addEventListener('resize',sync);viewport.addEventListener('scroll',sync)}
- new MutationObserver(()=>{if(overlay.classList.contains('show'))sync();else reset()}).observe(overlay,{attributes:true,attributeFilter:['class']});
- overlay.addEventListener('focusin',()=>{sync()});
+/* visualViewport reflects the visible region when Android's keyboard is open: keep the
+   budget and entry sheets inside it while they are shown. */
+(()=>{const viewport=window.visualViewport;
+ for(const id of ['fmLedgerBudgetOverlay','entryOverlay']){const overlay=document.getElementById(id);if(!overlay)continue;
+  const sync=()=>{if(!overlay.classList.contains('show')){overlay.style.top='';overlay.style.height='';overlay.style.bottom='';return}if(viewport){overlay.style.top=viewport.offsetTop+'px';overlay.style.height=viewport.height+'px';overlay.style.bottom='auto'}};
+  if(viewport){viewport.addEventListener('resize',sync);viewport.addEventListener('scroll',sync)}
+  new MutationObserver(sync).observe(overlay,{attributes:true,attributeFilter:['class']});overlay.addEventListener('focusin',sync);
+ }
 })();
-}catch(e){console.error('fm-ledger-keyboard-safe-v3517',e)}
-
-
-// ===== fm-ledger-entry-keyboard-v3534 — 가계부 · 입력 키보드 =====
-try{
-(()=>{const overlay=document.getElementById('entryOverlay');if(!overlay)return;const viewport=window.visualViewport;
- const sync=()=>{if(!overlay.classList.contains('show')){overlay.style.top='';overlay.style.height='';overlay.style.bottom='';return}if(viewport){overlay.style.top=viewport.offsetTop+'px';overlay.style.height=viewport.height+'px';overlay.style.bottom='auto'}};
- if(viewport){viewport.addEventListener('resize',sync);viewport.addEventListener('scroll',sync)}
- new MutationObserver(sync).observe(overlay,{attributes:true,attributeFilter:['class']});overlay.addEventListener('focusin',sync);
-})();
-}catch(e){console.error('fm-ledger-entry-keyboard-v3534',e)}
-
-
-// ===== fm-arcade-link — 설정 · 게임 =====
-try{document.getElementById('fmArcadeOpen')?.addEventListener('click',()=>{window.location.assign(new URL('./arcade/index.html',document.baseURI).href)});}catch(e){console.error('fm-arcade-link',e)}
+}catch(e){console.error('fm-ledger-keyboard',e)}
 
 
 // ===== fm-premium-finance-ui — 공통 · 카드 디자인 =====
@@ -653,28 +634,6 @@ try{
  });
 })();
 }catch(e){console.error('fm-home-record',e)}
-
-
-// ===== fm-ledger-analysis-tab — 가계부 · 분석 탭 =====
-try{
-/* 가계부 = 달력 · 목록 · 분석. The 분석 tab opens the existing 소비 분석 view, which links on to
-   월간 결산; both are the existing screens and handlers. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const sw=document.querySelector('#view-calendar .fm-ledger-switch'),insights=$('view-insights');
-  if(!sw||!insights||typeof window.fmGo!=='function')return;
-  const tab=document.createElement('button');tab.type='button';tab.id='fmModeAnalysis';tab.textContent='분석';tab.setAttribute('aria-label','소비 분석과 월간 결산 보기');
-  tab.onclick=()=>window.fmGo('insights');
-  sw.append(tab);
-  const links=document.createElement('div');links.className='fm-insights-links';links.setAttribute('role','group');links.setAttribute('aria-label','분석 화면');
-  links.innerHTML='<button type="button" class="secondary" aria-current="page">소비 분석</button><button type="button" class="secondary" id="fmInsightsMonthly">월간 결산 →</button>';
-  const header=insights.querySelector('.fm-report-header');(header||insights.firstElementChild).after(links);
-  $('fmInsightsMonthly').onclick=()=>($('fmMonthlyOpen')?$('fmMonthlyOpen').click():window.fmGo('monthly'));
- });
-})();
-}catch(e){console.error('fm-ledger-analysis-tab',e)}
 
 
 // ===== fm-settings-order — 설정 · 순서 =====

@@ -91,10 +91,10 @@ test('mail backup shares a validated .txt file and restore accepts it',async({pa
  expect(await page.evaluate(()=>localStorage.getItem('firemate_last_backup_v1'))).toBeTruthy();
  expect(await page.locator('#importFile').getAttribute('accept')).toContain('.txt');
  // The shared file restores through the normal validated path.
- page.on('dialog',dialog=>dialog.accept());
  await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.tx=[];localStorage.setItem('firemate_smart_v3',JSON.stringify(d))});
  await page.reload();
  await page.locator('#importFile').setInputFiles({name:shared.name,mimeType:'text/plain',buffer:Buffer.from(shared.text)});
+ await page.locator('#fmAskOk').click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.length)).toBe(longTimeUser.tx.length);
 });
 

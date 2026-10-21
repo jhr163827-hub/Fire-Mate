@@ -35,8 +35,8 @@ test('ZIP password is asked once and remembered only when the user opts in',asyn
  await expect(page.locator('#fmZipRemember')).not.toBeChecked();
  await importZip(page,'2026-10-18');
  // The opt-in sits right next to the password field.
- await expect(page.locator('#bankZipKeep')).not.toBeChecked();
- await page.locator('#bankZipKeep').check();
+ // Remembering is on by default next to the field; it can still be turned off.
+ await expect(page.locator('#bankZipKeep')).toBeChecked();
  await answerZip(page,PASSWORD);
  await expect(page.locator('#bankExcelConfirm')).toBeVisible();
  await page.locator('#bankExcelConfirm').click();
@@ -61,11 +61,13 @@ test('without opting in the password stays for this session only, and a wrong on
  const dialogs=noBrowserDialogs(page);
  await page.goto('/index.html');
  await importZip(page,'2026-10-18');
+ await page.locator('#bankZipKeep').uncheck();
  await answerZip(page,'wrong-pass');
  await expect(page.locator('#bankExcelPreview')).toContainText('ZIP 해제 실패');
  expect(await page.evaluate(()=>[sessionStorage.getItem('fm-bank-zip-password'),localStorage.getItem('firemate_bank_zip_pwd_v1')])).toEqual([null,null]);
  await page.locator('#bankExcelFile').setInputFiles([]);
  await importZip(page,'2026-10-18');
+ await page.locator('#bankZipKeep').uncheck();
  await answerZip(page,PASSWORD);
  await expect(page.locator('#bankExcelConfirm')).toBeVisible();
  expect(await page.evaluate(()=>[sessionStorage.getItem('fm-bank-zip-password'),localStorage.getItem('firemate_bank_zip_pwd_v1')])).toEqual([PASSWORD,null]);

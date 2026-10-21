@@ -33,3 +33,16 @@ test('a finished pull says what happened',async({page})=>{
  await touch('touchstart',100);await touch('touchmove',300);await touch('touchend',300);
  await expect(page.locator('#toast')).toContainText('순자산');
 });
+
+test('tapping the home budget opens the editor on home and saves this month',async({page})=>{
+ await page.goto('/index.html');
+ await page.locator('#heroBudget').click();
+ await expect(page.locator('#fmLedgerBudgetOverlay')).toHaveClass(/show/);
+ await expect(page.locator('#view-home')).toHaveClass(/active/);
+ await page.locator('#fmLedgerBudgetValue').fill('1200000');
+ await page.locator('#fmLedgerBudgetSave').click();
+ await expect(page.locator('#view-home')).toHaveClass(/active/);
+ const month=new Date().toISOString().slice(0,7);
+ expect(await page.evaluate(m=>JSON.parse(localStorage.getItem('firemate_smart_v3')).budgets[m],month)).toBe(1200000);
+ await expect(page.locator('#heroBudget')).toHaveText('₩1,200,000');
+});

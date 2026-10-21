@@ -23,7 +23,9 @@ test('steps open the existing screens and completion follows saved data',async({
  page.on('dialog',dialog=>dialog.accept());
  await page.goto('/index.html');
  await page.locator('[data-step="budget"] button').click();
- await expect(page.locator('#view-calendar')).toHaveClass(/active/);
+ // The budget editor opens right on home.
+ await expect(page.locator('#fmLedgerBudgetOverlay')).toHaveClass(/show/);
+ await expect(page.locator('#view-home')).toHaveClass(/active/);
  await page.locator('#fmLedgerBudgetValue').fill('1500000');
  await page.locator('#fmLedgerBudgetSave').click();
  await page.locator('.bottomnav [data-view="home"]').click();

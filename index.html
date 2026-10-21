@@ -1662,8 +1662,11 @@ html:not([data-theme=light]) #view-calendar .day.selected .cost{color:#ffb8bf}
 #fmLedgerSync .fm-zip-remember input{width:20px;height:20px;margin:0}
 #fmZipForget{min-height:44px;margin-left:auto}
 #fmGmailForget{width:100%;min-height:44px;margin-top:6px}
-#view-home #fmHomeSyncNote{margin-top:6px;font-size:12px;color:var(--sub)}
-#view-home #fmHomeSyncNote.due{color:var(--yellow);font-weight:700}
+#view-home #fmHomeSync{flex-direction:column;gap:1px;line-height:1.2;padding:4px 12px}
+#view-home #fmHomeSyncNote{max-width:100%;font-size:12px;font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view-home #fmHomeSyncNote:empty{display:none}
+#view-home #fmHomeSyncNote.due{opacity:1;font-weight:800}
+#view-home #fmHomeSyncNote.due::before{content:'⚠ '}
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow" id="fmCurrentSection" aria-live="polite">홈</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero fm-home-wealth" id="homeAssetHero">
@@ -4119,8 +4122,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   sync.onclick=()=>{window.fmGo('calendar');document.getElementById('bankGmailImport')?.click()};
   const button=document.createElement('button');button.type='button';button.id='fmHomeRecord';button.className='secondary fm-home-record';
   button.textContent='＋ 직접 기록';button.onclick=()=>window.fmOpenEntry();
+  // The import age rides inside the button as a second line so the card does not grow.
+  sync.textContent='';const label=document.createElement('span');label.textContent='📥 Gmail에서 가져오기';
+  const note=document.createElement('span');note.id='fmHomeSyncNote';note.setAttribute('aria-live','polite');sync.append(label,note);
   actions.append(sync,button);card.append(actions);
-  const note=document.createElement('div');note.id='fmHomeSyncNote';note.setAttribute('aria-live','polite');card.append(note);
  });
 })();
 </script><script id="fm-ledger-analysis-tab">
@@ -4233,7 +4238,8 @@ document.addEventListener('DOMContentLoaded',()=>{
    const days=Number.isFinite(at)?Math.floor((Date.now()-at)/86400000):null;
    $('fmSyncStatus').textContent=(last?'가져온 내역 '+day(last)+'까지':'아직 가져온 내역이 없어요')+(days===null?'':' · 마지막 가져오기 '+(days<1?'오늘':days+'일 전'));
    const note=$('fmHomeSyncNote');
-   if(note){note.textContent=days===null?(last?'가져온 내역 '+day(last)+'까지':'뱅크샐러드 내역을 아직 가져오지 않았어요'):'마지막 가져오기 '+(days<1?'오늘':days+'일 전')+(last?' · '+day(last)+'까지':'');note.classList.toggle('due',days!==null&&days>=7)}
+   // Short on purpose: it is the second line of the home button; the ledger card has the details.
+   if(note){note.textContent=days!==null?(days<1?'오늘 가져옴':days+'일 전 가져옴'):last?day(last)+'까지 있음':'아직 가져온 적 없어요';note.classList.toggle('due',days!==null&&days>=7)}
   };
   for(const el of [$('bankExcelPreview'),$('heroSpent')])if(el)new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
   sync();

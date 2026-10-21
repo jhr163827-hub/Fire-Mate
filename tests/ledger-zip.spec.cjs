@@ -38,7 +38,7 @@ test('ZIP password is asked once and remembered only when the user opts in',asyn
  expect(prompts).toBe(1);
  expect(await page.evaluate(()=>localStorage.getItem('firemate_bank_zip_pwd_v1'))).toBe(PASSWORD);
  await expect(page.locator('#fmZipRememberText')).toHaveText('ZIP 암호를 기억하고 있어요');
- await expect(page.locator('#fmHomeSyncNote')).toContainText('마지막 가져오기 오늘');
+ await expect(page.locator('#fmHomeSyncNote')).toHaveText('오늘 가져옴');
  // A new session no longer asks.
  await page.evaluate(()=>sessionStorage.clear());
  await page.reload();

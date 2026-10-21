@@ -117,8 +117,8 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('#homeBudgetAction').click()
             page.locator('#fmModeList').click()
             page.locator('#fmLedgerAllTx .tx').filter(has_text='budget scenario').locator('[data-edit]').click()
-            page.once('dialog', lambda dialog: dialog.accept())
             page.locator('#deleteEntry').click()
+            page.locator('#fmAskOk').click()
             page.locator('.bottomnav [data-view="home"]').click()
             self.assertEqual(page.locator('#heroSpent').inner_text(), '₩0')
             self.assertEqual(page.locator('#heroLeft').inner_text(), '₩1,500,000')
@@ -634,8 +634,8 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('.bottomnav [data-view="calendar"]').click()
             page.locator("#fmModeList").click()
             page.locator('#fmLedgerAllTx .tx').filter(has_text="Playwright ledger regression").locator('[data-edit]').click()
-            page.once("dialog", lambda dialog: dialog.accept())
             page.locator("#deleteEntry").click()
+            page.locator('#fmAskOk').click()
             self.assertEqual(entries(), [])
             page.reload(wait_until="domcontentloaded")
             self.assertEqual(entries(), [])
@@ -685,8 +685,8 @@ class HomeResponsiveTest(unittest.TestCase):
             })()""")
             page.goto(URL, wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="assets"]').click()
-            page.once("dialog", lambda dialog: dialog.accept())
             page.locator("#refreshStocks").click()
+            page.locator('#fmAskOk').click()
             page.wait_for_function("""() => Number(localStorage.getItem('firemate_quote_cooldown_v1') || 0) > Date.now()""",
                                    timeout=15000)
             saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings[0]""")
@@ -725,8 +725,8 @@ class HomeResponsiveTest(unittest.TestCase):
                     })()""")
                     page.goto(URL, wait_until="domcontentloaded")
                     page.locator('.bottomnav [data-view="assets"]').click()
-                    page.once("dialog", lambda dialog: dialog.accept())
                     page.locator("#refreshStocks").click()
+                    page.locator('#fmAskOk').click()
                     page.wait_for_function("""() => !document.querySelector('#refreshStocks').disabled && document.querySelector('#quoteProgressText')?.textContent?.includes('완료')""", timeout=20000)
                     saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3'))""")
                     holding = saved["holdings"][0]
@@ -1092,7 +1092,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         # Reset is also allocation-only, preserving a living-condition draft.
                         self.fire_screen(page,'firelife');page.locator('#fmLifeConditions>summary').tap();page.locator('#rpMonthly').fill('375')
                         self.open_portfolio(page);page.locator('#fmRpEditToggle').tap()
-                        page.once('dialog',lambda dialog:dialog.accept());page.locator('#rpReset').tap()
+                        page.locator('#rpReset').tap();page.locator('#fmAskOk').tap()
                         expected={**expected,'items':original['items']}
                         self.assertEqual(saved(),expected);self.assertEqual(page.locator('#rpMonthly').input_value(),'375')
                         self.fire_screen(page,'firelife');page.locator('#fmRetireCancel').tap()

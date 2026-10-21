@@ -1,0 +1,7 @@
+{
+  "_note": "Ratchet: these are ceilings. Lower them when cleanup shrinks the code; never raise without the owner's OK.",
+  "index_script_blocks": 32,
+  "index_style_blocks": 3,
+  "index_html_bytes": 480000,
+  "app_css_important": 817
+}

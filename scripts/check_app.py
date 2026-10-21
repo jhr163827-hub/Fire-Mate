@@ -31,4 +31,11 @@ require(len(re.findall(r"<script\b", html)) == len(re.findall(r"</script>", html
 require(len(re.findall(r"<style\b", html)) == len(re.findall(r"</style>", html)), "Style tags are balanced")
 require("const fmtUnitPrice=n=>" in html and "const metrics=[['보유 수량'" in html, "Holding price metrics are intact")
 require(len(html) > 100000, "Main app file has expected size")
+# Styles live in app.css; the link and the worker's precache must name the same build.
+version = re.search(r"VERSION='([0-9.]+)'", html).group(1)
+sw = (ROOT / "sw.js").read_text(encoding="utf-8") if "ROOT" in globals() else open("sw.js", encoding="utf-8").read()
+require(html.count('<link rel="stylesheet" href="./app.css?v=' + version + '">') == 1, "app.css link carries the app version")
+require("'./app.css?v=" + version + "'" in sw, "Service worker precaches the same app.css")
+css = open("app.css", encoding="utf-8").read()
+require(css.count("{") == css.count("}") and len(css) > 100000, "app.css is complete")
 print("PASS: static regression checks completed (not a browser end-to-end test)")

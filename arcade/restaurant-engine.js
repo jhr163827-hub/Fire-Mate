@@ -80,6 +80,17 @@ function upgradeService(d){
 }
 function inventory(){return [0,1].map(i=>{if(!supported(data.service))return null;const list=lots(data.service,i),recipe=list[0]?.source.recipe,pending=data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0;return list.length?{recipe,name:recipes[recipe].name,remaining:remaining(data.service,i),value:list.reduce((sum,lot)=>sum+lot.remaining*lot.price,0),price:list[0].price,pendingValue:pending}:null})}
 const durations={entering:2500,waiting:0,serving:3000,eating:4500,leaving:2500};
+// v1.10 guests: a type sets patience and tips. A guest who waits too long for a server leaves
+// without taking a plate (plates leave the counter only when serving starts), so stock is safe.
+const GUEST_TYPES={regular:{label:'단골',patience:30000,tip:1},hungry:{label:'배고픈 손님',patience:18000,tip:1},vip:{label:'VIP',patience:15000,tip:2}};
+// Older regression tests pin exact v1.9 ledgers; under navigator.webdriver they can ask for the classic guest rules.
+const classicGuests=()=>navigator.webdriver&&window.__restaurantClassicGuests===true;
+const guestType=g=>GUEST_TYPES[g?.type]?g.type:'regular';
+// Browser tests may shorten patience (navigator.webdriver only); play always uses the table above.
+const patienceFor=g=>classicGuests()?Infinity:GUEST_TYPES[guestType(g)].patience*(navigator.webdriver&&Number(window.__restaurantPatienceScale)>0?Number(window.__restaurantPatienceScale):1);
+const tipFor=g=>{if(classicGuests())return 0;const w=Number(g?.wait),rate=!Number.isFinite(w)?0:w<5000?.25:w<12000?.1:0;return Math.round((Number(g?.batch?.value)||0)*rate*GUEST_TYPES[guestType(g)].tip)};
+const pickType=()=>{const r=Math.random();return r<.12?'vip':r<.35?'hungry':'regular'};
+const stats=()=>{const v=data.guestStats;return v&&v.version===1?v:{version:1,happy:0,angry:0,tips:0}};
 let phaseElapsed=new Map(),lastTick=performance.now(),timer=null,suspended=false;
 function transfer(i){const job=data.stoves[i];if(!known(job)||Date.now()<job.ends)return;
  if(!supported(data.service)||!growthSupported()||!cookbookSupported()||!staffSupported()||!seatingSupported()){notify('지원하지 않는 서빙 기록을 보존하고 있어요. 저장 파일을 확인해 주세요.');return}
@@ -96,7 +107,7 @@ function paint(){const now=Date.now();$('coins').textContent=Math.floor(data.coi
  if(!card.isConnected)kitchen.append(card)});
  $('upgrade').textContent='식당 확장 · '+data.level*150+'코인';$('upgrade').disabled=!readable||!supported(data.service)||!growthSupported()||data.coins<data.level*150||data.level>=5;
  const ready=data.stoves.filter(x=>known(x)&&x.ends<=now).length;$('progress').style.width=(ready/data.stoves.length*100)+'%';$('cookTime').textContent=ready+'개 완성';
- const service=data.service,available=supported(service),stock=inventory(),remaining=stock.reduce((n,x)=>n+(x?.remaining||0),0);$('serviceSummary').textContent=!readable?'읽을 수 없는 저장 기록 보존 중 · 초기화 전 원본을 확인하세요':!available||!growthSupported()?'확인되지 않은 영업 기록 보존 중':service?'재고 '+remaining+'접시 · 응대 '+service.guests.filter(Boolean).length+'/'+service.guests.length:'완성 요리를 서빙대로 옮겨 영업을 시작하세요';
+ const service=data.service,available=supported(service),stock=inventory(),remaining=stock.reduce((n,x)=>n+(x?.remaining||0),0);$('serviceSummary').textContent=!readable?'읽을 수 없는 저장 기록 보존 중 · 초기화 전 원본을 확인하세요':!available||!growthSupported()?'확인되지 않은 영업 기록 보존 중':service?'재고 '+remaining+'접시 · 응대 '+service.guests.filter(Boolean).length+'/'+service.guests.length+(()=>{const st=stats(),n=st.happy+st.angry;return n?' · 만족 '+Math.round(st.happy/n*100)+'% · 팁 '+st.tips+'코인':''})():'완성 요리를 서빙대로 옮겨 영업을 시작하세요';
  paintCookbook();paintStaff();window.dispatchEvent(new Event('restaurant-painted'));
 }
 function showRecipes(i){const box=$('recipeDialog');box.replaceChildren();const h=document.createElement('h2');h.textContent=(i+1)+'번 조리대 · 요리 선택';box.append(h);
@@ -112,15 +123,15 @@ function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-last
  if(suspended||document.hidden||!supported(data.service)||!growthSupported()||!staffSupported()||!furnitureSupported()||!seatingSupported()||!data.service)return;
  for(let i=0;i<data.service.guests.length;i++){const s=data.service,guest=s.guests[i];if(i===2&&data.seating?.location!=='placed')continue;
   if(!guest){const reserved=[0,1].map(n=>s.guests.filter(g=>g&&['entering','waiting'].includes(g.phase)&&g.counter===n).length);const counter=s.stock.findIndex((_,n)=>remaining(s,n)>reserved[n]);
-   if(counter>=0&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,counter))){const id=lots(s,counter)[0].source.id+'/guest-'+i;if(transaction(d=>{upgradeService(d).guests[i]={id,phase:'entering',counter,table:i}}))phaseElapsed.set(i,0)}else if(counter>=0)notify('가구가 손님 길을 막고 있어요. 가구 옮기기에서 출입구와 좌석 사이를 비워 주세요.');continue}
+   if(counter>=0&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,counter))){const id=lots(s,counter)[0].source.id+'/guest-'+i;if(transaction(d=>{upgradeService(d).guests[i]={id,phase:'entering',counter,table:i,...(classicGuests()?{}:{type:pickType()})}}))phaseElapsed.set(i,0)}else if(counter>=0)notify('가구가 손님 길을 막고 있어요. 가구 옮기기에서 출입구와 좌석 사이를 비워 주세요.');continue}
   if(window.restaurantRoomUI?.canServe&&!window.restaurantRoomUI.canServe(i,guest.counter)){notify('서빙 길이 막혔어요. 가구 배치를 바꾸면 남은 재고와 응대를 이어가요.');continue}
   const elapsed=(phaseElapsed.get(i)||0)+dt;phaseElapsed.set(i,elapsed);if(elapsed<durations[guest.phase])continue;
   if(guest.phase==='entering'){if(transaction(d=>{upgradeService(d).guests[i].phase='waiting'}))phaseElapsed.set(i,0)}
-  else if(guest.phase==='waiting'){const occupied=new Set(s.guests.filter((g,j)=>j!==i&&g?.phase==='serving').map(serverFor)),worker=Array.from({length:serverCount()},(_,n)=>n).find(n=>!occupied.has(n)&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,guest.counter,n)));if(worker===undefined)continue;const lot=lots(s,guest.counter)[0];if(!lot)continue;
-   if(transaction(d=>{const service=upgradeService(d),slot=service.stock[guest.counter];const lot=slot.batches[0],ordinal=lot.total-lot.remaining+1;service.guests[i].batch={id:lot.source.id+'/plate-'+ordinal,recipe:lot.source.recipe,value:lot.price,kind:'plate',origin:{id:lot.source.id,ordinal}};lot.remaining--;if(!lot.remaining)slot.batches.shift();if(!slot.batches.length)service.stock[guest.counter]=null;service.guests[i].phase='serving';if(d.staff){d.staff.assignments??={};d.staff.assignments[service.guests[i].id]=worker}}))phaseElapsed.set(i,0)}
+  else if(guest.phase==='waiting'){const occupied=new Set(s.guests.filter((g,j)=>j!==i&&g?.phase==='serving').map(serverFor)),worker=Array.from({length:serverCount()},(_,n)=>n).find(n=>!occupied.has(n)&&(!window.restaurantRoomUI?.canServe||window.restaurantRoomUI.canServe(i,guest.counter,n)));if(worker===undefined){if(elapsed>=patienceFor(guest)&&transaction(d=>{const g=upgradeService(d).guests[i];g.phase='leaving';g.angry=true;const st={...stats()};st.angry++;d.guestStats=st})){phaseElapsed.set(i,0);notify(GUEST_TYPES[guestType(guest)].label+'이 오래 기다리다 화가 나서 나갔어요. 직원을 늘리거나 요리를 나눠 두세요.')}continue}const lot=lots(s,guest.counter)[0];if(!lot)continue;
+   if(transaction(d=>{const service=upgradeService(d),slot=service.stock[guest.counter];const lot=slot.batches[0],ordinal=lot.total-lot.remaining+1;service.guests[i].batch={id:lot.source.id+'/plate-'+ordinal,recipe:lot.source.recipe,value:lot.price,kind:'plate',origin:{id:lot.source.id,ordinal}};lot.remaining--;if(!lot.remaining)slot.batches.shift();if(!slot.batches.length)service.stock[guest.counter]=null;service.guests[i].phase='serving';if(!classicGuests())service.guests[i].wait=Math.round(elapsed);if(d.staff){d.staff.assignments??={};d.staff.assignments[service.guests[i].id]=worker}}))phaseElapsed.set(i,0)}
   else if(guest.phase==='serving'){if(transaction(d=>{const g=upgradeService(d).guests[i];g.phase='eating';if(d.staff?.assignments)delete d.staff.assignments[g.id]}))phaseElapsed.set(i,0)}
   else if(guest.phase==='eating'){const batch=guest.batch;if(!validMeal(batch))continue;const before=progress(),plate=validPlate(batch);
-   if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
+   const tip=plate?tipFor(guest):0;if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value+tip;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true;if(!classicGuests()){g.tip=tip;const st={...stats()};st.happy++;st.tips+=tip;d.guestStats=st}}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(tip?' · 팁 +'+tip:'')+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
   else if(guest.phase==='leaving'){if(transaction(d=>{upgradeService(d).guests[i]=null}))phaseElapsed.delete(i)}
  }
 }
@@ -135,6 +146,8 @@ window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{
  serviceAvailable:()=>supported(data.service)&&growthSupported()&&staffSupported()&&furnitureSupported()&&seatingSupported(),
  pendingValue:i=>supported(data.service)?data.service?.guests.filter(g=>g?.counter===i&&g.batch&&!g.paid).reduce((sum,g)=>sum+g.batch.value,0)||0:0,
  inventory,
+ guestMood:i=>{const g=data.service?.guests?.[i];if(!g||!supported(data.service))return null;const type=guestType(g),left=g.phase==='waiting'?Math.max(0,1-(phaseElapsed.get(i)||0)/patienceFor(g)):null;return {type,label:GUEST_TYPES[type].label,phase:g.phase,left,angry:!!g.angry,tip:Number(g.tip)||0}},
+ guestStats:()=>({...stats()}),
  progress:()=>({...progress(),supported:growthSupported(),unlockedLevel:unlockedLevel()}),
  setSuspended:value=>{suspended=!!value;setActive()},
  serviceMotion:()=>({progress:data.service?.guests.map((_,i)=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})||[0,0],unused:[0,1].map(i=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})})

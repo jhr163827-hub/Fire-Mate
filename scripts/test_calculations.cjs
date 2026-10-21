@@ -3,7 +3,7 @@
 const fs=require('node:fs');
 const vm=require('node:vm');
 const assert=require('node:assert/strict');
-const html=fs.readFileSync('index.html','utf8');
+const html=require('../tests/app-source.cjs')();
 const begin=html.indexOf('function fmFiniteNumber(');
 const end=html.indexOf('function moveAccount(',begin);
 assert(begin>=0&&end>begin,'asset calculation functions found');

@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const html = fs.readFileSync('index.html', 'utf8');
+const html = require('./app-source.cjs')();
 
 const checks = [
   ['FIRE settings rollback', /data\.fire=p;if\(!persist\(\)\)\{data\.fire=previousFire;return\}/],

@@ -3,12 +3,16 @@ on:
   push:
     paths:
       - 'index.html'
+      - 'app.css'
+      - 'js/**'
       - 'tests/test_home_responsive.py'
       - 'tests/capture_compact_comparison.py'
       - '.github/workflows/home-responsive.yml'
   pull_request:
     paths:
       - 'index.html'
+      - 'app.css'
+      - 'js/**'
       - 'tests/test_home_responsive.py'
       - 'tests/capture_compact_comparison.py'
       - '.github/workflows/home-responsive.yml'

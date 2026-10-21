@@ -3,11 +3,14 @@ on:
   push:
     paths:
       - 'index.html'
+      - 'app.css'
+      - 'js/**'
       - 'sw.js'
       - 'scripts/check_app.py'
       - 'scripts/test_calculations.cjs'
       - 'tests/storage-rollback.test.cjs'
       - 'tests/pwa-update.test.cjs'
+      - 'tests/app-source.cjs'
       - '.github/workflows/app-checks.yml'
   workflow_dispatch:
 permissions:
@@ -39,4 +42,7 @@ jobs:
                   f.write(code);f.flush()
                   subprocess.run(['node','--check',f.name],check=True)
               print('PASS: script',i)
+          for js in sorted(Path('js').glob('*.js')):
+              subprocess.run(['node','--check',str(js)],check=True)
+              print('PASS:',js)
           PY

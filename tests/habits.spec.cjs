@@ -57,3 +57,18 @@ test('home-screen shortcuts are declared and ?action=record opens the entry dial
  await expect(page.locator('#entryOverlay')).toHaveClass(/show/);
  expect(new URL(page.url()).search).toBe('');
 });
+
+test('tiny interest credits stay saved but are left out of the ledger until the setting is off',async({page})=>{
+ const today=ds(new Date());
+ await open(page,{theme:'dark',rec:[],budgets:{},tx:[{id:'i1',date:today,type:'income',category:'배당·이자',amount:37,memo:'예금이자'},{id:'i2',date:today,type:'income',category:'기타 수입',amount:12,memo:'카드 캐시백'},{id:'i3',date:today,type:'income',category:'급여',amount:3000000,memo:'월급'}]});
+ await page.evaluate(()=>window.fmGo('history'));
+ await expect(page.locator('#historyList [data-edit]')).toHaveCount(1);
+ await expect(page.locator('#historySummary')).toContainText('수입 ₩3,000,000');
+ expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx).toHaveLength(3);
+ await page.locator('#settingsBottom').click();
+ await page.evaluate(()=>window.fmOpenImport());
+ await page.locator('#fmHideTinyIncome input').uncheck();
+ await page.waitForLoadState('load');
+ await page.evaluate(()=>window.fmGo('history'));
+ await expect(page.locator('#historyList [data-edit]')).toHaveCount(3);
+});

@@ -36,6 +36,20 @@ test('backups carry category budgets, merchant rules, health inputs and fixed-co
  expect(await page.evaluate(()=>localStorage.getItem('firemate_fixed_costs_v1'))).toBe(JSON.stringify({'넷플릭스':true}));
 });
 
+test('backups also carry the small-income and auto-add switches',async({page})=>{
+ await page.goto('/index.html');
+ await page.evaluate(()=>{localStorage.setItem('firemate_hide_small_income_v1','0');localStorage.setItem('firemate_import_auto_v1','1')});
+ await page.locator('#settingsBottom').click();
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
+ const text=require('fs').readFileSync(await download.path(),'utf8');
+ expect(JSON.parse(text).extras).toMatchObject({firemate_hide_small_income_v1:'0',firemate_import_auto_v1:'1'});
+ await page.evaluate(()=>{localStorage.removeItem('firemate_hide_small_income_v1');localStorage.removeItem('firemate_import_auto_v1')});
+ await page.locator('#importFile').setInputFiles({name:'b.json',mimeType:'application/json',buffer:Buffer.from(text)});
+ await Promise.all([page.waitForEvent('download'),page.locator('#fmAskOk').click()]);
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_hide_small_income_v1'))).toBe('0');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_import_auto_v1'))).toBe('1');
+});
+
 test('fixed costs keep monthly bills, skip frequent shops and can be hidden',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('insights'));

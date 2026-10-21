@@ -73,3 +73,14 @@ test('"Google 로그인 기억 지우기" forgets the token and the account',asy
  expect(await page.evaluate(()=>window.__gsi.revoked)).toBe('token-1');
  await expect(page.locator('#fmGmailForget')).toBeHidden();
 });
+
+test('the home button imports in place without opening settings',async({page})=>{
+ await setup(page);
+ await page.goto('/index.html');
+ await page.locator('#fmHomeSync').click();
+ await expect(page.locator('#view-home #fmHomeImport #bankGmailStatus')).toContainText('뱅크샐러드 ZIP 첨부 메일을 찾지 못했습니다');
+ await expect(page.locator('#view-home')).toHaveClass(/active/);
+ await expect(page.locator('#settingsOverlay')).not.toHaveClass(/show/);
+ expect(await page.evaluate(()=>window.__gsi.requests.length)).toBe(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});

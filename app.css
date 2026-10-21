@@ -1996,3 +1996,7 @@ html,body{overscroll-behavior-y:contain}
 #fmMonthReport .fm-mr-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
 #fmMonthReport .fm-mr-actions button{min-height:44px}
 
+/* ---- fm-autocat-v3594 ---- */
+.fm-fixed-hide{min-height:32px!important;padding:0 6px!important;background:none!important;border:0!important;box-shadow:none!important;color:var(--sub)!important;font-size:12px!important;font-weight:600!important;text-decoration:underline}
+#fmUncatFold>summary{min-height:44px;display:flex;align-items:center;font-size:15px;font-weight:800;cursor:pointer}
+#fmAutoCatNote button{min-height:36px;padding:0 10px;margin-left:6px;font-size:12px}

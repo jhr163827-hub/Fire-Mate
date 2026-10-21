@@ -54,6 +54,6 @@ require(js_size <= budget["js_bytes"], f"js/*.js size {js_size} <= {budget['js_b
 important_n = css.count("!important")
 require(scripts_n <= budget["index_script_blocks"], f"index.html script blocks {scripts_n} <= {budget['index_script_blocks']}")
 require(styles_n <= budget["index_style_blocks"], f"index.html style blocks {styles_n} <= {budget['index_style_blocks']}")
-require(size <= budget["index_html_bytes"], f"index.html size {size} <= {budget['index_html_bytes']} bytes")
+require(size + js_size <= budget["app_code_bytes"], f"index.html + js size {size + js_size} <= {budget['app_code_bytes']} bytes")
 require(important_n <= budget["app_css_important"], f"app.css !important {important_n} <= {budget['app_css_important']}")
 print("PASS: static regression checks completed (not a browser end-to-end test)")

@@ -19,7 +19,8 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
 test('뱅크샐러드 import sits at the top of 가계부 and home offers it first',async({page})=>{
  await page.goto('/index.html');
- await expect(page.locator('#view-home #fmHomeSync')).toHaveText('📥 Gmail에서 가져오기');
+ await expect(page.locator('#view-home #fmHomeSync > span').first()).toHaveText('📥 Gmail에서 가져오기');
+ await expect(page.locator('#view-home #fmHomeSyncNote')).toHaveText('아직 가져온 적 없어요');
  await expect(page.locator('#view-home #fmHomeRecord')).toHaveText('＋ 직접 기록');
  for(const id of ['fmHomeSync','fmHomeRecord'])expect((await page.locator('#'+id).boundingBox()).height).toBeGreaterThanOrEqual(44);
  await page.evaluate(()=>window.fmGo('calendar'));

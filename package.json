@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
+    "@zip.js/zip.js": "2.7.62",
     "xlsx": "0.18.5"
   }
 }

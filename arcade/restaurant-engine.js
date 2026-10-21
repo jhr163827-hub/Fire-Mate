@@ -4,7 +4,9 @@
  */
 (()=>{'use strict';
 const KEY='firemate_arcade_restaurant_v2',OLD='firemate_arcade_restaurant_v1',$=id=>document.getElementById(id);
-const recipes=[{name:'주먹밥',emoji:'🍙',ms:60000,cost:3,sell:12,lv:1,plates:4},{name:'라면',emoji:'🍜',ms:300000,cost:10,sell:35,lv:1,plates:5},{name:'카레',emoji:'🍛',ms:1800000,cost:40,sell:110,lv:2,plates:10},{name:'햄버거',emoji:'🍔',ms:3600000,cost:90,sell:250,lv:3,plates:10},{name:'스테이크',emoji:'🥩',ms:14400000,cost:250,sell:780,lv:4,plates:12}];
+const recipes=[{name:'주먹밥',emoji:'🍙',ms:60000,cost:3,sell:12,lv:1,plates:4},{name:'라면',emoji:'🍜',ms:300000,cost:10,sell:35,lv:1,plates:5},{name:'카레',emoji:'🍛',ms:1800000,cost:40,sell:110,lv:2,plates:10},{name:'햄버거',emoji:'🍔',ms:3600000,cost:90,sell:250,lv:3,plates:10},{name:'스테이크',emoji:'🥩',ms:14400000,cost:250,sell:780,lv:4,plates:12},
+ // v1.12 menu: appended so saved recipe indices keep their meaning.
+ {name:'김밥',emoji:'🍣',ms:180000,cost:6,sell:24,lv:1,plates:4},{name:'만두',emoji:'🥟',ms:900000,cost:25,sell:80,lv:2,plates:8},{name:'짜장면',emoji:'🍝',ms:2700000,cost:55,sell:160,lv:2,plates:8},{name:'피자',emoji:'🍕',ms:7200000,cost:140,sell:420,lv:3,plates:12},{name:'초밥',emoji:'🍱',ms:21600000,cost:300,sell:980,lv:4,plates:14},{name:'케이크',emoji:'🎂',ms:28800000,cost:420,sell:1440,lv:5,plates:16}];
 let lastStored=null;
 try{lastStored=localStorage.getItem(KEY)}catch{}
 let readable=lastStored===null;
@@ -33,7 +35,7 @@ function seatingAction(action){if(!readable||!seatingSupported()||!furnitureSupp
  if(action==='store'||action==='sell'){if(!data.seating?.owned||data.service?.guests?.[2]||data.seating.location!=='placed'&&action==='store')return false;return transaction(d=>{if(action==='sell'){d.coins+=60;d.seating.owned=false;d.seating.location='sold'}else d.seating.location='warehouse'})}
  return false;
 }
-const fmt=ms=>{const sec=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return (h?h+'시간 ':'')+(m?m+'분 ':'')+(!h||!m?ss+'초':'')};
+const fmt=ms=>{const sec=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return h?h+'시간'+(m?' '+m+'분':''):m?m+'분'+(ss?' '+ss+'초':''):ss+'초'};
 const known=job=>!!job&&Number.isInteger(job.recipe)&&!!recipes[job.recipe]&&Number.isFinite(job.ends);
 // Temporary balance, NOT original game constants. Every batch keeps its previous total reward.
 const milestones=[0,4,12,24];
@@ -41,9 +43,9 @@ function growthSupported(){return data.growth===undefined||!!data.growth&&data.g
 function progress(){const xp=growthSupported()?(data.growth?.xp||0):0;let level=1;for(let i=1;i<milestones.length;i++)if(xp>=milestones[i])level=i+1;return {xp,level,next:milestones[level]??null,base:milestones[level-1]}}
 const unlockedLevel=()=>Math.max(data.level,progress().level);
 // Own mastery balance. A successful completed-batch transfer counts once; no retrospective guesswork.
-function cookbookSupported(){const book=data.cookbook;return book===undefined||!!book&&book.version===1&&Array.isArray(book.recipes)&&book.recipes.length===recipes.length&&book.recipes.every(x=>x&&Number.isSafeInteger(x.completed)&&x.completed>=0)}
+function cookbookSupported(){const book=data.cookbook;return book===undefined||!!book&&book.version===1&&Array.isArray(book.recipes)&&book.recipes.length>=5&&book.recipes.length<=recipes.length&&book.recipes.every(x=>x&&Number.isSafeInteger(x.completed)&&x.completed>=0)}
 function mastery(n){const completed=cookbookSupported()?(data.cookbook?.recipes[n]?.completed||0):0;return {completed,stage:completed>=10?2:completed>=3?1:0,next:completed>=10?null:completed>=3?10:3}}
-function recordCooking(d,n){d.cookbook??={version:1,recipes:recipes.map(()=>({completed:0}))};d.cookbook.recipes[n].completed=Math.min(Number.MAX_SAFE_INTEGER,d.cookbook.recipes[n].completed+1)}
+function recordCooking(d,n){d.cookbook??={version:1,recipes:recipes.map(()=>({completed:0}))};while(d.cookbook.recipes.length<recipes.length)d.cookbook.recipes.push({completed:0});d.cookbook.recipes[n].completed=Math.min(Number.MAX_SAFE_INTEGER,d.cookbook.recipes[n].completed+1)}
 let cookbookMarkup='';
 function paintCookbook(){const list=$('cookbookList');if(!list)return;const unknown=!cookbookSupported();$('cookbookSummary').textContent=unknown?'지원하지 않는 요리 기록을 보존하고 있어요. 새 기록을 덮어쓰지 않습니다.':recipes.filter((_,n)=>mastery(n).stage===2).length+' / '+recipes.length+' 요리 마스터 · 완성 요리를 서빙대로 옮길 때 기록돼요.';
  const html=recipes.map((r,n)=>{const m=mastery(n),locked=unlockedLevel()<r.lv;return '<article class="cookbook-entry"><span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><div><h3>'+r.name+(locked?' · 잠김':'')+'</h3><p>'+r.plates+'접시 · '+fmt(r.ms)+' · 재료 '+r.cost+'코인</p><p class="mastery-label">'+(unknown?'숙련 기록 확인 필요':m.stage===2?'★★ 마스터':m.stage===1?'★ 익숙한 요리':'처음 배우는 요리')+'</p><p>'+(unknown?'저장 원본 유지':m.completed+'회 완성'+(m.next===null?' · 도감 배지 획득':' · 다음 단계까지 '+(m.next-m.completed)+'회'))+'</p><progress aria-label="'+r.name+' 숙련 진행" max="'+(m.next||10)+'" value="'+Math.min(m.completed,10)+'"></progress></div></article>'}).join('');if(cookbookMarkup!==html){cookbookMarkup=html;list.innerHTML=html;window.dispatchEvent(new Event('restaurant-recipe-art'))}}
@@ -88,6 +90,7 @@ const classicGuests=()=>navigator.webdriver&&window.__restaurantClassicGuests===
 const guestType=g=>GUEST_TYPES[g?.type]?g.type:'regular';
 // Browser tests may shorten patience (navigator.webdriver only); play always uses the table above.
 const patienceFor=g=>classicGuests()?Infinity:GUEST_TYPES[guestType(g)].patience*(navigator.webdriver&&Number(window.__restaurantPatienceScale)>0?Number(window.__restaurantPatienceScale):1);
+const masteryBonus=batch=>{if(classicGuests()||!validPlate(batch))return 0;const st=mastery(batch.recipe).stage;return Math.round(batch.value*(st===2?.2:st===1?.1:0))};
 const tipFor=g=>{if(classicGuests())return 0;const w=Number(g?.wait),rate=!Number.isFinite(w)?0:w<5000?.25:w<12000?.1:0;return Math.round((Number(g?.batch?.value)||0)*rate*GUEST_TYPES[guestType(g)].tip)};
 const pickType=()=>{const r=Math.random();return r<.12?'vip':r<.35?'hungry':'regular'};
 const stats=()=>{const v=data.guestStats;return v&&v.version===1?v:{version:1,happy:0,angry:0,tips:0}};
@@ -111,7 +114,7 @@ function paint(){const now=Date.now();$('coins').textContent=Math.floor(data.coi
  paintCookbook();paintStaff();window.dispatchEvent(new Event('restaurant-painted'));
 }
 function showRecipes(i){const box=$('recipeDialog');box.replaceChildren();const h=document.createElement('h2');h.textContent=(i+1)+'번 조리대 · 요리 선택';box.append(h);
- recipes.forEach((r,n)=>{const locked=unlockedLevel()<r.lv;const btn=document.createElement('button');btn.type='button';btn.className='recipe-choice';btn.innerHTML='<span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><span class="recipe-copy"><strong>'+r.name+(locked?' · 잠김':'')+'</strong><span>'+fmt(r.ms)+' · 재료 '+r.cost+'코인</span><small>'+r.plates+'접시 × '+r.sell/r.plates+'코인 · 총 '+r.sell+'코인</small><small>'+(locked?'셰프 Lv'+r.lv+' 또는 시설 '+r.lv+'단계 필요':'판매 접시당 +1 XP')+'</small><small>'+(!cookbookSupported()?'숙련 기록 확인 필요':mastery(n).completed+'회 완성 · '+(mastery(n).stage===2?'마스터':mastery(n).stage===1?'숙련 중':'배우는 중'))+'</small></span>';btn.disabled=locked||!staffSupported()||!cookbookSupported()||!readable||!supported(data.service)||!growthSupported()||data.coins<r.cost;
+ recipes.map((r,n)=>[r,n]).sort((a,b)=>a[0].lv-b[0].lv||a[0].ms-b[0].ms).forEach(([r,n])=>{const locked=unlockedLevel()<r.lv;const btn=document.createElement('button');btn.type='button';btn.className='recipe-choice';btn.innerHTML='<span class="recipe-art" data-recipe-art="'+n+'" aria-hidden="true"></span><span class="recipe-copy"><strong>'+r.name+(locked?' · 잠김':'')+'</strong><span>'+fmt(r.ms)+' · 재료 '+r.cost+'코인</span><small>'+r.plates+'접시 × '+r.sell/r.plates+'코인 · 총 '+r.sell+'코인</small><small>'+(locked?'셰프 Lv'+r.lv+' 또는 시설 '+r.lv+'단계 필요':'판매 접시당 +1 XP')+'</small><small>'+(!cookbookSupported()?'숙련 기록 확인 필요':mastery(n).completed+'회 완성 · '+(mastery(n).stage===2?'마스터 · 판매 +20%':mastery(n).stage===1?'숙련 · 판매 +10%':'배우는 중 · '+mastery(n).next+'회 완성 시 +10%'))+'</small></span>';btn.disabled=locked||!staffSupported()||!cookbookSupported()||!readable||!supported(data.service)||!growthSupported()||data.coins<r.cost;
  btn.onclick=()=>{if(data.stoves[i]||unlockedLevel()<r.lv)return;if(!transaction(d=>{d.coins-=r.cost;d.stoves[i]={recipe:n,ends:Date.now()+r.ms}}))return;box.close();notify(r.name+' 조리 시작 · 완성되면 서빙대로 옮겨 주세요.')};box.append(btn)});
  const close=document.createElement('button');close.type='button';close.textContent='취소';close.onclick=()=>box.close();box.append(close);window.dispatchEvent(new Event('restaurant-recipe-art'));window.restaurantRoomUI?window.restaurantRoomUI.open(box):box.showModal();
 }
@@ -131,7 +134,7 @@ function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-last
    if(transaction(d=>{const service=upgradeService(d),slot=service.stock[guest.counter];const lot=slot.batches[0],ordinal=lot.total-lot.remaining+1;service.guests[i].batch={id:lot.source.id+'/plate-'+ordinal,recipe:lot.source.recipe,value:lot.price,kind:'plate',origin:{id:lot.source.id,ordinal}};lot.remaining--;if(!lot.remaining)slot.batches.shift();if(!slot.batches.length)service.stock[guest.counter]=null;service.guests[i].phase='serving';if(!classicGuests())service.guests[i].wait=Math.round(elapsed);if(d.staff){d.staff.assignments??={};d.staff.assignments[service.guests[i].id]=worker}}))phaseElapsed.set(i,0)}
   else if(guest.phase==='serving'){if(transaction(d=>{const g=upgradeService(d).guests[i];g.phase='eating';if(d.staff?.assignments)delete d.staff.assignments[g.id]}))phaseElapsed.set(i,0)}
   else if(guest.phase==='eating'){const batch=guest.batch;if(!validMeal(batch))continue;const before=progress(),plate=validPlate(batch);
-   const tip=plate?tipFor(guest):0;if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value+tip;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true;if(!classicGuests()){g.tip=tip;const st={...stats()};st.happy++;st.tips+=tip;d.guestStats=st}}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(tip?' · 팁 +'+tip:'')+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
+   const tip=plate?tipFor(guest):0,bonus=plate?masteryBonus(batch):0;if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value+tip+bonus;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true;if(!classicGuests()){g.tip=tip;const st={...stats()};st.happy++;st.tips+=tip;d.guestStats=st}}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(bonus?' · 숙련 +'+bonus:'')+(tip?' · 팁 +'+tip:'')+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
   else if(guest.phase==='leaving'){if(transaction(d=>{upgradeService(d).guests[i]=null}))phaseElapsed.delete(i)}
  }
 }

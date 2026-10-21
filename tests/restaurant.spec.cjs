@@ -1,4 +1,8 @@
 const {test,expect}=require('@playwright/test');
+// These ledgers predate guest tips and patience (v1.11); run them under the classic guest rules.
+const CLASSIC=()=>{window.__restaurantClassicGuests=true};let restoreContext;
+test.beforeEach(async({browser,context})=>{await context.addInitScript(CLASSIC);const original=browser.newContext;browser.newContext=async function(...args){const created=await original.apply(this,args);await created.addInitScript(CLASSIC);return created};restoreContext=()=>{browser.newContext=original}});
+test.afterEach(()=>restoreContext?.());
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
 const KEY='firemate_arcade_restaurant_v2';
 const seed={coins:500,served:7,level:3,stoves:[null,null,null],decor:4,custom:{preserve:'future-field'}};

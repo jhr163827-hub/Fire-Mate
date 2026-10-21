@@ -114,6 +114,11 @@ function putPerson(layer,id,xy,color,walking=false,pose='standing',variant=0){
  if(!walking)el.dataset.view='front';
  el.classList.toggle('room-walking',walking);el.dataset.pose=pose;el.dataset.depth=xy[0]+xy[1];el.dataset.x=xy[0];el.dataset.y=xy[1];const transform='translate('+p[0]+' '+(p[1]-6)+')';if(el.getAttribute('transform')!==transform)el.setAttribute('transform',transform);poses.set(id,xy);return el;
 }
+// Patience bar and mood above a guest: 😊 → 😐 → 😟 while waiting, 😠 when leaving angry, 💰 for a tip.
+function putMood(layer,id,xy,mood){const el=actorNode(layer,id),p=point(...xy);const face=mood.angry?'😠':mood.phase==='leaving'&&mood.tip?'💰':mood.left==null?'😊':mood.left>.6?'😊':mood.left>.3?'😐':'😟';const w=34,fill=mood.left==null?0:Math.max(0,Math.min(1,mood.left));const color=fill>.6?'#5bb96a':fill>.3?'#e8b23c':'#e0644f';
+ const key=face+'|'+(mood.left==null?'n':Math.round(fill*20))+'|'+mood.type+'|'+mood.tip;if(el.dataset.mood!==key){el.dataset.mood=key;el.setAttribute('class','room-mood'+(mood.type==='vip'?' vip':''));el.setAttribute('aria-hidden','true');
+  el.innerHTML=(mood.type==='vip'?'<text class="room-mood-vip" x="0" y="-86">VIP</text>':'')+'<text class="room-mood-face" x="0" y="-70">'+face+(mood.phase==='leaving'&&mood.tip?' +'+mood.tip:'')+'</text>'+(mood.left==null?'':'<rect x="'+(-w/2)+'" y="-62" width="'+w+'" height="5" rx="2.5" class="room-mood-track"/><rect x="'+(-w/2)+'" y="-62" width="'+(w*fill).toFixed(1)+'" height="5" rx="2.5" fill="'+color+'"/>')}
+ el.dataset.depth=xy[0]+xy[1]+.03;const transform='translate('+p[0]+' '+p[1]+')';if(el.getAttribute('transform')!==transform)el.setAttribute('transform',transform);return el}
 function putFood(layer,id,xy,recipe,y=-23){const el=actorNode(layer,id),p=point(...xy);if(el.dataset.recipe!==String(recipe)||el.dataset.foodY!==String(y)){el.innerHTML=dish(recipe,y);el.dataset.recipe=recipe;el.dataset.foodY=y}el.dataset.depth=xy[0]+xy[1]+.02;const transform='translate('+p[0]+' '+p[1]+')';if(el.getAttribute('transform')!==transform)el.setAttribute('transform',transform);return el}
 function advanceVisualClock(){const now=performance.now();if(!motionPaused&&!editing&&!document.hidden)visualClock+=Math.max(0,now-visualLast);visualLast=now}
 function paintService(state,list,positions){
@@ -137,6 +142,7 @@ function paintService(state,list,positions){
    if(['entering','leaving'].includes(g.phase)){const amount=Math.sin(Math.PI*motion.progress[i])*(i?.1:-.1);xy=[xy[0]+amount,xy[1]-amount]}
   }
   const walking=!!paths&&['entering','leaving'].includes(g.phase);putPerson(layer,id,xy,i?'#aa7793':'#cb985a',walking,g.phase==='eating'?'eating':['waiting','serving'].includes(g.phase)?'seated':'standing',i);wanted.add(id);
+  {const mood=bridge.guestMood?.(i);if(mood&&(mood.phase==='waiting'||mood.angry||(mood.phase==='leaving'&&mood.tip)||mood.type==='vip')){putMood(layer,'mood-'+i,xy,mood);wanted.add('mood-'+i)}}
   if(g.phase==='eating'&&g.batch){const table=positions['table-'+i];if(!table)continue;putFood(layer,'meal-'+i,paths?.table||[table.x+.5,table.y+.5],g.batch.recipe);wanted.add('meal-'+i)}
  }
  const layoutKey=JSON.stringify(positions),count=state.staff?.version===1?state.staff.servers:1;

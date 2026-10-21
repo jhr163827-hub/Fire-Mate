@@ -86,6 +86,9 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertTrue(page.locator('#fmLedgerBudgetOverlay').is_visible())
             page.locator('#fmLedgerBudgetValue').fill('1500000')
             page.locator('#fmLedgerBudgetSave').click()
+            # The editor opens on home; the saved budget shows in the ledger.
+            self.assertTrue(page.locator('#view-home').is_visible())
+            page.locator('.bottomnav [data-view="calendar"]').click()
             self.assertEqual(page.locator('#fmCalendarBudget').inner_text(), '₩1,500,000 남음')
             page.locator('#fmLedgerAddBtn').click()
             page.locator('#entryAmount').fill('850000')

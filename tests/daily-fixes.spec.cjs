@@ -1,0 +1,104 @@
+const {test,expect}=require('@playwright/test');
+const path=require('path');
+const XLSX=require('xlsx');
+const SHEETJS=path.join(path.dirname(require.resolve('xlsx/package.json')),'dist','xlsx.full.min.js');
+const ago=n=>new Date(Date.now()-n*86400000).toISOString().slice(0,10);
+const month=ago(0).slice(0,7);
+const book=rows=>{const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단'],...rows]),'가계부 내역');return XLSX.write(wb,{type:'buffer',bookType:'xlsx'})};
+const seedWith=async(page,seed)=>page.addInitScript(seed=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');if(seed)localStorage.setItem('firemate_smart_v3',JSON.stringify(seed))},seed);
+const saved=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
+test.beforeEach(async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort());
+ await page.route('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',route=>route.fulfill({path:SHEETJS,contentType:'application/javascript'}));
+});
+test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+
+test('imports map 뱅크샐러드 분류 to app categories and learn a merchant fix',async({page})=>{
+ await page.goto('/index.html');
+ const load=async rows=>{await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
+  await page.locator('#bankExcelConfirm').click()};
+ await load([[ago(1),'08:00','지출','편의점','','GS25',-3000,'KRW','카드'],[ago(1),'09:00','지출','생활','','다이소',-5000,'KRW','카드'],
+  [ago(1),'10:00','수입','급여','','회사',3000000,'KRW','계좌'],[ago(1),'11:00','수입','금융수입','','이자',1200,'KRW','계좌'],[ago(1),'12:00','지출','알수없음','','무언가',-700,'KRW','카드']]);
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.bankExcelKey).length).toBe(5);
+ const cat=async memo=>(await saved(page)).tx.find(t=>t.memo===memo).category;
+ expect([await cat('GS25'),await cat('다이소'),await cat('회사'),await cat('이자'),await cat('무언가')]).toEqual(['식비','쇼핑','급여','배당·이자','기타']);
+ // Re-categorise one imported merchant by hand; the next import of that merchant follows it.
+ await page.locator('#settingsOverlay [data-close]').first().click();
+ await page.evaluate(()=>window.fmGo('calendar'));await page.locator('#fmModeList').click();
+ await page.locator('#fmLedgerAllTx .tx',{hasText:'다이소'}).locator('[data-edit]').click();
+ await page.locator('#entryCat').selectOption('주거·관리비');await page.locator('#saveEntry').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_category_rules_v1')))).toEqual({'expense|다이소':'주거·관리비'});
+ await load([[ago(0),'09:00','지출','생활','','다이소',-8000,'KRW','카드']]);
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='다이소').map(t=>t.category)).toEqual(['주거·관리비','주거·관리비']);
+});
+
+test('older imports can be tidied in one confirmed step without touching amounts',async({page})=>{
+ const key=(main,memo,amount,type='expense')=>[ago(2),'10:00',type,main,'',memo,amount,'카드'].join('|');
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},tx:[
+  {id:'a',date:ago(2),type:'expense',category:'편의점',amount:3000,memo:'GS25',bankExcelKey:key('편의점','GS25',3000)},
+  {id:'b',date:ago(2),type:'income',category:'기타 수입',amount:3000000,memo:'회사',bankExcelKey:key('급여','회사',3000000,'income')},
+  {id:'c',date:ago(2),type:'expense',category:'식비',amount:9000,memo:'직접'}]});
+ await page.goto('/index.html');
+ await page.locator('#settingsBottom').click();
+ const btn=page.locator('#fmTidyCategories');
+ await expect(btn).toHaveText('가져온 거래 분류 정리 (2건)');
+ const before=await saved(page);
+ await page.evaluate(()=>window.fmOpenImport());
+ await btn.click();await page.locator('#fmAskCancel').click();
+ expect(await saved(page)).toEqual(before);
+ await btn.click();await page.locator('#fmAskOk').click();
+ const after=await saved(page);
+ expect(after.tx.map(t=>[t.id,t.category,t.amount,t.date])).toEqual([['a','식비',3000,ago(2)],['b','급여',3000000,ago(2)],['c','식비',9000,ago(2)]]);
+ await expect(btn).toBeHidden();
+});
+
+test('a new month offers last budget and the recent average; analysis links to the one editor',async({page})=>{
+ const prev=(()=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);return d.toISOString().slice(0,7)})();
+ await seedWith(page,{theme:'dark',rec:[],budgets:{[prev]:1000000},tx:[{id:'p',date:prev+'-10',type:'expense',category:'식비',amount:1500000,memo:'지난달'}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#budget')).toBeHidden();
+ await page.locator('#fmInsightsBudgetLink').click();
+ await expect(page.locator('#fmLedgerBudgetOverlay')).toHaveClass(/show/);
+ await expect(page.locator('#fmLedgerBudgetValue')).toHaveValue('1,000,000');
+ const chips=page.locator('#fmBudgetSuggest button');
+ await expect(chips).toHaveText(['지난 예산 ₩1,000,000','최근 1개월 평균 지출 ₩1,500,000']);
+ await chips.nth(1).click();
+ await expect(page.locator('#fmLedgerBudgetValue')).toHaveValue('1,500,000');
+ // Nothing is saved until 저장.
+ expect((await saved(page)).budgets[month]).toBeUndefined();
+ await page.locator('#fmLedgerBudgetSave').click();
+ expect((await saved(page)).budgets[month]).toBe(1500000);
+});
+
+test('lists are grouped by day with totals and empty accounts fold away',async({page})=>{
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},balance:{fx:1400,cash:0,other:0,debt:0},
+  accounts:[{id:'k',name:'KB',kind:'cash',amount:5000000},{id:'e1',name:'빈1',kind:'investment',amount:0},{id:'e2',name:'빈2',kind:'investment',amount:0}],holdings:[],
+  tx:[{id:'1',date:ago(0),type:'expense',category:'식비',amount:9000,memo:'점심'},{id:'2',date:ago(0),type:'expense',category:'교통',amount:1500,memo:'버스'},{id:'3',date:ago(0),type:'income',category:'급여',amount:100000,memo:'용돈'}]});
+ await page.goto('/index.html');
+ // The full history list gets day headers (the 가계부 목록 already groups by day).
+ await page.evaluate(()=>window.fmGo('history'));
+ await expect(page.locator('#historyList .fm-tx-day').first().locator('span')).toHaveText('지출 ₩10,500 · 수입 ₩100,000');
+ await page.evaluate(()=>window.fmGo('calendar'));await page.locator('#fmModeList').click();
+ await page.locator('#fmLedgerAllTx details.fm-ledger-day > summary').first().evaluate(s=>{if(!s.parentElement.open)s.click()});
+ const row=page.locator('#fmLedgerAllTx .tx').first();
+ const box=await row.boundingBox();expect(box.height).toBeLessThanOrEqual(64);expect(box.height).toBeGreaterThanOrEqual(44);
+ // The whole row opens the editor.
+ await row.click();await expect(page.locator('#entryTitle')).toHaveText('거래 수정');
+ await page.locator('#entryOverlay [data-close]').first().click();
+ await page.evaluate(()=>window.fmGo('assets'));
+ const fold=page.locator('#accountSummary .fm-empty-accounts');
+ await expect(fold.locator('summary')).toHaveText(/^빈 계좌 [2-9]개$/);
+ await expect(page.locator('#accountSummary [data-inline-toggle="e1"]')).toBeHidden();
+ await expect(page.locator('#accountSummary [data-inline-toggle="k"]')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('the automatic morning quote refresh does not pop a toast',async({page})=>{
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},tx:[],accounts:[{id:'a',name:'A',kind:'investment',amount:0}],holdings:[{id:'h',accountId:'a',ticker:'SPY',type:'USD',qty:1,price:500,cost:400}]});
+ await page.goto('/index.html');
+ await expect(page.locator('#homeLastQuote')).toContainText(/조회|실패|시세/);
+ await page.waitForTimeout(1500);
+ await expect(page.locator('.toast')).toBeHidden();
+});

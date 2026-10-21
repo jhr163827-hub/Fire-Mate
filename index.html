@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.96</title><link rel="stylesheet" href="./app.css?v=3.5.96"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-96">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.97</title><link rel="stylesheet" href="./app.css?v=3.5.97"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-97">
 
 
 
@@ -200,14 +200,14 @@ const BANK_GMAIL_CLIENT_ID='627391217192-s72kf80usqqhjpghf8j1kp11jnru8nod.apps.g
 let bankGoogleTokenClient=null;
 function bankLoadScript(url,test){if(test())return Promise.resolve();return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=url;script.onload=()=>test()?resolve():reject(Error('도구 초기화 실패'));script.onerror=()=>reject(Error('도구를 불러오지 못했습니다'));document.head.appendChild(script)})}
 // Asked inside the import panel: a browser prompt() shows the site address as its title.
-function bankAskZipPassword(){const host=$('bankExcelPreview');return new Promise(resolve=>{const form=document.createElement('form');form.className='fm-zip-ask';form.innerHTML='<label for="bankZipPassword">뱅크샐러드 ZIP 암호를 입력해 주세요</label><div><input id="bankZipPassword" type="password" autocomplete="off" enterkeyhint="done"><button class="primary" type="submit">확인</button><button class="secondary" type="button">취소</button></div>';const main=$('fmZipRemember');if(main){const keep=document.createElement('label');keep.className='fm-zip-ask-keep';keep.innerHTML='<input type="checkbox" id="bankZipKeep"><span>이 휴대폰에 기억하기</span>';const box=keep.querySelector('input');box.checked=main.checked;box.onchange=()=>{main.checked=box.checked;main.dispatchEvent(new Event('change'))};form.append(keep)}const input=form.querySelector('input'),done=value=>{host.textContent=value?'ZIP 여는 중…':'';resolve(value)};form.onsubmit=e=>{e.preventDefault();done(input.value)};form.querySelector('.secondary').onclick=()=>done('');host.replaceChildren(form);host.scrollIntoView?.({block:'center'});input.focus()})}
+function bankAskZipPassword(){const host=$('bankExcelPreview');return new Promise(resolve=>{const form=document.createElement('form');form.className='fm-zip-ask';form.innerHTML='<label for="bankZipPassword">뱅크샐러드 ZIP 암호를 입력해 주세요</label><div><input id="bankZipPassword" type="password" autocomplete="off" enterkeyhint="done"><button class="primary" type="submit">확인</button><button class="secondary" type="button">취소</button></div>';const main=$('fmZipRemember');if(main){const keep=document.createElement('label');keep.className='fm-zip-ask-keep';keep.innerHTML='<input type="checkbox" id="bankZipKeep"><span>이 휴대폰에 기억하기</span>';const box=keep.querySelector('input');box.checked=true;main.checked=true;main.dispatchEvent(new Event('change'));box.onchange=()=>{main.checked=box.checked;main.dispatchEvent(new Event('change'))};form.append(keep)}const input=form.querySelector('input'),done=value=>{host.textContent=value?'ZIP 여는 중…':'';resolve(value)};form.onsubmit=e=>{e.preventDefault();done(input.value)};form.querySelector('.secondary').onclick=()=>done('');host.replaceChildren(form);host.scrollIntoView?.({block:'center'});input.focus()})}
 async function bankExtractXlsx(file){if(!/\.zip$/i.test(file.name))return file;if(file.size>15*1024*1024)throw Error('ZIP 파일은 15MB 이하만 지원합니다');await bankLoadScript('https://cdn.jsdelivr.net/npm/@zip.js/zip.js@2.7.62/dist/zip.min.js',()=>!!window.zip?.ZipReader);let kept=null;try{kept=localStorage.getItem('firemate_bank_zip_pwd_v1')}catch{}const pwd=sessionStorage.getItem('fm-bank-zip-password')||kept||await bankAskZipPassword();if(!pwd)throw Error('ZIP 암호가 필요합니다');const reader=new zip.ZipReader(new zip.BlobReader(file),{password:pwd});try{const entries=await reader.getEntries();const item=entries.find(x=>!x.directory&&/\.xlsx$/i.test(x.filename));if(!item)throw Error('ZIP 안에 XLSX 파일이 없습니다');if(item.uncompressedSize>15*1024*1024)throw Error('압축 해제 파일이 너무 큽니다');const blob=await item.getData(new zip.BlobWriter(),{password:pwd});sessionStorage.setItem('fm-bank-zip-password',pwd);try{if($('fmZipRemember')?.checked)localStorage.setItem('firemate_bank_zip_pwd_v1',pwd)}catch{}return new File([blob],item.filename,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}catch(err){sessionStorage.removeItem('fm-bank-zip-password');try{localStorage.removeItem('firemate_bank_zip_pwd_v1')}catch{}throw Error('ZIP 해제 실패: 암호나 파일 형식을 확인해 주세요 ('+err.message+')')}finally{await reader.close()}}
 async function bankGmailFetch(){const status=$('bankGmailStatus'),btn=$('bankGmailImport');btn.disabled=true;status.textContent='Google 로그인 준비 중…';try{// Reuse a still-valid access token (about 1 hour) and pass the remembered account as a login hint,
 // so after the first sign-in Google can finish without any taps. Nothing longer-lived is kept.
 const TOKEN_KEY='firemate_gmail_token_v1',HINT_KEY='firemate_gmail_hint_v1';const cachedToken=()=>{try{const t=JSON.parse(localStorage.getItem(TOKEN_KEY)||'null');return t&&typeof t.token==='string'&&t.exp>Date.now()+60000?t.token:null}catch{return null}};const requestToken=async()=>{await bankLoadScript('https://accounts.google.com/gsi/client',()=>!!window.google?.accounts?.oauth2);let hint='';try{hint=localStorage.getItem(HINT_KEY)||''}catch{}return new Promise((resolve,reject)=>{bankGoogleTokenClient=google.accounts.oauth2.initTokenClient({client_id:BANK_GMAIL_CLIENT_ID,scope:'https://www.googleapis.com/auth/gmail.readonly',hint,callback:res=>{if(res.error)return reject(Error(res.error));try{localStorage.setItem(TOKEN_KEY,JSON.stringify({token:res.access_token,exp:Date.now()+(Number(res.expires_in)||3600)*1000}))}catch{}resolve(res.access_token)},error_callback:()=>reject(Error('Google 로그인 창이 닫혔거나 차단됐습니다'))});bankGoogleTokenClient.requestAccessToken({prompt:''})})};let token=cachedToken();const reused=!!token;if(!token)token=await requestToken();let retried=false;const api=async url=>{const call=()=>fetch('https://gmail.googleapis.com/gmail/v1/users/me/'+url,{headers:{Authorization:'Bearer '+token}});let response=await call();if(response.status===401&&reused&&!retried){retried=true;try{localStorage.removeItem(TOKEN_KEY)}catch{}token=await requestToken();response=await call()}if(!response.ok){if(response.status===401){try{localStorage.removeItem(TOKEN_KEY)}catch{}}throw Error('Gmail 접근 오류 ('+response.status+')')}return response.json()};try{if(!localStorage.getItem(HINT_KEY)){const profile=await api('profile');if(profile?.emailAddress)localStorage.setItem(HINT_KEY,profile.emailAddress)}}catch{}status.textContent='뱅크샐러드 최신 메일 검색 중…';const list=await api('messages?q='+encodeURIComponent('from:(export-noreply@banksalad.com) subject:(뱅크샐러드) has:attachment filename:zip')+'&maxResults=30');if(!list.messages?.length)throw Error('뱅크샐러드 ZIP 첨부 메일을 찾지 못했습니다');let found=null;for(const entry of list.messages){const msg=await api('messages/'+encodeURIComponent(entry.id)+'?format=full');const headers=msg.payload?.headers||[];const subject=headers.find(x=>x.name.toLowerCase()==='subject')?.value||'';if(!subject.includes('뱅크샐러드'))continue;const parts=[];const visit=p=>{if(p.filename&&/\.zip$/i.test(p.filename)&&p.body?.attachmentId)parts.push(p);(p.parts||[]).forEach(visit)};visit(msg.payload||{});if(parts.length&&(!found||Number(msg.internalDate)>found.date))found={id:msg.id,date:Number(msg.internalDate),part:parts[0]}}if(!found)throw Error('일치하는 ZIP 첨부파일이 없습니다');status.textContent='최신 ZIP 다운로드 중…';const attachment=await api('messages/'+encodeURIComponent(found.id)+'/attachments/'+encodeURIComponent(found.part.body.attachmentId));const binary=atob((attachment.data||'').replace(/-/g,'+').replace(/_/g,'/'));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));const file=new File([bytes],found.part.filename,{type:'application/zip'});status.textContent='파일 다운로드 완료 · 미리보기 분석 중…';await bankProcessFile(file);status.textContent='최신 Gmail 첨부파일 분석 완료 · 아래 신규 거래를 확인해 주세요'}catch(err){status.textContent='Gmail 가져오기 실패: '+err.message}finally{btn.disabled=false}};
 $('bankGmailImport').onclick=bankGmailFetch;
 async function bankProcessFile(inputFile){bankPending=[];$('bankExcelConfirm').hidden=true;const host=$('bankExcelPreview');host.textContent='엑셀 분석 중…';try{const file=await bankExtractXlsx(inputFile);await bankLoadSheetJS();const workbook=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:false});if(!workbook.SheetNames.includes('가계부 내역'))throw Error('가계부 내역 시트가 없습니다');const rows=XLSX.utils.sheet_to_json(workbook.Sheets['가계부 내역'],{header:1,defval:''});const header=rows[0].map(x=>String(x).trim()),required=['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단'];if(!required.every(x=>header.includes(x)))throw Error('뱅크샐러드 가계부 열 구성이 다릅니다');const col=n=>header.indexOf(n);const existing=new Set(data.tx.filter(x=>x.bankExcelKey).map(x=>x.bankExcelKey));const inFile=new Set();let invalid=0,duplicates=0,excluded=0;for(const row of rows.slice(1)){if(row.every(x=>x===''||x===null))continue;const rawType=String(row[col('타입')]||'').trim(),type={'지출':'expense','수입':'income','이체':'transfer'}[rawType],date=bankExcelDate(row[col('날짜')]),amount=Math.abs(Number(String(row[col('금액')]).replace(/,/g,'')));if(!type||!date||!Number.isFinite(amount)||amount<=0){invalid++;continue}if(String(row[col('화폐')]).trim()!=='KRW'){excluded++;continue}const main=String(row[col('대분류')]||'').trim(),sub=String(row[col('소분류')]||'').trim(),memo=String(row[col('내용')]||'').trim(),payment=String(row[col('결제수단')]||'').trim(),time=bankExcelTime(row[col('시간')]);const category=bankCategoryFor(type,main,memo||sub);const key=bankExcelKey({date,time,type,category:main,subcategory:sub,memo,amount,payment});if(existing.has(key)||inFile.has(key)){duplicates++;continue}inFile.add(key);bankPending.push({id:uid(),date,type,amount,category,memo:(memo||sub||main).slice(0,120),bankExcelKey:key})}const sum=bankPending.filter(x=>x.type==='expense').reduce((n,x)=>n+x.amount,0);const skipped=invalid+excluded,more=(duplicates?' · 이미 있는 '+duplicates.toLocaleString('ko-KR')+'건 건너뜀':'')+(skipped?' · 읽지 못한 '+skipped+'건 제외':'');host.textContent=(bankPending.length?'새 거래 '+bankPending.length+'건 · 지출 '+won(sum):'새로 추가할 거래가 없어요')+more;$('bankExcelConfirm').textContent=bankPending.length+'건 가계부에 추가';$('bankExcelConfirm').hidden=!bankPending.length}catch(err){host.textContent='가져오기 실패: '+err.message;throw err}};
-$('bankExcelConfirm').onclick=()=>{if(!bankPending.length)return;const count=bankPending.length;const original=data.tx;const keys=new Set(original.filter(x=>x.bankExcelKey).map(x=>x.bankExcelKey));const fresh=bankPending.filter(x=>!keys.has(x.bankExcelKey));if(!fresh.length){bankPending=[];$('bankExcelConfirm').hidden=true;$('bankExcelPreview').textContent='새로 추가할 거래가 없어요. 기존 기록은 그대로 유지됩니다.';return}data.tx=[...original,...fresh];if(!persist()){data.tx=original;toast('저장에 실패해 가져오기를 취소했어요');return}let lastImport=null;try{lastImport=localStorage.getItem('firemate_last_import_v1');localStorage.setItem('firemate_last_import_v1',new Date().toISOString())}catch{}bankPending=[];$('bankExcelConfirm').hidden=true;$('bankExcelFile').value='';const preview=$('bankExcelPreview');preview.textContent=fresh.length+'건을 가계부에 추가했어요 · 계좌 잔액은 그대로예요'+(fresh.length<count?' · 중복 '+(count-fresh.length)+'건 제외':'');
+$('bankExcelConfirm').onclick=()=>{if(!bankPending.length)return;const count=bankPending.length;const original=data.tx;const keys=new Set(original.filter(x=>x.bankExcelKey).map(x=>x.bankExcelKey));const fresh=bankPending.filter(x=>!keys.has(x.bankExcelKey));if(!fresh.length){bankPending=[];$('bankExcelConfirm').hidden=true;$('bankExcelPreview').textContent='새로 추가할 거래가 없어요. 기존 기록은 그대로 유지됩니다.';return}data.tx=[...original,...fresh];if(!persist()){data.tx=original;toast('저장에 실패해 가져오기를 취소했어요');return}let lastImport=null;try{lastImport=localStorage.getItem('firemate_last_import_v1');localStorage.setItem('firemate_last_import_v1',new Date().toISOString())}catch{}bankPending=[];$('bankExcelConfirm').hidden=true;$('bankExcelFile').value='';const preview=$('bankExcelPreview');const byCat={};for(const x of fresh)if(x.type==='expense')byCat[x.category]=(byCat[x.category]||0)+1;const catLine=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c,n])=>c+' '+n).join(' · ');preview.textContent=fresh.length+'건을 가계부에 추가했어요'+(catLine?' · '+catLine:'')+(fresh.length<count?' · 중복 '+(count-fresh.length)+'건 제외':'')+' · 계좌 잔액은 그대로예요';
 // The tap on the labelled button is the confirmation; an in-app undo replaces the browser dialog.
 const ids=new Set(fresh.map(x=>x.id)),undo=document.createElement('button');undo.type='button';undo.className='secondary';undo.id='bankImportUndo';undo.textContent='되돌리기';undo.onclick=()=>{const before=data.tx;data.tx=before.filter(x=>!ids.has(x.id));if(!persist()){data.tx=before;toast('저장에 실패해 되돌리지 못했어요');return}try{lastImport?localStorage.setItem('firemate_last_import_v1',lastImport):localStorage.removeItem('firemate_last_import_v1')}catch{}preview.textContent='방금 가져온 '+ids.size+'건을 되돌렸어요';render();toast('가져오기를 되돌렸어요')};preview.append(' ',undo);render();toast('가계부 가져오기 완료')};
 $('bankExcelFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{await bankProcessFile(file)}catch(err){bankPending=[];$('bankExcelConfirm').hidden=true;$('bankExcelPreview').textContent='가져오기 실패: '+err.message}};
@@ -1745,7 +1745,7 @@ window.fmRefreshNetWorth=async()=>{if(!navigator.onLine){toast('인터넷 연결
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-96',VERSION='3.5.96';
+ const BUILD='fire-mate-v3-5-97',VERSION='3.5.97';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2447,9 +2447,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   const syncBackup=d=>{
    const last=readTime(LAST),snooze=readTime(SNOOZE);
    status.textContent=last===null?'마지막 백업: 아직 없어요':'마지막 백업: '+(daysSince(last)<1?'오늘':daysSince(last)+'일 전');
-   const start=firstDay(d),due=last!==null?daysSince(last)>=30:start!==null&&daysSince(start)>=3;
+   const start=firstDay(d),due=last!==null?daysSince(last)>=7:start!==null&&daysSince(start)>=3;
    nudge.hidden=!(hasData(d)&&due&&!(snooze!==null&&snooze>Date.now()));
-   if(!nudge.hidden)$('fmBackupNudgeText').textContent=(last===null?'아직 백업한 적이 없어요.':'마지막 백업이 '+daysSince(last)+'일 전이에요.')+' 기록은 이 휴대폰에만 저장돼서, 앱이나 브라우저 데이터를 지우면 사라져요.';
+   if(!nudge.hidden)$('fmBackupNudgeText').textContent=(last===null?'아직 백업한 적이 없어요.':'이번 주 백업할까요? 마지막 백업이 '+daysSince(last)+'일 전이에요.')+' 기록은 이 휴대폰에만 저장돼서, 앱이나 브라우저 데이터를 지우면 사라져요.';
   };
   const sync=()=>{const d=saved();syncQuote(d);syncBackup(d)};
   $('fmBackupNow').onclick=()=>{($('exportShare')||$('export'))?.click();setTimeout(sync,300)};
@@ -2612,7 +2612,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   remember.innerHTML='<input type="checkbox" id="fmZipRemember"><span id="fmZipRememberText">ZIP 암호를 이 휴대폰에 기억하기</span><button type="button" class="secondary" id="fmZipForget" hidden>지우기</button>';
   const confirmImport=$('bankExcelConfirm');
   const options=document.createElement('details');options.id='fmSyncOptions';options.innerHTML='<summary>가져오기 설정 · 파일로 가져오기</summary>';
-  options.append(remember,file);
+  const autoAdd=document.createElement('label');autoAdd.className='fm-zip-remember';autoAdd.innerHTML='<input type="checkbox" id="fmImportAuto"><span>홈에서 가져올 때 확인 없이 바로 추가 (되돌리기는 가능)</span>';
+  const autoBox=autoAdd.querySelector('input');try{autoBox.checked=localStorage.getItem('firemate_import_auto_v1')==='1'}catch{}autoBox.onchange=()=>{try{localStorage.setItem('firemate_import_auto_v1',autoBox.checked?'1':'0')}catch{}};
+  options.append(remember,autoAdd,file);
   panel.firstElementChild.append(gmail);
   panel.append($('bankGmailStatus'),$('bankExcelPreview'),confirmImport,options);
   // The panel is not in the document yet, so look inside the label rather than by global id.
@@ -2644,6 +2646,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   new MutationObserver(()=>{
    if(!fromHome||confirmImport.hidden||typeof window.fmAsk!=='function')return;
    fromHome=false;
+   let direct=false;try{direct=localStorage.getItem('firemate_import_auto_v1')==='1'}catch{}
+   if(direct){confirmImport.click();return}
    const summary=($('bankExcelPreview')?.textContent||'').split(' · ').join('\n');
    window.fmAsk('뱅크샐러드에서 가져온 내역\n'+summary+'\n\n가계부에 추가할까요? 계좌 잔액은 바뀌지 않아요.',{ok:'예',cancel:'아니오'}).then(yes=>{
     if(yes){confirmImport.click();return}
@@ -2825,7 +2829,14 @@ document.addEventListener('DOMContentLoaded',()=>{
    for(const s of d.snapshots||[])if(s&&typeof s.month==='string'&&Number.isFinite(Number(s.amount)))last.set(s.month,Number(s.amount));
    for(const s of [...(d.dailySnapshots||[])].sort((a,b)=>String(a.day).localeCompare(String(b.day))))if(s&&typeof s.day==='string'&&Number.isFinite(Number(s.amount)))last.set(s.day.slice(0,7),Number(s.amount));
    const months=[...last.keys()].sort().slice(-12),host=$('fmTrend');if(!host)return;
-   if(months.length<2){host.innerHTML='';$('fmTrendDelta').textContent='';$('fmTrendNote').textContent='매일 자산이 기록되면 월별 추이를 보여 드려요.';return}
+   if(months.length<2){
+    // Fewer than two months: show the daily records instead of an empty chart.
+    const days=[...(d.dailySnapshots||[])].filter(s=>s&&typeof s.day==='string'&&Number.isFinite(Number(s.amount))).sort((a,b)=>a.day.localeCompare(b.day)).slice(-30);
+    if(days.length<2){host.innerHTML='';$('fmTrendDelta').textContent='';$('fmTrendNote').textContent='이틀 이상 기록되면 추이를 보여 드려요. 앱을 열 때마다 자동으로 기록돼요.';return}
+    const vals=days.map(s=>Number(s.amount)),max=Math.max(...vals),min=Math.min(...vals),span=Math.max(1,max-min*0.98);
+    host.innerHTML=days.map((s,i)=>'<div title="'+s.day+' '+won(vals[i])+'"><i style="height:'+Math.max(6,(vals[i]-min*0.98)/span*100).toFixed(1)+'%"></i><span>'+(i===0||i===days.length-1||i%7===0?Number(s.day.slice(8)):'')+'</span></div>').join('');
+    const diff=vals.at(-1)-vals[0];$('fmTrendDelta').className=diff>=0?'fm-up':'fm-down';$('fmTrendDelta').textContent=days.length+'일 동안 '+(diff>=0?'+':'-')+won(Math.abs(diff));
+    $('fmTrendNote').textContent='일별 기록 기준 · 다음 달부터는 월별로 보여 드려요.';return}
    const vals=months.map(m=>last.get(m)),max=Math.max(...vals,1),min=Math.min(...vals,0);
    host.innerHTML=months.map((m,i)=>'<div title="'+m+' '+won(vals[i])+'"><i style="height:'+Math.max(4,(vals[i]-Math.min(0,min))/(max-Math.min(0,min))*100).toFixed(1)+'%"></i><span>'+Number(m.slice(5))+'월</span></div>').join('');
    const diff=vals.at(-1)-vals.at(-2);$('fmTrendDelta').className=diff>=0?'fm-up':'fm-down';$('fmTrendDelta').textContent='전월 대비 '+(diff>=0?'+':'-')+won(Math.abs(diff));
@@ -3092,6 +3103,51 @@ document.addEventListener('DOMContentLoaded',()=>{
   const retry=$('retryStocks'),list=$('fmQuoteFailuresList');if(retry&&list)list.after(retry);
   // 4. A planned shortfall is a warning, not an error.
   const cash=$('fmOverview-cashflow');if(cash){const tone=()=>{const v=cash.querySelector('strong');if(v&&/부족/.test(v.textContent)&&v.style.color!=='var(--yellow)')v.style.color='var(--yellow)'};new MutationObserver(tone).observe(cash,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style']});tone()}
+ });
+})();
+</script><script id="fm-start-v3597">
+/* First run: choose how to start (example data / record by hand / 뱅크샐러드). Example data is
+   offered only while nothing is saved, and leaving it clears it. Plus a "1년 앞당기려면" line on FIRE. */
+(()=>{
+ 'use strict';
+ const K='firemate_smart_v3',CHOICE='firemate_start_choice_v1',DEMO='firemate_demo_mode_v1';
+ const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ function sample(){
+  const tx=[],now=new Date(),shops=[['식비','김밥천국',8500],['카페·간식','스타벅스',5800],['교통','지하철',1550],['쇼핑','쿠팡',23900],['식비','배달의민족',21000],['문화·취미','CGV',14000]];
+  for(let n=0;n<75;n++){const day=new Date(now);day.setDate(day.getDate()-n);const k=ds(day);if(n%6===4)continue;
+   for(let j=0;j<1+(n%3===0?1:0);j++){const [c,m,a]=shops[(n*2+j)%shops.length];tx.push({id:'demo-'+n+'-'+j,date:k,type:'expense',category:c,amount:a+((n*137)%9)*100,memo:m})}
+   if(day.getDate()===25)tx.push({id:'demo-pay-'+n,date:k,type:'income',category:'급여',amount:3200000,memo:'월급'});
+   if(day.getDate()===5)tx.push({id:'demo-tel-'+n,date:k,type:'expense',category:'통신·구독',amount:55000,memo:'휴대폰 요금'})}
+  const snaps=[];for(let n=89;n>=0;n--){const day=new Date(now);day.setDate(day.getDate()-n);snaps.push({day:ds(day),amount:52000000+(89-n)*95000+((n*7919)%11)*40000,recordedAt:day.toISOString()})}
+  const month=ds(now).slice(0,7);
+  return {theme:'dark',tx,rec:[],favorites:[],budgets:{[month]:1500000},fire:{asset:5500,goal:65000,monthly:250,rate:6,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},
+   accounts:[{id:'demo-bank',name:'예시 입출금',kind:'cash',amount:8500000},{id:'demo-invest',name:'예시 투자 계좌',kind:'investment',amount:46000000,fire:true}],holdings:[],dailySnapshots:snaps,snapshots:[]};
+ }
+ document.addEventListener('DOMContentLoaded',()=>{
+  const $=id=>document.getElementById(id),home=$('view-home');if(!home)return;
+  let demo=false;try{demo=localStorage.getItem(DEMO)==='1'}catch{}
+  if(demo){const bar=document.createElement('div');bar.className='fm-demo-bar';bar.id='fmDemoBar';bar.innerHTML='<span>예시 데이터로 둘러보는 중이에요</span><button type="button" class="primary">내 데이터로 시작</button>';home.prepend(bar);
+   bar.querySelector('button').onclick=async()=>{if(window.fmAsk&&!await window.fmAsk('예시 데이터를 지우고 빈 상태에서 시작할까요?',{ok:'시작',cancel:'취소'}))return;try{localStorage.removeItem(K);localStorage.removeItem(DEMO);localStorage.setItem(CHOICE,'manual')}catch{}location.reload()};}
+  // First visit with nothing saved: one card with three ways to start (tests opt in explicitly).
+  let d={};try{d=JSON.parse(localStorage.getItem(K)||'{}')||{}}catch{}
+  const empty=!(d.tx||[]).length&&!(d.holdings||[]).length&&!(d.accounts||[]).some(a=>Number(a?.amount)>0);
+  let chosen=null;try{chosen=localStorage.getItem(CHOICE)}catch{}
+  if(!demo&&empty&&!chosen&&(!navigator.webdriver||window.__fmStartTest)){
+   const card=document.createElement('section');card.className='card fm-start';card.id='fmStart';
+   card.innerHTML='<h3>어떻게 시작할까요?</h3><p class="mini">언제든 바꿀 수 있어요.</p><div class="fm-start-options"><button type="button" data-start="demo"><strong>👀 예시로 둘러보기</strong><span>샘플 데이터로 화면을 먼저 봐요</span></button><button type="button" data-start="manual"><strong>✍️ 직접 기록으로 시작</strong><span>은행 연결 없이 손으로 적어요</span></button><button type="button" data-start="bank"><strong>📥 뱅크샐러드 연결</strong><span>Gmail로 받은 내역을 가져와요</span></button></div>';
+   home.prepend(card);
+   card.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{const how=b.dataset.start;try{localStorage.setItem(CHOICE,how)}catch{}
+    if(how==='demo'){try{localStorage.setItem(K,JSON.stringify(sample()));localStorage.setItem(DEMO,'1')}catch{window.fmToast?.('예시 데이터를 넣지 못했어요');return}location.reload();return}
+    card.remove();if(how==='manual')window.fmOpenEntry?.();else window.fmImportFromHome?.()});
+  }
+  // FIRE: how much more a month brings the date one year closer (same monthly compounding as the plan).
+  const sooner=document.createElement('p');sooner.id='fmFireSooner';sooner.className='fm-fire-sooner';
+  ($('fmRetirementETA')||$('fireYears'))?.after(sooner);
+  const months=(asset,monthly,rate,goal)=>{const r=Math.pow(1+rate/100,1/12)-1;let v=asset;for(let i=0;i<=1200;i++){if(v>=goal)return i;v=v*(1+r)+monthly}return Infinity};
+  const sync=()=>{const p=window.fmFireViewState?.plan;sooner.textContent='';if(!p||!(p.goal>0))return;const asset=Number(p.net)/10000,base=months(asset,p.monthly,p.rate,p.goal);if(!Number.isFinite(base)||base<=12)return;
+   let lo=p.monthly,hi=Math.max(p.monthly*4,p.goal);for(let k=0;k<40;k++){const mid=(lo+hi)/2;if(months(asset,mid,p.rate,p.goal)<=base-12)hi=mid;else lo=mid}
+   const extra=Math.ceil(hi-p.monthly);if(extra>0&&extra<100000)sooner.textContent='1년 앞당기려면 매달 '+extra.toLocaleString('ko-KR')+'만 원 더 모으면 돼요.'};
+  document.addEventListener('fm-fire-view-updated',sync);sync();
  });
 })();
 </script></body></html>

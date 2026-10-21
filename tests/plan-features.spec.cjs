@@ -17,7 +17,7 @@ test('home shows the month pace and an over-budget category; the decorative circ
  await page.addInitScript(()=>localStorage.setItem('firemate_category_budgets_v1',JSON.stringify({'식비':50000})));
  await page.goto('/index.html');
  const pace=page.locator('#fmPaceLine');
- if(new Date().getDate()>=3)await expect(pace).toContainText('이 속도면 이번 달');
+ if(new Date().getDate()>=3)await expect(pace).toContainText('이 속도면 월');
  await expect(pace).toContainText('식비 예산 초과');
  expect(await page.locator('#view-home .fm-home-wealth').evaluate(e=>getComputedStyle(e,'::before').display)).toBe('none');
 });

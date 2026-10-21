@@ -42,7 +42,9 @@ test('older imports can be tidied in one confirmed step without touching amounts
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const btn=page.locator('#fmTidyCategories');
- await expect(btn).toHaveText('가져온 거래 분류 정리 (2건)');
+ // The raw bank label 편의점 is already fixed on load; the income row still waits for the confirmed tidy.
+ expect((await saved(page)).tx.find(t=>t.id==='a').category).toBe('식비');
+ await expect(btn).toHaveText('가져온 거래 분류 정리 (1건)');
  const before=await saved(page);
  await page.evaluate(()=>window.fmOpenImport());
  await btn.click();await page.locator('#fmAskCancel').click();

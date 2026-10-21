@@ -18,7 +18,7 @@ const setup=async(page,{expireFirst401=false}={})=>{
  return calls;
 };
 const importGmail=async page=>{
- await page.evaluate(()=>window.fmGo('calendar'));
+ await page.evaluate(()=>window.fmOpenImport());
  await page.locator('#bankGmailImport').click();
  await expect(page.locator('#bankGmailStatus')).toContainText('뱅크샐러드 ZIP 첨부 메일을 찾지 못했습니다');
 };
@@ -38,6 +38,7 @@ test('first import signs in once, then reuses the token and remembers the accoun
  await importGmail(page);
  expect(await page.evaluate(()=>window.__gsi?.requests.length||0)).toBe(0);
  expect(calls.at(-1).auth).toBe('Bearer token-1');
+ await page.locator('#fmSyncOptions > summary').click();
  await expect(page.locator('#fmGmailForget')).toBeVisible();
 });
 
@@ -66,6 +67,7 @@ test('"Google 로그인 기억 지우기" forgets the token and the account',asy
  await setup(page);
  await page.goto('/index.html');
  await importGmail(page);
+ await page.locator('#fmSyncOptions > summary').click();
  await page.locator('#fmGmailForget').click();
  expect(await page.evaluate(()=>[localStorage.getItem('firemate_gmail_token_v1'),localStorage.getItem('firemate_gmail_hint_v1')])).toEqual([null,null]);
  expect(await page.evaluate(()=>window.__gsi.revoked)).toBe('token-1');

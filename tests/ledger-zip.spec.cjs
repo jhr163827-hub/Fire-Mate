@@ -18,24 +18,28 @@ test.beforeEach(async({page})=>{
  await page.route('https://cdn.jsdelivr.net/npm/@zip.js/zip.js@2.7.62/dist/zip.min.js',route=>route.fulfill({path:ZIPJS,contentType:'application/javascript'}));
 });
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+// The password is asked in the panel, never with a browser prompt (which shows the site address).
+const answerZip=async(page,value)=>{const input=page.locator('#fmLedgerSync #bankZipPassword');await expect(input).toBeVisible();await input.fill(value);await page.locator('#fmLedgerSync .fm-zip-ask button[type=submit]').click()};
+const noBrowserDialogs=page=>{const seen=[];page.on('dialog',dialog=>{seen.push(dialog.type());dialog.dismiss()});return seen};
 const importZip=async(page,day)=>{
- await page.evaluate(()=>window.fmGo('calendar'));
+ await page.evaluate(()=>window.fmOpenImport());
  await page.addScriptTag({path:ZIPJS});
  const buffer=await zipFile(page,day);
  await page.locator('#bankExcelFile').setInputFiles({name:'banksalad.zip',mimeType:'application/zip',buffer});
 };
 
 test('ZIP password is asked once and remembered only when the user opts in',async({page})=>{
- let prompts=0;
- page.on('dialog',dialog=>{if(dialog.type()==='prompt'){prompts++;dialog.accept(PASSWORD)}else dialog.accept()});
+ const dialogs=noBrowserDialogs(page);
  await page.goto('/index.html');
- await page.evaluate(()=>window.fmGo('calendar'));
+ await page.evaluate(()=>window.fmOpenImport());
  await expect(page.locator('#fmZipRemember')).not.toBeChecked();
- await page.locator('#fmZipRemember').check();
  await importZip(page,'2026-10-18');
+ // The opt-in sits right next to the password field.
+ await expect(page.locator('#bankZipKeep')).not.toBeChecked();
+ await page.locator('#bankZipKeep').check();
+ await answerZip(page,PASSWORD);
  await expect(page.locator('#bankExcelConfirm')).toBeVisible();
  await page.locator('#bankExcelConfirm').click();
- expect(prompts).toBe(1);
  expect(await page.evaluate(()=>localStorage.getItem('firemate_bank_zip_pwd_v1'))).toBe(PASSWORD);
  await expect(page.locator('#fmZipRememberText')).toHaveText('ZIP 암호를 기억하고 있어요');
  await expect(page.locator('#fmHomeSyncNote')).toHaveText('오늘 가져옴');
@@ -44,22 +48,39 @@ test('ZIP password is asked once and remembered only when the user opts in',asyn
  await page.reload();
  await importZip(page,'2026-10-19');
  await expect(page.locator('#bankExcelConfirm')).toBeVisible();
- expect(prompts).toBe(1);
+ await expect(page.locator('#bankZipPassword')).toHaveCount(0);
+ expect(dialogs).toEqual([]);
  // 지우기 forgets it.
+ await page.locator('#fmSyncOptions > summary').click();
  await page.locator('#fmZipForget').click();
  expect(await page.evaluate(()=>localStorage.getItem('firemate_bank_zip_pwd_v1'))).toBeNull();
  await expect(page.locator('#fmZipRemember')).not.toBeChecked();
 });
 
 test('without opting in the password stays for this session only, and a wrong one is forgotten',async({page})=>{
- const answers=['wrong-pass',PASSWORD];
- page.on('dialog',dialog=>{if(dialog.type()==='prompt')dialog.accept(answers.shift());else dialog.accept()});
+ const dialogs=noBrowserDialogs(page);
  await page.goto('/index.html');
  await importZip(page,'2026-10-18');
+ await answerZip(page,'wrong-pass');
  await expect(page.locator('#bankExcelPreview')).toContainText('ZIP 해제 실패');
  expect(await page.evaluate(()=>[sessionStorage.getItem('fm-bank-zip-password'),localStorage.getItem('firemate_bank_zip_pwd_v1')])).toEqual([null,null]);
  await page.locator('#bankExcelFile').setInputFiles([]);
  await importZip(page,'2026-10-18');
+ await answerZip(page,PASSWORD);
  await expect(page.locator('#bankExcelConfirm')).toBeVisible();
  expect(await page.evaluate(()=>[sessionStorage.getItem('fm-bank-zip-password'),localStorage.getItem('firemate_bank_zip_pwd_v1')])).toEqual([PASSWORD,null]);
+ expect(dialogs).toEqual([]);
+});
+
+test('cancelling the in-app password ask stops the import without changing data',async({page})=>{
+ noBrowserDialogs(page);
+ await page.goto('/index.html');
+ const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
+ await importZip(page,'2026-10-18');
+ await expect(page.locator('#bankZipPassword')).toBeVisible();
+ expect((await page.locator('#bankZipPassword').boundingBox()).height).toBeGreaterThanOrEqual(44);
+ await page.locator('#fmLedgerSync .fm-zip-ask button[type=button]').click();
+ await expect(page.locator('#bankExcelPreview')).toContainText('ZIP 암호가 필요합니다');
+ await expect(page.locator('#bankExcelConfirm')).toBeHidden();
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).toBe(before);
 });

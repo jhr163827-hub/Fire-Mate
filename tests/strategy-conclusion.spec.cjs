@@ -15,8 +15,8 @@ test('strategy card opens with a takeaway that matches the published comparison'
  const q=await page.evaluate(()=>window.fmFireViewState.quick);
  const surplus=q.net-q.spend,diff=q.saleEnd-q.dividendEnd;
  expect(await text(box.locator('p'))).toEqual([
-  surplus>=0?'세후 배당만으로 1년 생활비를 채우고 '+won(surplus)+'이 남아요.':'세후 배당은 1년 생활비보다 '+won(surplus)+' 부족해요.',
-  '1년 후 남는 자산은 '+(diff>0?'자가배당':'배당 FIRE')+'이 '+won(diff)+' 더 많아요.'
+  surplus>=0?'배당만으로 살면 1년 생활비를 내고도 '+won(surplus)+'이 남아요.':'배당만으로 살면 1년 생활비가 '+won(surplus)+' 모자라요.',
+  (diff>0?'필요한 만큼 팔아 쓰면 ':'배당만으로 살면 ')+'1년 뒤 자산이 '+won(diff)+' 더 남아요.'
  ]);
  // Each amount stays on one line inside the takeaway.
  for(const line of await box.locator('p').all())expect(await line.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
@@ -42,8 +42,8 @@ test('long comparison takeaway waits for a result and follows mode changes',asyn
  const d=await page.evaluate(()=>window.fmFireViewState.detail);
  const [dividend,sale]=d.balances,diff=sale-dividend;
  expect(await text(box.locator('p'))).toEqual([
-  '10년 후 배당 FIRE '+won(dividend)+' · 자가배당 '+won(sale),
-  '10년 후 남는 자산은 '+(diff>0?'자가배당':'배당 FIRE')+'이 '+won(diff)+' 더 많아요.'
+  '10년 뒤 남는 자산 · 배당만 '+won(dividend)+' · 팔아 쓰기 '+won(sale),
+  (diff>0?'필요한 만큼 팔아 쓰면 ':'배당만으로 살면 ')+'10년 뒤 자산이 '+won(diff)+' 더 남아요.'
  ]);
  await page.locator('#fmStrModeQuick').click();
  await expect(box.locator('p').first()).toContainText('1년 생활비');

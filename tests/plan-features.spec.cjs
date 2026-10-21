@@ -40,7 +40,8 @@ test('소비 분석 finds fixed costs and saves category budgets in their own ke
 test('assets show a monthly net-worth trend with the change from last month',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('assets'));
- await expect(page.locator('#fmTrend > div')).toHaveCount(3);
+ await page.locator('#fmAssetQuickAnalysis').click();
+ await expect(page.locator('#fmAssetAnalysisView #fmTrend > div')).toHaveCount(3);
  await expect(page.locator('#fmTrendDelta')).toHaveText('전월 대비 +₩1,000,000');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });

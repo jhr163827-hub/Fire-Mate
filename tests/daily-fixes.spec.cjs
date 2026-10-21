@@ -100,5 +100,5 @@ test('the automatic morning quote refresh does not pop a toast',async({page})=>{
  await page.goto('/index.html');
  await expect(page.locator('#homeLastQuote')).toContainText(/조회|실패|시세/);
  await page.waitForTimeout(1500);
- await expect(page.locator('.toast')).toBeHidden();
+ await expect(page.locator('#toast')).toBeHidden();
 });

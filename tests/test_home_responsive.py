@@ -391,6 +391,8 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.locator('#fmSpendingOpen').click()
                         self.assertTrue(page.locator('#view-insights').is_visible())
                         self.assertTrue(page.locator('#sixChart').is_visible())
+                        # Recent transactions live in the folded '이번 달 흐름 더 보기' section.
+                        page.locator('#fmInsightsMore>summary').click()
                         self.assertTrue(page.locator('#recent').is_visible())
                         page.locator('#fmInsightsBack').click()
                         page.wait_for_selector('#view-home.active')
@@ -1600,6 +1602,7 @@ class HomeResponsiveTest(unittest.TestCase):
                                 page.locator('#theme').click()
                             page.locator('.bottomnav [data-view="home"]').click()
                             page.locator('#fmSpendingOpen').click()
+                            page.evaluate("document.getElementById('fmInsightsMore').open=true")
                             page.locator('#view-insights .fm-home-transactions [data-go="history"]').click()
                             self.assertTrue(page.locator('#historyList [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'history')

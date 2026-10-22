@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(cashValue&&/부족/.test(cashValue.textContent))cashValue.style.color='var(--yellow)';
    metric('fmOverview-portfolio',state.portfolio?{value:state.portfolio.value,note:'목표 구성과 실제 보유 비교 · 금액 목표와 별개'}:null);
    $('fmOpenCalculator').textContent=state.draft?.dirty?'조건 비교 •':'조건 비교';$('fmOpenCalculator').setAttribute('aria-label',state.draft?.dirty?'조건 비교 · 미저장 조건 이어보기':'조건 비교');
-   const p=state.plan;if(p)$('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 순자산은 남은 금액·도달 계산에서 0으로 가정':'');
+   const p=state.plan;if(p)$('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 운용자산은 남은 금액·도달 계산에서 0으로 가정':'');
    const difference=$('fmFirePlanDifference'),different=p&&state.portfolio&&Math.abs(p.goal-state.portfolio.totalTarget)>0.01;
    difference.hidden=!different;if(different)difference.textContent='금액 목표와 배분 합계가 달라요. 생활비는 목표 배분 기준입니다.';
    $('fmOverview-strategy').textContent=state.mode==='detail'?(state.detail?.text||'종목별 장기 비교 · 조건 확인 후 계산'):'배당·자산 매도 비교 · 저장 계획에 미반영';

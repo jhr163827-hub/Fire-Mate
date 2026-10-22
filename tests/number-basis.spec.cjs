@@ -4,11 +4,21 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const seed=extra=>({theme:'dark',tx:[],rec:[],budgets:{},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:10000000,other:0,debt:0},accounts:[{id:'a',name:'투자',kind:'investment',amount:30000000,fire:true}],holdings:[],dailySnapshots:[],...extra});
 const load=async(page,s)=>{await page.addInitScript(s=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify(s))},s);await page.goto('/index.html')};
 
-test('FIRE says when its net worth includes assets excluded from FIRE, and the figures match 자산',async({page})=>{
+test('FIRE progress counts only FIRE assets everywhere; net worth stays the full total',async({page})=>{
  await load(page,seed({accounts:[{id:'a',name:'투자',kind:'investment',amount:30000000,fire:true},{id:'b',name:'전세보증금',kind:'cash',amount:100000000,fire:false}]}));
+ // 4,000만 of 6.5억 → 6.2%; the excluded deposit must not count toward the goal.
+ await expect(page.locator('#homeTotalAssets')).toHaveText('₩140,000,000');
+ await expect(page.locator('#homeAssetPercent')).toHaveText('6.2%');
  await page.evaluate(()=>window.fmGo('fire'));
- await expect(page.locator('#fireAsset')).toHaveText('1억 4,000만 원');
- await expect(page.locator('#fmFireBasisGap')).toHaveText('FIRE 제외 자산 1억 원 포함 · 운용자산만 4,000만 원');
+ await expect(page.locator('#toast')).toContainText('운용자산 기준');
+ await expect(page.locator('#fireAsset')).toHaveText('4,000만 원');
+ await expect(page.locator('#firePct')).toHaveText('6.2%');
+ await expect(page.locator('#fmFireBasisGap')).toHaveText('전체 순자산 1억 4,000만 원 · FIRE 제외 1억 원');
+ expect(await page.evaluate(()=>window.fmFireViewState.plan.net)).toBe(40000000);
+ await page.evaluate(()=>window.fmGo('assets'));
+ await expect(page.locator('#assetGoalPct')).toHaveText('6.2%');
+ await page.reload();
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_fire_basis_v1'))).toBe('1');
  await page.evaluate(()=>window.fmGo('assets'));
  await expect(page.locator('#fireLiquidSummary')).toContainText('FIRE 운용자산 ₩40,000,000 · 총순자산 ₩140,000,000');
  await expect(page.locator('#netWorth')).toHaveText('₩140,000,000');

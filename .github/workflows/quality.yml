@@ -15,6 +15,11 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
+      # The Chromium download is reused between runs; system packages are still installed each time.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package.json') }}
       - run: npx playwright install --with-deps chromium
       - run: npm run test:finance
       - run: npm run test:e2e

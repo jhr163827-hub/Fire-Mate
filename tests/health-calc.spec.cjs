@@ -30,3 +30,13 @@ test('the result goes into the 생활비 health-insurance field without saving b
  expect(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).toBe(before);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
+
+test('배당 금액 채우기 uses the computed pre-tax payout, not the wording on screen',async({page})=>{
+ await open(page);
+ const gross=await page.evaluate(()=>window.fmFireViewState?.cashflow?.monthlyGrossIncome);
+ expect(gross).toBeGreaterThan(0);
+ // Rewording the 생활비 card must not change what gets filled in.
+ await page.evaluate(()=>{for(const el of document.querySelectorAll('#fmFireLife *'))if(el.childElementCount===0&&/세전/.test(el.textContent))el.textContent='표시 문구 변경'});
+ await page.locator('#fmHcFill').click();
+ await expect(page.locator('#fmHc-finance')).toHaveValue(String(Math.round(gross*12)));
+});

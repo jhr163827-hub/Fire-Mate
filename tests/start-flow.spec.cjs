@@ -46,3 +46,28 @@ test('backups are suggested weekly',async({page})=>{
  await page.goto('/index.html');
  await expect(page.locator('#fmBackupNudgeText')).toContainText('이번 주 백업할까요? 마지막 백업이 8일 전이에요');
 });
+
+test('cash, debt, budgets or FIRE settings alone are not mistaken for a first visit',async({page})=>{
+ await page.addInitScript(()=>{window.__fmStartTest=true});
+ for(const seed of [{balance:{fx:1400,cash:5000000,other:0,debt:0}},{balance:{fx:1400,cash:0,other:0,debt:30000000}},{budgets:{'2026-01':900000}},{fire:{asset:15000,goal:90000,monthly:300,rate:7,withdrawal:4}},{dailySnapshots:[{day:'2026-01-02',amount:1000000}]}]){
+  await page.evaluate(s=>localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],rec:[],holdings:[],accounts:[],...s})),seed).catch(()=>{});
+  await page.goto('/index.html');
+  await page.evaluate(s=>{localStorage.clear();localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],rec:[],holdings:[],accounts:[],...s}))},seed);
+  await page.reload();
+  await expect(page.locator('#fmStart'),JSON.stringify(seed)).toHaveCount(0);
+ }
+});
+
+test('leaving example data brings back what was saved before it',async({page})=>{
+ await page.addInitScript(()=>{window.__fmStartTest=true});
+ await page.goto('/index.html');
+ const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
+ await page.locator('#fmStart [data-start="demo"]').click();
+ await expect(page.locator('#fmDemoBar')).toBeVisible();
+ await page.locator('#fmDemoBar button').click();await page.locator('#fmAskOk').click();
+ await page.waitForLoadState('load');
+ await expect(page.locator('#fmDemoBar')).toHaveCount(0);
+ const after=await page.evaluate(()=>[localStorage.getItem('firemate_smart_v3'),localStorage.getItem('firemate_demo_backup_v1')]);
+ expect(JSON.parse(after[0]).tx).toEqual(JSON.parse(before).tx);
+ expect(after[1]).toBeNull();
+});

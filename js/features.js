@@ -7,17 +7,16 @@
 //   4. fm-strategy-conclusion — FIRE · 전략 비교
 //   5. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
 //   6. fm-settings-order — 설정 · 순서
-//   7. fm-assets-balance-row — 자산 · 현금·기타·부채
-//   8. fm-ledger-sync — 설정 · Gmail·파일 가져오기
-//   9. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
-//  10. fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리
-//  11. fm-plan-v3587 — 홈·자산 · 이번 달 속도, 순자산 추이, 당겨서 업데이트
-//  12. fm-polish-v3588 — 공통 · 다듬기
-//  13. fm-feedback-v3589 — 공통 · 알림(fmToast)
-//  14. fm-health-calc-v3590 — 설정 · 건보료 계산기
-//  15. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  16. fm-design-v3596 — 공통 · 디자인
-//  17. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//   7. fm-ledger-sync — 설정 · Gmail·파일 가져오기
+//   8. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
+//   9. fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리
+//  10. fm-plan-v3587 — 홈·자산 · 당겨서 업데이트
+//  11. fm-polish-v3588 — 공통 · 다듬기
+//  12. fm-feedback-v3589 — 공통 · 알림(fmToast)
+//  13. fm-health-calc-v3590 — 설정 · 건보료 계산기
+//  14. fm-safety-v3592 — 설정 · 저장 보호, 분류
+//  15. fm-design-v3596 — 공통 · 디자인
+//  16. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — FIRE·은퇴·자산 · 화면 동작 =====
@@ -394,33 +393,6 @@ try{
 }catch(e){console.error('fm-settings-order',e)}
 
 
-// ===== fm-assets-balance-row — 자산 · 현금·기타·부채 =====
-try{
-/* Cash, other assets and debt kept in balance count toward net worth but had no visible home once
-   their settings entry was hidden. Show them under the accounts and reopen the existing editor. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const details=$('accountDetails'),open=$('openLegacyAssets');
-  if(!details||!open)return;
-  const row=document.createElement('div');row.id='fmBalanceRow';
-  row.innerHTML='<div><strong>현금·기타 자산·부채</strong><span id="fmBalanceRowText"></span></div><button type="button" class="secondary" id="fmBalanceRowEdit" aria-label="현금·기타 자산·부채 관리">관리</button>';
-  details.after(row);
-  const title=$('legacyAssetsOverlay')?.querySelector('h2');if(title)title.textContent='현금·기타 자산·부채';
-  $('fmBalanceRowEdit').onclick=()=>open.click();
-  const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
-  const sync=()=>{
-   let b=fmLiveData().balance||{};
-   const parts=[['현금·예금',b.cash],['기타',b.other],['부채',b.debt]].filter(([,v])=>Number(v)>0).map(([k,v])=>k+' '+(k==='부채'?'-':'')+won(Number(v)));
-   $('fmBalanceRowText').textContent=parts.length?parts.join(' · ')+' · 순자산에 포함':'없음 · 대출 같은 부채도 여기서 입력해요';
-  };
-  for(const id of ['netWorth','homeTotalAssets'])if($(id))new MutationObserver(sync).observe($(id),{childList:true,characterData:true,subtree:true});
-  sync();
- });
-})();
-}catch(e){console.error('fm-assets-balance-row',e)}
-
 
 // ===== fm-ledger-sync — 설정 · Gmail·파일 가져오기 =====
 try{
@@ -544,7 +516,7 @@ try{
 }catch(e){console.error('fm-in-app-confirm',e)}
 
 
-// ===== fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리 =====
+// ===== fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리 =====
 try{
 (()=>{
  'use strict';
@@ -552,18 +524,6 @@ try{
   const $=id=>document.getElementById(id);
   const saved=fmLiveData;
   const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
-  // Fold accounts that hold nothing, but only once some account has value (new profiles keep the starter list).
-  const fold=()=>{
-   const holder=$('accountSummary');if(!holder||holder.querySelector(':scope>.fm-empty-accounts'))return;
-   const d=saved(),hs=d.holdings||[];
-   const empty=a=>!(Number(a.amount)>0)&&!(a.items||[]).length&&!hs.some(h=>h.accountId===a.id);
-   const accounts=d.accounts||[];if(!accounts.some(a=>!empty(a)))return;
-   const rows=[...holder.querySelectorAll(':scope>.fm-account-row')].filter(r=>{const id=r.querySelector('[data-inline-toggle]')?.dataset.inlineToggle;const a=accounts.find(x=>x.id===id);return a&&empty(a)&&r.querySelector('[data-inline-toggle]')?.getAttribute('aria-expanded')!=='true'&&!r.querySelector('[data-move-up]')});
-   if(rows.length<2)return;
-   const box=document.createElement('details');box.className='fm-empty-accounts';box.innerHTML='<summary></summary>';box.firstChild.textContent='빈 계좌 '+rows.length+'개';
-   box.append(...rows);holder.append(box);
-  };
-  const holder=$('accountSummary');if(holder){fold();new MutationObserver(fold).observe(holder,{childList:true})}
   // Settings: one tap tidies categories of rows imported before the new mapping.
   const mount=$('fmLedgerImportMount');
   if(mount){const tiny=document.createElement('label');tiny.className='fm-zip-remember';tiny.id='fmHideTinyIncome';tiny.innerHTML='<input type="checkbox"><span>1,000원 미만 이자·배당·캐시백은 가계부에서 숨기기</span>';const box=tiny.querySelector('input');try{box.checked=localStorage.getItem('firemate_hide_small_income_v1')!=='0'}catch{box.checked=true}box.onchange=()=>{try{localStorage.setItem('firemate_hide_small_income_v1',box.checked?'1':'0')}catch{}location.reload()};mount.after(tiny)}
@@ -582,52 +542,14 @@ try{
 }catch(e){console.error('fm-daily-fixes-v3586',e)}
 
 
-// ===== fm-plan-v3587 — 홈·자산 · 이번 달 속도, 순자산 추이, 당겨서 업데이트 =====
+// ===== fm-plan-v3587 — 홈·자산 · 당겨서 업데이트 =====
 try{
-/* Month pace on home, net-worth trend, import nudge, pull-to-refresh. Fixed costs and category
-   budgets on 소비 분석 are drawn by the main script (fmRenderFixed / fmRenderCatBudget). */
+/* Pull down on 홈 or 자산 to refresh quotes and net worth. */
 (()=>{
  'use strict';
  document.addEventListener('DOMContentLoaded',()=>{
   const $=id=>document.getElementById(id);
-  const CATB='firemate_category_budgets_v1';
-  const load=fmLiveData;
-  const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
-  const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-  const expenses=(d,m)=>(d.tx||[]).filter(t=>t&&t.type==='expense'&&typeof t.date==='string'&&t.date.slice(0,7)===m);
-  const sum=rows=>rows.reduce((a,t)=>a+(Number(t.amount)||0),0);
-  const catBudgets=()=>{try{const v=JSON.parse(localStorage.getItem(CATB)||'{}');return v&&typeof v==='object'?v:{}}catch{return {}}};
   const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-  // 9. Net-worth trend from the daily records the app already keeps.
-  const assetsCard=null,analysisView=$('fmAssetAnalysisView');
-  const trend=el('div','card fm-card-x','<div class="fm-trend-head"><h3>순자산 추이</h3><strong id="fmTrendDelta"></strong></div><div class="fm-trend" id="fmTrend" role="img" aria-label="최근 12개월 순자산"></div><p class="mini" id="fmTrendNote" style="margin-top:8px"></p>');trend.id='fmTrendCard';
-  if(analysisView)analysisView.prepend(trend);else if(assetsCard)assetsCard.after(trend);
-  const renderTrend=()=>{
-   const d=load(),last=new Map();
-   for(const s of d.snapshots||[])if(s&&typeof s.month==='string'&&Number.isFinite(Number(s.amount)))last.set(s.month,Number(s.amount));
-   for(const s of [...(d.dailySnapshots||[])].sort((a,b)=>String(a.day).localeCompare(String(b.day))))if(s&&typeof s.day==='string'&&Number.isFinite(Number(s.amount)))last.set(s.day.slice(0,7),Number(s.amount));
-   const months=[...last.keys()].sort().slice(-12),host=$('fmTrend');if(!host)return;
-   if(months.length<2){
-    // Fewer than two months: show the daily records instead of an empty chart.
-    const days=[...(d.dailySnapshots||[])].filter(s=>s&&typeof s.day==='string'&&Number.isFinite(Number(s.amount))).sort((a,b)=>a.day.localeCompare(b.day)).slice(-30);
-    if(days.length<2){host.innerHTML='';$('fmTrendDelta').textContent='';$('fmTrendNote').textContent='이틀 이상 기록되면 추이를 보여 드려요. 앱을 열 때마다 자동으로 기록돼요.';return}
-    const vals=days.map(s=>Number(s.amount)),max=Math.max(...vals),min=Math.min(...vals),span=Math.max(1,max-min*0.98);
-    host.innerHTML=days.map((s,i)=>'<div title="'+s.day+' '+won(vals[i])+'"><i style="height:'+Math.max(6,(vals[i]-min*0.98)/span*100).toFixed(1)+'%"></i><span>'+(i===0||i===days.length-1||i%7===0?Number(s.day.slice(8)):'')+'</span></div>').join('');
-    const diff=vals.at(-1)-vals[0];$('fmTrendDelta').className=diff>=0?'fm-up':'fm-down';$('fmTrendDelta').textContent=days.length+'일 동안 '+(diff>=0?'+':'-')+won(Math.abs(diff));
-    $('fmTrendNote').textContent='일별 기록 기준 · 다음 달부터는 월별로 보여 드려요.';return}
-   const vals=months.map(m=>last.get(m)),max=Math.max(...vals,1),min=Math.min(...vals,0);
-   host.innerHTML=months.map((m,i)=>'<div title="'+m+' '+won(vals[i])+'"><i style="height:'+Math.max(4,(vals[i]-Math.min(0,min))/(max-Math.min(0,min))*100).toFixed(1)+'%"></i><span>'+Number(m.slice(5))+'월</span></div>').join('');
-   const diff=vals.at(-1)-vals.at(-2);$('fmTrendDelta').className=diff>=0?'fm-up':'fm-down';$('fmTrendDelta').textContent='전월 대비 '+(diff>=0?'+':'-')+won(Math.abs(diff));
-   $('fmTrendNote').textContent='각 달의 마지막 기록 기준이에요.';
-  };
-
-  // 10. Import nudge: after 7 days the home import button turns primary.
-  const sync=$('fmHomeSync'),note=$('fmHomeSyncNote');
-  const nudge=()=>{if(!sync||!note)return;const due=note.classList.contains('due');sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)};
-  if(note)new MutationObserver(nudge).observe(note,{attributes:true,attributeFilter:['class'],childList:true});
-
   // Pull down on 홈 or 자산 to refresh quotes and net worth.
   const pill=el('div','',null);pill.id='fmPull';pill.setAttribute('aria-live','polite');document.body.append(pill);
   let startY=null,pulled=0,busy=false;
@@ -638,10 +560,6 @@ try{
    busy=true;pill.textContent='↻ 순자산 업데이트 중…';pill.classList.add('busy');
    const before=$('netWorth')?.textContent||'';let failed=false,ran=true;try{ran=await window.fmRefreshNetWorth()!==false}catch{failed=true}finally{busy=false;pill.classList.remove('busy');pill.textContent=''}const after=$('netWorth')?.textContent||'';if(ran||failed)window.fmToast?.(failed?'업데이트하지 못했어요. 잠시 후 다시 당겨 주세요':'순자산 '+after+(before&&before!==after?' (업데이트됨)':' · 시세 변동 없음'))},{passive:true});
 
-  const all=()=>{renderTrend();nudge()};
-  all();
-  for(const id of ['heroSpent','netWorth','homeTotalAssets'])if($(id))new MutationObserver(all).observe($(id),{childList:true,characterData:true,subtree:true});
-  window.addEventListener('storage',all);
  });
 })();
 }catch(e){console.error('fm-plan-v3587',e)}

@@ -1002,7 +1002,7 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-home{display:none}
 #view-home.active{display:flex;flex-direction:column;gap:11px}
 #view-home #homeAssetHero{padding:19px 18px!important;gap:8px!important;margin:0!important}
-#view-home #homeAssetHero #fmHomeTrend,#view-home #homeAssetHero #fmNextMilestone{display:none!important}
+#view-home #homeAssetHero #fmHomeTrend{display:none!important}
 #view-home #homeAssetHero #homeLastQuote,#view-home #homeAssetHero [data-go="assets"]{display:none!important}
 #view-home .fm-home-fire #homeAssetPercent{font-size:27px;font-weight:800}
 #view-home #homeAssetHero .fm-quote-refresh{min-height:44px}
@@ -1665,7 +1665,6 @@ body.fm-quote-loading :is(#homeRefreshStocks,#refreshStocks)::before{content:'�
 
 /* ---- fm-stage12-precision ---- */
 
-#fmHomeRenderCache[hidden]{display:none!important}
 #view-home .home-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #view-home .home-shortcuts button{min-height:60px!important;padding:12px!important;font-size:14px;border-radius:16px}
 #view-home .home-shortcuts small{font-size:11px;line-height:1.45}
@@ -1673,8 +1672,6 @@ body.fm-quote-loading :is(#homeRefreshStocks,#refreshStocks)::before{content:'�
 #view-home .fm-home-fire .hero-stat strong{margin-top:2px}
 #view-home .fm-home-fire .hero-stat>span{font-size:11px}
 #view-home .fm-home-fire .progress{height:5px;margin:5px 0}
-#view-home .fm-home-fire #homeAssetGoal{font-size:17px}
-#view-home .fm-home-fire #fmNextMilestone{display:none}
 #view-home .fm-home-fire .fm-fire-eta{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:3px 8px}
 #view-home .fm-home-fire .fm-fire-eta>small{grid-column:1/-1}
 #view-home .fm-home-fire .fm-fire-eta>strong{font-size:20px;text-align:right}
@@ -2051,7 +2048,13 @@ html,body{overscroll-behavior-y:contain}
 .fm-drive-actions button{min-height:44px;margin:0}
 
 /* ---- fm-fire-gap ---- */
-.fm-fire-gap{display:block;margin-top:2px;font-size:12px;line-height:1.4;color:var(--sub);font-weight:600}
+.fm-fire-gap{display:block;width:100%;min-height:44px;margin:0;padding:4px 0;border:0;background:none;text-align:left;font:inherit;font-size:12px;line-height:1.4;color:var(--sub);font-weight:600;cursor:pointer}
+.fm-fire-gap[hidden]{display:none}
+.fm-fire-accounts:not([hidden]){display:grid;gap:2px;margin:10px 0 4px;padding:8px 12px;border-radius:12px;background:var(--panel2)}
+.fm-fire-accounts p{margin:4px 0}
+.fm-fire-accounts label{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:44px;font-size:14px;cursor:pointer}
+.fm-fire-accounts input{width:20px;height:20px;margin:0}
+.fm-fire-accounts span{overflow-wrap:anywhere}
 .fm-stale{color:var(--yellow);font-weight:700}
 
 /* ---- 가계부 예산 카드: every rule for .fm-ledger-compare lives here ---- */

@@ -29,27 +29,7 @@
 try{
 document.addEventListener('DOMContentLoaded',()=>{
  try{
- const home=document.getElementById('view-home');
- if(home){
-  const wealth=document.getElementById('homeAssetHero'),expense=home.querySelector('.fm-home-budget');
-  const fire=document.createElement('section');fire.className='card fm-home-fire';fire.setAttribute('aria-label','FIRE 진행 상황');
-  fire.innerHTML='<div class="fm-home-fire-head"><span>FIRE 진행 상황</span><button type="button" data-go="fire">FIRE 상세 →</button></div>';
-  expense.after(fire);
-  for(const node of [wealth.querySelector('.hero-row'),wealth.querySelector('.progress'),document.getElementById('fmNextMilestone'),document.getElementById('homeFireRemaining'),wealth.querySelector('.fm-fire-eta'),document.getElementById('fmHomeEstimateInputs')])if(node)fire.append(node);
-  fire.querySelector('[data-go]').onclick=()=>window.fmGo('fire');
-  const shortcuts=home.querySelector('.home-shortcuts');fire.after(shortcuts);
-  const legacy=document.createElement('div');legacy.id='fmHomeRenderCache';legacy.hidden=true;legacy.setAttribute('aria-hidden','true');home.after(legacy);
-  legacy.append(document.getElementById('fmHomeTrend'));
-  const insights=document.getElementById('view-insights');
-  const cashflow=home.querySelector('.statrow');if(cashflow){cashflow.setAttribute('aria-label','선택 월 현금 흐름');cashflow.querySelector('.muted').textContent='수입';insights.append(cashflow)}
-  const coach=home.querySelector('.grid:not(.fm-home-transactions)>.card:last-child');if(coach){coach.querySelector('h3').textContent='이번 달 소비 코치';coach.classList.add('fm-insight-coach');insights.append(coach)}
-  const recent=home.querySelector('.fm-home-transactions');if(recent)insights.append(recent);
-  // All detail analysis uses renderInsights / getTx / catBars / listTo; no cloned totals.
-  for(const node of [...home.children])if(![wealth,expense,fire,shortcuts].includes(node))legacy.append(node);
-  const assetLink=document.createElement('button');assetLink.type='button';assetLink.className='secondary';assetLink.id='fmInsightAssets';assetLink.textContent='자산 추이는 자산 분석에서 보기 →';assetLink.onclick=()=>{window.fmGo('assets');window.fmSelectAssetView('analysis')};insights.append(assetLink);
-  document.getElementById('fmSpendingOpen').onclick=()=>window.fmGo('insights');
-  document.getElementById('fmInsightsBack').onclick=()=>window.fmReportBack('calendar');
- }
+ // 홈 화면 배치는 index.html 마크업에 바로 들어 있다(FIRE 카드, 바로가기, 숨김 보관함, 소비 분석으로 옮긴 카드).
  const fireView=document.getElementById('view-fire');
  if(fireView){
   const hero=fireView.querySelector('.fm-fire-hero'),calc=fireView.querySelector('.fm-fire-calc-card'),life=fireView.querySelector('.fm-fire-life-card'),portfolio=fireView.querySelector('.fm-fire-portfolio-card'),chart=fireView.querySelector('.fm-fire-chart-card'),strategy=fireView.querySelector('.fm-fire-strategy-card');

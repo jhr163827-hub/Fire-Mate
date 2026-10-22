@@ -190,7 +190,7 @@ try{
   document.addEventListener('fm-fire-view-updated',sync);sync();
   // One quote status owner on 자산.
   const assetHero=$('view-assets').querySelector(':scope>.hero'),quoteContext=$('fmAssetQuoteContext');
-  const refreshContext=()=>{const rate=Number($('assetFx').value),text=rate>0?'환율 '+rate.toLocaleString('ko-KR')+'원/USD · 시세 상태':'환율·시세 확인';const title=quoteContext.querySelector('summary');if(title.textContent!==text)title.textContent=text;const status=$('fxStatus').textContent||'환율 기준일 확인 필요';if($('fmAssetFxStatus').textContent!==status)$('fmAssetFxStatus').textContent=status;};
+  const refreshContext=()=>{const rate=Number($('assetFx').value),fetched=!!(fmLiveData().balance?.fxCheckedAt||fmLiveData().balance?.fxAt),text=rate>0?'환율 '+rate.toLocaleString('ko-KR')+'원/USD'+(fetched?'':' (기본값)')+' · 시세 상태':'환율·시세 확인';const title=quoteContext.querySelector('summary');if(title.textContent!==text)title.textContent=text;const status=$('fxStatus').textContent||'환율 기준일 확인 필요';if($('fmAssetFxStatus').textContent!==status)$('fmAssetFxStatus').textContent=status;};
   new MutationObserver(refreshContext).observe(assetHero,{childList:true,subtree:true});new MutationObserver(refreshContext).observe($('fxStatus'),{childList:true,subtree:true});refreshContext();
   const assetTabs=$('view-assets').querySelector('.fm-asset-jump'),tabButtons=[...assetTabs.querySelectorAll('button')];assetTabs.setAttribute('role','tablist');
   const panels=['fmAssetAccountsPanel','fmAssetHoldingsPanel','fmAssetDividendView','fmAssetAnalysisView'];

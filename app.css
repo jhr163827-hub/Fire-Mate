@@ -2049,3 +2049,7 @@ html,body{overscroll-behavior-y:contain}
 #fmDriveStatus{margin:4px 0 8px}
 .fm-drive-actions:not([hidden]){display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fm-drive-actions button{min-height:44px;margin:0}
+
+/* ---- fm-fire-gap ---- */
+.fm-fire-gap{display:block;margin-top:2px;font-size:12px;line-height:1.4;color:var(--sub);font-weight:600}
+.fm-stale{color:var(--yellow);font-weight:700}

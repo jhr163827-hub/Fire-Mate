@@ -1,0 +1,32 @@
+const {test,expect}=require('@playwright/test');
+test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
+test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+const seed=extra=>({theme:'dark',tx:[],rec:[],budgets:{},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:10000000,other:0,debt:0},accounts:[{id:'a',name:'투자',kind:'investment',amount:30000000,fire:true}],holdings:[],dailySnapshots:[],...extra});
+const load=async(page,s)=>{await page.addInitScript(s=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify(s))},s);await page.goto('/index.html')};
+
+test('FIRE says when its net worth includes assets excluded from FIRE, and the figures match 자산',async({page})=>{
+ await load(page,seed({accounts:[{id:'a',name:'투자',kind:'investment',amount:30000000,fire:true},{id:'b',name:'전세보증금',kind:'cash',amount:100000000,fire:false}]}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fireAsset')).toHaveText('1억 4,000만 원');
+ await expect(page.locator('#fmFireBasisGap')).toHaveText('FIRE 제외 자산 1억 원 포함 · 운용자산만 4,000만 원');
+ await page.evaluate(()=>window.fmGo('assets'));
+ await expect(page.locator('#fireLiquidSummary')).toContainText('FIRE 운용자산 ₩40,000,000 · 총순자산 ₩140,000,000');
+ await expect(page.locator('#netWorth')).toHaveText('₩140,000,000');
+});
+
+test('with every account counted for FIRE no basis note is shown',async({page})=>{
+ await load(page,seed({}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireBasisGap')).toBeHidden();
+});
+
+test('old and hand-entered prices are labelled; an exchange rate never fetched is marked as the default',async({page})=>{
+ const old=new Date(Date.now()-10*86400000).toISOString(),fresh=new Date().toISOString();
+ await load(page,seed({holdings:[{id:'h1',accountId:'a',ticker:'JEPQ',name:'JEPQ',type:'USD',qty:1,price:50,cost:40,quoteAt:old},{id:'h2',accountId:'a',ticker:'SCHD',name:'SCHD',type:'USD',qty:1,price:30,cost:30,quoteAt:fresh},{id:'h3',accountId:'a',ticker:'비상장',name:'비상장',type:'KRW',qty:1,price:1000000,cost:1000000}]}));
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickHoldings').click();
+ const panel=page.locator('#fmAssetHoldingsPanel');
+ await expect(panel).toContainText('10일 전 시세');
+ await expect(panel).toContainText('직접 입력가');
+ await expect(panel.locator('.fm-stale')).toHaveCount(1);
+ await expect(page.locator('#fmAssetQuoteContext summary')).toHaveText('환율 1,400원/USD (기본값) · 시세 상태');
+});

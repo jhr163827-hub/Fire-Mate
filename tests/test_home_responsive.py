@@ -591,7 +591,9 @@ class HomeResponsiveTest(unittest.TestCase):
                 localStorage.setItem('firemate_smart_v3', JSON.stringify(fixture));
             })()""")
             expected_net = 2 * 100 * 1400 + 3 * 10000 + 5000 + 7000 + 10000 + 2000 - 3000
-            expected_pct = expected_net / (100 * 10000) * 100
+            # FIRE progress counts only FIRE assets: account b, '기타 자산' (other) are excluded.
+            expected_fire = 2 * 100 * 1400 + 5000 + 10000 - 3000
+            expected_pct = expected_fire / (100 * 10000) * 100
             for attempt in range(2):
                 page.goto(URL, wait_until="load")
                 page.locator('.bottomnav [data-view="home"]').click()
@@ -837,7 +839,7 @@ class HomeResponsiveTest(unittest.TestCase):
                 localStorage.setItem('firemate_smart_v3',JSON.stringify(fixture));
             })()""")
             expected_net=331000
-            expected_percent="33.1%"
+            expected_percent="29.2%"  # FIRE assets only: 280,000+5,000+10,000-3,000
             page.goto(URL, wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="home"]').click()
             page.wait_for_function("""() => document.querySelector('#homeTotalAssets')?.textContent?.includes('331,000')""")
@@ -993,7 +995,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             (65000,0,10000000,'다음 목표 2억까지 2억 1,000만 원','₩660,000,000'),
                             (65000,0,0,'다음 목표 2억까지 2억 원','₩650,000,000'),
                             (0,0,0,'FIRE 목표 미설정','FIRE 목표 미설정')):
-                            page.evaluate("""v=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=v.theme;d.fire.goal=v.goal;d.holdings=[];d.accounts=[{id:'cash',name:'현금',amount:v.cash}];d.balance={fx:1400,cash:0,other:0,debt:v.debt};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))}""",{'goal':goal,'cash':cash,'debt':debt,'theme':theme})
+                            page.evaluate("""v=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=v.theme;d.fire.goal=v.goal;d.holdings=[];d.accounts=[{id:'cash',name:'현금',amount:v.cash,fire:true}];d.balance={fx:1400,cash:0,other:0,debt:v.debt};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))}""",{'goal':goal,'cash':cash,'debt':debt,'theme':theme})
                             page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="home"]').tap()
                             self.assertEqual(page.locator('#fmNextMilestone').inner_text(),expected)
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').text_content())

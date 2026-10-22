@@ -59,7 +59,7 @@ class HomeResponsiveTest(unittest.TestCase):
         page = self.browser.new_page(viewport={"width": 320, "height": 720}, is_mobile=True)
         try:
             page.goto(URL, wait_until="domcontentloaded")
-            dims = page.locator('#homeAssetGoal').evaluate("e => ({height:e.clientHeight,size:parseFloat(getComputedStyle(e).fontSize),width:e.clientWidth,scroll:e.scrollWidth})")
+            dims = page.locator('#homeAssetPercent').evaluate("e => ({height:e.clientHeight,size:parseFloat(getComputedStyle(e).fontSize),width:e.clientWidth,scroll:e.scrollWidth})")
             self.assertLessEqual(dims['height'], dims['size'] * 1.6)
             self.assertLessEqual(dims['scroll'], dims['width'] + 1)
             quote = page.locator('#homeRefreshStocks').bounding_box()
@@ -554,7 +554,7 @@ class HomeResponsiveTest(unittest.TestCase):
             page.goto(URL, wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="home"]').click()
             self.assertEqual(page.locator('#view-home .fm-eta-details').count(), 0)
-            self.assertFalse(page.locator('#homeEtaPrincipal').is_visible())
+            self.assertEqual(page.locator('#homeEtaPrincipal').count(), 0)
             self.assertIn('실제 결과는 달라질 수', page.locator('#homeFireEtaNote').inner_text())
             before = page.evaluate("localStorage.getItem('firemate_smart_v3')")
             page.locator('.fm-home-fire-head [data-go="fire"]').tap()
@@ -997,7 +997,6 @@ class HomeResponsiveTest(unittest.TestCase):
                             (0,0,0,'FIRE 목표 미설정','FIRE 목표 미설정')):
                             page.evaluate("""v=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.theme=v.theme;d.fire.goal=v.goal;d.holdings=[];d.accounts=[{id:'cash',name:'현금',amount:v.cash,fire:true}];d.balance={fx:1400,cash:0,other:0,debt:v.debt};localStorage.setItem('firemate_smart_v3',JSON.stringify(d))}""",{'goal':goal,'cash':cash,'debt':debt,'theme':theme})
                             page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="home"]').tap()
-                            self.assertEqual(page.locator('#fmNextMilestone').inner_text(),expected)
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').text_content())
                             quote=page.locator('#homeRefreshStocks').bounding_box();total=page.locator('#homeTotalAssets').bounding_box()
                             self.assertGreaterEqual(quote['height'],44);self.assertGreaterEqual(total['y'],quote['y']+quote['height'])
@@ -1006,9 +1005,8 @@ class HomeResponsiveTest(unittest.TestCase):
                             page.locator('.bottomnav [data-view="assets"]').tap()
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').inner_text())
                             self.assertEqual(page.locator('#fmAssetNextMilestone').inner_text(),expected)
-                            self.assertEqual(page.locator('#fmNextMilestone').count(),1)
+                            self.assertEqual(page.locator('#fmNextMilestone').count(),0)
                             page.locator('.bottomnav [data-view="home"]').tap()
-                            self.assertEqual(page.locator('#fmNextMilestone').inner_text(),expected)
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width)
                     finally:
                         page.close()

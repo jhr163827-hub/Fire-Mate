@@ -176,7 +176,7 @@ test("compact dashboard keeps all seven metrics and exposes report shortcuts on 
       const nav = await page.locator('.bottom-item').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().toJSON()));
       for(const item of nav){expect(item.height).toBe(52);expect(item.y).toBe(nav[0].y);expect(Math.abs(item.width-nav[0].width)).toBeLessThan(0.1);}
       await expect(page.locator("#view-home .fm-eta-details")).toHaveCount(0);
-      await expect(page.locator("#homeEtaPrincipal")).toBeHidden();
+      await expect(page.locator("#homeEtaPrincipal")).toHaveCount(0);
       await expect(page.locator("#homeFireEtaNote")).toContainText("실제 결과는 달라질 수");
       expect(
         await page.evaluate(

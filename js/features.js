@@ -3,17 +3,16 @@
 //
 //   1. fm-layout — FIRE·은퇴·자산 · 화면 동작
 //   2. fm-ledger-keyboard — 가계부 · 입력 키보드
-//   3. fm-premium-finance-ui — 공통 · 카드 디자인
+//   3. fm-premium-finance-ui — FIRE·홈·자산·가계부 · 결정 중심 화면 동작
 //   4. fm-strategy-conclusion — FIRE · 전략 비교
 //   5. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
-//   6. fm-settings-order — 설정 · 순서
-//   7. fm-ledger-sync — 설정 · Gmail·파일 가져오기
-//   8. fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리
-//   9. fm-plan-v3587 — 홈·자산 · 당겨서 업데이트
-//  10. fm-health-calc-v3590 — 설정 · 건보료 계산기
-//  11. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  12. fm-design-v3596 — 홈·자산 · 약 N만 원 표시
-//  13. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//   6. fm-ledger-sync — 설정 · Gmail·파일 가져오기
+//   7. fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리
+//   8. fm-plan-v3587 — 홈·자산 · 당겨서 업데이트
+//   9. fm-health-calc-v3590 — 설정 · 건보료 계산기
+//  10. fm-safety-v3592 — 설정 · 저장 보호, 분류
+//  11. fm-design-v3596 — 홈·자산 · 약 N만 원 표시
+//  12. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — FIRE·은퇴·자산 · 화면 동작 =====
@@ -120,9 +119,9 @@ try{
 }catch(e){console.error('fm-ledger-keyboard',e)}
 
 
-// ===== fm-premium-finance-ui — 공통 · 카드 디자인 =====
+// ===== fm-premium-finance-ui — FIRE·홈·자산·가계부 · 결정 중심 화면 동작 =====
 try{
-/* Decision-first presentation. Finance calculations and persistence remain in their existing owners. */
+/* Decision-first presentation; the structure is in index.html. Finance calculations and persistence remain in their existing owners. */
 (() => {
  'use strict';
  document.addEventListener('DOMContentLoaded', () => {
@@ -131,62 +130,15 @@ try{
   const compactMoney=n=>{const v=Math.round(n),e=Math.floor(v/10000),m=v%10000;return (e?e+'억 ':'')+(m?m.toLocaleString('ko-KR')+'만 ':'')+(e||m?'원':'0원')};
   // Amounts in 만원; 1억 and above read as 억 (6억 5,000만 원), never 65,000만 원.
   const money=n=>Math.round(n)===0?'0만 원':(Math.round(n)<0?'-':'')+compactMoney(Math.abs(n));
-  const fire=$('view-fire'),overview=fire.querySelector('.fm-fire-overview');
-  for(const nav of document.querySelectorAll('.fm-fire-screen-nav')){
-   for(const button of nav.querySelectorAll('[data-fire-screen]')){
-    const label={fire:'은퇴 현황',firecalc:'계획 조정',firelife:'생활비',retire:'전략·위험'}[button.dataset.fireScreen];
-    button.textContent=label;
-   }
-  }
-  const eta=document.createElement('p');eta.id='fmRetirementETA';eta.className='fm-decision-eta';
-  $('fireYears').after(eta);
-  overview.querySelector('h3').textContent='은퇴 준비 점검';
-  const scope=overview.querySelector('.fm-fire-scope');scope.textContent='목표 배분 완성 시 예상 · 지금 월급과는 별개예요';
-  const portfolioButton=$('fmFirePortfolioOpen'),portfolioValue=$('fmOverview-portfolio');
-  portfolioButton.hidden=false;portfolioButton.className='fm-fire-overview-row fm-fire-portfolio-card';
-  portfolioButton.firstElementChild.append(portfolioValue);portfolioValue.hidden=false;
-  portfolioButton.querySelector('strong').textContent='목표 자산 구성';overview.append(portfolioButton);
-  const risk=document.createElement('button');risk.type='button';risk.id='fmFireRiskOpen';risk.className='fm-fire-overview-row';
-  risk.innerHTML='하락 실험 열기 <span aria-hidden="true">→</span>';risk.className='fm-decision-action';
-  risk.onclick=()=>{navigate('retire');$('fmLifeScenario').open=true;requestAnimationFrame(()=>$('fmModelBridge').scrollIntoView({block:'start',behavior:'instant'}))};overview.append(risk);
-  for(const [button,label,action] of [[$('fmFireLifeOpen'),'은퇴 후 매달 남거나 모자란 돈','조건 확인'],[portfolioButton,'목표 자산까지 남은 금액','배분 보기']]){
-   const content=button.firstElementChild,row=document.createElement('section');row.className='fm-decision-row';
-   content.querySelector(':scope>strong').textContent=label;
-   button.before(row);row.append(content,button);button.className='fm-decision-action';button.replaceChildren(document.createTextNode(action+' →'));
-  }
-  const riskRow=document.createElement('div');riskRow.className='fm-decision-risk';risk.before(riskRow);
-  riskRow.innerHTML='<span>하락 시 생활비 변화<small id="fmRiskHeadline">목표 배분 · 별도 가정</small></span>';riskRow.append(risk);
-  $('fmOpenCalculator').textContent='계획 조정';
-  const calc=$('view-firecalc');calc.querySelector('.hero>strong').textContent='은퇴 시점을 앞당기려면';
-  calc.querySelector('.grid>.card>h3').textContent='목표와 월 투자금 비교';
-  const purpose=document.createElement('p');purpose.className='mini fm-decision-purpose';purpose.textContent='월 투자금·목표를 바꿔 도달 시점의 차이를 확인하세요. 저장 전까지 기존 계획은 유지됩니다.';calc.querySelector('.grid>.card>h3').after(purpose);
-  $('fmStrModeQuick').textContent='1년 비교';$('fmStrModeDetail').textContent='장기 비교';
-  const strategy=$('fmStrategyCard'),settings=$('fmStrategyDetails');
-  strategy.querySelector('h3').textContent='배당과 자산 매도, 어떻게 다를까요?';
-  strategy.querySelector(':scope>p').textContent='같은 비교 자산과 생활비로 은퇴 방식을 점검해요. 저장된 FIRE 계획과 별개의 임시 비교입니다.';
-  const modes=$('fmStrModeQuick').parentElement;modes.classList.add('fm-comparison-modes');strategy.insertBefore(modes,settings);
-  const basis=document.createElement('div');basis.id='fmComparisonBasis';basis.className='fm-comparison-basis';basis.setAttribute('aria-live','polite');strategy.insertBefore(basis,settings);
-  const riskBasis=document.createElement('p');riskBasis.id='fmStressBasis';riskBasis.className='mini fm-model-basis';$('fmLifeScenario').querySelector('summary').after(riskBasis);
-  const riskEdit=document.createElement('button');riskEdit.type='button';riskEdit.className='secondary fm-stress-edit';riskEdit.textContent='실험 조건 수정';
-  riskEdit.onclick=()=>{$('fmUniformExperimentInputs').open=true;requestAnimationFrame(()=>$('rpCrash').focus())};$('fmLifeScenario').append(riskEdit);
-  // The common living expense stays directly editable; separate model parameters remain available.
-  const conditions=$('fmLifeConditions'),form=conditions.querySelector(':scope>.stack');conditions.querySelector(':scope>summary').textContent='월 생활비 수정';
-  const advanced=document.createElement('details');advanced.id='fmUniformExperimentInputs';advanced.innerHTML='<summary>단일 분배율 하락 실험 설정</summary><p class="mini">위 종목별 생활비 계산과 다른 모델입니다. 모든 목표 자산에 같은 분배율·세금 부담률을 적용합니다.</p>';
-  for(const id of ['rpTaxRate','rpYield','rpAdvancedSettings'])advanced.append(id==='rpAdvancedSettings'?$(id):$(id).closest('.field'));
-  $('fmLifeScenario').append(advanced);
-  form.querySelector(':scope>.mini').textContent='월 생활비만 저장합니다. 분배율·세금·보험료와 실험 조건은 각각의 수정 메뉴에서 관리해요.';
-  advanced.querySelector('summary').textContent='실험 조건 수정 · 분배율·세금·하락률';
-  riskEdit.hidden=true;
-  const experimentActions=document.createElement('div');experimentActions.className='fm-flow-actions';
-  experimentActions.innerHTML='<button type="button" class="secondary" id="fmCancelExperiment">취소</button><button type="button" class="primary" id="fmSaveExperiment">실험 조건 저장</button>';
-  advanced.append(experimentActions);
+  const eta=$('fmRetirementETA'),portfolioValue=$('fmOverview-portfolio'),riskBasis=$('fmStressBasis'),basis=$('fmComparisonBasis');
+  const conditions=$('fmLifeConditions'),form=conditions.querySelector(':scope>.stack'),advanced=$('fmUniformExperimentInputs'),draftStatus=$('fmLifeExpenseStatus');
+  // The FIRE screen layout hides these two until this block shows them in the overview.
+  $('fmFirePortfolioOpen').hidden=false;portfolioValue.hidden=false;
+  $('fmFireRiskOpen').onclick=()=>{navigate('retire');$('fmLifeScenario').open=true;requestAnimationFrame(()=>$('fmModelBridge').scrollIntoView({block:'start',behavior:'instant'}))};
+  document.querySelector('#fmLifeScenario .fm-stress-edit').onclick=()=>{advanced.open=true;requestAnimationFrame(()=>$('rpCrash').focus())};
   $('fmSaveExperiment').onclick=()=>{const button=$('rpSave'),scope=button.dataset.scope;button.dataset.scope='experiment';button.onclick();button.dataset.scope=scope};
   $('fmCancelExperiment').onclick=()=>{document.dispatchEvent(new CustomEvent('fm-retirement-cancel',{detail:{scope:'experiment'}}));advanced.open=false};
   document.addEventListener('fm-retirement-saved',e=>{if(e.detail?.scope==='experiment'){advanced.open=false;requestAnimationFrame(()=>$('fmLifeScenario').scrollIntoView({block:'start',behavior:'instant'}))}});
-  const bridge=document.createElement('section');bridge.id='fmModelBridge';bridge.className='card fm-model-bridge';
-  bridge.innerHTML='<h3>비교 기준 확인</h3><p class="mini">생활비는 목표 배분의 종목별 분배율, 하락 실험은 단일 분배율을 사용합니다.</p><div id="fmModelValues"></div><details><summary>모델별 적용 범위</summary><div id="fmModelScope"></div></details>';
-  $('fmLifeScenario').before(bridge);
-  const draftStatus=document.createElement('p');draftStatus.id='fmLifeExpenseStatus';draftStatus.className='mini';draftStatus.setAttribute('role','status');form.prepend(draftStatus);
   const updateExpense=()=>{const value=$('rpMonthly').value.trim(),saved=window.fmFireViewState?.plan?.lifeMonthly,dirty=value===''||Number(value.replace(/,/g,''))!==saved;draftStatus.textContent=dirty?'월 생활비 수정 중 · 저장 전 결과는 유지됩니다':'저장된 월 생활비 · 목표 배분과 실험에 공통 적용';if($('view-firelife').classList.contains('active'))$('rpSave').disabled=!dirty};
   $('rpMonthly').addEventListener('input',updateExpense);conditions.addEventListener('toggle',updateExpense);
   const originalFireSync=window.fmSyncFireScreens;window.fmSyncFireScreens=view=>{originalFireSync?.(view);if(view==='firelife')updateExpense();else $('rpSave').disabled=false};
@@ -236,17 +188,8 @@ try{
    else{const q=state.quick;add('임시 · 1년 비교','fm-model-tag');if(q){add('비교 자산 '+money(q.assets));add('연 생활비 '+money(q.spend));add('총수익률 '+(q.growthRate*100).toFixed(1)+'% · 배당 포함');add('배당 부담 '+(q.taxRate*100).toFixed(1)+'%');add('물가·매도세·보험료 미반영');}}
   };
   document.addEventListener('fm-fire-view-updated',sync);sync();
-  // Compact daily dashboard, with the existing render targets and handlers intact.
-  const home=$('view-home'),budget=home.querySelector('.fm-home-budget'),budgetTotal=document.createElement('div');
-  budgetTotal.className='fm-home-budget-total';$('heroSpent').before(budgetTotal);budgetTotal.append($('heroSpent'),$('homeBudgetAction'));
-  const homeFire=home.querySelector('.fm-home-fire'),cache=$('fmHomeRenderCache');
-  // Keep existing render targets available without duplicating the FIRE plan on home.
-  cache.append($('fmHomeEstimateInputs'),$('homeAssetGoal').closest('.hero-stat'),$('fmNextMilestone'),$('homeFireRemaining'));
-  homeFire.querySelector('.hero-stat .light').textContent='목표 달성률';
-  // One quote status owner; the holding-only location made failures hard to discover.
-  const assetHero=$('view-assets').querySelector(':scope>.hero'),quoteContext=document.createElement('details');quoteContext.id='fmAssetQuoteContext';
-  quoteContext.innerHTML='<summary>환율·시세 확인</summary><p class="mini" id="fmAssetFxStatus"></p><p class="mini">국내·해외·코인 시세는 거래 시간과 공급처에 따라 갱신 시점이 다릅니다. 마지막 조회 시간은 모든 종목의 실시간 가격을 보장하지 않습니다.</p>';
-  const stockStatus=$('stockStatus'),statusRow=stockStatus.parentElement;quoteContext.append(stockStatus);if(!statusRow.children.length)statusRow.remove();assetHero.append(quoteContext);
+  // One quote status owner on 자산.
+  const assetHero=$('view-assets').querySelector(':scope>.hero'),quoteContext=$('fmAssetQuoteContext');
   const refreshContext=()=>{const rate=Number($('assetFx').value),text=rate>0?'환율 '+rate.toLocaleString('ko-KR')+'원/USD · 시세 상태':'환율·시세 확인';const title=quoteContext.querySelector('summary');if(title.textContent!==text)title.textContent=text;const status=$('fxStatus').textContent||'환율 기준일 확인 필요';if($('fmAssetFxStatus').textContent!==status)$('fmAssetFxStatus').textContent=status;};
   new MutationObserver(refreshContext).observe(assetHero,{childList:true,subtree:true});new MutationObserver(refreshContext).observe($('fxStatus'),{childList:true,subtree:true});refreshContext();
   const assetTabs=$('view-assets').querySelector('.fm-asset-jump'),tabButtons=[...assetTabs.querySelectorAll('button')];assetTabs.setAttribute('role','tablist');
@@ -254,13 +197,9 @@ try{
   const selectTabs=()=>tabButtons.forEach((button,i)=>{const selected=button.getAttribute('aria-pressed')==='true';button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;});
   tabButtons.forEach((button,i)=>{button.setAttribute('role','tab');button.setAttribute('aria-controls',panels[i]);$(panels[i]).setAttribute('role','tabpanel');$(panels[i]).setAttribute('aria-labelledby',button.id);new MutationObserver(selectTabs).observe(button,{attributes:true,attributeFilter:['aria-pressed']});button.addEventListener('keydown',event=>{const offset={ArrowRight:1,ArrowLeft:-1}[event.key];if(offset===undefined&&!['Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?3:(i+offset+4)%4;tabButtons[next].click();tabButtons[next].focus({preventScroll:true});});});selectTabs();
   // Date selection reveals its transactions only when they would otherwise be out of sight.
-  const calendar=$('cal'),day=$('dayTx'),dayHeader=$('selectedTitle');let calendarY=0;
-  const calendarBack=document.createElement('button');calendarBack.id='fmBackToCalendar';calendarBack.type='button';calendarBack.className='secondary';calendarBack.textContent='달력으로 ↑';dayHeader.after(calendarBack);
+  const calendar=$('cal'),day=$('dayTx'),dayHeader=$('selectedTitle'),calendarBack=$('fmBackToCalendar');let calendarY=0;
   calendarBack.onclick=()=>{scrollTo({top:calendarY,behavior:'instant'});calendar.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});};
   calendar.addEventListener('click',event=>{if(!event.target.closest('[data-date]'))return;calendarY=scrollY;requestAnimationFrame(()=>{if(!day.querySelector('.tx'))return;const rect=day.getBoundingClientRect(),height=window.visualViewport?.height||innerHeight;if(rect.bottom>height-90){dayHeader.scrollIntoView({block:'start',behavior:'instant'});dayHeader.tabIndex=-1;dayHeader.focus({preventScroll:true});}});});
-  // Keep backup creation one tap away in settings; import/reset retain their safeguards.
-  const storage=document.createElement('section');storage.className='fm-device-storage';storage.innerHTML='<h3>내 데이터 보관</h3>';
-  const backup=$('export'),group=backup.closest('details'),note=group.querySelector('.notice');storage.append(note,backup);$('settingsOverlay').querySelector('.stack').prepend(storage);group.querySelector(':scope>summary').textContent='복원·가져오기·거래 내보내기';
   const syncMainNav=()=>document.querySelectorAll('.bottomnav [data-view]').forEach(button=>{if(button.classList.contains('active'))button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
   new MutationObserver(syncMainNav).observe(document.querySelector('.bottomnav'),{attributes:true,subtree:true,attributeFilter:['class']});syncMainNav();
 
@@ -268,7 +207,6 @@ try{
 })();
 
 }catch(e){console.error('fm-premium-finance-ui',e)}
-
 
 
 // ===== fm-strategy-conclusion — FIRE · 전략 비교 =====
@@ -365,32 +303,6 @@ try{
 })();
 }catch(e){console.error('fm-practical-fixes',e)}
 
-
-
-// ===== fm-settings-order — 설정 · 순서 =====
-try{
-/* Settings in the order people look for them: 내 데이터 → 화면 → 연동 → 가져오기·내보내기 → 게임 → 초기화.
-   Only existing nodes are moved; ids and handlers stay as they are. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const stack=document.querySelector('#settingsOverlay .stack'),storage=stack&&stack.querySelector(':scope>.fm-device-storage');
-  if(!storage)return;
-  // Every backup action lives with the backup button.
-  let anchor=$('export');
-  for(const id of ['exportShare','fmBackupStatus','importBtn']){const el=$(id);if(el&&anchor){anchor.after(el);anchor=el}}
-  const groups=[...stack.querySelectorAll(':scope>details.fm-settings-group')];
-  const summary=g=>g.querySelector(':scope>summary');
-  const sync=groups.find(g=>/시세/.test(summary(g)?.textContent||'')),io=groups.find(g=>g.querySelector('#csvExport')),reset=groups.find(g=>g.querySelector('#clearAll'));
-  if(io)summary(io).textContent='📥 가져오기 · 내보내기';
-  if(reset)summary(reset).textContent='⚠️ 데이터 초기화';
-  const theme=stack.querySelector(':scope>.fm-settings-theme'),arcade=$('fmArcadeOpen');
-  const order=[storage,theme,sync,io,arcade,reset].filter(Boolean);
-  for(const el of order)stack.append(el);
- });
-})();
-}catch(e){console.error('fm-settings-order',e)}
 
 
 

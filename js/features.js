@@ -2,25 +2,22 @@
 // 새 기능은 블록을 덧붙이지 말고 해당 화면 블록을 고친다. 블록마다 오류가 나도 다른 기능은 계속 돈다.
 //
 //   1. fm-layout — 공통 · 화면 배치
-//   2. fm-home-improvements-20261016 — 홈
-//   3. fm-ledger-keyboard — 가계부 · 입력 키보드
-//   4. fm-premium-finance-ui — 공통 · 카드 디자인
-//   5. fm-home-onboarding — 홈 · 시작 안내
-//   6. fm-strategy-conclusion — FIRE · 전략 비교
-//   7. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
-//   8. fm-home-record — 홈 · 기록 버튼
-//   9. fm-settings-order — 설정 · 순서
-//  10. fm-assets-balance-row — 자산 · 현금·기타·부채
-//  11. fm-ledger-sync — 설정 · Gmail·파일 가져오기
-//  12. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
-//  13. fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리
-//  14. fm-plan-v3587 — 홈·자산 · 이번 달 속도, 순자산 추이, 당겨서 업데이트
-//  15. fm-polish-v3588 — 공통 · 다듬기
-//  16. fm-feedback-v3589 — 공통 · 알림(fmToast)
-//  17. fm-health-calc-v3590 — 설정 · 건보료 계산기
-//  18. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  19. fm-design-v3596 — 공통 · 디자인
-//  20. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//   2. fm-ledger-keyboard — 가계부 · 입력 키보드
+//   3. fm-premium-finance-ui — 공통 · 카드 디자인
+//   4. fm-strategy-conclusion — FIRE · 전략 비교
+//   5. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
+//   6. fm-settings-order — 설정 · 순서
+//   7. fm-assets-balance-row — 자산 · 현금·기타·부채
+//   8. fm-ledger-sync — 설정 · Gmail·파일 가져오기
+//   9. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
+//  10. fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리
+//  11. fm-plan-v3587 — 홈·자산 · 이번 달 속도, 순자산 추이, 당겨서 업데이트
+//  12. fm-polish-v3588 — 공통 · 다듬기
+//  13. fm-feedback-v3589 — 공통 · 알림(fmToast)
+//  14. fm-health-calc-v3590 — 설정 · 건보료 계산기
+//  15. fm-safety-v3592 — 설정 · 저장 보호, 분류
+//  16. fm-design-v3596 — 공통 · 디자인
+//  17. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — 공통 · 화면 배치 =====
@@ -202,24 +199,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 }catch(e){console.error('fm-layout',e)}
 
 
-// ===== fm-home-improvements-20261016 — 홈 =====
-try{
-(function(){
- function update(){try{
- const host=document.getElementById('fmHomeTrend'),mile=document.getElementById('fmNextMilestone');if(!host||!mile||typeof data==='undefined')return;
- const records=(Array.isArray(data.dailySnapshots)?data.dailySnapshots:[]).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.day)&&Number.isFinite(+x.amount)).sort((a,b)=>a.day.localeCompare(b.day));
- const unique=[...new Map(records.map(x=>[x.day,+x.amount])).entries()];const now=new Date(),cutoff=new Date(now);cutoff.setDate(now.getDate()-29);const day=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const series=unique.filter(x=>x[0]>=day(cutoff)&&x[0]<=day(now));
- if(series.length<2){host.innerHTML='<div style="font-size:12px;color:var(--sub)">📈 '+(series.length?'첫 자산 기록 완료 · 다음 날짜부터 성장 그래프 표시':'자산 기록이 쌓이면 성장 그래프 표시')+'</div>'}else{
- const values=series.map(x=>x[1]),min=Math.min(...values),max=Math.max(...values),span=max-min||1;const pts=values.map((v,i)=>(8+i*304/(values.length-1)).toFixed(1)+','+(53-(v-min)/span*42).toFixed(1)).join(' ');host.innerHTML='<div style="font-size:12px;color:var(--sub);margin-bottom:4px">최근 30일 자산 추이</div><svg viewBox="0 0 320 62" style="width:100%;height:55px;display:block" role="img" aria-label="최근 30일 순자산 기록 그래프"><polyline points="'+pts+'" fill="none" stroke="var(--green)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>';
- }
-
- const compare=document.getElementById('heroCompare');if(compare){const t=compare.textContent||'';compare.style.color=t.includes('더 사용')?'var(--red)':t.includes('차이')?'var(--green)':'var(--sub)';}
- }catch(e){console.warn('Home trend:',e)}}
- window.fmUpdateHomeTrend=update;
- document.addEventListener('DOMContentLoaded',()=>{update();const target=document.getElementById('homeTotalAssets');if(target)new MutationObserver(update).observe(target,{childList:true,subtree:true});const recordsTarget=document.getElementById('homeDailyChange');if(recordsTarget)new MutationObserver(update).observe(recordsTarget,{childList:true,subtree:true});document.querySelectorAll('[data-view="home"]').forEach(b=>b.addEventListener('click',update));});
-})();
-}catch(e){console.error('fm-home-improvements-20261016',e)}
-
 
 // ===== fm-ledger-keyboard — 가계부 · 입력 키보드 =====
 try{
@@ -384,64 +363,6 @@ try{
 }catch(e){console.error('fm-premium-finance-ui',e)}
 
 
-// ===== fm-home-onboarding — 홈 · 시작 안내 =====
-try{
-/* First-run checklist on home. Completion is read from saved data and never written; only dismissal is stored. */
-(()=>{
- 'use strict';
- const KEY='firemate_onboarding_v1';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const home=$('view-home'),fire=home&&home.querySelector('.fm-home-fire');
-  if(!home||!fire||typeof window.fmGo!=='function')return;
-  try{if(localStorage.getItem(KEY)==='dismissed')return}catch{}
-  const steps=[
-   {id:'assets',title:'자산 등록하기',hint:'통장·주식·현금을 추가하면 순자산이 계산돼요',
-    // New profiles start with three empty default accounts, so only entered values count.
-    done:d=>(Array.isArray(d.holdings)&&d.holdings.length>0)||(Array.isArray(d.accounts)&&d.accounts.some(a=>Number(a?.amount)>0||(Array.isArray(a?.items)&&a.items.length>0)))||['cash','other','debt'].some(k=>Number(d.balance?.[k])>0),
-    run:()=>{window.fmGo('assets');const add=$('unifiedAddAsset'),box=$('assetAddChoices');if(!add)return;if(box&&(box.hidden||box.style.display==='none'))add.click();add.scrollIntoView({block:'center'})}},
-   {id:'budget',title:'이번 달 예산 정하기',hint:'예산을 정하면 남은 금액을 알려 드려요',
-    done:d=>Object.values(d.budgets&&typeof d.budgets==='object'?d.budgets:{}).some(v=>Number(v)>0),
-    run:()=>$('homeBudgetAction')?.click()},
-   {id:'tx',title:'첫 거래 기록하기',hint:'오늘 쓴 돈이나 받은 돈을 남겨 보세요',
-    done:d=>Array.isArray(d.tx)&&d.tx.length>0,
-    run:()=>{window.fmGo('calendar');$('fmLedgerAddBtn')?.click()}}
-  ];
-  const card=document.createElement('section');card.className='card fm-onboarding';card.setAttribute('aria-labelledby','fmOnboardingTitle');
-  card.innerHTML='<div class="fm-onboarding-head"><div><h3 id="fmOnboardingTitle">시작하기</h3><p id="fmOnboardingCount" aria-live="polite"></p></div><button type="button" class="fm-onboarding-close" aria-label="시작하기 안내 닫기">닫기</button></div><ol class="fm-onboarding-steps"></ol>';
-  const list=card.querySelector('ol');
-  for(const step of steps){
-   const item=document.createElement('li');item.dataset.step=step.id;
-   item.innerHTML='<button type="button"><span class="fm-onboarding-mark" aria-hidden="true"></span><span class="fm-onboarding-text"><strong></strong><small></small></span><span class="fm-onboarding-go" aria-hidden="true">→</span></button>';
-   item.querySelector('strong').textContent=step.title;item.querySelector('small').textContent=step.hint;item.querySelector('button').onclick=step.run;
-   list.append(item);
-  }
-  // Below the shortcuts so the core metrics and report shortcuts stay in the first screen.
-  (home.querySelector('.home-shortcuts')||fire).after(card);
-  const update=()=>{
-   let saved=fmLiveData();
-   let count=0;
-   for(const step of steps){
-    const ok=!!step.done(saved),item=list.querySelector('[data-step="'+step.id+'"]');count+=ok;
-    item.classList.toggle('done',ok);item.querySelector('.fm-onboarding-mark').textContent=ok?'✓':'';
-    item.querySelector('button').setAttribute('aria-label',step.title+(ok?' (완료)':''));
-   }
-   $('fmOnboardingCount').textContent=steps.length+'개 중 '+count+'개 완료';
-   card.hidden=count===steps.length;
-  };
-  // Home re-renders after every saved change; refresh while it is the visible view.
-  let queued=false;
-  const observer=new MutationObserver(records=>{
-   if(queued||records.every(r=>card.contains(r.target)))return;
-   queued=true;requestAnimationFrame(()=>{queued=false;if(home.classList.contains('active'))update()});
-  });
-  observer.observe(home,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
-  card.querySelector('.fm-onboarding-close').onclick=()=>{try{localStorage.setItem(KEY,'dismissed')}catch{}observer.disconnect();card.remove()};
-  update();
- });
-})();
-}catch(e){console.error('fm-home-onboarding',e)}
-
 
 // ===== fm-strategy-conclusion — FIRE · 전략 비교 =====
 try{
@@ -537,27 +458,6 @@ try{
 })();
 }catch(e){console.error('fm-practical-fixes',e)}
 
-
-// ===== fm-home-record — 홈 · 기록 버튼 =====
-try{
-/* Record a transaction straight from home: opens the existing entry dialog and stays on home. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const card=document.querySelector('#view-home .fm-home-budget');
-  if(!card||typeof window.fmOpenEntry!=='function')return;
-  const actions=document.createElement('div');actions.className='fm-home-actions';
-  const sync=document.createElement('button');sync.type='button';sync.id='fmHomeSync';sync.className='secondary fm-home-record';sync.textContent='📥 Gmail 가져오기';
-  sync.onclick=()=>{if(window.fmImportFromHome)window.fmImportFromHome();else document.getElementById('bankGmailImport')?.click()};
-  const button=document.createElement('button');button.type='button';button.id='fmHomeRecord';button.className='secondary fm-home-record';
-  button.textContent='＋ 직접 기록';button.onclick=()=>window.fmOpenEntry();
-  // The import age rides inside the button as a second line so the card does not grow.
-  sync.textContent='';const label=document.createElement('span');label.textContent='📥 Gmail 가져오기';
-  const note=document.createElement('span');note.id='fmHomeSyncNote';note.setAttribute('aria-live','polite');sync.append(label,note);
-  actions.append(sync,button);card.append(actions);
- });
-})();
-}catch(e){console.error('fm-home-record',e)}
 
 
 // ===== fm-settings-order — 설정 · 순서 =====
@@ -792,24 +692,6 @@ try{
   const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  // 6. This month's pace on the home spending card (+ any category over its budget).
-  const anchor=$('homeBudgetAction')?.closest('.card')||$('fmHomeSync')?.closest('.fm-home-actions')?.parentElement;
-  const pace=el('div','fm-pace');pace.id='fmPaceLine';
-  const actions=$('fmHomeSync')?.closest('.fm-home-actions');if(actions)actions.before(pace);else anchor?.append(pace);
-  const renderPace=()=>{
-   const d=load(),now=new Date(),m=ym(now),day=now.getDate(),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-   const spent=sum(expenses(d,m));const budget=Number(d.budgets?.[m])||0;
-   const parts=[];
-   const todayKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(day).padStart(2,'0'),spentToday=sum(expenses(d,m).filter(t=>t.date===todayKey));
-   // One short line: today's spend, then the month pace (kept to one line so home shortcuts stay above the nav).
-   const first=[];if(spentToday>0)first.push('오늘 <strong>'+won(spentToday)+'</strong>');
-   if(day>=3&&spent>0){const est=Math.round(spent/day*days/1000)*1000;let line='이 속도면 월 <strong>'+won(est)+'</strong>';if(budget){const diff=est-budget;line+=diff>0?' <span class="over">(예산 +'+won(diff)+')</span>':' (예산 안)'}first.push(line)}
-   if(first.length)parts.push(first.join(' · '));
-   const cb=catBudgets(),over=Object.entries(cb).filter(([c,v])=>v>0&&sum(expenses(d,m).filter(t=>t.category===c))>v).map(([c])=>c);
-   if(over.length)parts.push('<span class="over">'+over.map(esc).join('·')+' 예산 초과</span>');
-   pace.innerHTML=parts.join('<br>');pace.hidden=!parts.length;
-  };
-
   // 9. Net-worth trend from the daily records the app already keeps.
   const assetsCard=null,analysisView=$('fmAssetAnalysisView');
   const trend=el('div','card fm-card-x','<div class="fm-trend-head"><h3>순자산 추이</h3><strong id="fmTrendDelta"></strong></div><div class="fm-trend" id="fmTrend" role="img" aria-label="최근 12개월 순자산"></div><p class="mini" id="fmTrendNote" style="margin-top:8px"></p>');trend.id='fmTrendCard';
@@ -848,7 +730,7 @@ try{
    busy=true;pill.textContent='↻ 순자산 업데이트 중…';pill.classList.add('busy');
    const before=$('netWorth')?.textContent||'';let failed=false,ran=true;try{ran=await window.fmRefreshNetWorth()!==false}catch{failed=true}finally{busy=false;pill.classList.remove('busy');pill.textContent=''}const after=$('netWorth')?.textContent||'';if(ran||failed)window.fmToast?.(failed?'업데이트하지 못했어요. 잠시 후 다시 당겨 주세요':'순자산 '+after+(before&&before!==after?' (업데이트됨)':' · 시세 변동 없음'))},{passive:true});
 
-  const all=()=>{renderPace();renderTrend();nudge()};
+  const all=()=>{renderTrend();nudge()};
   all();
   for(const id of ['heroSpent','netWorth','homeTotalAssets'])if($(id))new MutationObserver(all).observe($(id),{childList:true,characterData:true,subtree:true});
   window.addEventListener('storage',all);

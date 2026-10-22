@@ -19,10 +19,8 @@
 //  16. fm-feedback-v3589 — 공통 · 알림(fmToast)
 //  17. fm-health-calc-v3590 — 설정 · 건보료 계산기
 //  18. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  19. fm-search-report-v3593 — 가계부·홈 · 검색, 월간 리포트
-//  20. fm-habits-v3594 — 홈 · 습관(오늘, 주간, 무지출)
-//  21. fm-design-v3596 — 공통 · 디자인
-//  22. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//  19. fm-design-v3596 — 공통 · 디자인
+//  20. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — 공통 · 화면 배치 =====
@@ -1002,104 +1000,6 @@ try{
 }catch(e){console.error('fm-safety-v3592',e)}
 
 
-// ===== fm-search-report-v3593 — 가계부·홈 · 검색, 월간 리포트 =====
-try{
-/* 7. In the first week of a month, home shows last month's closing in one card until dismissed. */
-(()=>{
- 'use strict';
- const KEY='firemate_month_report_v1';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const home=$('view-home'),fire=home?.querySelector('.fm-home-fire');if(!home||!fire)return;
-  // Browser tests opt in explicitly so first-week dates never shift other layouts.
-  const now=new Date();if(navigator.webdriver?!window.__fmMonthReportAnyDay:now.getDate()>7)return;
-  const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-  const prev=ym(new Date(now.getFullYear(),now.getMonth()-1,1)),before=ym(new Date(now.getFullYear(),now.getMonth()-2,1));
-  try{if(localStorage.getItem(KEY)===prev)return}catch{}
-  let d=fmLiveData();
-  const rows=(d.tx||[]).filter(t=>t&&typeof t.date==='string'&&t.date.slice(0,7)===prev);if(!rows.length)return;
-  const sum=type=>rows.filter(t=>t.type===type).reduce((a,t)=>a+(Number(t.amount)||0),0),out=sum('expense'),inc=sum('income');
-  const cats={};for(const t of rows)if(t.type==='expense')cats[t.category]=(cats[t.category]||0)+(Number(t.amount)||0);
-  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
-  const budget=Number(d.budgets?.[prev])||0;
-  const lastOf=m=>{const v=(d.dailySnapshots||[]).filter(x=>x&&typeof x.day==='string'&&x.day.slice(0,7)===m).sort((a,b)=>a.day.localeCompare(b.day)).at(-1);return v?Number(v.amount):null};
-  const nw=lastOf(prev),nwBefore=lastOf(before);
-  const won=n=>'₩'+Math.round(Math.abs(n)).toLocaleString('ko-KR');
-  const line=(label,value,cls='')=>'<div class="fm-mr-row"><span>'+label+'</span><strong class="'+cls+'">'+value+'</strong></div>';
-  const card=document.createElement('section');card.className='card';card.id='fmMonthReport';card.setAttribute('aria-labelledby','fmMonthReportTitle');
-  card.innerHTML='<h3 id="fmMonthReportTitle">'+Number(prev.slice(5))+'월 결산</h3>'+
-   line('지출',won(out))+line('수입',won(inc))+line('남은 돈',(inc-out<0?'-':'')+won(inc-out),inc-out>=0?'fm-mr-good':'fm-mr-bad')+
-   (budget?line('예산 '+won(budget),out<=budget?won(budget-out)+' 아꼈어요':won(out-budget)+' 넘었어요',out<=budget?'fm-mr-good':'fm-mr-bad'):'')+
-   (top?line('가장 많이 쓴 곳',top[0]+' '+won(top[1])):'')+
-   (nw!==null&&nwBefore!==null?line('순자산 변화',(nw>=nwBefore?'+':'-')+won(nw-nwBefore),nw>=nwBefore?'fm-mr-good':'fm-mr-bad'):'')+
-   '<div class="fm-mr-actions"><button type="button" class="secondary" id="fmMonthReportOpen">월간 결산 자세히 →</button><button type="button" class="secondary" id="fmMonthReportClose">닫기</button></div>';
-  fire.before(card);
-  card.querySelector('#fmMonthReportOpen').onclick=()=>window.fmGo?.('monthly');
-  card.querySelector('#fmMonthReportClose').onclick=()=>{try{localStorage.setItem(KEY,prev)}catch{}card.remove()};
- });
-})();
-}catch(e){console.error('fm-search-report-v3593',e)}
-
-
-// ===== fm-habits-v3594 — 홈 · 습관(오늘, 주간, 무지출) =====
-try{
-/* Habit loop: weekly report (Mon–Tue), no-spend days and streak, net-worth milestones, and
-   home-screen shortcuts (?action=import|record). Reads saved data only; marks live in their own keys. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  const load=fmLiveData;
-  const won=n=>'₩'+Math.round(Math.abs(n)).toLocaleString('ko-KR');
-  const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  const home=$('view-home'),fire=home?.querySelector('.fm-home-fire');
-  const testOnly=flag=>navigator.webdriver&&!window[flag];
-  // Weekly report: last Monday–Sunday versus the week before.
-  (()=>{const now=new Date(),dow=now.getDay();if(!home||!fire)return;if(navigator.webdriver?!window.__fmWeekReportAnyDay:!(dow===1||dow===2))return;
-   const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((dow+6)%7));const start=new Date(monday);start.setDate(start.getDate()-7);const prevStart=new Date(start);prevStart.setDate(prevStart.getDate()-7);
-   const key=ds(start);try{if(localStorage.getItem('firemate_week_report_v1')===key)return}catch{}
-   const tx=(load().tx||[]).filter(t=>t&&t.type==='expense'&&typeof t.date==='string');
-   const inRange=(a,b)=>tx.filter(t=>t.date>=ds(a)&&t.date<ds(b));
-   const week=inRange(start,monday),before=inRange(prevStart,start);if(!week.length)return;
-   const total=r=>r.reduce((a,t)=>a+(Number(t.amount)||0),0),w=total(week),p=total(before);
-   const cats={};for(const t of week)cats[t.category]=(cats[t.category]||0)+(Number(t.amount)||0);const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
-   const spentDays=new Set(week.map(t=>t.date)).size;
-   const card=document.createElement('section');card.className='card';card.id='fmWeekReport';
-   const row=(l,v,c='')=>'<div class="fm-wr-row"><span>'+l+'</span><strong class="'+c+'">'+v+'</strong></div>';
-   card.innerHTML='<h3>지난주 리포트 · '+(start.getMonth()+1)+'/'+start.getDate()+'~'+(new Date(monday.getTime()-864e5).getMonth()+1)+'/'+new Date(monday.getTime()-864e5).getDate()+'</h3>'+row('지출',won(w))+(p?row('전주 대비',(w>=p?'+':'-')+won(w-p)+' ('+Math.round(Math.abs(w-p)/p*100)+'%)',w>p?'fm-wr-up':'fm-wr-down'):'')+(top?row('가장 많이 쓴 곳',top[0]+' '+won(top[1])):'')+row('무지출',(7-spentDays)+'일')+'<button type="button" class="secondary">확인했어요</button>';
-   (($('fmMonthReport'))||fire).before(card);
-   card.querySelector('button').onclick=()=>{try{localStorage.setItem('firemate_week_report_v1',key)}catch{}card.remove()};
-  })();
-  // Net-worth milestones: celebrate a newly crossed line once; the first run only records the current one.
-  (()=>{if(!home||!fire||navigator.webdriver&&!window.__fmMilestoneTest)return;const LINES=[1e7,3e7,5e7,1e8,1.5e8,2e8,3e8,4e8,5e8,6.5e8,1e9,1.5e9,2e9];
-   const snaps=(load().dailySnapshots||[]).filter(x=>x&&Number.isFinite(Number(x.amount))).sort((a,b)=>String(a.day).localeCompare(String(b.day)));const latest=snaps.at(-1);if(!latest)return;
-   const amount=Number(latest.amount),reached=LINES.filter(v=>amount>=v).at(-1)||0;
-   let seen=null;try{seen=localStorage.getItem('firemate_milestone_v1')}catch{}
-   if(seen===null){try{localStorage.setItem('firemate_milestone_v1',String(reached))}catch{}return}
-   if(!(reached>Number(seen)))return;
-   const next=LINES.find(v=>v>amount),label=v=>v>=1e8?(v/1e8)+'억':(v/1e4).toLocaleString('ko-KR')+'만';
-   const card=document.createElement('section');card.className='card';card.id='fmMilestone';
-   card.innerHTML='<h3>🎉 순자산 '+label(reached)+' 돌파!</h3><p>'+(next?'다음 목표 '+label(next)+'까지 '+won(next-amount)+' 남았어요.':'정해 둔 목표를 모두 넘었어요.')+'</p><button type="button" class="primary">좋아요</button>';
-   home.querySelector('.card,.hero')?.after(card);
-   card.querySelector('button').onclick=()=>{try{localStorage.setItem('firemate_milestone_v1',String(reached))}catch{}card.remove()};
-  })();
-  // No-spend days on the calendar, only inside the range the records cover.
-  const line=document.createElement('p');line.id='fmNoSpendLine';$('view-calendar')?.querySelector('.fm-ledger-compare')?.append(line);
-  const marks=()=>{const d=load(),tx=(d.tx||[]).filter(t=>t&&typeof t.date==='string');if(!tx.length){line.hidden=true;return}
-   const spend=new Set(tx.filter(t=>t.type==='expense').map(t=>t.date)),dates=tx.map(t=>t.date).sort(),first=dates[0],last=dates.at(-1),todayKey=ds(new Date());
-   const known=day=>day>=first&&day<=last&&day<=todayKey;
-   document.querySelectorAll('#view-calendar .day[data-date]').forEach(el=>el.classList.toggle('fm-nospend',known(el.dataset.date)&&!spend.has(el.dataset.date)));
-   const m=todayKey.slice(0,7);let count=0;for(let i=1;i<=31;i++){const day=m+'-'+String(i).padStart(2,'0');if(known(day)&&!spend.has(day))count++}
-   let streak=0;for(let x=new Date(last+'T12:00:00');ds(x)>=first;x.setDate(x.getDate()-1)){if(spend.has(ds(x)))break;streak++}
-   line.hidden=false;line.innerHTML='이번 달 무지출 <strong>'+count+'일</strong>'+(streak?' · 연속 <strong>'+streak+'일</strong> 🌱':'')+(last<todayKey?' · '+Number(last.slice(5,7))+'/'+Number(last.slice(8))+'까지 기록 기준':'');
-  };
-  const cal=$('cal');if(cal){new MutationObserver(marks).observe(cal,{childList:true});marks()}
-  // Home-screen shortcuts.
-  const action=new URLSearchParams(location.search).get('action');
-  if(action){history.replaceState(history.state,'',location.pathname);setTimeout(()=>{if(action==='import')window.fmImportFromHome?.();else if(action==='record')window.fmOpenEntry?.()},300)}
- });
-})();
-}catch(e){console.error('fm-habits-v3594',e)}
 
 
 // ===== fm-design-v3596 — 공통 · 디자인 =====

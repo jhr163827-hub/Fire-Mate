@@ -147,7 +147,7 @@ try{
   const updateIncome=()=>{const editor=$('fmDividendEditor');if(!editor)return;const cash=window.fmFireViewState?.cashflow;let limit=$('fmLifeInputLimits');if(!limit){limit=document.createElement('p');limit.id='fmLifeInputLimits';limit.className='mini';editor.before(limit)}limit.textContent=cash?.missingYieldNames?.length?'분배율 미입력 '+cash.missingYieldNames.length+'종목은 0%로 반영됩니다. 수입 가정에서 확인해 주세요.':'';limit.hidden=!limit.textContent;const fields=[...editor.querySelectorAll('input')],dirty=fields.some(x=>x.value.trim()===''||Number(x.value)!==Number(x.defaultValue));
    const button=$('fmSaveDividendRates');button.disabled=!dirty;button.textContent='수입 가정 저장';
    $('fmCancelDividendRates').textContent=dirty?'변경 취소':'닫기';
-   editor.querySelector('summary').textContent='분배율·세금·보험료 수정';
+   editor.querySelector('summary').textContent='배당률·세금·보험료 수정';
    let notice=$('fmIncomeDraftStatus');if(!notice){notice=document.createElement('p');notice.id='fmIncomeDraftStatus';notice.className='mini';notice.setAttribute('role','status');editor.querySelector('summary').after(notice)}
    notice.textContent=dirty?'수입 가정 수정 중 · 저장 전 결과는 유지됩니다':'종목별 수입 가정만 저장합니다. 월 생활비는 아래에서 수정해요.';
   };
@@ -161,7 +161,7 @@ try{
    else if(Number.isInteger(months)){const now=new Date(),date=new Date(now.getFullYear(),now.getMonth()+months,1);eta.textContent=months===0?'금액 목표 달성 · 생활비와 위험은 별도 점검':date.getFullYear()+'년 '+(date.getMonth()+1)+'월 예상 · 저장 계획 기준';}
    if(state.portfolio){
     const p=state.portfolio;portfolioValue.querySelector('strong').textContent=p.totalTarget>0?(p.gap>0?compactMoney(p.gap)+' 부족':'목표 배분 충족'):'목표 배분 미설정';
-    portfolioValue.querySelector('small').textContent='종목별 목표 대비 · 총자산 달성률과 별개';
+    portfolioValue.querySelector('small').textContent='종목별 목표 금액 대비 · 위 진행률과 별개';
    }
    const cash=state.cashflow,cashValue=$('fmOverview-cashflow');
    if(cash){
@@ -169,15 +169,15 @@ try{
     cashValue.querySelector('strong').textContent=cash.expenseEntered?cash.statusValue+' (가정)':'생활비 입력 필요';
     cashValue.querySelector('strong').style.color=cash.expenseEntered&&cash.monthlyRemaining<0?'var(--red)':limits.length||!cash.expenseEntered?'var(--txt)':'var(--green)';
     if(/부족/.test(cashValue.querySelector('strong').textContent))cashValue.querySelector('strong').style.color='var(--yellow)';
-    cashValue.querySelector('small').textContent=cash.expenseEntered?'예상 분배금 '+money(cash.monthlyNetIncome)+' / 생활비 '+money(cash.spend):'월 생활비를 입력하면 차액을 확인할 수 있어요';
+    cashValue.querySelector('small').textContent=cash.expenseEntered?'예상 배당 '+money(cash.monthlyNetIncome)+' / 생활비 '+money(cash.spend):'월 생활비를 입력하면 차액을 확인할 수 있어요';
     let note=$('fmCashflowLimits');if(!note){note=document.createElement('small');note.id='fmCashflowLimits';cashValue.after(note)}note.textContent=limits.join(' · ');note.hidden=!limits.length;
    }
    $('fmOpenCalculator').textContent=state.draft?.dirty?'계획 조정 •':'계획 조정';
    const stress=state.stress;
-   if(stress){$('fmRiskHeadline').textContent=stress.crash+'% 하락 · 별도 단일 분배율 가정';riskBasis.textContent='목표 배분 '+money(stress.total)+' · 연 분배율 '+stress.yield+'% · 세금 부담률 '+stress.taxRate+'% · '+stress.crash+'% 일시 하락. 분배금도 자산가치에 비례해 감소하는 가정이며 물가·보험료는 제외합니다.';}
+   if(stress){$('fmRiskHeadline').textContent=stress.crash+'% 하락 · 평균 배당률로 계산';riskBasis.textContent='목표 배분 '+money(stress.total)+' · 연 분배율 '+stress.yield+'% · 세금 부담률 '+stress.taxRate+'% · '+stress.crash+'% 일시 하락. 분배금도 자산가치에 비례해 감소하는 가정이며 물가·보험료는 제외합니다.';}
    if(state.cashflow&&state.stress){const c=state.cashflow,t=state.stress,p=state.plan||{};
     $('fmModelValues').replaceChildren();
-    for(const [label,value] of [['생활비 화면 · 세후 분배금',compactMoney(c.monthlyNetIncome)+'/월'],['하락 실험 · 하락 전',compactMoney(t.monthlyBefore)+'/월']]){const row=document.createElement('div');row.className='fm-model-value';const l=document.createElement('span'),v=document.createElement('strong');l.textContent=label;v.textContent=value;row.append(l,v);$('fmModelValues').append(row)}
+    for(const [label,value] of [['생활비 화면 · 세후 배당',compactMoney(c.monthlyNetIncome)+'/월'],['하락 확인 · 하락 전',compactMoney(t.monthlyBefore)+'/월']]){const row=document.createElement('div');row.className='fm-model-value';const l=document.createElement('span'),v=document.createElement('strong');l.textContent=label;v.textContent=value;row.append(l,v);$('fmModelValues').append(row)}
     $('fmModelScope').replaceChildren();
     for(const text of ['목표 배분 '+compactMoney(state.portfolio?.totalTarget||0)+' · 공통 생활비 '+compactMoney(c.spend)+'/월','생활비: 종목별 분배율·원천징수, '+(c.insuranceEntered?'입력 보험료 반영':'보험료 미입력 · 미차감'),'하락 실험: 분배율 '+t.yield+'% · 세금 부담 '+t.taxRate+'% · 보험료·물가 제외','전략 비교: 표시된 비교 자산·생활비와 총수익률 사용. 은퇴 계획에 저장되지 않습니다.']){const line=document.createElement('p');line.className='mini';line.textContent=text;$('fmModelScope').append(line)}
    }
@@ -185,7 +185,7 @@ try{
    const detail=state.mode==='detail';basis.replaceChildren();
    const add=(text,cls='')=>{const span=document.createElement('span');span.className=cls;span.textContent=text;basis.append(span)};
    if(detail){add('임시 · 장기 비교','fm-model-tag');const d=state.detail;if(d){add(d.years+'년 · 물가 '+(d.inflation*100).toFixed(1)+'%');add('비교 자산 '+money(d.budget));add('연 생활비 '+money(d.spend+d.insurance));}else add('종목·조건을 확인한 뒤 계산해 주세요');}
-   else{const q=state.quick;add('임시 · 1년 비교','fm-model-tag');if(q){add('비교 자산 '+money(q.assets));add('연 생활비 '+money(q.spend));add('총수익률 '+(q.growthRate*100).toFixed(1)+'% · 배당 포함');add('배당 부담 '+(q.taxRate*100).toFixed(1)+'%');add('물가·매도세·보험료 미반영');}}
+   else{const q=state.quick;add('임시 · 1년 비교','fm-model-tag');if(q){add('비교 자산 '+money(q.assets));add('연 생활비 '+money(q.spend));add('총수익률 '+(q.growthRate*100).toFixed(1)+'% · 배당 포함');add('배당 세금 '+(q.taxRate*100).toFixed(1)+'%');add('물가·매도세·보험료 미반영');}}
   };
   document.addEventListener('fm-fire-view-updated',sync);sync();
   // One quote status owner on 자산.

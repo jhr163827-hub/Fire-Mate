@@ -176,7 +176,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertFalse(page.locator('#assetGrowthChart').is_visible())
                     self.assertLess(page.locator('#fmAssetDividendView').bounding_box()['y'],
                                     page.locator('.fm-asset-jump').bounding_box()['y'] + 90)
-                    self.assertEqual(page.locator('#fmAssetQuickDividend').get_attribute('aria-pressed'), 'true')
+                    self.assertEqual(page.locator('#fmAssetQuickDividend').get_attribute('aria-selected'), 'true')
                     page.locator('.bottomnav [data-view="home"]').click()
                     page.locator('.bottomnav [data-view="assets"]').click()
                     self.assertTrue(page.locator('#fmDividendPanel').is_visible())
@@ -186,12 +186,12 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertFalse(page.locator('#fmDividendPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetAccountsPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetAnalysisView .fm-analysis-tabs').is_visible())
-                    self.assertEqual(page.locator('#fmAssetQuickAnalysis').get_attribute('aria-pressed'), 'true')
+                    self.assertEqual(page.locator('#fmAssetQuickAnalysis').get_attribute('aria-selected'), 'true')
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'), width + 2)
                     page.locator('#fmAssetQuickAccounts').click()
                     self.assertTrue(page.locator('#fmAssetAccountsPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetAnalysisView').is_visible())
-                    self.assertEqual(page.locator('#fmAssetQuickAccounts').get_attribute('aria-pressed'), 'true')
+                    self.assertEqual(page.locator('#fmAssetQuickAccounts').get_attribute('aria-selected'), 'true')
                     self.assertEqual(page.evaluate("JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length"), 2)
                 finally:
                     page.close()

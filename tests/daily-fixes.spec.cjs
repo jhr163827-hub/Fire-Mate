@@ -61,6 +61,8 @@ test('a new month offers last budget and the recent average; analysis links to t
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('insights'));
  await expect(page.locator('#budget')).toBeHidden();
+ // The budget card sits in the folded '이번 달 흐름 더 보기' section.
+ await page.locator('#fmInsightsMore>summary').click();
  await page.locator('#fmInsightsBudgetLink').click();
  await expect(page.locator('#fmLedgerBudgetOverlay')).toHaveClass(/show/);
  await expect(page.locator('#fmLedgerBudgetValue')).toHaveValue('1,000,000');

@@ -14,7 +14,7 @@
 //  11. fm-ledger-sync — 설정 · Gmail·파일 가져오기
 //  12. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
 //  13. fm-daily-fixes-v3586 — 자산·설정 · 빈 계좌 접기, 소액 수입, 분류 정리
-//  14. fm-plan-v3587 — 가계부 · 분석(고정비, 예산, 추이)
+//  14. fm-plan-v3587 — 홈·자산 · 이번 달 속도, 순자산 추이, 당겨서 업데이트
 //  15. fm-polish-v3588 — 공통 · 다듬기
 //  16. fm-feedback-v3589 — 공통 · 알림(fmToast)
 //  17. fm-health-calc-v3590 — 설정 · 건보료 계산기
@@ -796,19 +796,18 @@ try{
 }catch(e){console.error('fm-daily-fixes-v3586',e)}
 
 
-// ===== fm-plan-v3587 — 가계부 · 분석(고정비, 예산, 추이) =====
+// ===== fm-plan-v3587 — 홈·자산 · 이번 달 속도, 순자산 추이, 당겨서 업데이트 =====
 try{
-/* 6~10: month pace, fixed costs, category budgets, net-worth trend, import nudge, pull-to-refresh.
-   Reads saved data only; category budgets live in their own key. */
+/* Month pace on home, net-worth trend, import nudge, pull-to-refresh. Fixed costs and category
+   budgets on 소비 분석 are drawn by the main script (fmRenderFixed / fmRenderCatBudget). */
 (()=>{
  'use strict';
  document.addEventListener('DOMContentLoaded',()=>{
   const $=id=>document.getElementById(id);
-  const CATB='firemate_category_budgets_v1';const FIXED='firemate_fixed_costs_v1';
+  const CATB='firemate_category_budgets_v1';
   const load=fmLiveData;
   const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
   const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-  const shift=(m,n)=>{const [y,mm]=m.split('-').map(Number);return ym(new Date(y,mm-1+n,1))};
   const expenses=(d,m)=>(d.tx||[]).filter(t=>t&&t.type==='expense'&&typeof t.date==='string'&&t.date.slice(0,7)===m);
   const sum=rows=>rows.reduce((a,t)=>a+(Number(t.amount)||0),0);
   const catBudgets=()=>{try{const v=JSON.parse(localStorage.getItem(CATB)||'{}');return v&&typeof v==='object'?v:{}}catch{return {}}};
@@ -832,35 +831,6 @@ try{
    if(over.length)parts.push('<span class="over">'+over.map(esc).join('·')+' 예산 초과</span>');
    pace.innerHTML=parts.join('<br>');pace.hidden=!parts.length;
   };
-
-  // 7·8. Fixed costs and category budgets on 소비 분석.
-  const insights=$('insightCats')?.closest('.card');
-  const fixedCard=el('div','card fm-card-x','<h3>매달 나가는 돈</h3><p class="mini">최근 3개월 중 2번 이상, 비슷한 금액으로 나간 거래예요.</p><div id="fmFixedList"></div>');
-  const catCard=el('div','card fm-card-x','<h3>카테고리 예산</h3><p class="mini">항목별 한도를 정하면 이번 달 사용량을 보여 드려요.</p><div id="fmCatBudgetList"></div><details id="fmCatBudgetEdit"><summary>항목별 예산 정하기</summary><div class="fm-catb-edit" id="fmCatBudgetForm"></div><button type="button" class="primary" id="fmCatBudgetSave">저장</button></details>');
-  if(insights){insights.after(fixedCard);fixedCard.after(catCard)}
-  const renderFixed=()=>{
-   const d=load(),m=ym(new Date()),months=[1,2,3].map(n=>shift(m,-n));const groups=new Map();
-   for(const t of d.tx||[]){if(!t||t.type!=='expense'||!t.memo||typeof t.date!=='string')continue;const mm=t.date.slice(0,7);if(!months.includes(mm))continue;const g=groups.get(t.memo)||{memo:t.memo,cat:t.category,byMonth:new Map(),count:new Map(),days:[]};g.days.push(Number(t.date.slice(8,10)));g.byMonth.set(mm,(g.byMonth.get(mm)||0)+(Number(t.amount)||0));g.count.set(mm,(g.count.get(mm)||0)+1);groups.set(t.memo,g)}
-   // A subscription or bill is paid once or twice a month; frequent shops with steady totals are not fixed costs.
-   // A bill or subscription: one payment in each month it appears, on a similar day.
-   for(const [k,g] of groups)if([...g.count.values()].some(c=>c>1))groups.delete(k);
-   const fixed=[...groups.values()].filter(g=>{if(g.byMonth.size<2)return false;const v=[...g.byMonth.values()],avg=sum(v.map(a=>({amount:a})))/v.length;const spread=Math.max(...g.days)-Math.min(...g.days);return v.every(x=>Math.abs(x-avg)<=avg*0.1)&&(spread<=6||spread>=25)}).map(g=>{const v=[...g.byMonth.values()];return {...g,avg:v.reduce((a,b)=>a+b,0)/v.length}}).sort((a,b)=>b.avg-a.avg).slice(0,8);
-   const host=$('fmFixedList');if(!host)return;
-   let marks={};try{marks=JSON.parse(localStorage.getItem(FIXED)||'{}')||{}}catch{}
-   const shown=fixed.filter(f=>marks[f.memo]!==false),hidden=fixed.length-shown.length;
-   host.innerHTML=shown.length?shown.map(f=>'<div class="fm-fixed-row'+(marks[f.memo]?' sure':'')+'"><div>'+esc(f.memo)+(marks[f.memo]?' ✓':'')+'<br><span>'+esc(f.cat||'')+'</span></div><div class="fm-fixed-side"><strong>약 '+won(f.avg)+'</strong>'+'<button type="button" class="fm-fixed-hide" data-fixed-no="'+esc(f.memo)+'" aria-label="'+esc(f.memo)+' 숨기기">숨기기</button>'+'</div></div>').join('')+'<div class="fm-fixed-total">매달 약 '+won(shown.reduce((a,f)=>a+f.avg,0))+(hidden?' · 숨긴 항목 '+hidden+'개':'')+'</div>':'<p class="mini">아직 찾지 못했어요. 2~3개월 기록이 쌓이면 보여 드려요.</p>';
-   const mark=(memo,v)=>{marks[memo]=v;try{localStorage.setItem(FIXED,JSON.stringify(marks))}catch{}renderFixed()};
-   host.querySelectorAll('[data-fixed-yes]').forEach(b=>b.onclick=()=>mark(b.dataset.fixedYes,true));host.querySelectorAll('[data-fixed-no]').forEach(b=>b.onclick=()=>mark(b.dataset.fixedNo,false));
-  };
-  const CATS=['식비','카페·간식','주거·관리비','교통','쇼핑','의료·건강','문화·취미','통신·구독','여행','기타'];
-  const renderCat=()=>{
-   const d=load(),m=ym(new Date()),cb=catBudgets(),host=$('fmCatBudgetList'),form=$('fmCatBudgetForm');if(!host||!form)return;
-   const rows=Object.entries(cb).filter(([,v])=>v>0);
-   host.innerHTML=rows.length?rows.map(([c,v])=>{const s=sum(expenses(d,m).filter(t=>t.category===c)),pct=Math.min(100,s/v*100);return '<div class="fm-catb-row"><div>'+esc(c)+'</div><strong>'+won(s)+' / '+won(v)+'</strong></div><div class="fm-catb-bar"><i class="'+(s>v?'over':'')+'" style="width:'+pct.toFixed(1)+'%"></i></div>'}).join(''):'';
-   if(!form.dataset.ready){form.innerHTML=CATS.map(c=>'<label for="fmCatB-'+c+'">'+c+'</label><input id="fmCatB-'+c+'" data-cat="'+c+'" inputmode="numeric" placeholder="없음" autocomplete="off">').join('');form.dataset.ready='1'}
-   form.querySelectorAll('input').forEach(i=>{if(document.activeElement!==i)i.value=cb[i.dataset.cat]?Number(cb[i.dataset.cat]).toLocaleString('ko-KR'):''});
-  };
-  $('fmCatBudgetSave')?.addEventListener('click',()=>{const next={};for(const i of $('fmCatBudgetForm').querySelectorAll('input')){const v=Number(String(i.value).replace(/[^\d]/g,''));if(Number.isSafeInteger(v)&&v>0)next[i.dataset.cat]=v}try{localStorage.setItem(CATB,JSON.stringify(next))}catch{window.fmToast?.('저장하지 못했어요');return}$('fmCatBudgetEdit').open=false;renderCat();renderPace();window.fmToast?.('카테고리 예산을 저장했어요')});
 
   // 9. Net-worth trend from the daily records the app already keeps.
   const assetsCard=null,analysisView=$('fmAssetAnalysisView');
@@ -900,7 +870,7 @@ try{
    busy=true;pill.textContent='↻ 순자산 업데이트 중…';pill.classList.add('busy');
    const before=$('netWorth')?.textContent||'';let failed=false,ran=true;try{ran=await window.fmRefreshNetWorth()!==false}catch{failed=true}finally{busy=false;pill.classList.remove('busy');pill.textContent=''}const after=$('netWorth')?.textContent||'';if(ran||failed)window.fmToast?.(failed?'업데이트하지 못했어요. 잠시 후 다시 당겨 주세요':'순자산 '+after+(before&&before!==after?' (업데이트됨)':' · 시세 변동 없음'))},{passive:true});
 
-  const all=()=>{renderPace();renderFixed();renderCat();renderTrend();nudge()};
+  const all=()=>{renderPace();renderTrend();nudge()};
   all();
   for(const id of ['heroSpent','netWorth','homeTotalAssets'])if($(id))new MutationObserver(all).observe($(id),{childList:true,characterData:true,subtree:true});
   window.addEventListener('storage',all);

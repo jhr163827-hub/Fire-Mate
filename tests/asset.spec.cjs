@@ -43,7 +43,7 @@ for(const width of [320,360,390,430]){
    const ids=['fmAssetQuickAccounts','fmAssetQuickHoldings','fmAssetQuickDividend','fmAssetQuickAnalysis'];
    for(const id of [...ids,...ids]){
     await page.locator('#'+id).click();
-    await expect(page.locator('#'+id)).toHaveAttribute('aria-pressed','true');
+    await expect(page.locator('#'+id)).toHaveAttribute('aria-selected','true');
     for(const navId of ids){
      const button=page.locator('#'+navId);
      await expect(button).toBeVisible();

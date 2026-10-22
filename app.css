@@ -1799,7 +1799,7 @@ html:not([data-theme=light]) #view-calendar .day.selected .cost{color:#ffb8bf}
 
 /* ---- fm-home-record-v3575 ---- */
 
-#view-home .fm-home-record{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:48px;margin-top:10px;border-radius:14px;font-size:15px;font-weight:800}
+
 
 /* ---- fm-ledger-analysis-tab-v3576 ---- */
 
@@ -1856,23 +1856,23 @@ html:not([data-theme=light]) #view-calendar .day.selected .cost{color:#ffb8bf}
 #fmLedgerSync #bankExcelConfirm{width:100%;min-height:48px;margin-top:8px}
 #fmLedgerSync #bankImportUndo{min-height:44px;padding:0 16px;margin-left:6px;vertical-align:middle}
 #fmLedgerSync .fm-zip-ask{display:grid;gap:8px;margin-top:8px}#fmLedgerSync .fm-zip-ask label{font-weight:700;color:var(--text)}#fmLedgerSync .fm-zip-ask div{display:flex;gap:8px}#fmLedgerSync .fm-zip-ask input{flex:1;min-width:0;min-height:48px;font-size:16px}#fmLedgerSync .fm-zip-ask button{min-height:48px;padding:0 14px;flex:none}
-#view-home .fm-home-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:10px}
-#view-home .fm-home-actions .fm-home-record{margin-top:0}
-#view-home .fm-home-actions #fmHomeRecord{width:auto;padding:0 14px}
+
+
+
 #fmSettingsImportLink{width:100%;min-height:44px}
 #fmLedgerSync .fm-zip-remember{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;color:var(--sub)}
 #fmLedgerSync .fm-zip-remember input{width:20px;height:20px;margin:0}
 #fmZipForget{min-height:44px;margin-left:auto}
 #fmGmailForget{width:100%;min-height:44px;margin-top:6px}
-#view-home #fmHomeSync{flex-direction:column;gap:1px;line-height:1.2;padding:4px 10px}
+
 /* Two equal, quiet buttons: the spending card stays the focus. */
-#view-home .fm-home-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-#view-home .fm-home-actions .fm-home-record{min-height:44px;font-size:14px;font-weight:700}
-#view-home .fm-home-actions #fmHomeRecord{width:100%}
-#view-home #fmHomeSyncNote{max-width:100%;font-size:12px;font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#view-home #fmHomeSyncNote:empty{display:none}
-#view-home #fmHomeSyncNote.due{opacity:1;font-weight:800}
-#view-home #fmHomeSyncNote.due::before{content:'⚠ '}
+
+
+
+
+
+
+
 
 /* ---- fm-in-app-confirm-style ---- */
 
@@ -2073,3 +2073,13 @@ html,body{overscroll-behavior-y:contain}
 #view-calendar .fm-ledger-usage strong{font-size:12px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
 #fmNoSpendLine{grid-column:1/-1;margin:0;font-size:12px;color:var(--sub)}
 #fmNoSpendLine strong{color:var(--green)}
+
+/* ---- 홈 지출 카드 버튼: every rule for .fm-home-actions lives here ---- */
+#view-home .fm-home-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:10px}
+#view-home .fm-home-record{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin:0;padding:4px 10px;border-radius:14px;font-size:15px;font-weight:800;white-space:nowrap}
+#view-home #fmHomeSync{flex-direction:column;gap:1px;line-height:1.2;min-width:0}
+#view-home #fmHomeSyncNote{max-width:100%;font-size:12px;font-weight:600;opacity:.85;overflow:hidden;text-overflow:ellipsis}
+#view-home #fmHomeSyncNote:empty{display:none}
+#view-home #fmHomeSyncNote.due{opacity:1;font-weight:800}
+#view-home #fmHomeSyncNote.due::before{content:'⚠ '}
+@media(max-width:360px){#view-home .fm-home-record{font-size:13px;padding:4px 6px;letter-spacing:-.02em}}

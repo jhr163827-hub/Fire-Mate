@@ -1,7 +1,7 @@
 // FIRE MATE 기능 모음. index.html의 메인 스크립트 다음에 순서대로 실행된다(순서 유지 필요).
 // 새 기능은 블록을 덧붙이지 말고 해당 화면 블록을 고친다. 블록마다 오류가 나도 다른 기능은 계속 돈다.
 //
-//   1. fm-layout — 공통 · 화면 배치
+//   1. fm-layout — FIRE·은퇴·자산 · 화면 동작
 //   2. fm-ledger-keyboard — 가계부 · 입력 키보드
 //   3. fm-premium-finance-ui — 공통 · 카드 디자인
 //   4. fm-strategy-conclusion — FIRE · 전략 비교
@@ -20,73 +20,40 @@
 //  17. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
-// ===== fm-layout — 공통 · 화면 배치 =====
+// ===== fm-layout — FIRE·은퇴·자산 · 화면 동작 =====
 try{
+/* The FIRE, retirement and asset screens are laid out in index.html. This block keeps their behaviour:
+   overview values, the retirement save bar, tidying of re-rendered results and the FIRE screen tabs. */
 document.addEventListener('DOMContentLoaded',()=>{
  try{
- // 홈 화면 배치는 index.html 마크업에 바로 들어 있다(FIRE 카드, 바로가기, 숨김 보관함, 소비 분석으로 옮긴 카드).
- const fireView=document.getElementById('view-fire');
+ const $=id=>document.getElementById(id);
+ const fireView=$('view-fire');
  if(fireView){
-  const hero=fireView.querySelector('.fm-fire-hero'),calc=fireView.querySelector('.fm-fire-calc-card'),life=fireView.querySelector('.fm-fire-life-card'),portfolio=fireView.querySelector('.fm-fire-portfolio-card'),chart=fireView.querySelector('.fm-fire-chart-card'),strategy=fireView.querySelector('.fm-fire-strategy-card');
-  const retire=document.getElementById('view-retire');
-  calc.className='fm-fire-calc-card';calc.replaceChildren(document.getElementById('fmOpenCalculator'));calc.firstElementChild.textContent='조건 바꿔보기';hero.append(calc);
-  hero.querySelector('.fm-fire-eyebrow').firstChild.textContent='내 FIRE 계획 ';
-  const summary=document.createElement('section');summary.className='card fm-fire-overview';summary.setAttribute('aria-label','은퇴 준비 요약');
-  summary.innerHTML='<h3>은퇴 생활비 점검</h3><p class="mini fm-fire-scope">현재 수입이 아닌 목표 배분 완성 시 가정</p><p class="mini" id="fmFirePlanDifference" hidden></p>';
-  for(const [id,label,key,cls] of [['fmFireLifeOpen','생활비 차액','cashflow','fm-fire-life-card'],['fmFireStrategyOpen','임시 전략 비교','strategy','fm-fire-strategy-card'],['fmFirePortfolioOpen','목표 자산 구성','portfolio','fm-fire-portfolio-card']]){
-   const button=document.getElementById(id);button.className='fm-fire-overview-row '+cls;button.innerHTML='<span><strong>'+label+'</strong><span id="fmOverview-'+key+'" class="fm-fire-overview-value"></span></span><span aria-hidden="true">›</span>';if(key==='cashflow')summary.append(button);else {button.hidden=true;retire.append(button);}
-  }
-  hero.after(summary);
-  life.id='fmRetireCashflow';portfolio.id='fmRetirePortfolio';life.className='card fm-retire-cashflow';portfolio.className='card fm-retire-portfolio';
-  life.querySelector('.fm-fire-section-head').innerHTML='<h3>은퇴 후 생활비</h3>';
-  portfolio.querySelector('.fm-fire-section-head').innerHTML='<h3>보유자산과 목표 배분</h3>';
-  const retireGrid=retire.querySelector(':scope>.grid');retireGrid.before(portfolio,life);strategy.remove();
-  const fold=document.createElement('details');fold.className='card fm-fire-chart-card';fold.id='fmForecastDisclosure';
-  fold.innerHTML='<summary><span>미래 자산 예상<small id="fmForecastSummaryDate"></small></span><strong id="fmForecastSummaryValue">—</strong></summary>';
-  fold.append(document.getElementById('fmFireForecast'));summary.after(fold);chart.remove();
   const sync=()=>{
    const state=window.fmFireViewState||{};
-   const metric=(id,x)=>{const h=document.getElementById(id),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=x?.value||'—';small.textContent=x?.note||'';h.replaceChildren(strong,small)};
+   const metric=(id,x)=>{const h=$(id),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=x?.value||'—';small.textContent=x?.note||'';h.replaceChildren(strong,small)};
    metric('fmOverview-cashflow',state.cashflow?{value:state.cashflow.statusValue,note:state.cashflow.statusNote}:null);
    const cashValue=document.querySelector('#fmOverview-cashflow>strong');if(cashValue)cashValue.style.color=state.cashflow?.monthlyRemaining<0?'var(--red)':'var(--green)';
    metric('fmOverview-portfolio',state.portfolio?{value:state.portfolio.value,note:'목표 구성과 실제 보유 비교 · 금액 목표와 별개'}:null);
-   document.getElementById('fmOpenCalculator').textContent=state.draft?.dirty?'조건 비교 •':'조건 비교';document.getElementById('fmOpenCalculator').setAttribute('aria-label',state.draft?.dirty?'조건 비교 · 미저장 조건 이어보기':'조건 비교');
-   const p=state.plan;if(p)document.getElementById('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 순자산은 남은 금액·도달 계산에서 0으로 가정':'');
-   const difference=document.getElementById('fmFirePlanDifference'),different=p&&state.portfolio&&Math.abs(p.goal-state.portfolio.totalTarget)>0.01;
+   $('fmOpenCalculator').textContent=state.draft?.dirty?'조건 비교 •':'조건 비교';$('fmOpenCalculator').setAttribute('aria-label',state.draft?.dirty?'조건 비교 · 미저장 조건 이어보기':'조건 비교');
+   const p=state.plan;if(p)$('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 순자산은 남은 금액·도달 계산에서 0으로 가정':'');
+   const difference=$('fmFirePlanDifference'),different=p&&state.portfolio&&Math.abs(p.goal-state.portfolio.totalTarget)>0.01;
    difference.hidden=!different;if(different)difference.textContent='금액 목표와 배분 합계가 달라요. 생활비는 목표 배분 기준입니다.';
-   document.getElementById('fmOverview-strategy').textContent=state.mode==='detail'?(state.detail?.text||'종목별 장기 비교 · 조건 확인 후 계산'):'배당·자산 매도 비교 · 저장 계획에 미반영';
-   document.getElementById('fmForecastSummaryValue').textContent=state.forecast?.summaryValue||'—';
-   document.getElementById('fmForecastSummaryDate').textContent=state.forecast?.summaryDate||'';
+   $('fmOverview-strategy').textContent=state.mode==='detail'?(state.detail?.text||'종목별 장기 비교 · 조건 확인 후 계산'):'배당·자산 매도 비교 · 저장 계획에 미반영';
+   $('fmForecastSummaryValue').textContent=state.forecast?.summaryValue||'—';
+   $('fmForecastSummaryDate').textContent=state.forecast?.summaryDate||'';
   };
   document.addEventListener('fm-fire-view-updated',sync);
   sync();
  }
- const retirement=document.getElementById('view-retire');
+ const retirement=$('view-retire');
  if(retirement){
-  const portfolio=document.getElementById('fmRetirePortfolio'),life=document.getElementById('fmRetireCashflow'),grid=retirement.querySelector(':scope>.grid'),allocation=grid.firstElementChild,lab=grid.lastElementChild;
-  const header=retirement.querySelector(':scope>.hero'),stats=header.querySelector('.hero-row'),total=document.getElementById('rpTotal'),calculator=document.getElementById('fmRetireToCalculator');
-  const back=document.createElement('button');back.type='button';back.className='secondary';back.id='fmRetireBack';back.textContent='← FIRE';back.onclick=()=>document.querySelector('.bottomnav [data-view="fire"]').click();
-  header.className='fm-retire-topbar';header.replaceChildren(back);const title=document.createElement('h2');title.textContent='은퇴 계획';header.append(title);
-  total.hidden=true;total.setAttribute('aria-hidden','true');header.append(total);
-  const body=document.getElementById('fmRpEditBody'),toggle=document.getElementById('fmRpEditToggle');
-  body.append(allocation.querySelector('#rpSum').parentElement,calculator);calculator.textContent='FIRE 목표·투자 설정';
-  document.getElementById('rpSum').previousElementSibling.textContent='저장된 배분 합계';
-  const draftNote=document.createElement('p');draftNote.className='mini';draftNote.textContent='수정 중인 배분은 저장 후 결과에 반영됩니다.';body.prepend(draftNote);
-  portfolio.append(toggle,body);allocation.remove();
-  const scenario=document.createElement('details');scenario.id='fmLifeScenario';scenario.innerHTML='<summary>단일 분배율 생활·하락 실험<small>종목별 현금흐름과 별도 조건</small></summary>';
-  const conditions=document.createElement('details');conditions.id='fmLifeConditions';conditions.innerHTML='<summary>생활비·실험 조건 변경</summary>';
-  const form=lab.querySelector(':scope>.stack');conditions.append(form);
-  const save=form.querySelector('#rpSave');save.textContent='목표 배분만 저장';
-  const savebar=document.createElement('div');savebar.id='fmRetireSaveBar';savebar.hidden=true;
-  const cancel=document.createElement('button');cancel.type='button';cancel.className='secondary';cancel.id='fmRetireCancel';cancel.textContent='취소';savebar.append(cancel,save);
-  const note=document.createElement('p');note.className='mini';note.textContent='수정 중인 값은 저장 후 반영됩니다. 월 생활비는 생활비 화면과 전략·위험의 하락 실험에 함께 적용됩니다. 분배율·세금 부담률·하락 조건은 단일 분배율 실험 전용이며 전략 비교는 별개입니다.';form.append(note);
-  const modelNote=document.createElement('p');modelNote.className='mini';modelNote.textContent='위 비교 기준을 확인한 뒤 결과를 읽어 주세요. 생활비 화면의 종목별 분배금을 그대로 낮추는 실험은 아닙니다.';
-  scenario.append(modelNote,stats);life.append(conditions);
-  // Keep every existing stress result, report and assumption available under this experiment.
-  for(const node of [...lab.children])if(node.tagName!=='H3'&&!node.classList.contains('line'))scenario.append(node);
-  life.append(scenario);lab.remove();grid.remove();retirement.append(savebar);
+  const portfolio=$('fmRetirePortfolio'),life=$('fmRetireCashflow'),scenario=$('fmLifeScenario'),conditions=$('fmLifeConditions'),form=conditions.querySelector(':scope>.stack');
+  const body=$('fmRpEditBody'),toggle=$('fmRpEditToggle'),save=$('rpSave'),cancel=$('fmRetireCancel'),savebar=$('fmRetireSaveBar');
+  $('rpTotal').hidden=true;
+  $('fmRetireBack').onclick=()=>document.querySelector('.bottomnav [data-view="fire"]').click();
   const setScope=scope=>{save.dataset.scope=scope;save.textContent=scope==='portfolio'?'목표 배분만 저장':'월 생활비 저장';cancel.setAttribute('aria-label',scope==='portfolio'?'목표 배분 변경 취소':'생활 조건 변경 취소')};
-  const updateSave=()=>{const scope=save.dataset.scope;if(document.getElementById('view-firelife')?.classList.contains('active')){setScope('life');savebar.hidden=!conditions.open;return}if(document.getElementById('view-retire')?.classList.contains('active')){setScope('portfolio');savebar.hidden=body.hidden;return}if(scope==='portfolio'&&body.hidden&&conditions.open)setScope('life');else if(scope==='life'&&!conditions.open&&!body.hidden)setScope('portfolio');savebar.hidden=body.hidden&&!conditions.open};
+  const updateSave=()=>{const scope=save.dataset.scope;if($('view-firelife')?.classList.contains('active')){setScope('life');savebar.hidden=!conditions.open;return}if($('view-retire')?.classList.contains('active')){setScope('portfolio');savebar.hidden=body.hidden;return}if(scope==='portfolio'&&body.hidden&&conditions.open)setScope('life');else if(scope==='life'&&!conditions.open&&!body.hidden)setScope('portfolio');savebar.hidden=body.hidden&&!conditions.open};
   setScope('portfolio');
   document.addEventListener('fm-fire-save-scope',e=>{setScope(e.detail);updateSave()});
   new MutationObserver(updateSave).observe(body,{attributes:true,attributeFilter:['hidden']});
@@ -100,10 +67,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const tidyLife=()=>{const l=document.getElementById('fmFireLife'),editor=l.querySelector('#fmDividendEditor'),button=l.querySelector('#fmSaveDividendRates');if(editor&&button&&button.parentElement!==editor)editor.insertBefore(button,editor.querySelector('#fmCancelDividendRates'))};
   new MutationObserver(tidyPortfolio).observe(document.getElementById('fmFirePortfolioProgress'),{childList:true});new MutationObserver(tidyLife).observe(document.getElementById('fmFireLife'),{childList:true});tidyPortfolio();tidyLife();
   const strategy=document.getElementById('fmStrategyCard'),settings=document.getElementById('fmStrategyDetails'),quick=document.getElementById('fmQuickResult'),detail=document.getElementById('fmStrResult');
-  strategy.querySelector('h3').textContent='FIRE 전략 비교';strategy.querySelector(':scope>p').textContent='배당으로 생활비 받기와 자산을 일부 팔아 생활비 쓰기(자가배당)를 비교해요. 임시 비교이며 저장 계획과 실제 자산에는 반영되지 않습니다.';
-  settings.querySelector(':scope>summary').textContent='비교 조건 변경';
-  const comparisonNote=document.createElement('p');comparisonNote.className='mini';comparisonNote.textContent='비교용 조건 · 은퇴 계획에 저장되지 않으며 새로고침하면 초기화됩니다. 간편 비교는 1년, 종목별 비교는 선택한 기간의 별도 모델입니다.';settings.querySelector(':scope>summary').after(comparisonNote);
-  strategy.append(quick,detail);detail.hidden=true;
+  detail.hidden=true;
   const tidyQuick=()=>{if(quick.querySelector('.fm-quick-assumptions'))return;const ps=[...quick.querySelectorAll(':scope>p')];if(!ps.length)return;const d=document.createElement('details');d.className='fm-quick-assumptions';d.innerHTML='<summary>비교 가정·세금 기준</summary>';ps.forEach(n=>d.append(n));quick.append(d)};
   const tidyDetail=()=>{const model=detail.querySelector('.fm-str-model-summary');if(!model)return;
    if(!detail.querySelector('.fm-str-annual-details')){const fold=document.createElement('details');fold.className='fm-str-annual-details';fold.innerHTML='<summary>비교에 사용한 종목·연간 요약</summary>';while(detail.firstChild&&detail.firstChild!==model)fold.append(detail.firstChild);detail.insertBefore(fold,model)}
@@ -113,82 +77,27 @@ document.addEventListener('DOMContentLoaded',()=>{
   new MutationObserver(tidyQuick).observe(quick,{childList:true});new MutationObserver(tidyDetail).observe(detail,{childList:true});tidyQuick();tidyDetail();
   document.addEventListener('click',e=>{if(e.target?.id==='fmQuickRun'&&quick.querySelector('strong')||e.target?.id==='fmStrRun'&&detail.querySelector('.fm-str-model-summary')){settings.open=false;setTimeout(()=>(e.target.id==='fmQuickRun'?quick:detail).scrollIntoView({block:'start',behavior:'instant'}),0)}});
  }
- // FIRE internal screens share the existing main navigation and calculation owners.
- const lifeView=document.getElementById('view-firelife');
- const retirementView=document.getElementById('view-retire');retirementView.before(lifeView);
- lifeView.append(document.getElementById('fmRetireCashflow'));
- const scenario=document.getElementById('fmLifeScenario');retirementView.append(scenario);
- scenario.querySelector('summary').innerHTML='단일 분배율로 하락 실험<small>종목별 생활비 계산과 다른 가정</small>';
- const allocationDetails=document.createElement('details');allocationDetails.id='fmPortfolioDisclosure';allocationDetails.className='card';
- allocationDetails.innerHTML='<summary>목표 자산 구성</summary>';
- allocationDetails.append(document.getElementById('fmRetirePortfolio'));retirementView.append(allocationDetails);
- const strategyLink=document.getElementById('fmFireStrategyOpen'),portfolioLink=document.getElementById('fmFirePortfolioOpen');
- retirementView.append(strategyLink,portfolioLink); // Existing event targets remain available to integrations.
- const strategyStatus=document.getElementById('fmOverview-strategy'),portfolioStatus=document.getElementById('fmOverview-portfolio');
- strategyStatus.hidden=true;
- portfolioStatus.hidden=true;
- retirementView.append(strategyStatus,portfolioStatus);
- for(const [id,title] of [['fire','현황'],['firecalc','조건 비교'],['firelife','생활비'],['retire','전략·위험']]){
-  const view=document.getElementById('view-'+id),nav=document.createElement('nav');nav.className='fm-fire-screen-nav';nav.setAttribute('aria-label','FIRE 화면');
-  for(const [target,label] of [['fire','현황'],['firecalc','조건 비교'],['firelife','생활비'],['retire','전략·위험']]){
-   const button=document.createElement('button');button.type='button';button.dataset.fireScreen=target;button.textContent=label;button.setAttribute('aria-current',id===target?'page':'false');
-   button.onclick=()=>document.dispatchEvent(new CustomEvent('fm-fire-navigate',{detail:target}));nav.append(button);
-  }
-  view.prepend(nav);view.setAttribute('aria-label','FIRE '+title);
- }
- const strategyNav=document.querySelector('#view-fire [data-fire-screen="retire"]');strategyLink.hidden=false;strategyLink.className='';strategyLink.replaceChildren(...strategyNav.childNodes);strategyLink.dataset.fireScreen='retire';strategyLink.setAttribute('aria-current','false');strategyNav.replaceWith(strategyLink);
- portfolioLink.hidden=true;
- const calc=document.querySelector('#view-fire .fm-fire-calc-card'),calcNav=document.querySelector('#view-fire [data-fire-screen="firecalc"]'),calcButton=document.getElementById('fmOpenCalculator');calcButton.dataset.fireScreen='firecalc';calcButton.setAttribute('aria-current','false');calcButton.textContent='조건 비교';calcNav.replaceWith(calcButton);calc.hidden=true;
+ // FIRE screen tabs: the 전략·위험 and 조건 비교 tabs on 현황 are the existing open buttons and keep their own handlers.
+ for(const button of document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]'))if(button.id!=='fmFireStrategyOpen'&&button.id!=='fmOpenCalculator')button.onclick=()=>document.dispatchEvent(new CustomEvent('fm-fire-navigate',{detail:button.dataset.fireScreen}));
+ $('fmOverview-strategy').hidden=true;$('fmOverview-portfolio').hidden=true;$('fmFirePortfolioOpen').hidden=true;document.querySelector('#view-fire .fm-fire-calc-card').hidden=true;
  const originalSync=window.fmSyncFireScreens;
  window.fmSyncFireScreens=view=>{
   originalSync?.(view);
   document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]').forEach(b=>b.setAttribute('aria-current',b.dataset.fireScreen===view?'page':'false'));
-  const bar=document.getElementById('fmRetireSaveBar');if(view==='firelife'||view==='retire'){
-   document.getElementById('view-'+view).append(bar);
+  const bar=$('fmRetireSaveBar');if(view==='firelife'||view==='retire'){
+   $('view-'+view).append(bar);
    document.dispatchEvent(new CustomEvent('fm-fire-save-scope',{detail:view==='firelife'?'life':'portfolio'}));
   }
  };
  window.fmSyncFireScreens(document.querySelector('.view.active')?.id.replace('view-',''));
- const assets=document.getElementById('view-assets');
+ const assets=$('view-assets');
  if(assets){
-  const hero=assets.querySelector(':scope > .hero');
-  const jump=assets.querySelector('.fm-asset-jump');
-  const accounts=document.getElementById('fmAssetAccountsPanel');
-  const holdings=document.getElementById('fmAssetHoldingsPanel');
-  const oldTabs=assets.querySelector('.fm-main-asset-tabs');
+  const oldTabs=$('fmLegacyAssetTabs');if(oldTabs){oldTabs.hidden=true;oldTabs.style.display='none'}
+  const divPanel=$('fmDividendPanel');if(divPanel)divPanel.hidden=false;
   const composition=assets.querySelector('.fm-asset-composition');
-  const growth=document.getElementById('assetGrowthChart')?.closest('.card');
-  const milestone=assets.querySelector('.fm-milestone-details');
-  const history=document.getElementById('snapshotList')?.closest('.card');
-  if(hero)hero.classList.add('fm-unified-hero');
-  if(jump&&hero)hero.after(jump);
-  if(oldTabs){oldTabs.id='fmLegacyAssetTabs';oldTabs.hidden=true;oldTabs.style.display='none';}
-  const dividend=document.createElement('section');dividend.id='fmAssetDividendView';dividend.className='fm-asset-main-panel';dividend.hidden=true;
-  const analysis=document.createElement('section');analysis.id='fmAssetAnalysisView';analysis.className='fm-asset-main-panel';analysis.hidden=true;
-  if(jump){jump.after(dividend);jump.after(analysis);}
-  if(accounts&&jump)jump.after(accounts);
-  if(holdings&&accounts)accounts.after(holdings);
-  if(composition){
-   const divPanel=document.getElementById('fmDividendPanel');
-   if(divPanel){
-    dividend.append(divPanel);divPanel.hidden=false;
-    const method=divPanel.querySelector('.fm-div-method');
-    if(method){
-     method.querySelector('summary').textContent='계산 기준 · 환율 · 조회 상태';
-     for(const id of ['fmDivStatus','fmDivFxBasis']){const info=document.getElementById(id);if(info)method.append(info);}
-    }
-   }
-   const subTabs=composition.querySelector('.fm-analysis-tabs');
-   if(subTabs)subTabs.hidden=true;
-   analysis.append(composition);
-   const wrap=composition.querySelector('.fm-asset-donut-wrap');if(wrap)wrap.hidden=false;
-   const more=document.getElementById('fmCompositionMore');if(more)more.style.display='';
-  }
-  if(milestone)analysis.append(milestone);
-  if(growth)analysis.append(growth);
-  if(history)analysis.append(history);
+  if(composition){const subTabs=composition.querySelector('.fm-analysis-tabs');if(subTabs)subTabs.hidden=true;const wrap=composition.querySelector('.fm-asset-donut-wrap');if(wrap)wrap.hidden=false;const more=$('fmCompositionMore');if(more)more.style.display=''}
   for(const [id,mode] of [['fmAssetQuickAccounts','account'],['fmAssetQuickHoldings','holding'],['fmAssetQuickDividend','dividend'],['fmAssetQuickAnalysis','analysis']]){
-   const btn=document.getElementById(id);
+   const btn=$(id);
    if(btn)btn.onclick=()=>window.fmSelectAssetView(mode);
   }
   window.fmSelectAssetView(typeof fmAssetView==='string'?fmAssetView:'account');
@@ -197,7 +106,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  }catch(e){console.warn('Layout refinement:',e)}
 });
 }catch(e){console.error('fm-layout',e)}
-
 
 
 // ===== fm-ledger-keyboard — 가계부 · 입력 키보드 =====

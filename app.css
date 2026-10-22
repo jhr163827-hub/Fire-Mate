@@ -175,7 +175,7 @@ body{letter-spacing:-.015em}.top{margin-bottom:15px}.logo{font-size:20px}
 #view-calendar .fm-ledger-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0 18px}
 .fm-ledger-month{display:flex;align-items:center;gap:9px;white-space:nowrap}.fm-ledger-month strong{font-size:clamp(19px,5vw,26px);font-weight:800;letter-spacing:-.04em}.fm-ledger-month button{border:0;background:var(--panel2);color:var(--txt);border-radius:11px;padding:6px 12px;font-size:23px}
 .fm-ledger-totals{display:flex;flex-direction:column;gap:6px}.fm-ledger-totals>div{display:flex;align-items:center;justify-content:flex-end;gap:12px}.fm-ledger-totals span{color:var(--sub);font-size:12px}.fm-ledger-totals strong{font-size:clamp(16px,4.5vw,23px);font-variant-numeric:tabular-nums;white-space:nowrap}.fm-ledger-totals>div:nth-child(2) strong{color:var(--green)}
-.fm-ledger-compare{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:17px;font-size:13px}.fm-ledger-compare>button{background:var(--panel2);color:var(--txt);border:0;border-radius:9px;padding:8px}.fm-ledger-budget{display:flex;justify-content:space-between;align-items:center;width:100%;border-top:1px solid var(--line);padding-top:12px;color:var(--sub)}.fm-ledger-budget strong{color:var(--txt)}
+.fm-ledger-budget{display:flex;justify-content:space-between;align-items:center;width:100%;border-top:1px solid var(--line);padding-top:12px;color:var(--sub)}.fm-ledger-budget strong{color:var(--txt)}
 .fm-ledger-controls{display:flex;align-items:center;gap:7px;margin-bottom:14px}.fm-ledger-controls>button{background:transparent;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-size:12px}.fm-ledger-switch{display:flex;gap:3px;background:var(--panel2);padding:4px;border-radius:12px;margin-right:auto}.fm-ledger-switch button{border:0;background:transparent;color:var(--sub);padding:9px 12px;border-radius:9px;font-size:13px}.fm-ledger-switch button.active{background:var(--panel);color:var(--txt);font-weight:800}
 #view-calendar .cal{margin:0 0 14px;gap:3px}#view-calendar .day{min-width:0;min-height:69px;padding:7px 1px;border-radius:8px;overflow:hidden}#view-calendar .day .num{font-size:12px}#view-calendar .day .cost,#view-calendar .day .income{font-size:clamp(9px,2.3vw,12px);letter-spacing:-.045em;white-space:nowrap}#view-calendar .day.selected{background:var(--green2);outline:1px solid var(--green)}
 .fm-ledger-transactions{border-top:1px solid var(--line);padding-top:17px}.fm-ledger-transactions .cardhead h3{font-size:15px}.fm-ledger-transactions .cardhead button{font-size:12px;padding:8px}
@@ -228,7 +228,7 @@ body:has(#view-home.active) #view-home>.fm-home-activity{display:block!important
 /* ---- fm-ledger-v5 ---- */
 
 #view-calendar .fm-ledger-budget{align-items:center}
-#view-calendar #fmLedgerBudgetEdit{margin-left:8px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:5px 9px;font-size:11px;color:var(--txt)}
+
 #view-calendar #fmLedgerBudgetInline[hidden]{display:none}
 #view-calendar #fmLedgerBudgetInline{padding:12px 0 0;grid-column:1/-1}
 #view-calendar #fmLedgerBudgetInline label{display:block;font-size:12px;color:var(--sub);margin-bottom:8px}
@@ -1057,21 +1057,21 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-calendar .fm-ledger-totals{gap:16px}
 #view-calendar .fm-ledger-totals>div:first-child strong{font-size:clamp(25px,7vw,33px);letter-spacing:-.04em}
 #view-calendar .fm-ledger-totals>div:last-child{opacity:.78}
-#view-calendar .fm-ledger-compare{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding:13px 15px;margin-bottom:12px}
-#view-calendar .fm-ledger-budget-overview{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-#view-calendar .fm-ledger-budget-overview>div{display:flex;flex-direction:column;gap:4px;min-width:0}
-#view-calendar .fm-ledger-budget-overview span,#view-calendar .fm-ledger-usage span{color:var(--sub);font-size:12px}
-#view-calendar .fm-ledger-budget-overview strong{font-size:clamp(16px,4.6vw,22px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-#view-calendar .fm-ledger-usage{grid-column:1/-1;display:flex;justify-content:space-between;gap:10px;margin-top:6px}
-#view-calendar .fm-ledger-usage strong{font-size:13px;font-variant-numeric:tabular-nums}
-#view-calendar .fm-ledger-compare>.progress{grid-column:1/-1;margin:0 0 3px}
+
+
+
+
+
+
+
+
 #view-calendar #fmLedgerCompare{grid-column:1;align-self:center;color:var(--sub);font-size:12px}
-#view-calendar .fm-ledger-compare>[data-go="insights"]{grid-column:2;grid-row:4;min-height:44px}
+
 #view-calendar .fm-ledger-budget{grid-column:1/-1;margin:0}
 #view-calendar .fm-ledger-budget button{min-height:44px}
 #view-calendar #fmLedgerBudgetInline{grid-column:1/-1}
 #view-calendar .fm-ledger-controls{margin-bottom:10px}
-@media(max-width:360px){#view-calendar .fm-ledger-compare{padding:11px 12px;gap:5px 7px}#view-calendar .fm-ledger-budget-overview{gap:7px}}
+
 
 
 /* ---- fm-phase25-fire ---- */
@@ -1142,7 +1142,7 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
  #view-fire .fm-fire-strategy-preview{margin:8px 0}
  #view-fire .fm-fire-strategy-preview>div{padding:10px}
  #view-fire .fm-fire-life-button{margin-top:9px;min-height:44px}
- #view-calendar .fm-ledger-compare{margin-bottom:9px}
+ 
 }
 @media(max-width:600px){
  #view-assets #holdingList .tx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 8px;padding:11px 0;align-items:start}
@@ -1157,13 +1157,13 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 
 /* ---- fm-ledger-compact-v3516 ---- */
 
-#view-calendar .fm-ledger-compare{gap:5px 10px;padding:12px 14px;margin-bottom:10px}
-#view-calendar .fm-ledger-budget-overview{gap:8px}
+
+
 #view-calendar .fm-budget-value-head{display:flex;align-items:center;gap:4px}
-#view-calendar .fm-budget-edit-icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:34px;height:34px;min-height:34px;border:0;border-radius:9px;background:var(--panel2);color:var(--txt);font-size:17px;line-height:1}
-#view-calendar .fm-ledger-usage{margin-top:2px}
-#view-calendar .fm-ledger-compare>.progress{margin-bottom:0}
-#view-calendar .fm-ledger-compare>[data-go="insights"]{min-height:38px;padding:7px 9px;font-size:12px}
+
+
+
+
 #fmLedgerBudgetOverlay .fm-budget-modal{padding:19px 18px max(24px,env(safe-area-inset-bottom))}
 #fmLedgerBudgetOverlay .fm-budget-modal h2{font-size:19px;margin:0 0 17px}
 #fmLedgerBudgetOverlay .fm-budget-modal .modalfoot button{min-height:46px}
@@ -1173,22 +1173,22 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-calendar .day .cost{font-size:clamp(9px,2.5vw,11px);margin-top:3px;line-height:1.15;white-space:nowrap}
 #view-calendar .day .income{font-size:9px;margin-top:2px;line-height:1.1;white-space:nowrap}
 #view-calendar .fm-ledger-transactions{margin-top:5px}}
-@media(max-width:360px){#view-calendar .fm-ledger-compare{padding:10px 11px}#view-calendar .day{height:45px;min-height:45px}#view-calendar .day .cost{font-size:9px}#view-calendar .day .income{font-size:8px}}
+@media(max-width:360px){#view-calendar .day{height:45px;min-height:45px}#view-calendar .day .cost{font-size:9px}#view-calendar .day .income{font-size:8px}}
 
 /* ---- fm-ledger-polish-v3517 ---- */
 
 /* Keep the budget amount and edit affordance together without a bulky square. */
-#view-calendar .fm-budget-amount-line{display:flex;align-items:center;gap:4px;min-width:0}
-#view-calendar .fm-budget-amount-line strong{min-width:0}
-#view-calendar .fm-budget-edit-icon{width:40px;height:40px;min-height:40px;border-radius:9px;background:transparent;color:var(--sub);font-size:17px;flex-shrink:0}
-#view-calendar .fm-budget-edit-icon:focus-visible{outline:2px solid var(--green);outline-offset:1px}
-#view-calendar .fm-ledger-compare{padding:10px 13px;gap:4px 10px;margin-bottom:8px}
-#view-calendar .fm-ledger-budget-overview{gap:7px}
-#view-calendar .fm-ledger-budget-overview>div{gap:1px}
-#view-calendar .fm-ledger-usage{margin-top:0}
-#view-calendar .fm-ledger-compare>.progress{margin-bottom:0}
+
+
+
+
+
+
+
+
+
 #view-calendar #fmLedgerCompare{line-height:1.35}
-#view-calendar .fm-ledger-compare>[data-go="insights"]{min-height:38px}
+
 #view-calendar .fm-ledger-transactions{padding-top:9px}
 #view-calendar .fm-ledger-transactions .cardhead{margin-bottom:6px}
 #view-calendar .fm-ledger-transactions .cardhead h3{font-size:13px;line-height:1.45;overflow-wrap:anywhere}
@@ -1198,7 +1198,7 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #fmLedgerBudgetOverlay .fm-budget-modal{max-height:min(92%,520px);overflow-y:auto;overscroll-behavior:contain}
 #fmLedgerBudgetOverlay .fm-budget-modal .modalfoot{position:sticky;bottom:0;background:var(--panel);padding:9px 0 2px;margin-top:12px}
 @media(max-width:700px){#view-calendar .cal{gap:3px}#view-calendar .day{height:clamp(43px,5.9dvh,49px);min-height:43px}}
-@media(max-width:360px){#view-calendar .fm-ledger-compare{padding:10px}#view-calendar .fm-budget-amount-line strong{font-size:15px}}
+
 
 /* ---- fm-ledger-density-v3518 ---- */
 
@@ -1217,9 +1217,9 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-calendar .fm-ledger-cat>div:first-child{font-size:12px;gap:8px;align-items:center}
 #view-calendar .fm-ledger-cat strong{font-size:12px}
 #view-calendar .fm-ledger-bar{height:6px;margin-top:5px}
-#view-calendar .fm-budget-amount-line{gap:1px;align-items:center}
-#view-calendar .fm-budget-amount-line strong{flex:0 1 auto}
-#view-calendar .fm-budget-amount-line #fmLedgerBudgetEdit{display:inline-grid;place-items:center;flex:0 0 44px;width:44px;min-width:44px;max-width:44px;height:44px;min-height:44px;padding:0!important;margin:0;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none!important;color:var(--sub);font-size:15px}
+
+
+
 @media(max-width:360px){#view-calendar #dayTx .tx,#view-calendar #fmLedgerAllTx .tx{column-gap:7px;grid-template-columns:34px minmax(0,1fr) 42px}
 #view-calendar #dayTx .txicon,#view-calendar #fmLedgerAllTx .txicon{width:34px;height:34px}
 #view-calendar #dayTx .txamount,#view-calendar #fmLedgerAllTx .txamount{font-size:15px}
@@ -1359,16 +1359,16 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-calendar .fm-ledger-totals span{font-size:11px;white-space:nowrap;color:var(--sub)}
 #view-calendar .fm-ledger-totals strong,#view-calendar .fm-ledger-totals>div:first-child strong{font-size:clamp(18px,5.2vw,24px);line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 #view-calendar .fm-ledger-totals>div:last-child{opacity:1}
-#view-calendar .fm-ledger-compare{padding:8px 12px 10px;gap:4px 8px;border-radius:16px;margin-bottom:10px}
-#view-calendar .fm-ledger-budget-overview{gap:12px}
-#view-calendar .fm-ledger-budget-overview>div:first-child{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:0}
-#view-calendar .fm-ledger-budget-overview>div:first-child>span{grid-column:1;grid-row:1}
-#view-calendar .fm-budget-amount-line{display:contents}
-#view-calendar .fm-budget-amount-line #fmLedgerBudgetEdit{grid-column:2;grid-row:1;justify-self:end;margin:0}
-#view-calendar #fmCalendarBudgetTotal{grid-column:1/-1;grid-row:2}
-#view-calendar .fm-ledger-budget-overview>div:last-child>span{display:flex;align-items:center;min-height:44px}
-#view-calendar .fm-ledger-budget-overview strong{font-size:clamp(14px,4vw,18px);line-height:1.3;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
-#view-calendar .fm-ledger-usage{margin-top:6px;font-size:11px}
+
+
+
+
+
+
+
+
+
+
 #view-calendar .fm-ledger-controls{gap:6px;margin-bottom:8px}
 #view-calendar .fm-ledger-switch{gap:3px;padding:3px;border-radius:12px;background:var(--panel2)}
 #view-calendar .fm-ledger-controls button,#view-calendar #fmLedgerFilter{min-width:44px;min-height:44px}
@@ -1950,7 +1950,7 @@ html,body{overscroll-behavior-y:contain}
 
 /* ---- fm-feedback-v3589 ---- */
 
-#fmLedgerBudgetEdit{width:auto!important;max-width:none!important;flex:0 0 auto!important;padding:0 12px!important;border:1px solid var(--line)!important;background:var(--panel2)!important;color:var(--txt)!important;font-size:13px!important;font-weight:700;white-space:nowrap}
+
 #fmCalendarBudgetTotal,#view-home #heroBudget{cursor:pointer}
 #view-firelife details>summary,#view-retire details>summary,#view-firecalc details>summary{font-size:15px!important;font-weight:800!important;color:var(--txt)!important;font-family:inherit!important}
 
@@ -2053,3 +2053,23 @@ html,body{overscroll-behavior-y:contain}
 /* ---- fm-fire-gap ---- */
 .fm-fire-gap{display:block;margin-top:2px;font-size:12px;line-height:1.4;color:var(--sub);font-weight:600}
 .fm-stale{color:var(--yellow);font-weight:700}
+
+/* ---- 가계부 예산 카드: every rule for .fm-ledger-compare lives here ---- */
+#view-calendar .fm-ledger-compare{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 10px;padding:12px 14px;margin:0 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:16px;font-size:13px}
+#view-calendar .fm-ledger-budget-overview{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
+#view-calendar .fm-ledger-budget-overview>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+#view-calendar .fm-ledger-budget-overview>div:last-child{align-items:flex-end;text-align:right}
+#view-calendar .fm-ledger-budget-overview span{color:var(--sub);font-size:12px}
+#view-calendar .fm-ledger-budget-overview strong{font-size:17px;line-height:1.3;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+#view-calendar .fm-ledger-budget-overview>div:first-child{display:grid;grid-template-columns:auto auto;justify-content:start;align-items:center;column-gap:6px}
+#view-calendar .fm-budget-amount-line{display:contents}
+#view-calendar #fmCalendarBudgetTotal{grid-column:1/-1;grid-row:2}
+#view-calendar #fmLedgerBudgetEdit{grid-column:2;grid-row:1;position:relative;z-index:1;min-height:30px;padding:0 10px;margin:0;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700;white-space:nowrap}
+/* A compact button with a 44px touch area */
+#view-calendar #fmLedgerBudgetEdit::after{content:'';position:absolute;inset:-8px -2px}
+#view-calendar .fm-ledger-compare>.progress{grid-column:1;grid-row:2;margin:0}
+#view-calendar .fm-ledger-usage{grid-column:2;grid-row:2;display:flex;align-items:center}
+#view-calendar .fm-ledger-usage span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#view-calendar .fm-ledger-usage strong{font-size:12px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
+#fmNoSpendLine{grid-column:1/-1;margin:0;font-size:12px;color:var(--sub)}
+#fmNoSpendLine strong{color:var(--green)}

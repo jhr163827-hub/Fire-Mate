@@ -477,8 +477,12 @@ class HomeResponsiveTest(unittest.TestCase):
         try:
             page.goto(URL,wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="calendar"]').click()
-            for selector in ('#fmModeCalendar','#fmModeList','#fmLedgerAddBtn','#fmLedgerBudgetEdit'):
+            for selector in ('#fmModeCalendar','#fmModeList','#fmLedgerAddBtn'):
                 self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)
+            # The budget edit button is drawn compact; its tap area extends to 44px. Check what a finger actually hits.
+            hit=page.evaluate('''()=>{const b=document.getElementById('fmLedgerBudgetEdit'),r=b.getBoundingClientRect(),x=r.left+r.width/2;
+             let top=r.top,bottom=r.bottom;while(b.contains(document.elementFromPoint(x,top-1)))top--;while(b.contains(document.elementFromPoint(x,bottom)))bottom++;return bottom-top}''')
+            self.assertGreaterEqual(hit,44,'#fmLedgerBudgetEdit tap area')
             page.locator('.bottomnav [data-view="fire"]').click()
             for selector in ('#fmFireStrategyOpen','#fmFireLifeOpen'):
                 self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)

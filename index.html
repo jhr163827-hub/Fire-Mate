@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.112</title><link rel="stylesheet" href="./app.css?v=3.5.112"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-112">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.113</title><link rel="stylesheet" href="./app.css?v=3.5.113"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-113">
 
 
 
@@ -11,8 +11,8 @@
 #fmMilestone{border:1px solid var(--green);background:linear-gradient(135deg,var(--panel),var(--panel2))}
 #fmMilestone p{margin:4px 0 0;font-size:14px;color:var(--sub)}
 #view-calendar .day.fm-nospend .num::after{content:' 🌱';font-size:10px}
-#fmNoSpendLine{margin-top:8px;font-size:12px;color:var(--sub)}
-#fmNoSpendLine strong{color:var(--green)}
+
+
 </style></head><body><main class="app"><header class="top"><div><div class="eyebrow" id="fmCurrentSection" aria-live="polite">홈</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero fm-home-wealth" id="homeAssetHero">
@@ -2027,7 +2027,7 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-112',VERSION='3.5.112';
+ const BUILD='fire-mate-v3-5-113',VERSION='3.5.113';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2175,8 +2175,8 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 #fmAssetQuoteContext[open]>summary::after{content:'⌃'}
 #fmAssetQuoteContext :is(.mini,#stockStatus){display:block;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
 #view-assets .fm-asset-jump{scroll-margin-top:10px}
-#view-calendar .fm-ledger-compare{padding:10px 13px}
-#view-calendar .fm-ledger-budget-overview strong{font-size:18px}#view-calendar .fm-ledger-usage{margin-top:6px}
+
+
 #view-calendar .monthnav{gap:8px}
 #view-calendar .fm-ledger-transactions>.cardhead{align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
 #view-calendar #selectedTitle{font-size:13px;line-height:1.5;scroll-margin-top:12px;flex:1;min-width:140px}
@@ -2225,4 +2225,4 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.112"></script></body></html>
+</style><script src="./js/features.js?v=3.5.113"></script></body></html>

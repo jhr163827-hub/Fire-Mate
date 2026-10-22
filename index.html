@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.114</title><link rel="stylesheet" href="./app.css?v=3.5.114"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-114">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.115</title><link rel="stylesheet" href="./app.css?v=3.5.115"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-115">
 
 
 
@@ -1256,7 +1256,7 @@ $('quickCrypto').onclick=()=>{fmCloseAssetAddMenu();openHolding();$('holdingType
 $('quickSavings').onclick=()=>{fmCloseAssetAddMenu();editAccount(null);$('accountKind').value='safe';$('accountName').placeholder='예: 적금, 예금, 주택청약'};
 $('quickOther').onclick=()=>{fmCloseAssetAddMenu();const a=data.accounts.find(x=>x.kind==='other');if(a)showAccountDetail(a.id);else{editAccount(null);$('accountKind').value='other';$('accountName').value='기타자산';$('accountAmount').value=moneyFormat(0)}};$('saveHolding').onclick=()=>{const ticker=$('holdingTicker').value.trim().toUpperCase(),type=$('holdingType').value,qty=Number($('holdingQty').value),cost=moneyNumber($('holdingCost').value),price=moneyNumber($('holdingPrice').value);if(!ticker||ticker.length>32||!['USD','KRW','CRYPTO_KRW','CRYPTO_USD'].includes(type)||![qty,cost,price].every(Number.isFinite)||qty<=0||cost<0||price<0||qty>1e12||price>1e12)return toast('종목·수량·가격을 확인해 주세요');const oldHolding=data.holdings.find(x=>x.id===editingHolding);if(type==='KRW'&&!/^\d{6}$/.test(ticker))return toast('국내 종목은 검색 결과를 선택하거나 6자리 코드를 입력해 주세요');if(type==='USD'&&!/^[A-Z][A-Z0-9.-]{0,14}$/.test(ticker))return toast('미국 종목은 검색 결과를 선택하거나 영문 티커를 입력해 주세요');const h={...oldHolding,id:editingHolding||uid(),ticker,type,qty,cost,price,quoteName:(holdingSelectedName||((oldHolding?.ticker===ticker&&oldHolding?.type===type)?oldHolding?.quoteName:''))||undefined,accountId:$('holdingAccount').value,quoteAt:(oldHolding?.price===price&&oldHolding?.ticker===ticker)?oldHolding.quoteAt:null};if(!data.accounts.some(a=>a.id===h.accountId))return toast('저장할 계좌를 먼저 선택해 주세요');const previousHoldings=data.holdings;const nextHoldings=[...previousHoldings];if(editingHolding){const i=nextHoldings.findIndex(x=>x.id===editingHolding);if(i<0)return toast('종목을 찾을 수 없어요');nextHoldings[i]=h}else nextHoldings.push(h);data.holdings=nextHoldings;if(!persist()){data.holdings=previousHoldings;return}modal('holdingOverlay',false);render();toast('보유 종목을 저장했어요')};
 $('deleteHolding').onclick=async()=>{if(!editingHolding||!await fmAsk('이 종목을 삭제할까요?'))return;const previousHoldings=data.holdings;data.holdings=data.holdings.filter(h=>h.id!==editingHolding);if(!persist()){data.holdings=previousHoldings;return}modal('holdingOverlay',false);render();toast('종목을 삭제했어요')};
-$('saveAssets').onclick=()=>{const values={fx:Number($('assetFx').value),cash:moneyNumber($('assetCash').value),other:moneyNumber($('assetOther').value),debt:moneyNumber($('assetDebt').value)};if(!Object.values(values).every(Number.isFinite)||values.fx<=0||values.fx>1e6||[values.cash,values.other,values.debt].some(n=>n<0||n>1e15))return toast('자산 금액과 환율을 확인해 주세요');const previousBalance=data.balance;data.balance={...previousBalance,...values};if(!persist()){data.balance=previousBalance;return}render();toast('자산을 저장했어요')};
+$('saveAssets').onclick=()=>{const values={fx:Number($('assetFx').value),cash:moneyNumber($('assetCash').value),other:moneyNumber($('assetOther').value),debt:moneyNumber($('assetDebt').value)};if(!Object.values(values).every(Number.isFinite)||values.fx<=0||values.fx>1e6||[values.cash,values.other,values.debt].some(n=>n<0||n>1e15))return toast('자산 금액과 환율을 확인해 주세요');const previousBalance=data.balance;data.balance={...previousBalance,...values};if(!persist()){data.balance=previousBalance;return}modal('legacyAssetsOverlay',false);render();toast('자산을 저장했어요')};
 $('syncFireAssets').onclick=()=>{const amount=fireLiquid();if(amount<0)return toast('순자산이 음수예요. FIRE 자산 반영을 확인해 주세요');const previousFire=data.fire;data.fire={...previousFire,asset:Math.round(amount/10000)};if(!persist()){data.fire=previousFire;return}render();toast('FIRE 운용자산을 반영했어요')};
 
 // FIRE MATE PERSONAL: separate retirement planning and monthly net worth snapshots.
@@ -2019,7 +2019,7 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-114',VERSION='3.5.114';
+ const BUILD='fire-mate-v3-5-115',VERSION='3.5.115';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2217,4 +2217,4 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.114"></script></body></html>
+</style><script src="./js/features.js?v=3.5.115"></script></body></html>

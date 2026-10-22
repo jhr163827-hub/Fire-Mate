@@ -11,7 +11,8 @@ test('assets show cash, other and debt that count toward net worth and reopen th
  await page.locator('#assetCash').fill('1000000');
  await page.locator('#assetDebt').fill('3000000');
  await page.locator('#saveAssets').click();
- await page.locator('#legacyAssetsOverlay [data-close]').click();
+ // Saving closes the sheet.
+ await expect(page.locator('#legacyAssetsOverlay')).toBeHidden();
  await expect(page.locator('#fmBalanceRowText')).toHaveText('현금·예금 ₩1,000,000 · 부채 -₩3,000,000 · 순자산에 포함');
  const balance=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).balance);
  expect(balance).toMatchObject({cash:1000000,other:0,debt:3000000});

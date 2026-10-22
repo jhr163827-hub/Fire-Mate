@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const tidyPortfolio=()=>{const p=document.getElementById('fmFirePortfolioProgress'),d=p.querySelector('#fmFirePortfolioDetails');if(!d)return;const classes=p.querySelector(':scope>.fm-fire-target-classes');if(classes)d.append(classes);p.querySelectorAll(':scope>p').forEach(n=>d.append(n))};
   const tidyLife=()=>{const l=document.getElementById('fmFireLife'),editor=l.querySelector('#fmDividendEditor'),button=l.querySelector('#fmSaveDividendRates');if(editor&&button&&button.parentElement!==editor)editor.insertBefore(button,editor.querySelector('#fmCancelDividendRates'))};
   new MutationObserver(tidyPortfolio).observe(document.getElementById('fmFirePortfolioProgress'),{childList:true});new MutationObserver(tidyLife).observe(document.getElementById('fmFireLife'),{childList:true});tidyPortfolio();tidyLife();
-  const strategy=document.getElementById('fmStrategyCard'),settings=document.getElementById('fmStrategyDetails'),quick=document.getElementById('fmQuickResult'),detail=document.getElementById('fmStrResult');
+  const settings=document.getElementById('fmStrategyDetails'),quick=document.getElementById('fmQuickResult'),detail=document.getElementById('fmStrResult');
   detail.hidden=true;
   const tidyQuick=()=>{if(quick.querySelector('.fm-quick-assumptions'))return;const ps=[...quick.querySelectorAll(':scope>p')];if(!ps.length)return;const d=document.createElement('details');d.className='fm-quick-assumptions';d.innerHTML='<summary>비교 가정·세금 기준</summary>';ps.forEach(n=>d.append(n));quick.append(d)};
   const tidyDetail=()=>{const model=detail.querySelector('.fm-str-model-summary');if(!model)return;
@@ -131,7 +131,7 @@ try{
   // Amounts in 만원; 1억 and above read as 억 (6억 5,000만 원), never 65,000만 원.
   const money=n=>Math.round(n)===0?'0만 원':(Math.round(n)<0?'-':'')+compactMoney(Math.abs(n));
   const eta=$('fmRetirementETA'),portfolioValue=$('fmOverview-portfolio'),riskBasis=$('fmStressBasis'),basis=$('fmComparisonBasis');
-  const conditions=$('fmLifeConditions'),form=conditions.querySelector(':scope>.stack'),advanced=$('fmUniformExperimentInputs'),draftStatus=$('fmLifeExpenseStatus');
+  const conditions=$('fmLifeConditions'),advanced=$('fmUniformExperimentInputs'),draftStatus=$('fmLifeExpenseStatus');
   // The FIRE screen layout hides these two until this block shows them in the overview.
   $('fmFirePortfolioOpen').hidden=false;portfolioValue.hidden=false;
   $('fmFireRiskOpen').onclick=()=>{navigate('retire');$('fmLifeScenario').open=true;requestAnimationFrame(()=>$('fmModelBridge').scrollIntoView({block:'start',behavior:'instant'}))};
@@ -288,10 +288,12 @@ try{
    status.textContent=last===null?'마지막 백업: 아직 없어요':'마지막 백업: '+(daysSince(last)<1?'오늘':daysSince(last)+'일 전');
    const start=firstDay(d),due=last!==null?daysSince(last)>=7:start!==null&&daysSince(start)>=3;
    nudge.hidden=!(hasData(d)&&due&&!(snooze!==null&&snooze>Date.now()));
+   $('fmBackupNow').textContent=localStorage.getItem('firemate_drive_backup_v1')==='1'?'드라이브에 백업하기':'메일로 백업 보내기';
    if(!nudge.hidden)$('fmBackupNudgeText').textContent=(last===null?'아직 백업한 적이 없어요.':'이번 주 백업할까요? 마지막 백업이 '+daysSince(last)+'일 전이에요.')+' 기록은 이 휴대폰에만 저장돼서, 앱이나 브라우저 데이터를 지우면 사라져요.';
   };
   const sync=()=>{const d=saved();syncQuote(d);syncBackup(d)};
-  $('fmBackupNow').onclick=()=>{($('exportShare')||$('export'))?.click();setTimeout(sync,300)};
+  // With Drive backup on, the reminder backs up there in one tap; otherwise it opens the share sheet.
+  $('fmBackupNow').onclick=()=>{if(localStorage.getItem('firemate_drive_backup_v1')==='1')window.fmDriveBackupNow?.().then(sync);else{($('exportShare')||$('export'))?.click();setTimeout(sync,300)}};
   $('fmBackupLater').onclick=()=>{try{localStorage.setItem(SNOOZE,new Date(Date.now()+7*DAY).toISOString())}catch{}sync()};
   for(const id of ['export','exportShare'])$(id)?.addEventListener('click',()=>setTimeout(sync,300));
   // Totals re-render after every saved change; follow them instead of polling.
@@ -405,8 +407,6 @@ try{
  'use strict';
  document.addEventListener('DOMContentLoaded',()=>{
   const $=id=>document.getElementById(id);
-  const saved=fmLiveData;
-  const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
   // Settings: one tap tidies categories of rows imported before the new mapping.
   const mount=$('fmLedgerImportMount');
   if(mount){const tiny=document.createElement('label');tiny.className='fm-zip-remember';tiny.id='fmHideTinyIncome';tiny.innerHTML='<input type="checkbox"><span>1,000원 미만 이자·배당·캐시백은 가계부에서 숨기기</span>';const box=tiny.querySelector('input');try{box.checked=localStorage.getItem('firemate_hide_small_income_v1')!=='0'}catch{box.checked=true}box.onchange=()=>{try{localStorage.setItem('firemate_hide_small_income_v1',box.checked?'1':'0')}catch{}location.reload()};mount.after(tiny)}
@@ -499,13 +499,11 @@ try{
    try{localStorage.setItem(KEY,JSON.stringify(Object.fromEntries(Object.keys(DEFAULTS).map(k=>[k,$(k).value]))))}catch{}
   };
   box.addEventListener('input',calc);calc();
-  // Pre-tax yearly payout of the retirement portfolio, read from the 생활비 card itself.
   box.querySelector('#fmHcFill').onclick=()=>{
-   const text=host.textContent||'';const m=text.match(/세전\s*((?:\d[\d,]*억\s*)?(?:\d[\d,]*만\s*)?(?:\d[\d,]*)?)\s*원/);
-   if(!m){window.fmToast?.('생활비 화면에서 세전 분배금을 찾지 못했어요');return}
-   const t=m[1].replace(/\s/g,'');const eok=Number((t.match(/([\d,]+)억/)||[,'0'])[1].replace(/,/g,'')),man=Number((t.match(/([\d,]+)만/)||[,'0'])[1].replace(/,/g,'')),rest=Number((t.replace(/.*만|.*억/,'').match(/^[\d,]+$/)||['0'])[0].replace(/,/g,''));
-   const monthly=eok*1e8+man*1e4+rest;if(!(monthly>0)){window.fmToast?.('세전 분배금을 읽지 못했어요');return}
-   $('finance').value=String(Math.round(monthly*12/10000));calc();window.fmToast?.('세전 분배금 연 '+Math.round(monthly*12/10000).toLocaleString('ko-KR')+'만 원을 넣었어요');
+   // Pre-tax monthly payout (만원) published by the 생활비 calculation; display wording does not matter.
+   const gross=Number(window.fmFireViewState?.cashflow?.monthlyGrossIncome);
+   if(!(gross>0)){window.fmToast?.('생활비 화면에서 목표 배분의 분배금을 먼저 확인해 주세요');return}
+   const yearly=Math.round(gross*12);$('finance').value=String(yearly);calc();window.fmToast?.('세전 분배금 연 '+yearly.toLocaleString('ko-KR')+'만 원을 넣었어요');
   };
   // Hand the health-insurance part (without 장기요양, which the app adds itself) to the 생활비 settings.
   box.querySelector('#fmHcApply').onclick=()=>{
@@ -585,10 +583,11 @@ try{
 // ===== fm-start-v3597 — 홈 · 시작 화면, 예시 데이터 =====
 try{
 /* First run: choose how to start (example data / record by hand / 뱅크샐러드). Example data is
-   offered only while nothing is saved, and leaving it clears it. Plus a "1년 앞당기려면" line on FIRE. */
+   offered only while nothing is saved, and leaving it clears it. */
 (()=>{
  'use strict';
- const K='firemate_smart_v3',CHOICE='firemate_start_choice_v1',DEMO='firemate_demo_mode_v1';
+ // KEEP holds whatever was saved before example data, and comes back when leaving it.
+ const K='firemate_smart_v3',CHOICE='firemate_start_choice_v1',DEMO='firemate_demo_mode_v1',KEEP='firemate_demo_backup_v1';
  const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
  function sample(){
   const tx=[],now=new Date(),shops=[['식비','김밥천국',8500],['카페·간식','스타벅스',5800],['교통','지하철',1550],['쇼핑','쿠팡',23900],['식비','배달의민족',21000],['문화·취미','CGV',14000]];
@@ -605,27 +604,24 @@ try{
   const $=id=>document.getElementById(id),home=$('view-home');if(!home)return;
   let demo=false;try{demo=localStorage.getItem(DEMO)==='1'}catch{}
   if(demo){const bar=document.createElement('div');bar.className='fm-demo-bar';bar.id='fmDemoBar';bar.innerHTML='<span>예시 데이터로 둘러보는 중이에요</span><button type="button" class="primary">내 데이터로 시작</button>';home.prepend(bar);
-   bar.querySelector('button').onclick=async()=>{if(window.fmAsk&&!await window.fmAsk('예시 데이터를 지우고 빈 상태에서 시작할까요?',{ok:'시작',cancel:'취소'}))return;try{localStorage.removeItem(K);localStorage.removeItem(DEMO);localStorage.setItem(CHOICE,'manual')}catch{}location.reload()};}
+   bar.querySelector('button').onclick=async()=>{if(window.fmAsk&&!await window.fmAsk('예시 데이터를 지우고 내 데이터로 시작할까요?',{ok:'시작',cancel:'취소'}))return;try{const kept=localStorage.getItem(KEEP);if(kept!==null){localStorage.setItem(K,kept);localStorage.removeItem(KEEP)}else localStorage.removeItem(K);localStorage.removeItem(DEMO);localStorage.setItem(CHOICE,'manual')}catch{}location.reload()};}
   // First visit with nothing saved: one card with three ways to start (tests opt in explicitly).
-  let d={};try{d=JSON.parse(localStorage.getItem(K)||'{}')||{}}catch{}
-  const empty=!(d.tx||[]).length&&!(d.holdings||[]).length&&!(d.accounts||[]).some(a=>Number(a?.amount)>0);
+  let d={};try{d=JSON.parse(localStorage.getItem(K)||'{}')||{}}catch{d=null}
+  // Anything the person entered counts: records, assets, debt, budgets, recurring items, a changed plan, net-worth history.
+  const filled=v=>Array.isArray(v)?v.length>0:!!v&&typeof v==='object'&&Object.keys(v).length>0;
+  const fireDefaults={asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4};
+  const empty=!!d&&!filled(d.tx)&&!filled(d.holdings)&&!filled(d.rec)&&![...(d.dailySnapshots||[]),...(d.snapshots||[])].some(s=>Number(s?.amount)>0)
+   &&!(d.accounts||[]).some(a=>Number(a?.amount)>0||filled(a?.items))&&!['cash','other','debt'].some(k=>Number(d.balance?.[k])>0)
+   &&!Object.values(d.budgets||{}).some(v=>Number(v)>0)&&!Object.entries(d.fire||{}).some(([k,v])=>k in fireDefaults&&Number(v)!==fireDefaults[k]);
   let chosen=null;try{chosen=localStorage.getItem(CHOICE)}catch{}
   if(!demo&&empty&&!chosen&&(!navigator.webdriver||window.__fmStartTest)){
    const card=document.createElement('section');card.className='card fm-start';card.id='fmStart';
    card.innerHTML='<h3>어떻게 시작할까요?</h3><p class="mini">언제든 바꿀 수 있어요.</p><div class="fm-start-options"><button type="button" data-start="demo"><strong>👀 예시로 둘러보기</strong><span>샘플 데이터로 화면을 먼저 봐요</span></button><button type="button" data-start="manual"><strong>✍️ 직접 기록으로 시작</strong><span>은행 연결 없이 손으로 적어요</span></button><button type="button" data-start="bank"><strong>📥 뱅크샐러드 연결</strong><span>Gmail로 받은 내역을 가져와요</span></button></div>';
    home.prepend(card);
    card.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{const how=b.dataset.start;try{localStorage.setItem(CHOICE,how)}catch{}
-    if(how==='demo'){try{localStorage.setItem(K,JSON.stringify(sample()));localStorage.setItem(DEMO,'1')}catch{window.fmToast?.('예시 데이터를 넣지 못했어요');return}location.reload();return}
+    if(how==='demo'){try{const before=localStorage.getItem(K);if(before!==null)localStorage.setItem(KEEP,before);localStorage.setItem(K,JSON.stringify(sample()));localStorage.setItem(DEMO,'1')}catch{window.fmToast?.('예시 데이터를 넣지 못했어요');return}location.reload();return}
     card.remove();if(how==='manual')window.fmOpenEntry?.();else window.fmImportFromHome?.()});
   }
-  // FIRE: how much more a month brings the date one year closer (same monthly compounding as the plan).
-  const sooner=document.createElement('p');sooner.id='fmFireSooner';sooner.className='fm-fire-sooner';
-  ($('fmRetirementETA')||$('fireYears'))?.after(sooner);
-  const months=(asset,monthly,rate,goal)=>{const r=Math.pow(1+rate/100,1/12)-1;let v=asset;for(let i=0;i<=1200;i++){if(v>=goal)return i;v=v*(1+r)+monthly}return Infinity};
-  const sync=()=>{const p=window.fmFireViewState?.plan;sooner.textContent='';if(!p||!(p.goal>0))return;const asset=Number(p.net)/10000,base=months(asset,p.monthly,p.rate,p.goal);if(!Number.isFinite(base)||base<=12)return;
-   let lo=p.monthly,hi=Math.max(p.monthly*4,p.goal);for(let k=0;k<40;k++){const mid=(lo+hi)/2;if(months(asset,mid,p.rate,p.goal)<=base-12)hi=mid;else lo=mid}
-   const extra=Math.ceil(hi-p.monthly);if(extra>0&&extra<100000)sooner.textContent='1년 앞당기려면 매달 '+extra.toLocaleString('ko-KR')+'만 원 더 모으면 돼요.'};
-  document.addEventListener('fm-fire-view-updated',sync);sync();
  });
 })();
 }catch(e){console.error('fm-start-v3597',e)}

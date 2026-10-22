@@ -17,6 +17,9 @@
 - 비밀번호·이메일·토큰·API 키를 코드, 테스트, PR에 넣지 않는다. 테스트용 ZIP 비밀번호는 가짜 값 `qa-zip-pass`만 쓴다. 백업 `extras`에도 비밀값은 넣지 않는다.
 - 브라우저 기본 창(`alert`/`confirm`/`prompt`) 대신 `await window.fmAsk(문구,{ok,cancel})`와 `window.fmToast(문구)`를 쓴다. `window.toast`는 함수가 아니라 #toast 요소다.
 - 사용자가 손으로 분류·확인하게 만들지 않는다(자동 분류 + 되돌리기).
+- 예시 데이터는 저장된 기록이 없을 때만 들어가고, 들어가기 전 기록은 `firemate_demo_backup_v1`에 보관했다가 나올 때 되돌린다.
+- Google 드라이브 백업(`firemate_drive_*`)은 앱 전용 폴더(drive.appdata) 한 파일만 쓴다. 토큰은 백업에 넣지 않는다. 앱의 Google 프로젝트에 Drive API가 켜져 있어야 동작한다.
+- 화면 글자를 다시 숫자로 읽지 않는다. 계산 결과는 `window.fmFireViewState` 같은 공통 값에서 가져온다.
 
 ## 코드 구조
 - `index.html`: 마크업 → 앞부분 작은 스크립트 2개(접근성, 첫 화면 순자산) → 메인 스크립트(전역 IIFE: `data`, `persist()`, `getTx()`, `render*()`, 모든 화면의 기본 그리기) → `fm-pwa-updates`(업데이트, 인라인 유지) → `js/features.js`.

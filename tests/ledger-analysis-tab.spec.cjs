@@ -33,3 +33,19 @@ test('소비 분석 links to the asset analysis tab',async({page})=>{
  await expect(page.locator('#view-assets')).toHaveClass(/active/);
  await expect(page.locator('#fmAssetAnalysisView')).toBeVisible();
 });
+
+test('소비 분석 keeps the key cards open and folds the rest; empty comparisons look neutral',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await page.addInitScript(s=>{if(!sessionStorage.getItem('seeded')){sessionStorage.setItem('seeded','1');localStorage.setItem('firemate_smart_v3',JSON.stringify(s))}},{theme:'dark',rec:[],budgets:{[m]:500000},tx:[{id:'a',date:m+'-01',type:'expense',category:'식비',amount:12000}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmInsightsMore')).not.toHaveAttribute('open','');
+ await expect(page.locator('#fmFixedList')).toBeVisible();
+ await expect(page.locator('#coach')).toBeHidden();
+ await expect(page.locator('#monthDelta')).toHaveText('비교 불가');
+ await expect(page.locator('#monthDelta')).not.toHaveClass(/red|green/);
+ await expect(page.locator('#sixChart .fm-six-amount').first()).toHaveText('');
+ await page.locator('#fmInsightsMore>summary').click();
+ await expect(page.locator('#fmInsightsBudgetLink')).toHaveText('가계부에서 예산 수정 →');
+ await expect(page.locator('#coach')).toBeVisible();
+});

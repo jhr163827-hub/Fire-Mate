@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.103</title><link rel="stylesheet" href="./app.css?v=3.5.103"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-103">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.104</title><link rel="stylesheet" href="./app.css?v=3.5.104"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-104">
 
 
 
@@ -40,7 +40,7 @@
  <div class="fm-ledger-month"><button type="button" data-shift="-1" aria-label="이전 달">‹</button><strong class="monthLabel"></strong><button type="button" data-shift="1" aria-label="다음 달">›</button></div>
  <div class="fm-ledger-totals"><div><span>이 달 지출</span><strong id="fmCalendarSpent">₩0</strong></div><div><span>수입</span><strong id="fmCalendarIncome">₩0</strong></div></div>
 </div>
-<div class="fm-ledger-compare"><div class="fm-ledger-budget-overview"><div><span>월 예산</span><div class="fm-budget-amount-line"><strong id="fmCalendarBudgetTotal">미설정</strong><button type="button" id="fmLedgerBudgetEdit" class="fm-budget-edit-icon" aria-label="월 예산 수정" title="월 예산 수정">✎ 수정</button></div></div><div><span id="fmCalendarBudgetLabel">남은 예산</span><strong id="fmCalendarBudget">미설정</strong></div></div><div class="fm-ledger-usage"><span>예산 사용률</span><strong id="fmCalendarUsage">예산 설정 후 표시</strong></div><div class="progress" id="fmCalendarProgress" role="progressbar" aria-label="월 예산 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="fmCalendarProgressFill"></div></div></div>
+<div class="fm-ledger-compare"><div class="fm-ledger-budget-overview"><div><span>월 예산</span><div class="fm-budget-amount-line"><strong id="fmCalendarBudgetTotal">미설정</strong><button type="button" id="fmLedgerBudgetEdit" class="fm-budget-edit-icon" aria-label="월 예산 수정" title="월 예산 수정">✎ 수정</button></div></div><div><span id="fmCalendarBudgetLabel">남은 예산</span><strong id="fmCalendarBudget">미설정</strong></div></div><div class="fm-ledger-usage"><span>예산 사용률</span><strong id="fmCalendarUsage">예산 설정 후 표시</strong></div><div class="progress" id="fmCalendarProgress" role="progressbar" aria-label="월 예산 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="fmCalendarProgressFill"></div></div><p id="fmNoSpendLine"></p></div>
 <div class="fm-ledger-controls"><div class="fm-ledger-switch"><button type="button" id="fmModeCalendar" class="active" aria-pressed="true">달력</button><button type="button" id="fmModeList" aria-pressed="false">목록</button><button type="button" id="fmModeAnalysis" aria-label="소비 분석과 월간 결산 보기">분석</button></div><button type="button" id="fmLedgerSearchBtn" aria-label="거래 검색" aria-expanded="false">검색</button><button type="button" id="fmLedgerAddBtn" aria-label="거래 추가">＋ 추가</button></div><div id="fmLedgerSearchArea" hidden><input type="search" id="fmLedgerSearchInput" placeholder="가맹점·카테고리·메모 검색" aria-label="가계부 거래 검색"></div>
 <div id="fmLedgerCalendarPane"><div class="cal" id="cal"></div><div class="fm-ledger-transactions"><div class="cardhead"><h3 id="selectedTitle" aria-live="polite">선택한 날짜</h3><button class="secondary" id="addOnDay" hidden>+ 이 날짜에 기록</button></div><div id="dayTx"></div></div></div>
 <div id="fmLedgerListPane" hidden><div class="fm-ledger-listhead"><h3>이번 달 거래 내역</h3><select id="fmLedgerFilter" aria-label="거래 유형"><option value="all">지출·수입</option><option value="expense">지출</option><option value="income">수입</option><option value="transfer">이체</option><option value="including-transfer">전체(이체 포함)</option></select></div><div id="fmLedgerAllTx"></div></div>
@@ -322,7 +322,7 @@ function renderCal(){
  $('fmLedgerCompare').textContent=prev.expense?'지난달보다 '+won(Math.abs(t.expense-prev.expense))+(t.expense>prev.expense?' 더 지출':t.expense<prev.expense?' 덜 지출':' 동일'):'이번 달 지출을 한눈에 확인하세요';
  const dailyRows=data.tx.filter(t=>t.date===selected&&t.type!=='transfer'&&!fmTinyIncome(t));const dailyExpense=dailyRows.filter(t=>t.type==='expense').reduce((n,t)=>n+(Number(t.amount)||0),0);$('selectedTitle').textContent=selected+' 거래 · '+dailyRows.length+'건'+(dailyExpense?' · 지출 '+won(dailyExpense):'');
  listTo($('dayTx'),dailyRows);
- fmLedgerSetMode(fmLedgerMode);fmLedgerAnalytics();
+ fmLedgerSetMode(fmLedgerMode);fmLedgerAnalytics();fmNoSpendMarks();
 }
 $('fmModeCalendar').onclick=()=>fmLedgerSetMode('calendar',true);
 $('fmModeList').onclick=()=>fmLedgerSetMode('list',true);$('fmModeAnalysis').onclick=()=>go('insights');$('fmSpendingOpen').onclick=()=>go('insights');$('fmInsightsBack').onclick=()=>fmReportBack('calendar');$('fmInsightAssets').onclick=()=>{go('assets');fmSetAssetView('analysis')};$('fmInsightsMonthly').onclick=()=>$('fmMonthlyOpen')?$('fmMonthlyOpen').click():go('monthly');
@@ -513,6 +513,86 @@ if(!form.dataset.ready){form.innerHTML=FM_CATB_CATS.map(c=>'<label for="fmCatB-'
 form.querySelectorAll('input').forEach(i=>{if(document.activeElement!==i)i.value=cb[i.dataset.cat]?Number(cb[i.dataset.cat]).toLocaleString('ko-KR'):''});
 }
 $('fmCatBudgetSave')?.addEventListener('click',()=>{const next={};for(const i of $('fmCatBudgetForm').querySelectorAll('input')){const v=Number(String(i.value).replace(/[^\d]/g,''));if(Number.isSafeInteger(v)&&v>0)next[i.dataset.cat]=v}try{localStorage.setItem(FM_CATB,JSON.stringify(next))}catch{window.fmToast?.('저장하지 못했어요');return}$('fmCatBudgetEdit').open=false;fmRenderCatBudget();render();window.fmToast?.('카테고리 예산을 저장했어요')});
+// Home cards that come and go (last month, last week, milestones), calendar no-spend days and
+// home-screen shortcuts (?action=import|record). Marks live in their own keys.
+// No-spend days on the calendar, only inside the range the records cover.
+function fmNoSpendMarks(){const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const line=$('fmNoSpendLine');const d=data,tx=(d.tx||[]).filter(t=>t&&typeof t.date==='string');if(!tx.length){line.hidden=true;return}
+const spend=new Set(tx.filter(t=>t.type==='expense').map(t=>t.date)),dates=tx.map(t=>t.date).sort(),first=dates[0],last=dates.at(-1),todayKey=ds(new Date());
+const known=day=>day>=first&&day<=last&&day<=todayKey;
+document.querySelectorAll('#view-calendar .day[data-date]').forEach(el=>el.classList.toggle('fm-nospend',known(el.dataset.date)&&!spend.has(el.dataset.date)));
+const m=todayKey.slice(0,7);let count=0;for(let i=1;i<=31;i++){const day=m+'-'+String(i).padStart(2,'0');if(known(day)&&!spend.has(day))count++}
+let streak=0;for(let x=new Date(last+'T12:00:00');ds(x)>=first;x.setDate(x.getDate()-1)){if(spend.has(ds(x)))break;streak++}
+line.hidden=false;line.innerHTML='이번 달 무지출 <strong>'+count+'일</strong>'+(streak?' · 연속 <strong>'+streak+'일</strong> 🌱':'')+(last<todayKey?' · '+Number(last.slice(5,7))+'/'+Number(last.slice(8))+'까지 기록 기준':'');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ // Last month's closing in the first week of a month, until dismissed.
+ (()=>{
+ const KEY='firemate_month_report_v1';
+  const home=$('view-home'),fire=home?.querySelector('.fm-home-fire');if(!home||!fire)return;
+  // Browser tests opt in explicitly so first-week dates never shift other layouts.
+  const now=new Date();if(navigator.webdriver?!window.__fmMonthReportAnyDay:now.getDate()>7)return;
+  const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  const prev=ym(new Date(now.getFullYear(),now.getMonth()-1,1)),before=ym(new Date(now.getFullYear(),now.getMonth()-2,1));
+  try{if(localStorage.getItem(KEY)===prev)return}catch{}
+  const d=data;
+  const rows=(d.tx||[]).filter(t=>t&&typeof t.date==='string'&&t.date.slice(0,7)===prev);if(!rows.length)return;
+  const sum=type=>rows.filter(t=>t.type===type).reduce((a,t)=>a+(Number(t.amount)||0),0),out=sum('expense'),inc=sum('income');
+  const cats={};for(const t of rows)if(t.type==='expense')cats[t.category]=(cats[t.category]||0)+(Number(t.amount)||0);
+  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+  const budget=Number(d.budgets?.[prev])||0;
+  const lastOf=m=>{const v=(d.dailySnapshots||[]).filter(x=>x&&typeof x.day==='string'&&x.day.slice(0,7)===m).sort((a,b)=>a.day.localeCompare(b.day)).at(-1);return v?Number(v.amount):null};
+  const nw=lastOf(prev),nwBefore=lastOf(before);
+  const won=n=>'₩'+Math.round(Math.abs(n)).toLocaleString('ko-KR');
+  const line=(label,value,cls='')=>'<div class="fm-mr-row"><span>'+label+'</span><strong class="'+cls+'">'+value+'</strong></div>';
+  const card=document.createElement('section');card.className='card';card.id='fmMonthReport';card.setAttribute('aria-labelledby','fmMonthReportTitle');
+  card.innerHTML='<h3 id="fmMonthReportTitle">'+Number(prev.slice(5))+'월 결산</h3>'+
+   line('지출',won(out))+line('수입',won(inc))+line('남은 돈',(inc-out<0?'-':'')+won(inc-out),inc-out>=0?'fm-mr-good':'fm-mr-bad')+
+   (budget?line('예산 '+won(budget),out<=budget?won(budget-out)+' 아꼈어요':won(out-budget)+' 넘었어요',out<=budget?'fm-mr-good':'fm-mr-bad'):'')+
+   (top?line('가장 많이 쓴 곳',top[0]+' '+won(top[1])):'')+
+   (nw!==null&&nwBefore!==null?line('순자산 변화',(nw>=nwBefore?'+':'-')+won(nw-nwBefore),nw>=nwBefore?'fm-mr-good':'fm-mr-bad'):'')+
+   '<div class="fm-mr-actions"><button type="button" class="secondary" id="fmMonthReportOpen">월간 결산 자세히 →</button><button type="button" class="secondary" id="fmMonthReportClose">닫기</button></div>';
+  fire.before(card);
+  card.querySelector('#fmMonthReportOpen').onclick=()=>go('monthly');
+  card.querySelector('#fmMonthReportClose').onclick=()=>{try{localStorage.setItem(KEY,prev)}catch{}card.remove()};
+ })();
+  const won=n=>'₩'+Math.round(Math.abs(n)).toLocaleString('ko-KR');
+  const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const home=$('view-home'),fire=home?.querySelector('.fm-home-fire');
+  const testOnly=flag=>navigator.webdriver&&!window[flag];
+  // Weekly report: last Monday–Sunday versus the week before.
+  (()=>{const now=new Date(),dow=now.getDay();if(!home||!fire)return;if(navigator.webdriver?!window.__fmWeekReportAnyDay:!(dow===1||dow===2))return;
+   const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((dow+6)%7));const start=new Date(monday);start.setDate(start.getDate()-7);const prevStart=new Date(start);prevStart.setDate(prevStart.getDate()-7);
+   const key=ds(start);try{if(localStorage.getItem('firemate_week_report_v1')===key)return}catch{}
+   const tx=(data.tx||[]).filter(t=>t&&t.type==='expense'&&typeof t.date==='string');
+   const inRange=(a,b)=>tx.filter(t=>t.date>=ds(a)&&t.date<ds(b));
+   const week=inRange(start,monday),before=inRange(prevStart,start);if(!week.length)return;
+   const total=r=>r.reduce((a,t)=>a+(Number(t.amount)||0),0),w=total(week),p=total(before);
+   const cats={};for(const t of week)cats[t.category]=(cats[t.category]||0)+(Number(t.amount)||0);const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+   const spentDays=new Set(week.map(t=>t.date)).size;
+   const card=document.createElement('section');card.className='card';card.id='fmWeekReport';
+   const row=(l,v,c='')=>'<div class="fm-wr-row"><span>'+l+'</span><strong class="'+c+'">'+v+'</strong></div>';
+   card.innerHTML='<h3>지난주 리포트 · '+(start.getMonth()+1)+'/'+start.getDate()+'~'+(new Date(monday.getTime()-864e5).getMonth()+1)+'/'+new Date(monday.getTime()-864e5).getDate()+'</h3>'+row('지출',won(w))+(p?row('전주 대비',(w>=p?'+':'-')+won(w-p)+' ('+Math.round(Math.abs(w-p)/p*100)+'%)',w>p?'fm-wr-up':'fm-wr-down'):'')+(top?row('가장 많이 쓴 곳',top[0]+' '+won(top[1])):'')+row('무지출',(7-spentDays)+'일')+'<button type="button" class="secondary">확인했어요</button>';
+   (($('fmMonthReport'))||fire).before(card);
+   card.querySelector('button').onclick=()=>{try{localStorage.setItem('firemate_week_report_v1',key)}catch{}card.remove()};
+  })();
+  // Net-worth milestones: celebrate a newly crossed line once; the first run only records the current one.
+  (()=>{if(!home||!fire||navigator.webdriver&&!window.__fmMilestoneTest)return;const LINES=[1e7,3e7,5e7,1e8,1.5e8,2e8,3e8,4e8,5e8,6.5e8,1e9,1.5e9,2e9];
+   const snaps=(data.dailySnapshots||[]).filter(x=>x&&Number.isFinite(Number(x.amount))).sort((a,b)=>String(a.day).localeCompare(String(b.day)));const latest=snaps.at(-1);if(!latest)return;
+   const amount=Number(latest.amount),reached=LINES.filter(v=>amount>=v).at(-1)||0;
+   let seen=null;try{seen=localStorage.getItem('firemate_milestone_v1')}catch{}
+   if(seen===null){try{localStorage.setItem('firemate_milestone_v1',String(reached))}catch{}return}
+   if(!(reached>Number(seen)))return;
+   const next=LINES.find(v=>v>amount),label=v=>v>=1e8?(v/1e8)+'억':(v/1e4).toLocaleString('ko-KR')+'만';
+   const card=document.createElement('section');card.className='card';card.id='fmMilestone';
+   card.innerHTML='<h3>🎉 순자산 '+label(reached)+' 돌파!</h3><p>'+(next?'다음 목표 '+label(next)+'까지 '+won(next-amount)+' 남았어요.':'정해 둔 목표를 모두 넘었어요.')+'</p><button type="button" class="primary">좋아요</button>';
+   home.querySelector('.card,.hero')?.after(card);
+   card.querySelector('button').onclick=()=>{try{localStorage.setItem('firemate_milestone_v1',String(reached))}catch{}card.remove()};
+  })();
+  fmNoSpendMarks();
+  // Home-screen shortcuts.
+  const action=new URLSearchParams(location.search).get('action');
+  if(action){history.replaceState(history.state,'',location.pathname);setTimeout(()=>{if(action==='import')window.fmImportFromHome?.();else if(action==='record')openEntry()},300)}
+});
 function render(){const section=$('fmCurrentSection');if(section)section.textContent=({home:'홈',assets:'자산',fire:'FIRE',firecalc:'FIRE',firelife:'FIRE',retire:'FIRE',calendar:'가계부',history:'거래 내역',insights:'소비 분석',monthly:'월간 결산'})[active]||'홈';document.querySelectorAll('.monthLabel').forEach(e=>e.textContent=month.slice(0,4)+'년 '+Number(month.slice(5))+'월');if(active==='home')renderHome();if(active==='calendar')renderCal();if(active==='history')renderHistory();if(active==='insights'){renderHome();renderInsights();fmRenderFixed();fmRenderCatBudget();listTo($('recent'),getTx(),5);const back=$('fmInsightsBack');if(back)back.textContent=fmDetailReturn?.tab==='home'?'← 홈':'← 가계부'}if(active==='monthly')window.fmRenderMonthly?.();if(active==='fire'){renderFire();fmRenderFireExtra();}if(active==='firecalc')renderFire();if(active==='assets')renderAssets()}autoRefreshFx();$('settingsBottom').onclick=()=>{renderFavoriteEditor();modal('settingsOverlay',true)};function renderFavoriteEditor(){$('favoriteEditor').innerHTML=data.favorites.map((f,i)=>`<div class="tx"><div class="txmain"><strong>${safe(f.emoji)} ${safe(f.name)}</strong><span>${safe(f.category)} · ${won(f.amount)}</span></div><button data-editfav="${i}">수정</button><button data-delfav="${i}">✕</button></div>`).join('');$('favoriteEditor').querySelectorAll('[data-editfav]').forEach(e=>e.onclick=()=>editFavorite(Number(e.dataset.editfav)));$('favoriteEditor').querySelectorAll('[data-delfav]').forEach(e=>e.onclick=()=>{data.favorites.splice(Number(e.dataset.delfav),1);persist();renderFavoriteEditor();render()})}function editFavorite(i){const old=i===null?{emoji:'💸',name:'',amount:0,category:'기타'}:data.favorites[i],name=prompt('즐겨찾기 이름',old.name);if(name===null)return;const amount=prompt('금액 (원)',String(old.amount));if(amount===null)return;const n=Number(amount);if(!name.trim()||!Number.isSafeInteger(n)||n<=0)return toast('이름과 금액을 확인해 주세요');const category=prompt('카테고리 (식비, 카페·간식, 교통, 쇼핑 등)',old.category);if(category===null)return;const emoji=prompt('아이콘 이모지',old.emoji);if(emoji===null)return;const v={name:name.trim().slice(0,20),amount:n,category:cats.expense.includes(category)?category:'기타',emoji:emoji.slice(0,8)||'💸'};if(i===null)data.favorites.push(v);else data.favorites[i]=v;persist();renderFavoriteEditor();render();toast('즐겨찾기를 저장했어요')}$('addFavorite').onclick=()=>editFavorite(null);function fmValidateBackup(obj){
  const d=obj?.data;
  if(obj?.app!=='FIRE MATE'||!d||typeof d!=='object'||Array.isArray(d))throw Error('FIRE MATE 백업 파일이 아닙니다');
@@ -1785,7 +1865,7 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-103',VERSION='3.5.103';
+ const BUILD='fire-mate-v3-5-104',VERSION='3.5.104';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -1983,4 +2063,4 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.103"></script></body></html>
+</style><script src="./js/features.js?v=3.5.104"></script></body></html>

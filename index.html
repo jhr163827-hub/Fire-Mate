@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.107</title><link rel="stylesheet" href="./app.css?v=3.5.107"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-107">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.108</title><link rel="stylesheet" href="./app.css?v=3.5.108"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-108">
 
 
 
@@ -240,6 +240,29 @@ box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due');sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
+// fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
+(()=>{
+ let pending=null;
+ window.fmAsk=(message,labels={})=>new Promise(resolve=>{
+  if(pending)pending(false);
+  let host=document.getElementById('fmAsk');
+  if(!host){
+   host=document.createElement('div');host.id='fmAsk';host.hidden=true;
+   host.innerHTML='<div class="fm-ask-card" role="alertdialog" aria-modal="true" aria-describedby="fmAskText"><p id="fmAskText"></p><div class="fm-ask-actions"><button type="button" class="secondary" id="fmAskCancel">취소</button><button type="button" class="primary" id="fmAskOk">확인</button></div></div>';
+   document.body.append(host);
+  }
+  const text=String(message),ok=host.querySelector('#fmAskOk'),cancel=host.querySelector('#fmAskCancel'),back=document.activeElement;
+  host.querySelector('#fmAskText').textContent=text;
+  const danger=/삭제|초기화|덮어쓸|교체/.test(text);
+  ok.textContent=labels.ok||(/삭제/.test(text)?'삭제':/초기화/.test(text)?'초기화':'확인');cancel.textContent=labels.cancel||'취소';ok.classList.toggle('fm-ask-danger',danger);
+  const done=value=>{if(pending!==finish)return;pending=null;host.hidden=true;document.removeEventListener('keydown',key,true);try{back?.focus?.({preventScroll:true})}catch{}resolve(value)};
+  const finish=done;pending=finish;
+  const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false)}};
+  ok.onclick=()=>done(true);cancel.onclick=()=>done(false);host.onclick=e=>{if(e.target===host)done(false)};
+  document.addEventListener('keydown',key,true);
+  host.hidden=false;(danger?cancel:ok).focus({preventScroll:true});
+ });
+})();
 // Feature blocks read the live record instead of re-parsing storage on every render.
 window.fmLiveData=()=>data&&typeof data==='object'?data:{};function persist(){try{localStorage.setItem(K,JSON.stringify(data));return true}catch{toast('저장 실패: 저장 공간 또는 브라우저 설정을 확인하세요');return false}}function setTheme(t,save=true){const previous=data.theme;data.theme=t;if(save&&!persist()){data.theme=previous;return false}document.documentElement.dataset.theme=t;$('theme').textContent=t==='dark'?'☀️':'🌙';$('theme').setAttribute('aria-label',t==='dark'?'라이트 모드로 전환':'다크 모드로 전환');$('settingsThemeBtn').textContent=t==='dark'?'라이트 모드로 전환':'다크 모드로 전환';document.querySelector('meta[name=theme-color]').content=t==='dark'?'#090f12':'#f3f7f6';return true}setTheme(data.theme,false);$('theme').onclick=()=>setTheme(data.theme==='dark'?'light':'dark');$('settingsThemeBtn').onclick=()=>setTheme(data.theme==='dark'?'light':'dark');let fmNavRestoring=false,fmDetailReturn=history.state?.returnPoint||null;function fmNavState(tab=active,mode=typeof fmLedgerMode==='string'?fmLedgerMode:'calendar'){return {fmNav:true,tab,mode,month,selected,y:window.scrollY,returnPoint:fmDetailReturn}};function fmReportBack(fallback='home'){if(history.state?.returnPoint){history.back()}else go(fallback)};function fmNavPush(){if(!fmNavRestoring)try{history.pushState({...fmNavState(),y:0},'','#fm-'+active+(active==='calendar'?'-'+fmLedgerMode:''))}catch{}};function go(v){if(!FM_VALID_TABS.has(v)||!document.getElementById('view-'+v))v='home';const fmChanged=v!==active;if(v==='calendar'&&fmChanged&&!fmNavRestoring)fmLedgerMode=fmLedgerPreferred;if(fmChanged&&active==='fire'){window.fmDividendEditorOpen=false;window.fmInsuranceDetailsOpen=false;}if(fmChanged&&!fmNavRestoring){try{history.replaceState(fmNavState(),' ',location.href)}catch{}}if(fmChanged&&!fmNavRestoring){fmDetailReturn=['monthly','insights'].includes(v)?{tab:active,y:window.scrollY}:null;if(v==='insights'&&active==='home')month=localDate(new Date()).slice(0,7)}active=v;if(fmChanged)fmNavPush();try{sessionStorage.setItem(FM_TAB_KEY,v)}catch{}document.querySelectorAll('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+v));document.querySelectorAll('.tab,.bottom-item[data-view]').forEach(e=>e.classList.toggle('active',(e.dataset.view===v||e.dataset.view==='fire'&&['firecalc','firelife','retire'].includes(v)||e.dataset.view===(v==='monthly'?'home':v==='insights'?(fmDetailReturn?.tab==='home'?'home':'calendar'):''))));window.fmSyncFireScreens?.(v);document.getElementById('moreMenu')?.classList.remove('show');render();scrollTo({top:0,behavior:'instant'})}document.querySelectorAll('[data-view]').forEach(e=>e.onclick=()=>go(e.dataset.view));document.querySelectorAll('[data-go]').forEach(e=>e.onclick=()=>go(e.dataset.go));window.addEventListener('popstate',e=>{const st=e.state;if(st?.fmAssetDetail)return;if(!st||!st.fmNav){if(active!=='home'){fmNavRestoring=true;try{go('home')}finally{fmNavRestoring=false}}return;}fmNavRestoring=true;try{if(st.month)month=st.month;if(st.selected)selected=st.selected;fmDetailReturn=st.returnPoint||null;go(st.tab||'home');if(!st.fmAssetDetail)requestAnimationFrame(()=>scrollTo({top:Number(st.y)||0,behavior:'instant'}));if(st.tab==='calendar'&&st.mode)fmLedgerSetMode(st.mode)}finally{fmNavRestoring=false}});try{history.replaceState({fmNav:true,tab:active,mode:'calendar',month,selected},' ',location.href)}catch{};function shift(n){const [y,m]=month.split('-').map(Number),d=new Date(y,m-1+n,1);month=localDate(d).slice(0,7);selected=month+'-01';render()}document.querySelectorAll('[data-shift]').forEach(e=>e.onclick=()=>shift(Number(e.dataset.shift)));let fmDialogStack=[],fmDialogPendingClose=null,fmDialogClosing=0;
 function modal(id,on,fromHistory=false){
@@ -422,7 +445,7 @@ function renderCal(){
  fmLedgerSetMode(fmLedgerMode);fmLedgerAnalytics();fmNoSpendMarks();
 }
 $('fmModeCalendar').onclick=()=>fmLedgerSetMode('calendar',true);
-$('fmModeList').onclick=()=>fmLedgerSetMode('list',true);$('fmModeAnalysis').onclick=()=>go('insights');$('fmBalanceRowEdit').onclick=()=>$('openLegacyAssets').click();new MutationObserver(fmImportNudge).observe($('fmHomeSyncNote'),{attributes:true,attributeFilter:['class'],childList:true});$('fmHomeSync').onclick=()=>{if(window.fmImportFromHome)window.fmImportFromHome();else $('bankGmailImport')?.click()};$('fmHomeRecord').onclick=()=>openEntry();$('fmSpendingOpen').onclick=()=>go('insights');$('fmInsightsBack').onclick=()=>fmReportBack('calendar');$('fmInsightAssets').onclick=()=>{go('assets');fmSetAssetView('analysis')};$('fmInsightsMonthly').onclick=()=>$('fmMonthlyOpen')?$('fmMonthlyOpen').click():go('monthly');
+$('fmModeList').onclick=()=>fmLedgerSetMode('list',true);$('fmModeAnalysis').onclick=()=>go('insights');$('fmCalendarBudgetTotal')?.addEventListener('click',()=>$('fmLedgerBudgetEdit')?.click());$('heroBudget')?.addEventListener('click',()=>window.fmOpenBudgetEditorHere?.());$('fmBalanceRowEdit').onclick=()=>$('openLegacyAssets').click();new MutationObserver(fmImportNudge).observe($('fmHomeSyncNote'),{attributes:true,attributeFilter:['class'],childList:true});$('fmHomeSync').onclick=()=>{if(window.fmImportFromHome)window.fmImportFromHome();else $('bankGmailImport')?.click()};$('fmHomeRecord').onclick=()=>openEntry();$('fmSpendingOpen').onclick=()=>go('insights');$('fmInsightsBack').onclick=()=>fmReportBack('calendar');$('fmInsightAssets').onclick=()=>{go('assets');fmSetAssetView('analysis')};$('fmInsightsMonthly').onclick=()=>$('fmMonthlyOpen')?$('fmMonthlyOpen').click():go('monthly');
 $('fmLedgerFilter').onchange=fmLedgerList;
 $('fmLedgerSearchBtn').onclick=()=>{const area=$('fmLedgerSearchArea'),show=area.hidden;area.hidden=!show;$('fmLedgerSearchBtn').setAttribute('aria-expanded',String(show));if(show){fmLedgerSetMode('list');$('fmLedgerSearchInput').focus()}else{$('fmLedgerSearchInput').value='';fmLedgerList()}};
 $('fmLedgerSearchInput').oninput=()=>{fmLedgerSetMode('list')};
@@ -596,6 +619,17 @@ let streak=0;for(let x=new Date(last+'T12:00:00');ds(x)>=first;x.setDate(x.getDa
 line.hidden=false;line.innerHTML='이번 달 무지출 <strong>'+count+'일</strong>'+(streak?' · 연속 <strong>'+streak+'일</strong> 🌱':'')+(last<todayKey?' · '+Number(last.slice(5,7))+'/'+Number(last.slice(8))+'까지 기록 기준':'');
 }
 document.addEventListener('DOMContentLoaded',()=>{
+ // Data lives per browser: Samsung Internet and Chrome do not share it. Say so on home.
+ (()=>{
+  const KEY='firemate_browser_note_v1',home=document.getElementById('view-home');if(!home)return;
+  try{if(localStorage.getItem(KEY)==='dismissed')return}catch{}
+  if(!/SamsungBrowser/i.test(navigator.userAgent))return;
+  const note=document.createElement('div');note.className='fm-browser-note';note.id='fmBrowserNote';note.setAttribute('role','note');
+  note.innerHTML='<p></p><button type="button" class="secondary">닫기</button>';
+  note.querySelector('p').textContent='삼성 인터넷에서 열었어요. 데이터는 브라우저마다 따로 저장돼서, Chrome에서 쓰던 기록은 여기 보이지 않아요. 늘 같은 브라우저(Chrome 권장)로 열어 주세요.';
+  note.querySelector('button').onclick=()=>{try{localStorage.setItem(KEY,'dismissed')}catch{}note.remove()};
+  home.prepend(note);
+ })();
  (()=>{
   const home=$('view-home'),fire=home&&home.querySelector('.fm-home-fire');if(!home||!fire)return;
   try{if(localStorage.getItem('firemate_onboarding_v1')==='dismissed')return}catch{}
@@ -1709,7 +1743,7 @@ function fmSetQuoteCooldown(response,reason){if(response?.status!==429&&!/credit
 function fmRestoreQuoteFailures(){try{const v=JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null');failedSymbols=Array.isArray(v?.failureDetails)?v.failureDetails.map(x=>String(x.symbol||'')):[];retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none'}catch{}}
 
 function quoteProgress(done,total){const pct=total?Math.round(done/total*100):0;$('quoteProgress').style.display='block';$('quoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목'+(done===total?' 완료':' 진행 중');$('quoteProgressPercent').textContent=pct+'%';$('quoteProgressBar').style.width=pct+'%';const home=$('homeQuoteProgress');if(home){home.hidden=false;home.style.display='block';$('homeQuoteProgressText').textContent='주가 갱신 '+done+'/'+total+'종목';$('homeQuoteProgressPercent').textContent=pct+'%';$('homeQuoteProgressBar').style.width=pct+'%'}}
-const retryStocks=document.createElement('button');retryStocks.id='retryStocks';retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
+const retryStocks=document.createElement('button');retryStocks.id='retryStocks';retryStocks.type='button';retryStocks.textContent='실패 종목만 재시도';retryStocks.className='secondary';retryStocks.style.cssText='display:none;margin:12px 0 0;padding:9px 12px;font-size:12px;max-width:100%';retryStocks.hidden=true;($('fmQuoteFailuresList')||$('quoteProgress')||$('refreshStocks')).insertAdjacentElement('afterend',retryStocks);
 retryStocks.onclick=()=>{fmSetQuoteAttempt('실패 종목 재시도 요청');refreshStockPrices(true).catch(e=>{fmQuoteNotice(String(e?.message||e));toast('조회 오류가 발생했어요')})};
 fmRestoreQuoteFailures();
 $('homeRefreshStocks').onclick=()=>$('refreshStocks').click();
@@ -1954,7 +1988,7 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-107',VERSION='3.5.107';
+ const BUILD='fire-mate-v3-5-108',VERSION='3.5.108';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2152,4 +2186,4 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.107"></script></body></html>
+</style><script src="./js/features.js?v=3.5.108"></script></body></html>

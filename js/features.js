@@ -8,15 +8,12 @@
 //   5. fm-practical-fixes — 공통 · 시세 버튼, 백업 알림
 //   6. fm-settings-order — 설정 · 순서
 //   7. fm-ledger-sync — 설정 · Gmail·파일 가져오기
-//   8. fm-in-app-confirm — 공통 · 확인 창(fmAsk)
-//   9. fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리
-//  10. fm-plan-v3587 — 홈·자산 · 당겨서 업데이트
-//  11. fm-polish-v3588 — 공통 · 다듬기
-//  12. fm-feedback-v3589 — 공통 · 알림(fmToast)
-//  13. fm-health-calc-v3590 — 설정 · 건보료 계산기
-//  14. fm-safety-v3592 — 설정 · 저장 보호, 분류
-//  15. fm-design-v3596 — 공통 · 디자인
-//  16. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
+//   8. fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리
+//   9. fm-plan-v3587 — 홈·자산 · 당겨서 업데이트
+//  10. fm-health-calc-v3590 — 설정 · 건보료 계산기
+//  11. fm-safety-v3592 — 설정 · 저장 보호, 분류
+//  12. fm-design-v3596 — 홈·자산 · 약 N만 원 표시
+//  13. fm-start-v3597 — 홈 · 시작 화면, 예시 데이터
 
 
 // ===== fm-layout — FIRE·은퇴·자산 · 화면 동작 =====
@@ -33,6 +30,8 @@ document.addEventListener('DOMContentLoaded',()=>{
    const metric=(id,x)=>{const h=$(id),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=x?.value||'—';small.textContent=x?.note||'';h.replaceChildren(strong,small)};
    metric('fmOverview-cashflow',state.cashflow?{value:state.cashflow.statusValue,note:state.cashflow.statusNote}:null);
    const cashValue=document.querySelector('#fmOverview-cashflow>strong');if(cashValue)cashValue.style.color=state.cashflow?.monthlyRemaining<0?'var(--red)':'var(--green)';
+   // A planned shortfall is a warning, not an error.
+   if(cashValue&&/부족/.test(cashValue.textContent))cashValue.style.color='var(--yellow)';
    metric('fmOverview-portfolio',state.portfolio?{value:state.portfolio.value,note:'목표 구성과 실제 보유 비교 · 금액 목표와 별개'}:null);
    $('fmOpenCalculator').textContent=state.draft?.dirty?'조건 비교 •':'조건 비교';$('fmOpenCalculator').setAttribute('aria-label',state.draft?.dirty?'조건 비교 · 미저장 조건 이어보기':'조건 비교');
    const p=state.plan;if(p)$('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 순자산은 남은 금액·도달 계산에서 0으로 가정':'');
@@ -217,6 +216,7 @@ try{
     const limits=[];if(!cash.insuranceEntered)limits.push('보험료 미입력 · 차감 전');if(cash.missingYieldNames?.length)limits.push('분배율 미입력 '+cash.missingYieldNames.length+'종목은 0% 반영');
     cashValue.querySelector('strong').textContent=cash.expenseEntered?cash.statusValue+' (가정)':'생활비 입력 필요';
     cashValue.querySelector('strong').style.color=cash.expenseEntered&&cash.monthlyRemaining<0?'var(--red)':limits.length||!cash.expenseEntered?'var(--txt)':'var(--green)';
+    if(/부족/.test(cashValue.querySelector('strong').textContent))cashValue.querySelector('strong').style.color='var(--yellow)';
     cashValue.querySelector('small').textContent=cash.expenseEntered?'예상 분배금 '+money(cash.monthlyNetIncome)+' / 생활비 '+money(cash.spend):'월 생활비를 입력하면 차액을 확인할 수 있어요';
     let note=$('fmCashflowLimits');if(!note){note=document.createElement('small');note.id='fmCashflowLimits';cashValue.after(note)}note.textContent=limits.join(' · ');note.hidden=!limits.length;
    }
@@ -486,35 +486,6 @@ try{
 }catch(e){console.error('fm-ledger-sync',e)}
 
 
-// ===== fm-in-app-confirm — 공통 · 확인 창(fmAsk) =====
-try{
-/* fmAsk(message) → Promise<boolean>. Same wording as the old browser confirm calls; cancel, the
-   backdrop and Escape all answer false, so nothing changes unless 확인 is tapped. */
-(()=>{
- 'use strict';
- let pending=null;
- window.fmAsk=(message,labels={})=>new Promise(resolve=>{
-  if(pending)pending(false);
-  let host=document.getElementById('fmAsk');
-  if(!host){
-   host=document.createElement('div');host.id='fmAsk';host.hidden=true;
-   host.innerHTML='<div class="fm-ask-card" role="alertdialog" aria-modal="true" aria-describedby="fmAskText"><p id="fmAskText"></p><div class="fm-ask-actions"><button type="button" class="secondary" id="fmAskCancel">취소</button><button type="button" class="primary" id="fmAskOk">확인</button></div></div>';
-   document.body.append(host);
-  }
-  const text=String(message),ok=host.querySelector('#fmAskOk'),cancel=host.querySelector('#fmAskCancel'),back=document.activeElement;
-  host.querySelector('#fmAskText').textContent=text;
-  const danger=/삭제|초기화|덮어쓸|교체/.test(text);
-  ok.textContent=labels.ok||(/삭제/.test(text)?'삭제':/초기화/.test(text)?'초기화':'확인');cancel.textContent=labels.cancel||'취소';ok.classList.toggle('fm-ask-danger',danger);
-  const done=value=>{if(pending!==finish)return;pending=null;host.hidden=true;document.removeEventListener('keydown',key,true);try{back?.focus?.({preventScroll:true})}catch{}resolve(value)};
-  const finish=done;pending=finish;
-  const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false)}};
-  ok.onclick=()=>done(true);cancel.onclick=()=>done(false);host.onclick=e=>{if(e.target===host)done(false)};
-  document.addEventListener('keydown',key,true);
-  host.hidden=false;(danger?cancel:ok).focus({preventScroll:true});
- });
-})();
-}catch(e){console.error('fm-in-app-confirm',e)}
-
 
 // ===== fm-daily-fixes-v3586 — 설정 · 소액 수입, 분류 정리 =====
 try{
@@ -564,38 +535,6 @@ try{
 })();
 }catch(e){console.error('fm-plan-v3587',e)}
 
-
-// ===== fm-polish-v3588 — 공통 · 다듬기 =====
-try{
-/* Data lives per browser: Samsung Internet and Chrome do not share it. Say so where it matters. */
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const KEY='firemate_browser_note_v1',home=document.getElementById('view-home');if(!home)return;
-  try{if(localStorage.getItem(KEY)==='dismissed')return}catch{}
-  if(!/SamsungBrowser/i.test(navigator.userAgent))return;
-  const note=document.createElement('div');note.className='fm-browser-note';note.id='fmBrowserNote';note.setAttribute('role','note');
-  note.innerHTML='<p></p><button type="button" class="secondary">닫기</button>';
-  note.querySelector('p').textContent='삼성 인터넷에서 열었어요. 데이터는 브라우저마다 따로 저장돼서, Chrome에서 쓰던 기록은 여기 보이지 않아요. 늘 같은 브라우저(Chrome 권장)로 열어 주세요.';
-  note.querySelector('button').onclick=()=>{try{localStorage.setItem(KEY,'dismissed')}catch{}note.remove()};
-  home.prepend(note);
- });
-})();
-}catch(e){console.error('fm-polish-v3588',e)}
-
-
-// ===== fm-feedback-v3589 — 공통 · 알림(fmToast) =====
-try{
-(()=>{
- 'use strict';
- document.addEventListener('DOMContentLoaded',()=>{
-  const $=id=>document.getElementById(id);
-  // Tapping the budget amount opens the same editor as the 수정 button.
-  $('fmCalendarBudgetTotal')?.addEventListener('click',()=>$('fmLedgerBudgetEdit')?.click());
-  $('heroBudget')?.addEventListener('click',()=>window.fmOpenBudgetEditorHere?.());
- });
-})();
-}catch(e){console.error('fm-feedback-v3589',e)}
 
 
 // ===== fm-health-calc-v3590 — 설정 · 건보료 계산기 =====
@@ -710,10 +649,9 @@ try{
 
 
 
-// ===== fm-design-v3596 — 공통 · 디자인 =====
+// ===== fm-design-v3596 — 홈·자산 · 약 N만 원 표시 =====
 try{
-/* Design pass: one quiet home total, short quote failures on 자산, an approximate 만/억 reading
-   next to the two big totals, and a softer colour for planned shortfalls on FIRE. */
+/* An approximate 만/억 reading next to the two big totals (their labels are set at runtime). */
 (()=>{
  'use strict';
  document.addEventListener('DOMContentLoaded',()=>{
@@ -727,10 +665,6 @@ try{
    const sync=()=>{const raw=String(big.textContent||'').replace(/[^\d-]/g,'');const n=Number(raw);tag.textContent=raw&&Number.isFinite(n)&&Math.abs(n)>=10000?' · 약 '+approx(n):''};
    new MutationObserver(sync).observe(big,{childList:true,characterData:true,subtree:true});sync();
   }
-  // 2. The retry button lives inside the failure details instead of under the summary.
-  const retry=$('retryStocks'),list=$('fmQuoteFailuresList');if(retry&&list)list.after(retry);
-  // 4. A planned shortfall is a warning, not an error.
-  const cash=$('fmOverview-cashflow');if(cash){const tone=()=>{const v=cash.querySelector('strong');if(v&&/부족/.test(v.textContent)&&v.style.color!=='var(--yellow)')v.style.color='var(--yellow)'};new MutationObserver(tone).observe(cash,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style']});tone()}
  });
 })();
 }catch(e){console.error('fm-design-v3596',e)}

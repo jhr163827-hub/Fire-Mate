@@ -465,3 +465,61 @@ dialog button {
   outline: 2px solid #f5d992;
   outline-offset: 2px;
 }
+
+.boonChoice[aria-pressed="true"] {
+  border-color: #f0d59c;
+  background: #354444;
+  outline: 1px solid #f0d59c;
+}
+.boonChoice {
+  padding: 12px 10px;
+}
+.boonChoice span {
+  min-width: 0;
+}
+.boonChoice small {
+  font-size: 12px;
+  line-height: 1.5;
+}
+#boonDetail {
+  min-height: 5em;
+}
+#boonStatus {
+  color: #d7c29e;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+dialog.boonDialog {
+  overflow: hidden;
+}
+.boonDialog #dialogBody {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(85dvh - 46px);
+}
+.boonScroll {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 3px;
+}
+#confirmBoon {
+  flex-shrink: 0;
+  margin-top: 12px;
+}
+@media (max-width: 350px) {
+  dialog.boonDialog {
+    padding: 14px;
+  }
+  .boonDialog h2 {
+    font-size: 21px;
+  }
+  .boonDialog p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .boonChoice {
+    padding: 8px;
+  }
+}

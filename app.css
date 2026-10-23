@@ -2330,17 +2330,46 @@ html body #view-assets #fmAssetHoldingsPanel .fm-holding-name-line .fm-holding-d
 /* 설정: 아케이드 → 자격증 → 데이터 → 초기화 */
 html body #settingsOverlay .fm-set-row{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:56px;padding:0 18px;border:0;border-radius:20px;background:var(--panel);color:var(--txt);font-size:16px;font-weight:800;text-align:left}
 html body #settingsOverlay .fm-set-row span{color:var(--sub)}
-html body #settingsOverlay .fm-certs{padding:14px 18px;border-radius:20px;background:var(--panel)}
-html body #settingsOverlay .fm-certs .cardhead{margin:0}
-html body #settingsOverlay .fm-certs h3{margin:0;font-size:16px}
-html body #settingsOverlay #fmCertAdd{min-height:44px;border:0;background:none;color:var(--green);font-size:14px;font-weight:800}
-html body #settingsOverlay .fm-cert{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:56px;padding:8px 0;border:0;border-top:1px solid var(--line);background:none;color:var(--txt);text-align:left}
-html body #settingsOverlay .fm-cert strong{font-size:15px}
-html body #settingsOverlay .fm-cert span{font-size:13px;color:var(--sub)}
-html body #settingsOverlay #fmCertForm{display:grid;gap:8px;margin-top:10px}
-html body #settingsOverlay #fmCertForm[hidden]{display:none}
-html body #settingsOverlay #fmCertForm .flex{gap:8px}
-html body #settingsOverlay #fmCertForm .flex button{flex:1;min-height:48px;border-bottom:0;text-align:center}
+html body #settingsOverlay .fm-certs{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;border:0;border-radius:20px;background:var(--panel);color:var(--txt);text-align:left;font:inherit}
+html body #settingsOverlay .fm-certs::after{content:'';margin-left:auto;width:7px;height:7px;border-top:2px solid var(--sub);border-right:2px solid var(--sub);transform:rotate(45deg)}
+html body #settingsOverlay #fmCertBadge{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ffd76a33,#ff9f4333);font-size:24px}
+html body #settingsOverlay .fm-certs strong{display:block;font-size:16px}
+html body #settingsOverlay .fm-certs small{font-size:13px;color:var(--sub)}
+html body #fmCertOverlay{z-index:41}
+#fmCertOverlay .modal{width:100%;max-width:560px;height:100%;max-height:none;margin:0 auto;border-radius:0;padding:max(12px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));background:var(--bg);overflow-y:auto;overscroll-behavior:contain}
+#fmCertOverlay .fm-cert-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+#fmCertOverlay .fm-cert-top h2{margin:0;font-size:20px}
+#fmCertOverlay #fmCertAdd{margin-left:auto;min-height:44px;padding:0 14px;border:0;border-radius:999px;background:var(--green);color:var(--bg);font-weight:800}
+#fmCertOverlay .fm-cert-hero{position:relative;display:grid;justify-items:center;gap:4px;padding:22px 18px 16px;border-radius:24px;background:radial-gradient(circle at 50% 0,#ffd76a40,transparent 60%),var(--panel);text-align:center;overflow:hidden}
+#fmCertOverlay .fm-cert-medal{font-size:56px;line-height:1.1;filter:drop-shadow(0 6px 14px #0005);animation:fmCertFloat 3s ease-in-out infinite}
+#fmCertOverlay .fm-cert-hero>b{font-size:15px;color:var(--sub)}
+#fmCertOverlay .fm-cert-hero>strong{font-size:40px;font-weight:800;letter-spacing:-.04em}
+#fmCertOverlay .fm-cert-hero>strong small{font-size:18px;margin-left:2px}
+#fmCertOverlay .fm-cert-hero>small{font-size:13px;color:var(--sub)}
+#fmCertOverlay .fm-cert-bar{width:80%;height:8px;margin:6px 0 2px;border-radius:9px;background:var(--panel2);overflow:hidden}
+#fmCertOverlay .fm-cert-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#ffd76a,#ff9f43)}
+#fmCertOverlay .fm-cert-stats{display:grid;grid-template-columns:repeat(3,1fr);width:100%;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+#fmCertOverlay .fm-cert-stats span{display:grid;gap:2px;font-size:12px;color:var(--sub)}
+#fmCertOverlay .fm-cert-stats b{font-size:17px;color:var(--txt)}
+#fmCertOverlay .fm-cert-pop{animation:fmCertPop .6s ease}
+#fmCertOverlay #fmCertList h3{margin:20px 2px 10px;font-size:15px;color:var(--sub)}
+#fmCertOverlay .fm-cert-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#fmCertOverlay .fm-cert{--c1:#ff9f43;--c2:#ff6b6b;position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:128px;padding:14px;border:0;border-radius:20px;background:linear-gradient(145deg,color-mix(in srgb,var(--c1) 30%,var(--panel)),color-mix(in srgb,var(--c2) 14%,var(--panel)));color:var(--txt);text-align:left;font:inherit;overflow:hidden}
+#fmCertOverlay .fm-cert::after{content:'';position:absolute;right:-24px;top:-24px;width:80px;height:80px;border-radius:50%;background:var(--c1);opacity:.18}
+#fmCertOverlay .fm-cert-ico{font-size:28px;margin-bottom:auto}
+#fmCertOverlay .fm-cert strong{font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+#fmCertOverlay .fm-cert span:last-child{font-size:12px;color:var(--sub)}
+#fmCertOverlay .fm-cert:active{transform:scale(.97)}
+#fmCertOverlay .fm-cert-eng{--c1:#4dabf7;--c2:#3b5bdb}#fmCertOverlay .fm-cert-office{--c1:#51cf66;--c2:#20c997}#fmCertOverlay .fm-cert-it{--c1:#748ffc;--c2:#9775fa}#fmCertOverlay .fm-cert-lang{--c1:#da77f2;--c2:#f783ac}#fmCertOverlay .fm-cert-money{--c1:#ffd43b;--c2:#fab005}#fmCertOverlay .fm-cert-hist{--c1:#e8a87c;--c2:#c08457}
+#fmCertOverlay .fm-cert-goal{background:var(--panel);outline:2px dashed var(--line);outline-offset:-2px}
+#fmCertOverlay #fmCertForm{display:grid;gap:8px;margin-top:14px;padding:14px;border-radius:20px;background:var(--panel)}
+#fmCertOverlay #fmCertForm[hidden]{display:none}
+#fmCertOverlay .fm-cert-goalpick{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px}
+#fmCertOverlay #fmCertForm .flex{gap:8px}
+#fmCertOverlay #fmCertForm .flex button{flex:1;min-height:48px}
+@keyframes fmCertFloat{50%{transform:translateY(-5px)}}
+@keyframes fmCertPop{40%{transform:scale(1.05)}}
+@media(prefers-reduced-motion:reduce){#fmCertOverlay .fm-cert-medal,#fmCertOverlay .fm-cert-pop{animation:none}}
 html body #settingsOverlay #fmLedgerImport{margin-top:6px;padding:0;background:none}
 html body #settingsOverlay #fmLedgerImport>summary{min-height:52px;display:flex;align-items:center;font-size:15px;font-weight:600;cursor:pointer}
 html body #settingsOverlay .fm-device-storage [hidden][hidden]{display:none}
@@ -2368,3 +2397,5 @@ html body #view-assets #fmAssetAccountsPanel .fm-account-left small{grid-column:
 html body #view-assets #fmAssetHoldingsPanel .fm-holding-name-line .fm-holding-value{font-size:16px}
 html body #view-assets #fmAssetHoldingsPanel .fm-holding-subline .fm-holding-day{font-size:13px}
 html body #view-home #homeAssetHero #homeDailyChange{padding-top:6px;font-size:15px;font-weight:700}
+html body #view-assets .fm-daily-scroll{max-height:360px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(#000 calc(100% - 24px),transparent)}
+html body #view-assets .fm-daily-scroll .fm-daily-row:last-child{margin-bottom:16px}

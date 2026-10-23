@@ -18,19 +18,25 @@ test('settings list 게임 아케이드 → 자격증 → 내 데이터 → 초�
 test('certificates can be added, edited and deleted, and ride along in backups',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
+ await page.locator('#fmCertOpen').click();
+ await expect(page.locator('#fmCertOverlay')).toBeVisible();
  await page.locator('#fmCertAdd').click();
  await page.locator('#fmCertName').fill('정보처리기사');await page.locator('#fmCertOrg').fill('한국산업인력공단');await page.locator('#fmCertDate').fill('2024-06-14');
  await page.locator('#fmCertForm button.primary').click();
  await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('SQLD');await page.locator('#fmCertDate').fill('2025-03-01');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('🎓 내 자격증 2개');
- await expect(page.locator('.fm-cert')).toHaveText(['SQLD2025.03.01','정보처리기사한국산업인력공단 · 2024.06.14']);
+ await expect(page.locator('.fm-cert')).toHaveText(['💻SQLD2025.03.01','💻정보처리기사한국산업인력공단 · 2024.06.14']);
  await page.locator('.fm-cert',{hasText:'SQLD'}).click();
  await page.locator('#fmCertOrg').fill('데이터산업진흥원');await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('.fm-cert').first()).toHaveText('SQLD데이터산업진흥원 · 2025.03.01');
+ await expect(page.locator('.fm-cert').first()).toHaveText('💻SQLD데이터산업진흥원 · 2025.03.01');
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_certificates_v1')).list.length);expect(saved).toBe(2);
  await page.locator('.fm-cert',{hasText:'SQLD'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
  await expect(page.locator('.fm-cert')).toHaveCount(1);
+ await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('일반기계기사');await page.locator('#fmCertGoal').check();await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('.fm-cert-goal')).toHaveText('🎯일반기계기사도전 중');
+ await expect(page.locator('#fmCertSub')).toHaveText('새내기 수집가 · 도전 중 1');
+ await page.locator('[data-close="fmCertOverlay"]').click();await expect(page.locator('#fmCertOverlay')).toBeHidden();
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const backup=JSON.parse(require('fs').readFileSync(await download.path(),'utf8'));
- expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name)).toEqual(['정보처리기사']);
+ expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name)).toEqual(['정보처리기사','일반기계기사']);
 });

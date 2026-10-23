@@ -81,7 +81,7 @@ body:has(#view-home.active) #view-home .hero-stat strong{overflow-wrap:anywhere}
 
 /* Consolidated home dashboard layout: normal page scrolling on every viewport. */
 @media(max-width:700px){
- html:has(#view-home.active),body:has(#view-home.active){height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior-y:contain}
+ html:has(#view-home.active),body:has(#view-home.active){height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior-y:auto}
  body:has(#view-home.active) .app{height:auto;min-height:100dvh;overflow:visible;display:block;padding:12px 13px calc(100px + env(safe-area-inset-bottom))}
  body:has(#view-home.active) .top{margin-bottom:12px;min-height:44px}
 
@@ -2071,3 +2071,22 @@ html,body{overscroll-behavior-y:contain}
 #view-assets .fm-quote-hero.fm-unified-hero .hero-stat:nth-child(n) strong{font-size:clamp(12px,3.4vw,15px);line-height:1.35;letter-spacing:-.03em;white-space:nowrap}
 #view-assets .fm-quote-hero.fm-unified-hero #fmTodayPL strong span{display:block;font-size:12px}
 #view-assets .fm-quote-hero.fm-unified-hero{padding-bottom:12px}
+#view-assets .fm-quote-hero.fm-unified-hero{padding:12px 15px 8px}
+#view-assets .fm-quote-hero.fm-unified-hero .fm-last-quote{margin:0 0 4px}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-row{display:flex;flex-wrap:wrap;gap:2px 14px;margin:0;padding:6px 0 0;border:0}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-stat:nth-child(n){display:flex;align-items:baseline;gap:5px;padding:0;background:none;border:0;box-shadow:none}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-stat:nth-child(n) strong{font-size:14px}
+#view-assets .fm-quote-hero.fm-unified-hero #fmTodayPL strong span{display:inline;font-size:inherit}
+#view-assets .fm-quote-hero.fm-unified-hero #fmAssetQuoteContext{margin:6px 0 0;padding:4px 0 0}
+#view-assets .fm-quote-hero.fm-unified-hero #fmAssetQuoteContext>summary{min-height:32px;padding:0}
+#view-assets .fm-quote-hero.fm-unified-hero #netWorth{margin:2px 0 0;line-height:1.15}
+.fm-home-holdings>summary.fm-home-holdings-head{min-height:44px;cursor:pointer;list-style:none}
+.fm-home-holdings>summary::-webkit-details-marker{display:none}
+.fm-home-holdings>summary::after{content:'펼치기 ▾';font-size:12px;color:var(--green)}
+.fm-home-holdings[open]>summary::after{content:'접기 ▴'}
+.fm-home-holdings>#fmHomeAllHoldings{display:block;margin-left:auto;min-height:44px;padding:0 4px;border:0;background:none;color:var(--green);font-weight:800;font-size:13px}
+#view-home #homeAssetHero>.fm-home-section-title,#view-assets>.hero.fm-quote-hero>.light:first-child{grid-column:1/-1}
+#view-home #homeAssetHero>button#homeRefreshStocks,#view-assets>.hero.fm-quote-hero>button#refreshStocks{grid-row:2;align-self:center}
+#view-home #homeAssetHero>.fm-asset-amount-line,#view-assets>.hero.fm-quote-hero>.flex:has(#netWorth){grid-column:1;grid-row:2;align-self:center}
+#view-assets .fm-quote-hero.fm-unified-hero{padding:8px 14px 8px}
+#view-home #homeAssetHero,#view-assets .fm-quote-hero.fm-unified-hero{padding-top:10px}

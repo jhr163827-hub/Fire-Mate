@@ -67,7 +67,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertLessEqual(dims['scroll'], dims['width'] + 1)
             quote = page.locator('#homeRefreshStocks').bounding_box()
             total = page.locator('#homeTotalAssets').bounding_box()
-            self.assertGreaterEqual(total['y'], quote['y'] + quote['height'], '총자산 숫자와 시세 갱신 버튼이 겹치면 안 됩니다')
+            self.assertTrue(total['y'] >= quote['y'] + quote['height'] or total['x'] + total['width'] <= quote['x'], '총자산 숫자와 시세 갱신 버튼이 겹치면 안 됩니다')
         finally:
             page.close()
 
@@ -1000,7 +1000,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="home"]').tap()
                             self.assertIn(remaining,page.locator('#fmRemainingGoal').text_content())
                             quote=page.locator('#homeRefreshStocks').bounding_box();total=page.locator('#homeTotalAssets').bounding_box()
-                            self.assertGreaterEqual(quote['height'],44);self.assertGreaterEqual(total['y'],quote['y']+quote['height'])
+                            self.assertGreaterEqual(quote['height'],44);self.assertTrue(total['y']>=quote['y']+quote['height'] or total['x']+total['width']<=quote['x'])
                             for sel in ('.fm-home-fire-head>button','#fmMonthlyOpen','#fmSpendingOpen'):
                                 self.assertGreaterEqual(page.locator('#view-home '+sel).bounding_box()['height'],44)
                             page.locator('.bottomnav [data-view="assets"]').tap()

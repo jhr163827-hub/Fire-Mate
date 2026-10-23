@@ -13,13 +13,14 @@ test('the asset hero sums today\'s moves across holdings',async({page})=>{
  await expect(page.locator('#fmTodayPL')).toContainText('오늘 변동');
  await expect(page.locator('#fmTodayPL strong')).toHaveText('−₩100,000 (-5.00%)');
 });
-test('losses use a real minus and holdings sort by today\'s move',async({page})=>{
+test('losses use a real minus and the list is always every account by value',async({page})=>{
  await page.locator('#fmAssetQuickHoldings').click();
  await expect(page.locator('#holdingList')).toContainText('−₩200,000 (-20.0%)');
  // Today's move sits under the value, colored, so a glance at the list is enough.
  await expect(page.locator('#holdingList .fm-holding-day')).toHaveText(['오늘 +10.00% · +₩100,000','오늘 -20.00% · −₩200,000']);
- await page.locator('#fmHoldingSort').selectOption('day');
- await expect(page.locator('#holdingList .fm-holding-name').first()).toHaveText('오른종목');
+ // No search, sort or account filter: every holding, largest value first.
+ await expect(page.locator('#fmHoldingSearch, #fmHoldingSort, #accountFilter')).toHaveCount(0);
+ await expect(page.locator('#holdingList .fm-holding-name')).toHaveText(['오른종목','내린종목']);
  await page.locator('#holdingList .fm-holding-row-main').nth(1).click();
  await expect(page.locator('#fmAccountDetail')).toContainText('오늘 -20.00% · −₩200,000');
  await expect(page.locator('#fmAccountDetail')).toContainText('현재가');

@@ -2080,13 +2080,15 @@ html,body{overscroll-behavior-y:contain}
 #view-assets .fm-quote-hero.fm-unified-hero #fmAssetQuoteContext{margin:6px 0 0;padding:4px 0 0}
 #view-assets .fm-quote-hero.fm-unified-hero #fmAssetQuoteContext>summary{min-height:32px;padding:0}
 #view-assets .fm-quote-hero.fm-unified-hero #netWorth{margin:2px 0 0;line-height:1.15}
-.fm-home-holdings>summary.fm-home-holdings-head{min-height:44px;cursor:pointer;list-style:none}
-.fm-home-holdings>summary::-webkit-details-marker{display:none}
-.fm-home-holdings>summary::after{content:'펼치기 ▾';font-size:12px;color:var(--green)}
-.fm-home-holdings[open]>summary::after{content:'접기 ▴'}
 .fm-home-holdings>#fmHomeAllHoldings{display:block;margin-left:auto;min-height:44px;padding:0 4px;border:0;background:none;color:var(--green);font-weight:800;font-size:13px}
 #view-home #homeAssetHero>.fm-home-section-title,#view-assets>.hero.fm-quote-hero>.light:first-child{grid-column:1/-1}
-#view-home #homeAssetHero>button#homeRefreshStocks,#view-assets>.hero.fm-quote-hero>button#refreshStocks{grid-row:2;align-self:center}
-#view-home #homeAssetHero>.fm-asset-amount-line,#view-assets>.hero.fm-quote-hero>.flex:has(#netWorth){grid-column:1;grid-row:2;align-self:center}
+#view-home #homeAssetHero>button#homeRefreshStocks,#view-assets>.hero.fm-quote-hero>button#refreshStocks{grid-row:1;align-self:center}
+#view-home #homeAssetHero>.fm-asset-amount-line,#view-assets>.hero.fm-quote-hero>.flex:has(#netWorth){grid-column:1;grid-row:1;align-self:center}
 #view-assets .fm-quote-hero.fm-unified-hero{padding:8px 14px 8px}
 #view-home #homeAssetHero,#view-assets .fm-quote-hero.fm-unified-hero{padding-top:10px}
+#view-home #homeAssetHero>.fm-home-section-title,#view-assets>.hero.fm-quote-hero>.light:first-child{display:none}
+#view-home #homeAssetHero .fm-home-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;padding:3px;border-radius:12px;background:var(--panel2)}
+#view-home #homeAssetHero .fm-home-tabs button{min-height:40px;border:0;border-radius:9px;background:none;color:var(--sub);font-size:13px;font-weight:700}
+#view-home #homeAssetHero .fm-home-tabs [aria-selected=true]{background:var(--panel);color:var(--green);font-weight:800}
+#view-home #homeAssetHero:has(.fm-home-holdings[hidden]) .fm-home-tabs,#view-home #homeAssetHero.fm-show-holdings:not(:has(.fm-home-holdings[hidden])) #homeDailyChange,#view-home #homeAssetHero:not(.fm-show-holdings) .fm-home-holdings{display:none}
+#view-home #homeAssetHero .fm-home-holdings{margin-top:4px;border-top:0;padding-top:0}

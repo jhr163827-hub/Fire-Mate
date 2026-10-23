@@ -28,7 +28,6 @@ test('account detail adds holdings to its own account and preserves existing dat
  expect((await read()).holdings).toEqual(after.holdings);
  await page.locator('button.bottom-item[data-view="assets"]').click();
  await page.locator('#fmAssetQuickHoldings').click();
- await page.locator('#accountFilter').selectOption('all');
  await page.locator('[data-holding="qa-existing"]').click();
  await expect(page.locator('#holdingAccount')).toHaveValue('legacy-us');
  await page.locator('[data-close="holdingOverlay"]').first().click();

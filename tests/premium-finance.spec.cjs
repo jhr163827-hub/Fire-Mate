@@ -187,18 +187,14 @@ test("compact dashboard keeps all seven metrics and exposes report shortcuts on 
       ).toBe(0);
     }
 });
-test("quote context shares existing nodes and asset keyboard tabs expose exactly one panel", async ({
+test("the asset card has no exchange-rate row and asset keyboard tabs expose exactly one panel", async ({
   page,
 }) => {
   await seed(page);
   await page.setViewportSize({ width: 320, height: 670 });
   await page.locator('.bottomnav [data-view="assets"]').click();
-  await page.locator("#fmAssetQuoteContext>summary").click();
-  await expect(page.locator("#stockStatus")).toBeVisible();
+  await expect(page.locator("#fmAssetQuoteContext")).toBeHidden();
   await expect(page.locator("#stockStatus")).toHaveCount(1);
-  await expect(page.locator("#fmAssetQuoteContext>summary")).toContainText(
-    "1,400원/USD",
-  );
   await page.evaluate(
     () =>
       (document.getElementById("fxStatus").textContent =

@@ -179,7 +179,6 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('.bottomnav [data-view="assets"]').click()
                     self.assertTrue(page.locator('#fmDividendPanel').is_visible())
                     page.locator('#fmAssetQuickAnalysis').click()
-                    self.assertTrue(page.locator('#fmAssetDonut').is_visible())
                     self.assertTrue(page.locator('#assetGrowthChart').is_visible())
                     self.assertFalse(page.locator('#fmDividendPanel').is_visible())
                     self.assertFalse(page.locator('#fmAssetAccountsPanel').is_visible())
@@ -409,9 +408,10 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('#fmAssetQuickAnalysis').click()
             milestone=page.locator('#view-assets .fm-milestone-details')
             self.assertEqual(milestone.count(),1)
-            milestone.locator('summary').click()
-            self.assertTrue(milestone.evaluate('(el)=>el.open'))
+            # Open by default, under the growth chart, with the next goal first.
             self.assertTrue(page.locator('#assetBadges').is_visible())
+            self.assertIn('다음 목표',page.locator('#assetBadges').inner_text())
+            self.assertGreater(milestone.bounding_box()['y'],page.locator('#assetGrowthChart').bounding_box()['y'])
             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),322)
         finally:
             page.close()

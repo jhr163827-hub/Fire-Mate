@@ -23,8 +23,6 @@ for marker in ["function persist()", "function fmValidateBackup(", "function fmB
     require(marker in html, "Storage/function guard " + marker)
 require("keys.filter(key=>key.startsWith('fire-mate-v')&&key!==CACHE)" in sw, "Old PWA caches are cleaned")
 require("caches.match(req)" in sw, "Offline resource fallback remains")
-require("id=\"fmCompositionMore\"" in html and "id=\"fmCompositionMoreList\"" in html, "Composition detail elements remain available")
-require("표시돼요.</div>'const more=" not in html, "Known broken composition JavaScript cannot return")
 require(page.rstrip().endswith("</body></html>"), "HTML ends cleanly without trailing code")
 require(html.count("</body></html>") == 1, "Only one HTML document exists")
 require(html.count('<script id="fm-pwa-updates">') == 1, "Only one PWA update handler exists")

@@ -153,7 +153,7 @@ body{letter-spacing:-.015em}.top{margin-bottom:15px}.logo{font-size:20px}
 #view-assets>.hero{margin-bottom:16px}#view-assets .card{margin-bottom:14px}
 .fm-secondary-details{border:1px solid var(--line);border-radius:17px;background:var(--panel);margin:14px 0;padding:0 16px}
 .fm-secondary-details>summary{cursor:pointer;padding:17px 0;color:var(--sub);font-weight:700;list-style:none;display:flex;justify-content:space-between}
-.fm-secondary-details>summary:after{content:'⌄'}.fm-secondary-details[open]>summary:after{content:'⌃'}
+
 .fm-secondary-details>.card,.fm-secondary-details>.grid,.fm-secondary-details>.statrow,.fm-secondary-details>.hero{margin:10px 0 16px}
 #view-assets #fireLiquidSummary{display:none}
 #view-assets #unifiedAddAsset{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
@@ -940,8 +940,8 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #settingsOverlay .fm-settings-group{min-width:0;padding:4px 14px;background:var(--panel)}
 #settingsOverlay .fm-settings-group>summary{min-height:52px;display:flex;align-items:center;line-height:1.45;list-style:none;overflow-wrap:anywhere}
 #settingsOverlay .fm-settings-group>summary::-webkit-details-marker{display:none}
-#settingsOverlay .fm-settings-group>summary::after{content:'⌄';margin-left:auto;padding-left:8px;font-size:18px;color:var(--sub)}
-#settingsOverlay .fm-settings-group[open]>summary::after{transform:rotate(180deg)}
+
+
 #settingsOverlay .fm-settings-group button,#settingsOverlay #fmLedgerImport>summary{min-height:44px}
 #settingsOverlay #fmLedgerImport{min-width:0;overflow-wrap:anywhere}
 #settingsOverlay .fm-settings-group:last-of-type{border-color:color-mix(in srgb,var(--red) 38%,var(--line))}
@@ -1462,10 +1462,8 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-firelab #fmForecastDisclosure small{display:block;font-size:11px;color:var(--sub);font-weight:400;margin-top:6px}
 #view-fire #fmForecastDisclosure>summary>strong,
 #view-firelab #fmForecastDisclosure>summary>strong{color:var(--green);font-size:22px;white-space:nowrap}
-#view-fire #fmForecastDisclosure>summary:after,
-#view-firelab #fmForecastDisclosure>summary:after{content:'⌄';color:var(--sub)}
-#view-fire #fmForecastDisclosure[open]>summary:after,
-#view-firelab #fmForecastDisclosure[open]>summary:after{content:'⌃'}
+
+
 #view-fire #fmForecastDisclosure #fmFireForecast,
 #view-firelab #fmForecastDisclosure #fmFireForecast{padding-bottom:10px}
 #view-retire .fm-fire-section-head h3{font-size:17px;margin:0 0 10px}
@@ -1829,8 +1827,8 @@ html:not([data-theme=light]) #view-calendar .day.selected .cost{color:#ffb8bf}
 #fmLedgerSync #bankGmailStatus:not(:empty){margin-top:6px}
 #fmLedgerSync details{margin-top:8px}
 #fmLedgerSync details>summary{min-height:44px;display:flex;align-items:center;font-size:13px;color:var(--sub);cursor:pointer}
-#fmLedgerSync details>summary::before{content:'▸';margin-right:6px}
-#fmLedgerSync details[open]>summary::before{content:'▾'}
+
+
 #fmLedgerSync #bankExcelConfirm{width:100%;min-height:48px;margin-top:8px}
 #fmLedgerSync #bankImportUndo{min-height:44px;padding:0 16px;margin-left:6px;vertical-align:middle}
 #fmLedgerSync .fm-zip-ask{display:grid;gap:8px;margin-top:8px}#fmLedgerSync .fm-zip-ask label{font-weight:700;color:var(--text)}#fmLedgerSync .fm-zip-ask div{display:flex;gap:8px}#fmLedgerSync .fm-zip-ask input{flex:1;min-width:0;min-height:48px;font-size:16px}#fmLedgerSync .fm-zip-ask button{min-height:48px;padding:0 14px;flex:none}
@@ -2010,8 +2008,8 @@ html,body{overscroll-behavior-y:contain}
 #fmInsightsMore>summary::-webkit-details-marker{display:none}
 #fmInsightsMore>summary span{font-weight:800;font-size:15px;color:var(--txt)}
 #fmInsightsMore>summary small{font-size:12px;color:var(--sub)}
-#fmInsightsMore>summary::after{content:'⌄';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--sub)}
-#fmInsightsMore[open]>summary::after{content:'⌃'}
+
+
 #fmInsightsMore[open]>summary{margin-bottom:12px}
 
 /* ---- fm-drive-backup ---- */
@@ -2331,7 +2329,6 @@ html body #view-assets #fmAssetHoldingsPanel .fm-holding-name-line .fm-holding-d
 html body #settingsOverlay .fm-set-row{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:56px;padding:0 18px;border:0;border-radius:20px;background:var(--panel);color:var(--txt);font-size:16px;font-weight:800;text-align:left}
 html body #settingsOverlay .fm-set-row span{color:var(--sub)}
 html body #settingsOverlay .fm-certs{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;border:0;border-radius:20px;background:var(--panel);color:var(--txt);text-align:left;font:inherit}
-html body #settingsOverlay .fm-certs::after{content:'';margin-left:auto;width:7px;height:7px;border-top:2px solid var(--sub);border-right:2px solid var(--sub);transform:rotate(45deg)}
 html body #settingsOverlay #fmCertBadge{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ffd76a33,#ff9f4333);font-size:24px}
 html body #settingsOverlay .fm-certs strong{display:block;font-size:16px}
 html body #settingsOverlay .fm-certs small{font-size:13px;color:var(--sub)}
@@ -2387,8 +2384,6 @@ html body #view-firelab .fm-retire-topbar .secondary,html body #view-firelife .f
 html body #view-home #homeAssetHero .fm-home-dayrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
 html body #view-home #homeAssetHero .fm-home-dayrow #homeDailyChange{min-width:0;margin:0;padding:0}
 html body #view-home #homeAssetHero .fm-home-holdtoggle{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;min-height:32px;margin:0;padding:0 12px;border:0;border-radius:999px;background:var(--panel2);color:var(--txt);font-size:13px;font-weight:700}
-html body #view-home #homeAssetHero .fm-home-holdtoggle::after,html body #view-assets .fm-account-chevron{content:'';width:6px;height:6px;border-right:2px solid var(--sub);border-bottom:2px solid var(--sub);transform:translateY(-2px) rotate(45deg);transition:transform .2s}
-html body #view-home #homeAssetHero .fm-home-holdtoggle[aria-expanded=true]::after,html body #view-assets [aria-expanded=true] .fm-account-chevron{transform:translateY(2px) rotate(-135deg)}
 html body #view-home #homeAssetHero.fm-show-holdings .fm-home-holdings{margin-top:8px;border-top:1px solid var(--line)}
 html body #view-assets .fm-account-chevron{display:block;flex-shrink:0;font-size:0;margin-left:2px}
 html body #view-assets #fmAssetAccountsPanel .fm-account-toggle{align-items:center}
@@ -2399,3 +2394,15 @@ html body #view-assets #fmAssetHoldingsPanel .fm-holding-subline .fm-holding-day
 html body #view-home #homeAssetHero #homeDailyChange{padding-top:6px;font-size:15px;font-weight:700}
 html body #view-assets .fm-daily-scroll{max-height:360px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(#000 calc(100% - 24px),transparent)}
 html body #view-assets .fm-daily-scroll .fm-daily-row:last-child{margin-bottom:16px}
+/* 꺾쇠: 앱 전체 한 가지 모양 (아래 = 펼치기, 오른쪽 = 이동) */
+html body details>summary{list-style:none;position:relative;padding-right:30px}
+html body details>summary::-webkit-details-marker{display:none}
+html body details>summary::after,html body #homeAssetHero .fm-home-holdtoggle::after,html body .fm-account-chevron,html body .fm-certs::after,html body :is(#fmLabOpen,#fmArcadeOpen)>span::after,html body :is([data-shift],#fmMonthlyPrev,#fmMonthlyNext)::after{content:'';display:block;flex:none;box-sizing:border-box;width:8px;height:8px;border:solid var(--sub);border-width:0 2px 2px 0;border-radius:0 0 2px 0;transform:translateY(-2px) rotate(45deg);transition:transform .2s ease}
+html body details>summary::after{position:absolute;right:8px;top:50%;margin:-6px 0 0}
+html body details[open]>summary::after,html body #homeAssetHero .fm-home-holdtoggle[aria-expanded=true]::after,html body [aria-expanded=true] .fm-account-chevron{transform:translateY(2px) rotate(-135deg)}
+html body .fm-certs::after,html body :is(#fmLabOpen,#fmArcadeOpen)>span::after,html body :is([data-shift="1"],#fmMonthlyNext)::after{margin-left:auto;transform:rotate(-45deg)}
+html body :is([data-shift="-1"],#fmMonthlyPrev)::after{transform:rotate(135deg)}
+html body :is(#fmLabOpen,#fmArcadeOpen)>span{display:flex;align-items:center}
+html body :is([data-shift],#fmMonthlyPrev,#fmMonthlyNext){display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
+html body :is([data-shift],#fmMonthlyPrev,#fmMonthlyNext)::after{width:10px;height:10px;border-color:var(--txt)}
+html body select{appearance:none;-webkit-appearance:none;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5 6 6l4.5-4.5' fill='none' stroke='%238b98a5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px}

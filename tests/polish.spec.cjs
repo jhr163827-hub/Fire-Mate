@@ -26,9 +26,9 @@ test('restore first saves the current data, and backups carry the time',async({p
 
 test('FIRE overview uses plain words',async({page})=>{
  await open(page,seed());
- await page.evaluate(()=>window.fmGo('fire'));
- await expect(page.locator('#view-fire .fm-fire-overview h3')).toHaveText('은퇴 준비 점검');
- await expect(page.locator('#view-fire .fm-fire-overview')).toContainText('은퇴 후 매달 남거나 모자란 돈');
+ await page.evaluate(()=>window.fmGo('firelab'));
+ await expect(page.locator('#view-firelab .fm-fire-overview h3')).toHaveText('은퇴 준비 점검');
+ await expect(page.locator('#view-firelab .fm-fire-overview')).toContainText('은퇴 후 매달 남거나 모자란 돈');
 });
 
 test('Samsung Internet gets a one-time note that data is kept per browser',async({browser})=>{

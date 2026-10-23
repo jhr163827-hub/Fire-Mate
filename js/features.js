@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const portfolio=$('fmRetirePortfolio'),life=$('fmRetireCashflow'),scenario=$('fmLifeScenario'),conditions=$('fmLifeConditions'),form=conditions.querySelector(':scope>.stack');
   const body=$('fmRpEditBody'),toggle=$('fmRpEditToggle'),save=$('rpSave'),cancel=$('fmRetireCancel'),savebar=$('fmRetireSaveBar');
   $('rpTotal').hidden=true;
-  $('fmRetireBack').onclick=()=>document.querySelector('.bottomnav [data-view="fire"]').click();
+  $('fmRetireBack').onclick=()=>document.dispatchEvent(new CustomEvent('fm-fire-navigate',{detail:'firelab'}));
   const setScope=scope=>{save.dataset.scope=scope;save.textContent=scope==='portfolio'?'목표 배분만 저장':'월 생활비 저장';cancel.setAttribute('aria-label',scope==='portfolio'?'목표 배분 변경 취소':'생활 조건 변경 취소')};
   const updateSave=()=>{const scope=save.dataset.scope;if($('view-firelife')?.classList.contains('active')){setScope('life');savebar.hidden=!conditions.open;return}if($('view-retire')?.classList.contains('active')){setScope('portfolio');savebar.hidden=body.hidden;return}if(scope==='portfolio'&&body.hidden&&conditions.open)setScope('life');else if(scope==='life'&&!conditions.open&&!body.hidden)setScope('portfolio');savebar.hidden=body.hidden&&!conditions.open};
   setScope('portfolio');
@@ -75,12 +75,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('click',e=>{if(e.target?.id==='fmQuickRun'&&quick.querySelector('strong')||e.target?.id==='fmStrRun'&&detail.querySelector('.fm-str-model-summary')){settings.open=false;setTimeout(()=>(e.target.id==='fmQuickRun'?quick:detail).scrollIntoView({block:'start',behavior:'instant'}),0)}});
  }
  // FIRE screen tabs: 현황 and 생활비. 계획 조정 and 전략·위험 open from 현황, so those screens keep 현황 lit.
- for(const button of document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]'))button.onclick=()=>document.dispatchEvent(new CustomEvent('fm-fire-navigate',{detail:button.dataset.fireScreen}));
  $('fmOverview-strategy').hidden=true;$('fmOverview-portfolio').hidden=true;$('fmFirePortfolioOpen').hidden=true;document.querySelector('#view-fire .fm-fire-calc-card').hidden=true;
  const originalSync=window.fmSyncFireScreens;
  window.fmSyncFireScreens=view=>{
   originalSync?.(view);
-  document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]').forEach(b=>b.setAttribute('aria-current',b.dataset.fireScreen===({firecalc:'fire',retire:'fire'}[view]||view)?'page':'false'));
   const bar=$('fmRetireSaveBar');if(view==='firelife'||view==='retire'){
    $('view-'+view).append(bar);
    document.dispatchEvent(new CustomEvent('fm-fire-save-scope',{detail:view==='firelife'?'life':'portfolio'}));

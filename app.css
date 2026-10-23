@@ -28,7 +28,7 @@
 .fm-settings-group{border:1px solid var(--line);border-radius:15px;padding:14px;background:var(--panel)}.fm-settings-group>summary{cursor:pointer;font-weight:800;list-style-position:inside;padding:5px 0}.fm-settings-group[open]>summary{color:var(--green)}
 /* FIRE dashboard premium layout v3.0.208 */
 #view-fire .fm-fire-navhint{font-size:12px;font-weight:650;color:var(--sub);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}#view-fire .fm-fire-navhint span{font-size:22px;line-height:1;font-weight:400}#view-fire .fm-fire-screen-nav #fmOpenCalculator:focus-visible{outline:2px solid var(--fm-mint);outline-offset:-3px;border-radius:9px}
-#view-fire.fm-fire-premium{--fm-mint:#48d7b0;display:none;gap:13px}#view-fire.fm-fire-premium.active{display:flex;flex-direction:column}#view-fire.fm-fire-premium>.card,#view-fire.fm-fire-premium>.hero{margin:0;border-radius:22px}#view-fire .fm-fire-hero{padding:24px 22px;background:linear-gradient(145deg,#19312f 0%,var(--panel) 56%,var(--panel) 100%);border:1px solid rgba(73,215,177,.26);box-shadow:none}#view-fire .fm-fire-eyebrow{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:800;letter-spacing:1.3px;color:var(--fm-mint)}#view-fire .fm-fire-eyebrow span{font-size:11px;letter-spacing:0;color:var(--sub)}#view-fire .fm-fire-hero-label{font-size:13px;color:var(--sub);margin-top:23px}#view-fire .fm-fire-hero .big{font-size:clamp(43px,11vw,58px);font-weight:850;letter-spacing:-2px;line-height:1.2;color:var(--fm-mint);margin:3px 0 18px}#view-fire .fm-fire-hero .progress{height:9px;border-radius:100px;overflow:hidden;background:rgba(132,151,169,.17)}#view-fire .fm-fire-hero .hero-row{margin-top:23px;gap:12px;justify-content:space-between}#view-fire .fm-fire-hero .hero-stat{min-width:0}#view-fire .fm-fire-hero .hero-stat strong{font-size:20px}#view-fire .fm-fire-card-kicker{display:block;font-size:10px;letter-spacing:1.35px;color:var(--sub);font-weight:800;margin-bottom:7px}#view-fire .fm-fire-calc-card{padding:0;overflow:hidden}#view-fire .fm-fire-calc-card #fmOpenCalculator{width:100%;padding:19px 21px;border:0;background:transparent;color:var(--txt);text-align:left;display:block;cursor:pointer}#view-fire .fm-fire-calc-title{font-size:20px;display:flex;justify-content:space-between;align-items:center}#view-fire .fm-fire-calc-title span{color:var(--fm-mint)}#view-fire .fm-fire-calc-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;font-size:12px;color:var(--sub)}#view-fire .fm-fire-calc-stats strong{display:block;font-size:19px;color:var(--txt);margin-top:4px}#view-fire .fm-fire-chart-card,#view-fire .fm-fire-portfolio-card,#view-fire .fm-fire-life-card{padding:21px 19px}#view-fire .fm-fire-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}#view-fire .fm-fire-section-head h3{margin:0;font-size:19px;letter-spacing:-.5px}#view-fire .fm-fire-section-icon{font-size:24px;color:var(--fm-mint)}#view-fire .fm-fire-section-head .secondary{width:auto;margin:0;padding:10px 12px;font-size:12px;white-space:nowrap}#view-fire #fmFireForecast{margin-top:0;min-width:0}#view-fire .fm-fire-life-button{width:100%;margin-top:15px}#view-fire .fm-fire-chart-card svg{max-width:100%}@media(max-width:370px){#view-fire .fm-fire-section-head h3{font-size:17px}#view-fire .fm-fire-hero .hero-stat strong{font-size:17px}}
+#view-fire.fm-fire-premium{--fm-mint:#48d7b0;display:none;gap:13px}#view-fire.fm-fire-premium.active{display:flex;flex-direction:column}#view-fire.fm-fire-premium>.card,#view-fire.fm-fire-premium>.hero{margin:0;border-radius:22px}#view-fire .fm-fire-hero{padding:24px 22px;background:linear-gradient(145deg,#19312f 0%,var(--panel) 56%,var(--panel) 100%);border:1px solid rgba(73,215,177,.26);box-shadow:none}#view-fire .fm-fire-eyebrow{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:800;letter-spacing:1.3px;color:var(--fm-mint)}#view-fire .fm-fire-eyebrow span{font-size:11px;letter-spacing:0;color:var(--sub)}#view-fire .fm-fire-hero-label{font-size:13px;color:var(--sub);margin-top:23px}#view-fire .fm-fire-hero .big{font-size:clamp(43px,11vw,58px);font-weight:850;letter-spacing:-2px;line-height:1.2;color:var(--fm-mint);margin:3px 0 18px}#view-fire .fm-fire-hero .progress{height:9px;border-radius:100px;overflow:hidden;background:rgba(132,151,169,.17)}#view-fire .fm-fire-hero .hero-row{margin-top:23px;gap:12px;justify-content:space-between}#view-fire .fm-fire-hero .hero-stat{min-width:0}#view-fire .fm-fire-hero .hero-stat strong{font-size:20px}#view-fire .fm-fire-card-kicker{display:block;font-size:10px;letter-spacing:1.35px;color:var(--sub);font-weight:800;margin-bottom:7px}#view-fire .fm-fire-calc-card{padding:0;overflow:hidden}#view-fire .fm-fire-calc-card #fmOpenCalculator{width:100%;padding:19px 21px;border:0;background:transparent;color:var(--txt);text-align:left;display:block;cursor:pointer}#view-fire .fm-fire-calc-title{font-size:20px;display:flex;justify-content:space-between;align-items:center}#view-fire .fm-fire-calc-title span{color:var(--fm-mint)}#view-fire .fm-fire-calc-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;font-size:12px;color:var(--sub)}#view-fire .fm-fire-calc-stats strong{display:block;font-size:19px;color:var(--txt);margin-top:4px}#view-fire .fm-fire-chart-card,#view-fire .fm-fire-portfolio-card,#view-fire .fm-fire-life-card,#view-firelab .fm-fire-chart-card{padding:21px 19px}#view-fire .fm-fire-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}#view-fire .fm-fire-section-head h3{margin:0;font-size:19px;letter-spacing:-.5px}#view-fire .fm-fire-section-icon{font-size:24px;color:var(--fm-mint)}#view-fire .fm-fire-section-head .secondary{width:auto;margin:0;padding:10px 12px;font-size:12px;white-space:nowrap}#view-fire #fmFireForecast,#view-firelab #fmFireForecast{margin-top:0;min-width:0}#view-fire .fm-fire-life-button{width:100%;margin-top:15px}#view-fire .fm-fire-chart-card svg,#view-firelab .fm-fire-chart-card svg{max-width:100%}@media(max-width:370px){#view-fire .fm-fire-section-head h3{font-size:17px}#view-fire .fm-fire-hero .hero-stat strong{font-size:17px}}
 
 /* Accessibility: visible keyboard navigation and reduced-motion preference. */
 :where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--green);outline-offset:3px}
@@ -913,10 +913,13 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
  #view-fire .fm-fire-hero .hero-stat strong,#view-retire .hero-stat strong{font-size:clamp(15px,4.2vw,19px);overflow-wrap:anywhere;line-height:1.35}
  #view-fire .fm-fire-section-head{align-items:flex-start;flex-wrap:wrap}
  #view-fire .fm-fire-section-head .secondary{min-height:44px}
- #view-fire #fmFireForecast,#view-fire #fmFireLife,#view-fire #fmFirePortfolioProgress{overflow-wrap:anywhere}
+ #view-fire #fmFireForecast,#view-fire #fmFireLife,#view-fire #fmFirePortfolioProgress,
+ #view-firelab #fmFireForecast{overflow-wrap:anywhere}
  #view-fire [data-forecast-rate],#view-fire [data-forecast-period]{min-height:44px;flex:1;min-width:0;padding:8px 5px!important}
- #view-fire #fmForecastControls>summary,#view-fire #fmForecastComparisonDetails>summary{min-height:44px;display:flex;align-items:center}
- #view-fire #fmForecastComparisonDetails table{table-layout:fixed;overflow-wrap:anywhere}
+ #view-fire #fmForecastControls>summary,#view-fire #fmForecastComparisonDetails>summary,
+ #view-firelab #fmForecastControls>summary,#view-firelab #fmForecastComparisonDetails>summary{min-height:44px;display:flex;align-items:center}
+ #view-fire #fmForecastComparisonDetails table,
+ #view-firelab #fmForecastComparisonDetails table{table-layout:fixed;overflow-wrap:anywhere}
  #view-firecalc .hero{min-width:0}
  #view-retire .hero .big{font-size:clamp(25px,7vw,34px);overflow-wrap:anywhere}
  #view-retire #rpStressSummary{overflow-wrap:anywhere}
@@ -1113,10 +1116,12 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
  #view-fire .fm-fire-eta-visible{margin-top:9px;padding-top:9px}
  #view-fire .fm-fire-calc-card #fmOpenCalculator{padding:14px 16px}
  #view-fire .fm-fire-calc-stats{margin-top:10px}
- #view-fire .fm-fire-chart-card,#view-fire .fm-fire-portfolio-card,#view-fire .fm-fire-life-card,#view-fire .fm-fire-strategy-card{padding:15px}
+ #view-fire .fm-fire-chart-card,#view-fire .fm-fire-portfolio-card,#view-fire .fm-fire-life-card,#view-fire .fm-fire-strategy-card,
+ #view-firelab .fm-fire-chart-card{padding:15px}
  #view-fire .fm-fire-section-head{margin-bottom:10px}
  #view-fire .fm-fire-card-kicker{margin-bottom:4px}
- #view-fire #fmFireForecast>div:first-child{display:block}
+ #view-fire #fmFireForecast>div:first-child,
+ #view-firelab #fmFireForecast>div:first-child{display:block}
  #view-fire .fm-fire-strategy-preview{margin:8px 0}
  #view-fire .fm-fire-strategy-preview>div{padding:10px}
  #view-fire .fm-fire-life-button{margin-top:9px;min-height:44px}
@@ -1406,7 +1411,8 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-fire #fmFireStrategyPreview{gap:7px;margin:9px 0}
 #view-fire #fmFireStrategyPreview>div{padding:10px}
 #view-fire #fmFireStrategyPreview strong{font-size:18px}
-#view-fire .fm-forecast-assumptions{margin-top:6px}
+#view-fire .fm-forecast-assumptions,
+#view-firelab .fm-forecast-assumptions{margin-top:6px}
 #view-firecalc .card:first-child .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 #view-firecalc .card:first-child .stack>*{grid-column:1/-1;min-width:0}
 #view-firecalc .card:first-child .stack>.field:nth-child(2),#view-firecalc .card:first-child .stack>.field:nth-child(3){grid-column:auto}
@@ -1425,24 +1431,43 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 
 /* ---- fm-fire-stage85-main-v3538 ---- */
 
-#view-fire .fm-fire-overview{padding:4px 14px}
-#view-fire .fm-fire-overview>h3{font-size:14px;margin:12px 0 0;color:var(--sub)}
-#view-fire .fm-fire-overview-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:76px;border:0;border-radius:0;background:transparent;padding:13px 0;text-align:left;color:var(--txt);box-shadow:none}
-#view-fire .fm-fire-overview-row+button{border-top:1px solid var(--line)}
-#view-fire .fm-fire-overview-row>span:first-child{min-width:0;display:grid;gap:6px}
-#view-fire .fm-fire-overview-row strong{font-size:15px}
-#view-fire .fm-fire-overview-row>span:last-child{color:var(--sub);font-size:24px;flex:none}
-#view-fire .fm-fire-overview-value{display:block;font-size:12px;line-height:1.6;color:var(--sub);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#view-fire .fm-fire-overview,
+
+/* ---- fm-fire-stage85-main-v3538 ---- */
+
+#view-firelab .fm-fire-overview{padding:4px 14px}
+#view-fire .fm-fire-overview>h3,
+#view-firelab .fm-fire-overview>h3{font-size:14px;margin:12px 0 0;color:var(--sub)}
+#view-fire .fm-fire-overview-row,
+#view-firelab .fm-fire-overview-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:76px;border:0;border-radius:0;background:transparent;padding:13px 0;text-align:left;color:var(--txt);box-shadow:none}
+#view-fire .fm-fire-overview-row+button,
+#view-firelab .fm-fire-overview-row+button{border-top:1px solid var(--line)}
+#view-fire .fm-fire-overview-row>span:first-child,
+#view-firelab .fm-fire-overview-row>span:first-child{min-width:0;display:grid;gap:6px}
+#view-fire .fm-fire-overview-row strong,
+#view-firelab .fm-fire-overview-row strong{font-size:15px}
+#view-fire .fm-fire-overview-row>span:last-child,
+#view-firelab .fm-fire-overview-row>span:last-child{color:var(--sub);font-size:24px;flex:none}
+#view-fire .fm-fire-overview-value,
+#view-firelab .fm-fire-overview-value{display:block;font-size:12px;line-height:1.6;color:var(--sub);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 #view-fire .fm-fire-calc-card{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 #view-fire .fm-fire-calc-card #fmOpenCalculator{display:block;width:100%;min-height:44px;padding:8px;color:var(--green);font-size:13px;text-align:center;border-radius:9px;background:var(--panel2)}
-#view-fire #fmForecastDisclosure{padding:0 14px}
-#view-fire #fmForecastDisclosure>summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:76px;padding:12px 0;font-weight:700;list-style:none}
-#view-fire #fmForecastDisclosure>summary>span{font-size:14px}
-#view-fire #fmForecastDisclosure small{display:block;font-size:11px;color:var(--sub);font-weight:400;margin-top:6px}
-#view-fire #fmForecastDisclosure>summary>strong{color:var(--green);font-size:22px;white-space:nowrap}
-#view-fire #fmForecastDisclosure>summary:after{content:'⌄';color:var(--sub)}
-#view-fire #fmForecastDisclosure[open]>summary:after{content:'⌃'}
-#view-fire #fmForecastDisclosure #fmFireForecast{padding-bottom:10px}
+#view-fire #fmForecastDisclosure,
+#view-firelab #fmForecastDisclosure{padding:0 14px}
+#view-fire #fmForecastDisclosure>summary,
+#view-firelab #fmForecastDisclosure>summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:76px;padding:12px 0;font-weight:700;list-style:none}
+#view-fire #fmForecastDisclosure>summary>span,
+#view-firelab #fmForecastDisclosure>summary>span{font-size:14px}
+#view-fire #fmForecastDisclosure small,
+#view-firelab #fmForecastDisclosure small{display:block;font-size:11px;color:var(--sub);font-weight:400;margin-top:6px}
+#view-fire #fmForecastDisclosure>summary>strong,
+#view-firelab #fmForecastDisclosure>summary>strong{color:var(--green);font-size:22px;white-space:nowrap}
+#view-fire #fmForecastDisclosure>summary:after,
+#view-firelab #fmForecastDisclosure>summary:after{content:'⌄';color:var(--sub)}
+#view-fire #fmForecastDisclosure[open]>summary:after,
+#view-firelab #fmForecastDisclosure[open]>summary:after{content:'⌃'}
+#view-fire #fmForecastDisclosure #fmFireForecast,
+#view-firelab #fmForecastDisclosure #fmFireForecast{padding-bottom:10px}
 #view-retire .fm-fire-section-head h3{font-size:17px;margin:0 0 10px}
 #view-retire :is(#fmRetirePortfolio,#fmRetireCashflow,#fmStrategyCard){scroll-margin-top:10px}
 #view-retire #fmFireLife,#view-retire #fmFirePortfolioProgress{overflow-wrap:anywhere}
@@ -1459,8 +1484,13 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 
 /* ---- fm-fire-stage85-detail-v3539 ---- */
 
-#view-fire .fm-fire-overview-value>strong{display:block;color:var(--txt);font-size:20px;line-height:1.3;margin:1px 0 3px}
-#view-fire .fm-fire-overview-value>small{display:block;font-size:11px;line-height:1.6}
+#view-fire .fm-fire-overview-value>strong,
+
+/* ---- fm-fire-stage85-detail-v3539 ---- */
+
+#view-firelab .fm-fire-overview-value>strong{display:block;color:var(--txt);font-size:20px;line-height:1.3;margin:1px 0 3px}
+#view-fire .fm-fire-overview-value>small,
+#view-firelab .fm-fire-overview-value>small{display:block;font-size:11px;line-height:1.6}
 #view-retire .fm-retire-topbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:12px;background:var(--bg);padding:7px 0;margin-bottom:10px;border-bottom:1px solid var(--line)}
 #view-retire .fm-retire-topbar h2{margin:0;font-size:18px}
 #view-retire .fm-retire-topbar button{min-height:44px;padding:8px 12px}
@@ -1522,22 +1552,37 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-fire .fm-fire-hero .progress{height:5px;margin:6px 0 10px}
 #view-fire #fmFireBasisNote,#view-fire .fm-fire-meaning{font-size:11px;line-height:1.55;margin:4px 0}
 #view-fire .fm-fire-calc-card{margin-top:10px;padding-top:8px}
-#view-fire .fm-fire-overview{padding:4px 14px;border-radius:18px}
-#view-fire .fm-fire-overview>h3{margin-top:10px;color:var(--txt)}
-#view-fire .fm-fire-scope{font-size:11px;margin:5px 0 0;color:var(--sub)}
-#view-fire #fmFirePlanDifference{font-size:11px;margin:7px 0;color:var(--red)}
-#view-fire .fm-fire-overview-row{min-height:48px;padding:10px 0;gap:8px}
-#view-fire .fm-fire-overview-row>span:first-child{gap:3px}
-#view-fire .fm-fire-overview-row strong{font-size:13px}
-#view-fire #fmOverview-cashflow>strong{font-size:22px;line-height:1.35}
-#view-fire .fm-fire-overview-value>small{font-size:11px}
+#view-fire .fm-fire-overview,
+#view-firelab .fm-fire-overview{padding:4px 14px;border-radius:18px}
+#view-fire .fm-fire-overview>h3,
+#view-firelab .fm-fire-overview>h3{margin-top:10px;color:var(--txt)}
+#view-fire .fm-fire-scope,
+#view-firelab .fm-fire-scope{font-size:11px;margin:5px 0 0;color:var(--sub)}
+#view-fire #fmFirePlanDifference,
+#view-firelab #fmFirePlanDifference{font-size:11px;margin:7px 0;color:var(--red)}
+#view-fire .fm-fire-overview-row,
+#view-firelab .fm-fire-overview-row{min-height:48px;padding:10px 0;gap:8px}
+#view-fire .fm-fire-overview-row>span:first-child,
+#view-firelab .fm-fire-overview-row>span:first-child{gap:3px}
+#view-fire .fm-fire-overview-row strong,
+#view-firelab .fm-fire-overview-row strong{font-size:13px}
+#view-fire #fmOverview-cashflow>strong,
+#view-firelab #fmOverview-cashflow>strong{font-size:22px;line-height:1.35}
+#view-fire .fm-fire-overview-value>small,
+#view-firelab .fm-fire-overview-value>small{font-size:11px}
 #view-fire :is(.fm-fire-strategy-card,.fm-fire-portfolio-card) .fm-fire-overview-value{font-size:11px;line-height:1.5}
-#view-fire #fmOverview-portfolio>strong{font-size:12px;display:inline;margin-right:5px}
-#view-fire #fmOverview-portfolio>small{display:inline}
-#view-fire #fmForecastDisclosure{border-radius:18px}
-#view-fire #fmForecastDisclosure>summary{min-height:64px;padding:9px 0}
-#view-fire #fmForecastSummaryValue{font-size:16px;overflow-wrap:anywhere}
-#view-fire #fmForecastDisclosure>summary{flex-wrap:wrap;gap:6px}
+#view-fire #fmOverview-portfolio>strong,
+#view-firelab #fmOverview-portfolio>strong{font-size:12px;display:inline;margin-right:5px}
+#view-fire #fmOverview-portfolio>small,
+#view-firelab #fmOverview-portfolio>small{display:inline}
+#view-fire #fmForecastDisclosure,
+#view-firelab #fmForecastDisclosure{border-radius:18px}
+#view-fire #fmForecastDisclosure>summary,
+#view-firelab #fmForecastDisclosure>summary{min-height:64px;padding:9px 0}
+#view-fire #fmForecastSummaryValue,
+#view-firelab #fmForecastSummaryValue{font-size:16px;overflow-wrap:anywhere}
+#view-fire #fmForecastDisclosure>summary,
+#view-firelab #fmForecastDisclosure>summary{flex-wrap:wrap;gap:6px}
 #fmForecastSelectedValue{overflow-wrap:anywhere}
 #fmForecastUsePlan{min-height:44px;margin-top:6px;width:100%}
 
@@ -1696,7 +1741,7 @@ body{word-break:keep-all}
 
 /* Secondary text reads at 12px or more. Measured on every view: no .mini/small/.small renders above 12px, so nothing shrinks. */
 .mini,small,.small{font-size:12px!important}
-#view-home #homeLastQuote,#view-assets #assetsLastQuote,#fmAssetQuoteContext>summary,#view-calendar .weekday,#view-calendar .txmain span,#view-calendar #fmBackToCalendar,#view-insights .pill,#view-fire #fmGoalLabel,#view-fire .fm-fire-progress-label span,#view-fire .fm-decision-action,#fmComparisonBasis span,#fmComparisonBasis .fm-model-tag,#view-retire .fm-model-value span,#view-retire .fm-fire-target-values span,#view-retire .fm-fire-target-classes span,#view-retire .fm-fire-target-row strong{font-size:12px!important}
+#view-home #homeLastQuote,#view-assets #assetsLastQuote,#fmAssetQuoteContext>summary,#view-calendar .weekday,#view-calendar .txmain span,#view-calendar #fmBackToCalendar,#view-insights .pill,#view-fire #fmGoalLabel,#view-fire .fm-fire-progress-label span,#view-fire .fm-decision-action,#fmComparisonBasis span,#fmComparisonBasis .fm-model-tag,#view-retire .fm-model-value span,#view-retire .fm-fire-target-values span,#view-retire .fm-fire-target-classes span,#view-retire .fm-fire-target-row strong,#view-firelab .fm-decision-action{font-size:12px!important}
 #view-calendar .fm-ledger-totals span,#monthDeltaBasis,#dailyAvgBasis,#view-assets .fm-quote-hero .hero-stat:nth-child(n) .light.small,#fmDividendEditor div[style*="72px 82px"]>span{font-size:12px!important}
 /* Keep amounts on one line; the retirement summary scales down instead of splitting "-126만 / 6,667원". */
 #view-retire .hero-stat strong{white-space:nowrap;overflow-wrap:normal;font-size:clamp(14px,4.4vw,17px)!important}
@@ -1944,7 +1989,7 @@ html,body{overscroll-behavior-y:contain}
 #fmQuoteFailures #retryStocks{margin-top:8px;width:100%;min-height:44px}
 /* 5. Readable secondary text on the main explanations. */
 #homeLastQuote,#assetsLastQuote{font-size:12px}
-#view-fire .mini,#view-firelife .mini,#view-retire .mini,#view-fire .fm-fire-scope{font-size:13px!important;line-height:1.55}
+#view-fire .mini,#view-firelife .mini,#view-retire .mini,#view-fire .fm-fire-scope,#view-firelab .fm-fire-scope{font-size:13px!important;line-height:1.55}
 /* 6. Cards added over time share one title size, weight and spacing. */
 .fm-card-x h3,#fmMonthReport h3,#fmWeekReport h3,#fmMilestone h3,#fmTrendCard h3,#fmUncatFold>summary,#fmHealthCalc>summary{font-size:16px!important;font-weight:800;letter-spacing:-.01em}
 .fm-card-x .mini,#fmMonthReport .fm-mr-row,#fmWeekReport .fm-wr-row{font-size:13px}
@@ -2090,7 +2135,7 @@ html,body{overscroll-behavior-y:contain}
 #view-home #homeAssetHero .fm-home-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;padding:3px;border-radius:12px;background:var(--panel2)}
 #view-home #homeAssetHero .fm-home-tabs button{min-height:40px;border:0;border-radius:9px;background:none;color:var(--sub);font-size:13px;font-weight:700}
 #view-home #homeAssetHero .fm-home-tabs [aria-selected=true]{background:var(--panel);color:var(--green);font-weight:800}
-#view-home #homeAssetHero:has(.fm-home-holdings[hidden]) .fm-home-tabs,#view-home #homeAssetHero.fm-show-holdings:not(:has(.fm-home-holdings[hidden])) #homeDailyChange,#view-home #homeAssetHero:not(.fm-show-holdings) .fm-home-holdings{display:none}
+#view-home #homeAssetHero:has(.fm-home-holdings[hidden]) .fm-home-holdtoggle,#view-home #homeAssetHero:not(.fm-show-holdings) .fm-home-holdings{display:none}
 #view-home #homeAssetHero .fm-home-holdings{margin-top:4px;border-top:0;padding-top:0}
 /* Home polish: one surface per card, no boxes inside boxes, quiet secondary actions. */
 #view-home>.hero,#view-home>.card,#view-home>section.card{border-radius:20px;border:1px solid var(--line);background:var(--panel);box-shadow:none}
@@ -2245,8 +2290,9 @@ html body #view-fire .fm-fire-hero,html body #view-fire .card{background:var(--p
 html body #view-fire .fm-fire-eyebrow{color:var(--sub);font-size:13px}
 html body #view-fire #fireYears{font-size:30px;font-weight:800;letter-spacing:-.04em}
 html body #view-fire .fm-fire-gap{font-size:12px;color:var(--sub)}
-html body #view-fire #fmOpenCalculator,html body #view-fire #fmFireStrategyOpen{border:0;background:var(--panel2);color:var(--txt);border-radius:14px;font-size:15px;font-weight:700;box-shadow:none}
-html body #view-fire #fmFireStrategyOpen{background:var(--panel)}
+html body #view-fire #fmOpenCalculator,html body #view-fire #fmFireStrategyOpen,html body #view-firelab #fmFireStrategyOpen{border:0;background:var(--panel2);color:var(--txt);border-radius:14px;font-size:15px;font-weight:700;box-shadow:none}
+html body #view-fire #fmFireStrategyOpen,
+html body #view-firelab #fmFireStrategyOpen{background:var(--panel)}
 /* Skin v4 · 소비 분석 */
 html body #view-insights .card,html body #view-insights .fm-insights-more{background:var(--panel);border:0;box-shadow:none;border-radius:22px}
 /* Skin v4 · 설정: list rows instead of centered big buttons */
@@ -2298,3 +2344,18 @@ html body #settingsOverlay #fmCertForm .flex button{flex:1;min-height:48px;borde
 html body #settingsOverlay #fmLedgerImport{margin-top:6px;padding:0;background:none}
 html body #settingsOverlay #fmLedgerImport>summary{min-height:52px;display:flex;align-items:center;font-size:15px;font-weight:600;cursor:pointer}
 html body #settingsOverlay .fm-device-storage [hidden][hidden]{display:none}
+/* FIRE: one main screen; everything else lives in its own FIRE 실험실 space. */
+html body #view-fire .fm-lab-open{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:56px;margin-top:12px;padding:0 20px;border:0;border-radius:22px;background:var(--panel);color:var(--txt);font-size:16px;font-weight:800;text-align:left}
+html body #view-fire .fm-lab-open span,html body .fm-lab-menu button::after{color:var(--sub)}
+html body .fm-lab-menu{display:flex;flex-direction:column;margin:0 0 12px;padding:4px 20px;border-radius:22px;background:var(--panel)}
+html body .fm-lab-menu button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:64px;padding:10px 24px 10px 0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--txt);text-align:left}
+html body .fm-lab-menu button:last-child{border-bottom:0}
+html body .fm-lab-menu button::after{content:'›';position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:18px}
+html body .fm-lab-menu strong{font-size:16px}
+html body .fm-lab-menu small{font-size:13px;color:var(--sub)}
+html body #view-firelab .card,html body #view-firelife .card,html body #view-retire .card{background:var(--panel);border:0;box-shadow:none;border-radius:22px}
+html body #view-firelab .fm-retire-topbar .secondary,html body #view-firelife .fm-retire-topbar .secondary,html body #view-retire .fm-retire-topbar .secondary{border:0;background:none;color:var(--sub);font-size:14px;font-weight:700;min-height:44px;padding:0 4px}
+html body #view-home #homeAssetHero .fm-home-holdtoggle{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:44px;margin-top:8px;padding:0;border:0;border-top:1px solid var(--line);background:none;color:var(--txt);font-size:14px;font-weight:700}
+html body #view-home #homeAssetHero .fm-home-holdtoggle::after{content:'▾';color:var(--sub)}
+html body #view-home #homeAssetHero .fm-home-holdtoggle[aria-expanded=true]::after{content:'▴'}
+html body #view-home #homeAssetHero #homeDailyChange{padding-top:6px;font-size:15px;font-weight:700}

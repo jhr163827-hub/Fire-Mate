@@ -21,6 +21,7 @@
 - Google 드라이브 백업(`firemate_drive_*`)은 앱 전용 폴더(drive.appdata) 한 파일만 쓴다. 토큰은 백업에 넣지 않는다. 앱의 Google 프로젝트에 Drive API가 켜져 있어야 동작한다.
 - FIRE 진행률·남은 금액·도달 예상은 `fireLiquid()`(FIRE 운용자산) 기준이고, 순자산(`netAsset()`)은 자산 표시용이다. 저장되는 `data.fire.asset`은 예전처럼 순자산으로 둔다. 새 계좌는 FIRE 포함이 기본값.
 - 시세 백업: `scripts/refresh_live_quotes.py`(워크플로 `refresh-live-quotes.yml`, 평일 30분마다)가 `chart-symbols.json` 종목의 현재가·프리장·애프터 가격을 `chart-data/live-quotes.json`에 저장한다. 앱은 실시간 조회가 실패하거나 미국 API 키가 없을 때 이 가격을 쓰고(`quoteAt`은 그 시세의 시각), 프리장·애프터는 저장하지 않고 화면에만 표시한다. 새 종목은 `chart-symbols.json`에 추가해야 받아진다. 시장 지수(`chart-symbols.json`의 `indices`)는 같은 파일에 `IDX-<키>`로 현재값이 들어가고, 10년 일별 종가는 `refresh_charts.py`가 `chart-data/IDX-<키>.json`에 저장한다(자산 → 시장 탭, 홈 한 줄).
+- FIRE: 메인(`#view-fire`)은 도달 예상 카드 + 계획 조정 + "🧪 FIRE 실험실" 줄만. 실험실(`#view-firelab`)에 은퇴 준비 점검·미래 자산 예상과 생활비(`firelife`)·배당 vs 매도(`retire`)·목표 바꿔 보기(`firecalc`)로 가는 메뉴. 생활비·전략 화면의 뒤로는 실험실로.
 - 설정 순서: 게임 아케이드 → 내 자격증(`firemate_certificates_v1`, 백업 extras에 포함) → 내 데이터 보관(JSON 백업·복원, 드라이브, 뱅크샐러드 가져오기 설정) → 데이터 초기화. 메일 백업 버튼·시세/환율·가져오기/내보내기 묶음은 숨김(코드와 홈 백업 알림은 그대로).
 - 화면 글자를 다시 숫자로 읽지 않는다. 계산 결과는 `window.fmFireViewState` 같은 공통 값에서 가져온다.
 

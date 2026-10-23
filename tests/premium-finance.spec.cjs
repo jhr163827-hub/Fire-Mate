@@ -41,9 +41,8 @@ test("decision overview links exact saved baselines, portfolio and independent s
     localStorage.getItem("firemate_smart_v3"),
   );
   await page.locator('.bottomnav [data-view="fire"]').click();
-  const tabs = await page.locator('#view-fire .fm-fire-screen-nav button').evaluateAll(es=>es.map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,align:getComputedStyle(e).textAlign})));
-  expect(tabs).toHaveLength(2);
-  for(const tab of tabs){expect(tab.height).toBe(44);expect(Math.abs(tab.width-tabs[0].width)).toBeLessThan(0.1);expect(tab.align).toBe('center');}
+  // FIRE keeps one main screen; the rest opens from 🧪 FIRE 실험실.
+  await expect(page.locator('#view-fire .fm-fire-screen-nav')).toHaveCount(0);
   const state = await page.evaluate(() => window.fmFireViewState);
   const months = state.forecast.baselineMonthsToGoal,
     date = new Date();
@@ -53,6 +52,8 @@ test("decision overview links exact saved baselines, portfolio and independent s
     date.getFullYear() + "년 " + (date.getMonth() + 1) + "월",
   );
   await expect(page.locator("#fireYears")).toHaveText("8년 2개월");
+  await page.locator("#fmLabOpen").click();
+  await expect(page.locator("#view-firelab")).toBeVisible();
   await expect(page.locator("#fmFirePortfolioOpen")).toBeVisible();
   await expect(page.locator("#fmCashflowLimits")).toContainText("보험료 미입력 · 차감 전");
   await expect(page.locator("#fmOverview-cashflow")).toContainText("(가정)");
@@ -65,7 +66,7 @@ test("decision overview links exact saved baselines, portfolio and independent s
   );
   await expect(page.locator("#fmRetirePortfolio")).toBeVisible();
   await page.goBack();
-  await expect(page.locator("#view-fire")).toBeVisible();
+  await expect(page.locator("#view-firelab")).toBeVisible();
   await page.locator("#fmFireRiskOpen").click();
   await expect(page.locator("#fmLifeScenario")).toHaveAttribute("open", "");
   await expect(page.locator("#fmStressBasis")).toContainText("연 분배율 4%");
@@ -97,6 +98,7 @@ test("comparison mode and applied assumptions are visible before editing and do 
 }) => {
   await seed(page);
   await page.locator('.bottomnav [data-view="fire"]').click();
+  await page.locator("#fmLabOpen").click();
   await page.locator("#fmFireStrategyOpen").click();
   const raw = await page.evaluate(() =>
     localStorage.getItem("firemate_smart_v3"),

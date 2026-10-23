@@ -1,3 +1,4 @@
+import { supported, forecast, coaching, debrief } from "./feedback.mjs";
 import { Game } from "./engine.mjs";
 import {
   RULES,
@@ -304,8 +305,33 @@ PADS.forEach(([x, y], i) => {
   };
   $("#pads").append(b);
 });
+$("#scout").onclick = () => {
+  const s = game.s;
+  const w = forecast(Math.min(RULES.waves, s.wave + 1));
+  modal(
+    `<div class="eyebrow">시간이 멈췄어요 · 작전 정비</div><h2>${w.wave} 웨이브 · ${w.label}</h2><p>${w.composition}</p><p>${w.advice}</p><p>방어 보상 ${w.reward} 조각 + 처치 보상<br>보유 ${s.gold} · 랜덤 50 / 지정 85 / 합성 15</p><button id="planChoice" class="primary" ${s.gold < 85 || s.units.length === PADS.length || s.result ? "disabled" : ""}>역할을 골라 지정 소환</button><p>돌아가서 제단을 선택하면 무료 이동·교환과 합성을 할 수 있어요.</p>`,
+  );
+  $("#planChoice").onclick = () => $("#choose").click();
+};
 function update() {
   let s = game.s;
+  const preview = forecast(Math.min(RULES.waves, s.wave + 1));
+  $("#forecastTitle").textContent =
+    `${s.wave < RULES.waves ? "다음" : "최종"} ${preview.wave} · ${preview.label}`;
+  $("#forecastSummary").textContent = preview.composition;
+  $("#scout").textContent =
+    s.phase === "rest" ? "정비 · 시간 정지" : "작전 보기";
+  $("#scout").disabled = !!s.result;
+  $("#coach").textContent = coaching(s);
+  $("#coach").hidden = !coaching(s);
+  $("#summon").classList.toggle(
+    "guided",
+    s.phase === "ready" && !s.units.length,
+  );
+  $("#start").classList.toggle(
+    "guided",
+    s.phase === "ready" && s.units.length >= 3,
+  );
   $("#gold").textContent = s.gold;
   $("#lives").textContent = s.lives;
   $("#wave").innerHTML =
@@ -320,9 +346,10 @@ function update() {
   let u = unit();
   $("#unitActions").hidden = !u || !!s.result;
   if (u) {
-    let t = TYPES[u.kind];
+    let t = TYPES[u.kind],
+      boosted = supported(s.units, u);
     $("#selection").innerHTML =
-      `<strong>${t.name} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${t.interval}초</span>`;
+      `<strong>${t.name} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}</span>`;
     let pair = s.units.some(
       (v) => v.id !== u.id && v.kind === u.kind && v.tier === u.tier,
     );
@@ -353,16 +380,9 @@ function result() {
     r = s.result;
   best = Math.max(best, r.wave);
   save();
-  let reason =
-    s.units.length < 6
-      ? "제단을 더 채워 여러 구간에서 공격해 보세요."
-      : !s.units.some((u) => u.kind === "frost")
-        ? "서리 마녀로 적을 늦추면 공격할 시간이 늘어나요."
-        : !s.units.some((u) => u.kind === "ember")
-          ? "잿불 연금술사로 밀집한 적을 함께 처치해 보세요."
-          : "공격 범위가 겹치는 안쪽 제단에 강한 수호자를 배치해 보세요.";
+  const report = debrief(s);
   modal(
-    `<div class="eyebrow">${r.win ? "THE FOREST REMEMBERS" : "ANOTHER MOON WILL RISE"}</div><h2>${r.win ? "새벽을 지켜냈어요" : "성문의 불빛이 꺼졌어요"}</h2><p>${r.win ? "18번의 습격을 막았습니다. 다음 판에는 다른 조합으로 숲을 지켜보세요." : reason}</p><div class="resultStats"><div>도달 웨이브<b>${r.wave}</b></div><div>처치<b>${r.kills}</b></div><div>전투 시간<b>${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, "0")}</b></div></div><p>최고 도달 ${best} 웨이브 · 성문 피해 ${s.leaks}</p><button id="again" class="primary">다른 조합으로 다시 도전</button><button id="resultExit">아케이드로 돌아가기</button>`,
+    `<div class="eyebrow">${r.win ? "THE FOREST REMEMBERS" : "ANOTHER MOON WILL RISE"}</div><h2>${r.win ? "새벽을 지켜냈어요" : "성문의 불빛이 꺼졌어요"}</h2><p>${r.win ? "18번의 습격을 막았습니다. 다음 판에는 다른 조합으로 숲을 지켜보세요." : report.fact + "<br>" + report.tip}</p><div class="resultStats"><div>도달 웨이브<b>${r.wave}</b></div><div>처치<b>${r.kills}</b></div><div>전투 시간<b>${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, "0")}</b></div></div><p>최고 도달 ${best} 웨이브 · 성문 피해 ${s.leaks}</p><button id="again" class="primary">다른 조합으로 다시 도전</button><button id="resultExit">아케이드로 돌아가기</button>`,
     false,
   );
   $("#again").onclick = () => {
@@ -464,6 +484,23 @@ function render(t, dt) {
   ctx.beginPath();
   ctx.arc(179, 440, 18, Math.PI, 0);
   ctx.stroke();
+  if (game.s.wave <= 1) {
+    ctx.fillStyle = "#f4e2bd";
+    ctx.font = "bold 11px system-ui";
+    ctx.textAlign = "left";
+    ctx.fillText("침입 →", 8, 55);
+    ctx.textAlign = "center";
+    ctx.fillText("성문 보호", 179, 416);
+    ctx.strokeStyle = "#eed195";
+    ctx.lineWidth = 2;
+    for (const x of [26, 46]) {
+      ctx.beginPath();
+      ctx.moveTo(x - 4, 68);
+      ctx.lineTo(x, 72);
+      ctx.lineTo(x - 4, 76);
+      ctx.stroke();
+    }
+  }
   let sel = unit();
   if (sel) {
     let [x, y] = PADS[sel.pad];
@@ -493,6 +530,27 @@ function render(t, dt) {
       ctx.fillText("+", x, y + 5);
     }
   }
+  if (sel?.kind === "bell") {
+    const [x, y] = PADS[sel.pad];
+    ctx.save();
+    ctx.strokeStyle = "#d0b8ff88";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 4]);
+    ctx.beginPath();
+    ctx.arc(x, y, TYPES.bell.aura, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    for (const v of game.s.units) {
+      const [vx, vy] = PADS[v.pad];
+      if (v.id !== sel.id && Math.hypot(vx - x, vy - y) <= TYPES.bell.aura) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(vx, vy);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
   for (let u of game.s.units) {
     let [x, y] = PADS[u.pad],
       bounce = reduced || paused ? 0 : Math.sin(t / 350 + u.id) * 1.2,
@@ -505,6 +563,17 @@ function render(t, dt) {
       ctx.beginPath();
       ctx.ellipse(0, 9, 21, 11, 0, 0, Math.PI * 2);
       ctx.stroke();
+    }
+    if (supported(game.s.units, u)) {
+      ctx.strokeStyle = "#d0b8ff";
+      ctx.lineWidth = 1.5;
+      for (const offset of [-5, 2]) {
+        ctx.beginPath();
+        ctx.moveTo(14, offset);
+        ctx.lineTo(18, offset - 4);
+        ctx.lineTo(22, offset);
+        ctx.stroke();
+      }
     }
     ctx.drawImage(
       sprites[u.kind],
@@ -541,15 +610,26 @@ function render(t, dt) {
       size,
     );
     if (e.slow > 0) {
-      ctx.strokeStyle = "#8ce7f299";
+      ctx.strokeStyle = "#a8f3ff";
+      ctx.lineWidth = 1.3;
       ctx.beginPath();
-      ctx.ellipse(p.x, p.y + 9, size * 0.4, 5, 0, 0, 7);
+      for (let i = 0; i < 6; i++) {
+        const angle = (i * Math.PI) / 3;
+        const x = p.x + Math.cos(angle) * size * 0.36,
+          y = p.y + 7 + Math.sin(angle) * 6;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(angle) * 4, y + Math.sin(angle) * 4);
+      }
       ctx.stroke();
     }
     if (e.poison > 0) {
       ctx.fillStyle = "#b4e584";
+      const x = p.x + size / 3,
+        y = p.y - 9;
       ctx.beginPath();
-      ctx.arc(p.x + size / 3, p.y - 10, 2.5, 0, 7);
+      ctx.moveTo(x, y - 7);
+      ctx.bezierCurveTo(x - 7, y, x - 4, y + 4, x, y + 4);
+      ctx.bezierCurveTo(x + 4, y + 4, x + 7, y, x, y - 7);
       ctx.fill();
     }
     if (e.hp < e.max || e.boss) {
@@ -579,7 +659,16 @@ function render(t, dt) {
     ctx.stroke();
     if (k > 0.65) {
       ctx.beginPath();
-      ctx.arc(s.tx, s.ty, s.kind === "ember" ? 13 : 4, 0, 7);
+      if (s.kind === "ember") {
+        ctx.arc(s.tx, s.ty, reduced ? 12 : 8 + k * 12, 0, Math.PI * 2);
+      } else {
+        const rays = s.kind === "frost" ? 6 : s.kind === "bell" ? 4 : 3;
+        for (let i = 0; i < rays; i++) {
+          const a = (i * Math.PI * 2) / rays;
+          ctx.moveTo(s.tx + Math.cos(a) * 2, s.ty + Math.sin(a) * 2);
+          ctx.lineTo(s.tx + Math.cos(a) * 7, s.ty + Math.sin(a) * 7);
+        }
+      }
       ctx.stroke();
     }
     ctx.globalAlpha = 1;

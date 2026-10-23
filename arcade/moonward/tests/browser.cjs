@@ -61,6 +61,7 @@ function ok(name) {
   await page.evaluate(() =>
     localStorage.setItem("firemate_finance_sentinel", "do-not-touch"),
   );
+  assert.match(await page.textContent("#coach"), /첫 궁수/);
   await page.click("#summon");
   await page.click("#summon");
   await page.click("#summon");
@@ -182,8 +183,64 @@ function ok(name) {
   });
   await page.waitForSelector("#again");
   assert.match(await page.textContent("#dialogBody"), /꺼졌어요/);
+  assert.match(await page.textContent("#dialogBody"), /마리 돌파/);
   await page.click("#again");
   ok("loss explanation and clean restart");
+  await page.evaluate(() => {
+    const g = new moonward.Game(77);
+    g.s.wave = 5;
+    g.s.phase = "rest";
+    g.s.wait = 7;
+    g.s.gold = 285;
+    g.summon(0, "archer");
+    g.summon(1, "bell");
+    moonward.setGame(g);
+    moonward.pause(false);
+  });
+  await page.click('[data-pad="0"]');
+  assert.match(await page.textContent("#selection"), /가속 \+25%/);
+  assert.match(await page.textContent("#forecastTitle"), /다음 6/);
+  await page.click("#scout");
+  const restWait = await page.evaluate(() => moonward.game.s.wait);
+  await page.waitForTimeout(250);
+  assert.equal(await page.evaluate(() => moonward.game.s.wait), restWait);
+  assert.match(await page.textContent("#dialogBody"), /보스 1/);
+  await page.screenshot({
+    path: path.join(out, "planning-390.png"),
+    fullPage: true,
+  });
+  await page.click("#planChoice");
+  await page.click('[data-kind="thorn"]');
+  assert.ok(
+    await page.evaluate(() =>
+      moonward.game.s.units.some((u) => u.kind === "thorn"),
+    ),
+  );
+  assert.equal(await page.evaluate(() => moonward.game.s.gold), 30);
+  await page.evaluate(() => {
+    const g = new moonward.Game(3);
+    g.s.wave = 3;
+    g.s.lives = 0;
+    g.s.leaks = 20;
+    g.s.stats.breaches = { wolf: { count: 20, loss: 20, health: 10 } };
+    g.finish(false);
+    moonward.setGame(g);
+    moonward.step(0);
+  });
+  assert.match(await page.textContent("#dialogBody"), /질주 적 20마리 돌파/);
+  assert.match(await page.textContent("#dialogBody"), /평균 체력 50%/);
+  await page.screenshot({
+    path: path.join(out, "debrief-390.png"),
+    fullPage: true,
+  });
+  await page.click("#again");
+  assert.deepEqual(
+    await page.evaluate(() => moonward.game.s.stats.breaches),
+    {},
+  );
+  ok(
+    "scouting pauses rest, preview matches boss, support rate, choice and evidence-based retry",
+  );
   await page.evaluate(() => {
     moonward.game.summon(0);
     moonward.game.start();

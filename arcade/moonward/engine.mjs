@@ -1,3 +1,4 @@
+import { supported } from "./feedback.mjs";
 import {
   RULES,
   TYPES,
@@ -32,7 +33,7 @@ export class Game {
       randomSummons: 0,
       pity: 0,
       history: [],
-      stats: { damage: {}, spent: 0 },
+      stats: { damage: {}, spent: 0, breaches: {} },
       result: null,
     };
     this.events = [];
@@ -179,8 +180,9 @@ export class Game {
   hit(e, damage, kind) {
     if (e.hp <= 0) return;
     if (kind === "archer" && (e.kind === "beetle" || e.boss)) damage *= 0.6;
+    const actual = Math.min(e.hp, damage);
     e.hp -= damage;
-    this.s.stats.damage[kind] = (this.s.stats.damage[kind] || 0) + damage;
+    this.s.stats.damage[kind] = (this.s.stats.damage[kind] || 0) + actual;
   }
   step() {
     let s = this.s,
@@ -226,13 +228,7 @@ export class Game {
       let e = targets[0];
       if (!e) continue;
       let scale = tierScale(u.tier),
-        boost = s.units.some(
-          (v) =>
-            v.id !== u.id &&
-            v.kind === "bell" &&
-            Math.hypot(PADS[v.pad][0] - x, PADS[v.pad][1] - y) <=
-              TYPES.bell.aura,
-        );
+        boost = supported(s.units, u);
       u.cd = type.interval / (boost ? 1.25 : 1);
       this.hit(e, type.damage * scale, u.kind);
       let p = pointAt(e.d);
@@ -270,6 +266,15 @@ export class Game {
         let loss = e.boss ? 5 : 1;
         s.lives -= loss;
         s.leaks += loss;
+        s.stats.breaches ??= {};
+        const record = (s.stats.breaches[e.kind] ??= {
+          count: 0,
+          loss: 0,
+          health: 0,
+        });
+        record.count++;
+        record.loss += loss;
+        record.health += Math.min(1, e.hp / e.max);
         this.emit("leak", { loss });
       } else alive.push(e);
     }
@@ -408,6 +413,26 @@ export class Game {
         ids.add(e.id);
       }
       if (s.spawned > (s.wave ? waveSpec(s.wave).count : 0)) return null;
+      if (s.stats.breaches !== undefined) {
+        if (
+          !s.stats.breaches ||
+          typeof s.stats.breaches !== "object" ||
+          Array.isArray(s.stats.breaches)
+        )
+          return null;
+        for (const [kind, record] of Object.entries(s.stats.breaches)) {
+          if (
+            !["boss", "wolf", "beetle", "wisp"].includes(kind) ||
+            !record ||
+            !Number.isInteger(record.count) ||
+            !finite(record.count, 1) ||
+            !finite(record.loss, 1) ||
+            !finite(record.health, 0, record.count) ||
+            record.loss !== record.count * (kind === "boss" ? 5 : 1)
+          )
+            return null;
+        }
+      }
       let g = new Game();
       g.s = s;
       return g;

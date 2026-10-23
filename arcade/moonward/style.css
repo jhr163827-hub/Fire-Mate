@@ -425,3 +425,43 @@ dialog button {
     transition: none !important;
   }
 }
+
+#briefing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #405052;
+}
+#briefing div {
+  flex: 1;
+  min-width: 0;
+}
+#briefing strong {
+  display: block;
+  color: #eddbb8;
+  font-size: 12px;
+}
+#briefing span {
+  display: block;
+  color: #afc1c5;
+  font-size: 11px;
+  margin-top: 4px;
+}
+#scout {
+  flex-shrink: 0;
+  max-width: 106px;
+  font-size: 11px;
+  padding: 6px 8px;
+}
+#coach {
+  margin: 0 0 9px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #e4d2a7;
+}
+.guided {
+  outline: 2px solid #f5d992;
+  outline-offset: 2px;
+}

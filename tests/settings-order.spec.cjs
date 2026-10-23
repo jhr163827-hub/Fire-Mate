@@ -2,14 +2,35 @@ const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
-test('settings list 내 데이터 → 화면 → 연동 → 가져오기·내보내기 → 게임 → 초기화',async({page})=>{
+test('settings list 게임 아케이드 → 자격증 → 내 데이터 → 초기화, without mail, quote or export sections',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
-  e.matches('.fm-device-storage')?'data':e.matches('.fm-settings-theme')?'theme':e.id==='fmArcadeOpen'?'arcade':e.querySelector(':scope>summary')?.textContent.trim()));
- expect(order).toEqual(['data','theme','📡 시세 · 환율 연동','📥 가져오기 · 내보내기','arcade','⚠️ 데이터 초기화']);
- // Every backup action is visible without opening a fold.
- for(const id of ['export','exportShare','fmBackupStatus','importBtn'])await expect(page.locator('.fm-device-storage #'+id)).toBeVisible();
- await expect(page.locator('#settingsOverlay details.fm-settings-group[open]')).toHaveCount(0);
+  e.id==='fmArcadeOpen'?'arcade':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
+ expect(order).toEqual(['arcade','certs','data','⚠️ 데이터 초기화']);
+ for(const id of ['export','fmBackupStatus','importBtn'])await expect(page.locator('.fm-device-storage #'+id)).toBeVisible();
+ await expect(page.locator('#exportShare')).toBeHidden();
+ await expect(page.locator('#csvExport')).toHaveCount(0);
+ await expect(page.locator('.fm-device-storage #fmLedgerImport')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('certificates can be added, edited and deleted, and ride along in backups',async({page})=>{
+ await page.goto('/index.html');
+ await page.locator('#settingsBottom').click();
+ await page.locator('#fmCertAdd').click();
+ await page.locator('#fmCertName').fill('정보처리기사');await page.locator('#fmCertOrg').fill('한국산업인력공단');await page.locator('#fmCertDate').fill('2024-06-14');
+ await page.locator('#fmCertForm button.primary').click();
+ await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('SQLD');await page.locator('#fmCertDate').fill('2025-03-01');await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('#fmCertTitle')).toHaveText('🎓 내 자격증 2개');
+ await expect(page.locator('.fm-cert')).toHaveText(['SQLD2025.03.01','정보처리기사한국산업인력공단 · 2024.06.14']);
+ await page.locator('.fm-cert',{hasText:'SQLD'}).click();
+ await page.locator('#fmCertOrg').fill('데이터산업진흥원');await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('.fm-cert').first()).toHaveText('SQLD데이터산업진흥원 · 2025.03.01');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_certificates_v1')).list.length);expect(saved).toBe(2);
+ await page.locator('.fm-cert',{hasText:'SQLD'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
+ await expect(page.locator('.fm-cert')).toHaveCount(1);
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
+ const backup=JSON.parse(require('fs').readFileSync(await download.path(),'utf8'));
+ expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name)).toEqual(['정보처리기사']);
 });

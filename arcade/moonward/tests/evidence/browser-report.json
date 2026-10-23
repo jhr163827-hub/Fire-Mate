@@ -1,0 +1,36 @@
+{
+  "checks": [
+    "first summon and battle through real controls",
+    "pause, audio, reduced effects and speed controls",
+    "merge preview and explicit material selection",
+    "move/swap and cancel/confirm sell",
+    "guaranteed-role summon",
+    "save/reload twice preserves waiting resume and financial sentinel",
+    "full 18-wave browser-engine run, boss, victory and retry",
+    "loss explanation and clean restart",
+    "restart is explicit and cancellable",
+    "320/360/375/390/430/768 widths, no horizontal overflow, 44px controls",
+    "landscape rotation and scrollable guide dialog",
+    "30/60/100-enemy render benchmark (headless desktop only)",
+    "bounded effect queues",
+    "simulated visibility hide stops ticks and return requires resume",
+    "simulated pagehide disposes renderer and bfcache pageshow resumes safely",
+    "corrupt storage fails safely to fresh session",
+    "no uncaught browser errors"
+  ],
+  "errors": [],
+  "performance": {
+    "30": {
+      "median": 0.19999999995343387,
+      "p95": 1.8000000000465661
+    },
+    "60": {
+      "median": 0.30000000004656613,
+      "p95": 0.8000000000465661
+    },
+    "100": {
+      "median": 0.4000000001396984,
+      "p95": 0.8999999999068677
+    }
+  }
+}

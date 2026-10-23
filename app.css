@@ -1871,7 +1871,7 @@ html:not([data-theme=light]) #fmAskOk.fm-ask-danger{color:#2b0910}
 #view-calendar #fmLedgerAllTx .txmain,#historyList .txmain{grid-column:2!important;grid-row:1;align-self:center;min-width:0}
 #view-calendar #fmLedgerAllTx .txmain strong,#historyList .txmain strong{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #view-calendar #fmLedgerAllTx .txamount,#historyList .txamount{grid-column:3!important;grid-row:1;align-self:center;font-size:15px;white-space:nowrap;text-align:right}
-#view-calendar #fmLedgerAllTx .tx>button[data-edit][data-edit],#view-history #historyList .tx>button[data-edit][data-edit]{position:absolute;inset:0;left:0;top:0;right:0;bottom:0;transform:none;grid-area:auto;max-width:none;width:100%;height:100%;min-height:0;margin:0;padding:0;border:0;background:transparent;opacity:0;z-index:1}
+#view-calendar #fmLedgerAllTx .tx>button[data-edit][data-edit],#view-calendar #dayTx .tx>button[data-edit][data-edit],#view-history #historyList .tx>button[data-edit][data-edit]{position:absolute;inset:0;left:0;top:0;right:0;bottom:0;transform:none;grid-area:auto;max-width:none;width:100%;height:100%;min-height:0;margin:0;padding:0;border:0;background:transparent;opacity:0;z-index:1}
 .fm-tx-day{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:14px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--line);font-size:13px;font-weight:800;color:var(--text)}
 .fm-tx-day:first-child{margin-top:4px}
 .fm-tx-day span{font-size:12px;font-weight:700;color:var(--sub);white-space:nowrap}
@@ -2414,3 +2414,17 @@ html body #view-fire .fm-fire-gap[hidden]{display:none}
 html body #view-calendar .fm-ledger-date strong{font-size:14px}
 html body #view-calendar .fm-ledger-date span{font-size:12px}
 html body summary{cursor:pointer}
+/* 가계부 거래 한 줄: 둥근 아이콘 · 이름/분류 · 금액 (토스식, 구분선 없이) */
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .tx{grid-template-columns:40px minmax(0,1fr) auto;column-gap:12px;min-height:60px;padding:8px 0;border-bottom:0}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txicon{grid-column:1;grid-row:1/3;align-self:center;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--sub) 14%,transparent);font-size:19px}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txmain{grid-column:2;grid-row:1/3;align-self:center;display:grid;gap:2px}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txmain strong{font-size:15px;font-weight:650;line-height:1.3}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txmain span{font-size:12px;line-height:1.3;color:var(--sub)}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txamount{grid-column:3;grid-row:1/3;align-self:center;font-size:15px;font-weight:750;letter-spacing:-.02em}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txamount.green{color:var(--up)}
+html body #view-calendar :is(#fmLedgerAllTx,#dayTx) .txamount:not(.red):not(.green){color:var(--sub);font-weight:650}
+html body #view-calendar #fmLedgerAllTx .fm-ledger-day{border-bottom:1px solid var(--line);padding-bottom:4px}
+html body #view-calendar #fmLedgerAllTx .fm-ledger-day[open]>.fm-ledger-date{background:none;padding-left:2px}
+html body #view-calendar #fmLedgerAllTx .fm-ledger-date{border-bottom:0}
+html body #view-calendar #fmLedgerAllTx .fm-ledger-date strong{font-size:13px;color:var(--sub);font-weight:700}
+html body #view-calendar #dayTx .tx{position:relative}

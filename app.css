@@ -2281,3 +2281,20 @@ html body #view-calendar #fmNoSpendLine,html body #view-calendar .fm-ledger-usag
 html body #view-calendar .fm-ledger-compare .progress{margin:8px 0 0}
 html body #view-calendar .day{min-height:46px;padding-top:4px;padding-bottom:4px}
 html body #view-assets #fmAssetHoldingsPanel .fm-holding-name-line .fm-holding-day{font-size:14px}
+/* 설정: 아케이드 → 자격증 → 데이터 → 초기화 */
+html body #settingsOverlay .fm-set-row{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:56px;padding:0 18px;border:0;border-radius:20px;background:var(--panel);color:var(--txt);font-size:16px;font-weight:800;text-align:left}
+html body #settingsOverlay .fm-set-row span{color:var(--sub)}
+html body #settingsOverlay .fm-certs{padding:14px 18px;border-radius:20px;background:var(--panel)}
+html body #settingsOverlay .fm-certs .cardhead{margin:0}
+html body #settingsOverlay .fm-certs h3{margin:0;font-size:16px}
+html body #settingsOverlay #fmCertAdd{min-height:44px;border:0;background:none;color:var(--green);font-size:14px;font-weight:800}
+html body #settingsOverlay .fm-cert{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:56px;padding:8px 0;border:0;border-top:1px solid var(--line);background:none;color:var(--txt);text-align:left}
+html body #settingsOverlay .fm-cert strong{font-size:15px}
+html body #settingsOverlay .fm-cert span{font-size:13px;color:var(--sub)}
+html body #settingsOverlay #fmCertForm{display:grid;gap:8px;margin-top:10px}
+html body #settingsOverlay #fmCertForm[hidden]{display:none}
+html body #settingsOverlay #fmCertForm .flex{gap:8px}
+html body #settingsOverlay #fmCertForm .flex button{flex:1;min-height:48px;border-bottom:0;text-align:center}
+html body #settingsOverlay #fmLedgerImport{margin-top:6px;padding:0;background:none}
+html body #settingsOverlay #fmLedgerImport>summary{min-height:52px;display:flex;align-items:center;font-size:15px;font-weight:600;cursor:pointer}
+html body #settingsOverlay .fm-device-storage [hidden][hidden]{display:none}

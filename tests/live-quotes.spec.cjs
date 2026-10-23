@@ -11,7 +11,6 @@ test.beforeEach(async({page})=>{
 test('failed or keyless quotes fall back to the scheduled backup price with its own time',async({page})=>{
  await page.evaluate(()=>window.fmGo('assets'));
  await page.locator('#refreshStocks').click();
- await page.locator('#fmAskOk').click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.map(h=>[h.ticker,h.price]))).toEqual([['JEPQ',55.3],['005930',71200]]);
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings);
  expect(saved[0].quoteAt).toBe(live.quotes.JEPQ.at);

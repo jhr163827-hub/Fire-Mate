@@ -39,7 +39,6 @@ test('home and assets share quote loading, duplicate prevention, failure and off
  let release,requests=0,fail=false;
  await page.route('https://api.upbit.com/**',async r=>{requests++;if(!fail)await new Promise(resolve=>release=resolve);await r.fulfill(fail?{status:503,body:'unavailable'}:{json:[{market:'KRW-BTC',trade_price:120,signed_change_rate:0.02}]});});
  await page.locator('#homeRefreshStocks').click();
- await page.locator('#fmAskOk').click();
  await expect(page.locator('#homeRefreshStocks')).toBeDisabled();
  await expect(page.locator('#refreshStocks')).toBeDisabled();
  await expect.poll(()=>requests).toBe(1);
@@ -49,7 +48,7 @@ test('home and assets share quote loading, duplicate prevention, failure and off
  await expect(page.locator('#homeRefreshStocks')).toBeEnabled();
  await page.locator('.bottomnav [data-view="assets"]').click();
  await expect(page.locator('#assetsLastQuote')).toHaveText(await page.locator('#homeLastQuote').textContent());
- fail=true;await page.locator('#refreshStocks').click();await page.locator('#fmAskOk').click();
+ fail=true;await page.locator('#refreshStocks').click();
  await expect(page.locator('#assetsLastQuote')).toContainText('1종목 실패');
  expect(requests).toBe(2);
  const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));

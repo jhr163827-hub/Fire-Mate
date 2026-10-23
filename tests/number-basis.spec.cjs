@@ -16,7 +16,7 @@ test('FIRE progress counts only FIRE assets everywhere; net worth stays the full
  await expect(page.locator('#fmFireBasisGap')).toHaveText('전체 순자산 1억 4,000만 원 · FIRE 제외 1억 원 · 계좌 고르기 ›');
  expect(await page.evaluate(()=>window.fmFireViewState.plan.net)).toBe(40000000);
  await page.evaluate(()=>window.fmGo('assets'));
- await expect(page.locator('#assetGoalPct')).toHaveText('6.2%');
+ await expect(page.locator('#assetGoalPct')).toHaveCount(0);
  await page.reload();
  expect(await page.evaluate(()=>localStorage.getItem('firemate_fire_basis_v1'))).toBe('1');
  await page.evaluate(()=>window.fmGo('assets'));
@@ -78,4 +78,14 @@ test('FIRE shows this month\'s actual savings against the plan',async({page})=>{
  await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'e',date:m+'-02',type:'expense',category:'식비',amount:500000}]}));
  await page.evaluate(()=>window.fmGo('fire'));
  await expect(page.locator('#fmFireSaved')).toHaveText('이번 달 실제 모은 돈 +₩3,500,000 · 계획의 117%');
+});
+
+test('the ledger top shows what was saved this month and offers the 뱅크샐러드 import',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'e',date:m+'-02',type:'expense',category:'식비',amount:500000,bankExcelKey:'k'}]}));
+ await page.evaluate(()=>window.fmGo('calendar'));
+ await expect(page.locator('#fmCalendarSaved')).toHaveText('+₩3,500,000');
+ await expect(page.locator('#fmLedgerImportBtn')).toBeVisible();
+ await expect(page.locator('#fmLedgerSyncNote')).toHaveText(Number(m.slice(5))+'월 2일까지 있음');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });

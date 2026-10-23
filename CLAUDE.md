@@ -28,7 +28,7 @@
   - 메인 스크립트와 `const BUILD=`는 index.html에 있어야 한다. `sw.js`의 `validPage`가 이 문자열과 100KB 이상 크기를 확인한다.
 - 화면 배치는 index.html 마크업이 최종 구조다(앱이 켜질 때 재배치하지 않는다). 화면 구조를 바꿀 땐 마크업을 직접 고친다.
 - `js/features.js`: 화면별 기능 블록 12개. 맨 위 목차에 블록별 화면이 적혀 있다. 원래 순서대로 실행되고, 블록마다 try/catch로 감싸 한 기능의 오류가 다른 기능을 막지 않는다.
-- 스타일은 `app.css`. body 안의 `<style>` 2개는 JS가 head에 넣는 스타일보다 뒤에 있어야 해서 인라인으로 둔다.
+- 스타일은 `app.css`. body 안의 `<style id="fm-premium-finance">` 1개만 인라인으로 남아 있다(옮기면 `!important`가 app.css 상한을 넘음).
 - 메인 스크립트가 내보내는 도우미: `fmGo`, `fmOpenEntry`, `fmFireViewState`, `fmRefreshNetWorth`, `fmOpenImport`, `fmLiveData()`(메모리의 현재 데이터, 읽기 전용으로 쓸 것). `fmAsk`도 메인 스크립트에 있다.
 - 소스 문자열을 검사하는 테스트는 `tests/app-source.cjs`(index.html + js 파일 합친 것)를 쓴다.
 - 테스트 전용 표시 플래그: `__fmMonthReportAnyDay`, `__fmWeekReportAnyDay`, `__fmMilestoneTest`, `__fmStartTest`.

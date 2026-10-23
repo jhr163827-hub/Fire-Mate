@@ -10,12 +10,14 @@ test.beforeEach(async({page})=>{
 });
 test('the asset hero sums today\'s moves across holdings',async({page})=>{
  // +₩100,000 (1.1M was 1.0M) and −₩200,000 (800k was 1.0M): −₩100,000 on a ₩2,000,000 base.
- await expect(page.locator('#fmTodayPL')).toContainText('오늘 종목 변동');
+ await expect(page.locator('#fmTodayPL')).toContainText('오늘 변동');
  await expect(page.locator('#fmTodayPL strong')).toHaveText('−₩100,000 (-5.00%)');
 });
 test('losses use a real minus and holdings sort by today\'s move',async({page})=>{
  await page.locator('#fmAssetQuickHoldings').click();
  await expect(page.locator('#holdingList')).toContainText('−₩200,000 (-20.0%)');
+ // Today's move sits under the value, colored, so a glance at the list is enough.
+ await expect(page.locator('#holdingList .fm-holding-day')).toHaveText(['오늘 +10.00% · +₩100,000','오늘 -20.00% · −₩200,000']);
  await page.locator('#fmHoldingSort').selectOption('day');
  await expect(page.locator('#holdingList .fm-holding-name').first()).toHaveText('오른종목');
  await page.locator('#holdingList .fm-holding-row-main').nth(1).click();

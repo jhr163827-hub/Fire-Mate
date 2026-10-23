@@ -81,7 +81,7 @@ body:has(#view-home.active) #view-home .hero-stat strong{overflow-wrap:anywhere}
 
 /* Consolidated home dashboard layout: normal page scrolling on every viewport. */
 @media(max-width:700px){
- html:has(#view-home.active),body:has(#view-home.active){height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior-y:auto}
+ html:has(#view-home.active),body:has(#view-home.active){height:auto;min-height:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior-y:contain}
  body:has(#view-home.active) .app{height:auto;min-height:100dvh;overflow:visible;display:block;padding:12px 13px calc(100px + env(safe-area-inset-bottom))}
  body:has(#view-home.active) .top{margin-bottom:12px;min-height:44px}
 
@@ -1022,7 +1022,7 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 
 #view-assets .fm-quote-hero{padding:16px 17px;margin-bottom:10px}
 #view-assets .fm-quote-hero .hero-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-#view-assets .fm-quote-hero .hero-row>.hero-stat:last-child,#view-assets .fm-quote-hero>.progress,#view-assets .fm-quote-hero .fm-goal-line{display:none}
+#view-assets .fm-quote-hero .fm-goal-line{display:none}
 #view-assets .fm-asset-jump{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 12px}
 #view-assets .fm-asset-jump button{min-width:0;min-height:48px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--txt);font-weight:750;font-size:clamp(12px,3.4vw,15px)}
 #view-assets .fm-asset-jump button.active{background:var(--green);color:#06140f;border-color:var(--green)}
@@ -1310,7 +1310,7 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-calendar .fm-ledger-month{display:flex;align-items:center;justify-content:space-between;gap:8px}
 #view-calendar .fm-ledger-month strong{font-size:19px;letter-spacing:-.03em}
 #view-calendar .fm-ledger-month button{width:44px;min-width:44px;min-height:44px;padding:0;font-size:24px;border-radius:12px}
-#view-calendar .fm-ledger-totals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}
+#view-calendar .fm-ledger-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%}
 #view-calendar .fm-ledger-totals>div{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
 #view-calendar .fm-ledger-totals span{font-size:11px;white-space:nowrap;color:var(--sub)}
 #view-calendar .fm-ledger-totals strong,#view-calendar .fm-ledger-totals>div:first-child strong{font-size:clamp(18px,5.2vw,24px);line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
@@ -2051,3 +2051,23 @@ html,body{overscroll-behavior-y:contain}
 #fmLedgerSearchArea [data-go="history"]{min-height:44px;margin-top:6px}
 #fmAssetReadable{padding:14px 16px;border-radius:14px;background:var(--panel2);font-size:20px;font-weight:800;line-height:1.5}
 #fmQuoteFailuresList{margin-top:10px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+#fmStrategyCard .fm-str-money{font-size:12px;color:var(--sub);margin:-4px 0 6px}
+#fmStrategyCard .fm-str-row{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}
+#fmStrategyCard .fm-str-row-top{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:8px;align-items:center}
+#fmStrategyCard .fm-str-row-bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+#fmStrategyCard .fm-str-row input{width:100%;min-width:0;box-sizing:border-box}
+#fmStrategyCard .fm-str-row button{min-width:0;padding:10px 0}
+#view-assets #fmAssetHoldingsPanel .fm-holding-day{font-size:12px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+#view-assets #fmAssetHoldingsPanel .fm-holding-edit{background:none;border:0;box-shadow:none;color:var(--sub);font-size:15px}
+#view-calendar .fm-ledger-import{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:48px;margin:0 0 10px;padding:0 16px;border-radius:14px;font-weight:800}
+#view-calendar .fm-ledger-import span+span{font-size:12px;font-weight:600;color:var(--sub)}
+#fmLedgerImportBox:not(:empty){margin:-2px 0 10px;font-size:12px}
+#view-calendar .fm-ledger-header .fm-ledger-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
+#view-calendar .fm-ledger-header .fm-ledger-totals>div{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:3px;min-width:0;opacity:1}
+#view-calendar .fm-ledger-header .fm-ledger-totals>div:nth-child(n) strong{font-size:clamp(12px,4.2vw,22px);white-space:normal;overflow-wrap:anywhere}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-stat:nth-child(n){padding:7px 8px;min-width:0}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-stat:nth-child(n) .light.small{font-size:11px}
+#view-assets .fm-quote-hero.fm-unified-hero .hero-stat:nth-child(n) strong{font-size:clamp(12px,3.4vw,15px);line-height:1.35;letter-spacing:-.03em;white-space:nowrap}
+#view-assets .fm-quote-hero.fm-unified-hero #fmTodayPL strong span{display:block;font-size:12px}
+#view-assets .fm-quote-hero.fm-unified-hero{padding-bottom:12px}

@@ -553,7 +553,7 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('.bottomnav [data-view="home"]').click()
             self.assertEqual(page.locator('#view-home .fm-eta-details').count(), 0)
             self.assertEqual(page.locator('#homeEtaPrincipal').count(), 0)
-            self.assertIn('실제 결과는 달라질 수', page.locator('#homeFireEtaNote').inner_text())
+            self.assertIn('기본 예시 목표', page.locator('#homeFireEtaNote').inner_text())
             before = page.evaluate("localStorage.getItem('firemate_smart_v3')")
             page.locator('.fm-home-fire-head [data-go="fire"]').tap()
             self.assertTrue(page.locator('#view-fire').is_visible())

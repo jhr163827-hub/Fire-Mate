@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.150</title><link rel="stylesheet" href="./app.css?v=3.5.150"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-150">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.151</title><link rel="stylesheet" href="./app.css?v=3.5.151"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-151">
 
 
 
@@ -371,7 +371,7 @@ function renderCal(){
  $('fmCalendarSpent').textContent=won(t.expense);$('fmCalendarIncome').textContent=won(t.income);{const v=t.income-t.expense,e=$('fmCalendarSaved');e.textContent=fmSW(v);e.style.color=v>0?'var(--up)':v<0?'var(--down)':''}
  $('fmCalendarBudgetTotal').textContent=budget?won(budget):'미설정';$('fmCalendarBudgetLabel').textContent=budget&&budgetState.remaining<0?'초과 금액':'남은 예산';$('fmCalendarBudget').textContent=budget?(budgetState.remaining<0?won(-budgetState.remaining)+' 초과':won(budgetState.remaining)+' 남음'):'미설정';$('fmCalendarUsage').textContent=budget?budgetState.usage.toFixed(1)+'%':'예산 설정 후 표시';$('fmCalendarProgress').setAttribute('aria-valuenow',budget?String(Math.min(100,Math.round(budgetState.usage))):'0');$('fmCalendarProgress').setAttribute('aria-valuetext',budget?'예산 사용률 '+budgetState.usage.toFixed(1)+'%':'예산 미설정');$('fmCalendarProgressFill').style.width=(budget?Math.min(100,budgetState.usage):0)+'%';$('fmCalendarProgressFill').style.background=budgetState.remaining<0&&budget?'var(--yellow)':'';
  $('fmCalendarBudget').style.color=budget&&budget<t.expense?'var(--yellow)':'var(--txt)';if(document.activeElement!==$('fmLedgerBudgetValue'))$('fmLedgerBudgetValue').value=budget?moneyFormat(budget):'';
- const dailyRows=data.tx.filter(t=>t.date===selected&&t.type!=='transfer'&&!fmTinyIncome(t));const dailyExpense=dailyRows.filter(t=>t.type==='expense').reduce((n,t)=>n+(Number(t.amount)||0),0);$('selectedTitle').textContent=selected+' 거래 · '+dailyRows.length+'건'+(dailyExpense?' · 지출 '+won(dailyExpense):'');
+ const dailyRows=data.tx.filter(t=>t.date===selected&&t.type!=='transfer'&&!fmTinyIncome(t));const dailyExpense=dailyRows.filter(t=>t.type==='expense').reduce((n,t)=>n+(Number(t.amount)||0),0);$('selectedTitle').textContent=Number(selected.slice(5,7))+'월 '+Number(selected.slice(8))+'일 ('+'일월화수목금토'[new Date(selected+'T00:00').getDay()]+') · '+dailyRows.length+'건'+(dailyExpense?' · 지출 '+won(dailyExpense):'');
  listTo($('dayTx'),dailyRows);
  fmLedgerSetMode(fmLedgerMode);fmNoSpendMarks();
 }
@@ -1981,7 +1981,7 @@ fmRenderCerts();
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-150',VERSION='3.5.150';
+ const BUILD='fire-mate-v3-5-151',VERSION='3.5.151';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2197,4 +2197,4 @@ fmRenderCerts();
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.150"></script></body></html>
+</style><script src="./js/features.js?v=3.5.151"></script></body></html>

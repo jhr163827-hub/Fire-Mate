@@ -2355,7 +2355,16 @@ html body .fm-lab-menu strong{font-size:16px}
 html body .fm-lab-menu small{font-size:13px;color:var(--sub)}
 html body #view-firelab .card,html body #view-firelife .card,html body #view-retire .card{background:var(--panel);border:0;box-shadow:none;border-radius:22px}
 html body #view-firelab .fm-retire-topbar .secondary,html body #view-firelife .fm-retire-topbar .secondary,html body #view-retire .fm-retire-topbar .secondary{border:0;background:none;color:var(--sub);font-size:14px;font-weight:700;min-height:44px;padding:0 4px}
-html body #view-home #homeAssetHero .fm-home-holdtoggle{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:44px;margin-top:8px;padding:0;border:0;border-top:1px solid var(--line);background:none;color:var(--txt);font-size:14px;font-weight:700}
-html body #view-home #homeAssetHero .fm-home-holdtoggle::after{content:'▾';color:var(--sub)}
-html body #view-home #homeAssetHero .fm-home-holdtoggle[aria-expanded=true]::after{content:'▴'}
+html body #view-home #homeAssetHero .fm-home-dayrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+html body #view-home #homeAssetHero .fm-home-dayrow #homeDailyChange{min-width:0;margin:0;padding:0}
+html body #view-home #homeAssetHero .fm-home-holdtoggle{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;min-height:32px;margin:0;padding:0 12px;border:0;border-radius:999px;background:var(--panel2);color:var(--txt);font-size:13px;font-weight:700}
+html body #view-home #homeAssetHero .fm-home-holdtoggle::after,html body #view-assets .fm-account-chevron{content:'';width:6px;height:6px;border-right:2px solid var(--sub);border-bottom:2px solid var(--sub);transform:translateY(-2px) rotate(45deg);transition:transform .2s}
+html body #view-home #homeAssetHero .fm-home-holdtoggle[aria-expanded=true]::after,html body #view-assets [aria-expanded=true] .fm-account-chevron{transform:translateY(2px) rotate(-135deg)}
+html body #view-home #homeAssetHero.fm-show-holdings .fm-home-holdings{margin-top:8px;border-top:1px solid var(--line)}
+html body #view-assets .fm-account-chevron{display:block;flex-shrink:0;font-size:0;margin-left:2px}
+html body #view-assets #fmAssetAccountsPanel .fm-account-toggle{align-items:center}
+html body #view-assets #fmAssetAccountsPanel .fm-account-right{align-self:center;grid-row:1/span 2}
+html body #view-assets #fmAssetAccountsPanel .fm-account-left small{grid-column:1}
+html body #view-assets #fmAssetHoldingsPanel .fm-holding-name-line .fm-holding-value{font-size:16px}
+html body #view-assets #fmAssetHoldingsPanel .fm-holding-subline .fm-holding-day{font-size:13px}
 html body #view-home #homeAssetHero #homeDailyChange{padding-top:6px;font-size:15px;font-weight:700}

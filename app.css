@@ -2086,3 +2086,12 @@ html,body{overscroll-behavior-y:contain}
 #view-home #fmHomeSyncNote.due{opacity:1;font-weight:800}
 #view-home #fmHomeSyncNote.due::before{content:'⚠ '}
 @media(max-width:360px){#view-home .fm-home-record{font-size:13px;padding:4px 6px;letter-spacing:-.02em}}
+/* ---- fm-habits (was inline in <head>, loads right after app.css) ---- */
+#fmWeekReport,#fmMilestone{margin-top:12px}
+#fmWeekReport h3,#fmMilestone h3{margin:0 0 6px;font-size:16px}
+.fm-wr-row{display:flex;justify-content:space-between;gap:10px;font-size:14px;line-height:1.9}.fm-wr-row span{color:var(--sub)}
+.fm-wr-up{color:var(--red)}.fm-wr-down{color:var(--green)}
+#fmWeekReport button,#fmMilestone button{min-height:44px;margin-top:10px;width:100%}
+#fmMilestone{border:1px solid var(--green);background:linear-gradient(135deg,var(--panel),var(--panel2))}
+#fmMilestone p{margin:4px 0 0;font-size:14px;color:var(--sub)}
+#view-calendar .day.fm-nospend .num::after{content:' 🌱';font-size:10px}

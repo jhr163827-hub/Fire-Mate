@@ -1,9 +1,9 @@
 {
   "_note": "Ratchet: these are ceilings. Lower them when cleanup shrinks the code; never raise without the owner's OK. app_code_bytes = index.html + js/*.js, so merging a feature block into the main script is allowed as long as the total does not grow.",
   "index_script_blocks": 5,
-  "index_style_blocks": 3,
+  "index_style_blocks": 2,
   "app_css_important": 80,
   "js_bytes": 60400,
   "feature_blocks": 12,
-  "app_code_bytes": 457500
+  "app_code_bytes": 457300
 }

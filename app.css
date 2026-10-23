@@ -2049,3 +2049,44 @@ html,body{overscroll-behavior-y:contain}
 .fm-monthly-split small{width:100%;font-size:12px;color:var(--sub)}
 #fmTodayPL[hidden]{display:none}
 #fmLedgerSearchArea [data-go="history"]{min-height:44px;margin-top:6px}
+/* ---- 전면 개편 (body.fm-v2): neutral palette, 오늘 screen, 5-tab menu ---- */
+body:not(.fm-v2) .fm-v2-only,body.fm-v2 .fm-v1-only{display:none}
+body.fm-v2{--bg:#0F1115;--panel:#181B21;--panel2:#22262E;--line:#262A32;--txt:#F2F4F6;--sub:#9AA4B1;--green:#3FD0A0;--green2:#173A30;--down:#5B9DFF;--red:#FF6B6B}
+html[data-theme=light] body.fm-v2{--bg:#F2F4F6;--panel:#FFFFFF;--panel2:#F2F4F6;--line:#E5E8EB;--txt:#191F28;--sub:#6B7684;--green:#0B8A62;--green2:#DDF5EC;--down:#2F68D8;--red:#D6304A}
+body.fm-v2 .v2-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 4px 12px}
+body.fm-v2 .v2-head h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-.5px}
+body.fm-v2 .v2-head span{display:block;font-size:13px;color:var(--sub);margin-top:2px}
+.v2-pill{min-height:44px;padding:0 16px;border-radius:22px;border:0;background:var(--panel2);color:var(--txt);font-weight:700;font-size:14px}
+.v2-card{display:flex;flex-direction:column;gap:10px;width:100%;box-sizing:border-box;margin:0 0 14px;padding:20px;border:0;border-radius:24px;background:var(--panel);color:var(--txt);text-align:left;font:inherit}
+.v2-card h2{margin:0;font-size:17px;font-weight:800}
+.v2-cardhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.v2-label,.v2-line>span:first-child{font-size:14px;color:var(--sub)}
+.v2-big{font-size:34px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.v2-mid{font-size:20px}
+.v2-change{font-size:15px;font-weight:700}
+.v2-note{font-size:13px;color:var(--sub)}
+.v2-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:15px}
+.v2-line strong{font-variant-numeric:tabular-nums}
+.v2-bar{display:block;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.v2-bar i{display:block;height:100%;width:0;border-radius:4px;background:var(--green)}
+.v2-row{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 14px;border:0;border-radius:14px;background:var(--panel2);color:var(--txt);font:inherit;font-size:13px;text-align:left;white-space:pre-line}
+.v2-row[hidden]{display:none}
+.v2-link{min-height:44px;padding:0;border:0;background:none;color:var(--sub);font:inherit;font-size:14px;font-weight:700}
+.v2-hrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:60px;padding:6px 0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--txt);font:inherit;text-align:left}
+.v2-hrow:last-child{border-bottom:0}
+.v2-hrow>span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.v2-hrow>span:last-child{align-items:flex-end;white-space:nowrap}
+.v2-hrow strong{font-size:16px;overflow-wrap:anywhere}
+.v2-hrow small{font-size:13px;font-weight:700}
+.v2-hrow .fm-market-ext{font-size:12px;font-weight:600}
+.v2-more{min-height:48px;border:0;background:none;color:var(--sub);font:inherit;font-size:14px;font-weight:700}
+.v2-more[hidden]{display:none}
+.v2-todo{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.v2-primary{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:56px;padding:0 18px;border:0;border-radius:18px;background:var(--green);color:#0B1A14;font:inherit;font-size:16px;font-weight:800}
+.v2-primary small{font-size:13px;font-weight:700}
+.v2-fire{cursor:pointer}
+.v2-fire .v2-cardhead strong{font-size:17px;font-weight:800}
+.fm-v2-switch{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;margin:0 0 10px;padding:8px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);font-weight:800}
+.fm-v2-switch small{display:block;font-size:12px;font-weight:500;color:var(--sub)}
+.fm-v2-switch input{width:24px;height:24px;margin:0;flex:none;accent-color:var(--green)}
+.v2-pill,.v2-todo .v2-row{background:var(--panel)}

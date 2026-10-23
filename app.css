@@ -2260,3 +2260,13 @@ html body #view-insights .fm-insights-links .secondary{border:0;border-bottom:2p
 html body #view-insights .fm-insights-links [aria-current=page]{color:var(--txt);border-bottom-color:var(--txt);font-weight:800}
 html body #view-insights .stat{background:var(--panel2);border:0}
 html body #view-insights .monthnav button{background:none;color:var(--sub)}
+/* Skin v4 · 종목·계좌 상세 */
+html body #fmAccountDetail .fm-detail-header .secondary{border:0;background:none;box-shadow:none;color:var(--sub);font-size:14px;font-weight:700;min-height:44px;padding:0 4px}
+html body #fmAccountDetail .fm-detail-header #fmDetailEdit{color:var(--green)}
+html body #fmAccountDetail .card{background:var(--panel);border:0;box-shadow:none;border-radius:22px}
+html body #fmAccountDetail .card h2{font-size:30px;font-weight:800;letter-spacing:-.04em}
+html body #fmAccountDetail .fm-detail-metrics small{font-size:13px;color:var(--sub)}
+html body #fmAccountDetail .fm-history-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+html body #fmAccountDetail .fm-history-tabs button{min-height:40px;border:0;border-radius:10px;background:none;color:var(--sub);font-size:13px;font-weight:700}
+html body #fmAccountDetail .fm-history-tabs button.on{background:var(--panel2);color:var(--txt)}
+html body #fmAccountDetail [data-history-average],html body #fmAccountDetail #fmHistoryAverage{border:0;background:none;color:var(--sub);padding:0}

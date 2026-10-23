@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.139</title><link rel="stylesheet" href="./app.css?v=3.5.139"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-139">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.140</title><link rel="stylesheet" href="./app.css?v=3.5.140"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-140">
 
 
 
@@ -251,6 +251,8 @@ function fmQuickEntry(){const box=$('fmQuickEntry');if(!box)return;const isNew=$
   box.append(button)}}
 function openEntry(tx=null,day=null,preset=null){editing=tx?tx.id:null;$('entryTitle').textContent=tx?'거래 수정':'거래 기록';$('saveEntry').textContent=tx?'수정 저장':'저장하기';typeSet(tx?.type||'expense',tx?.category||preset?.category);$('entryAmount').value=moneyFormat(tx?.amount||preset?.amount||'');$('entryDate').value=tx?.date||day||today;$('entryMemo').value=tx?.memo||preset?.name||'';$('deleteEntry').classList.toggle('hidden',!tx);modal('entryOverlay',true);setTimeout(()=>{if(!$('entryOverlay').contains(document.activeElement))$('entryAmount').focus()},120)}$('addOnDay').onclick=()=>openEntry(null,selected);$('saveEntry').onclick=()=>{const amount=moneyNumber($('entryAmount').value),date=$('entryDate').value;if(!Number.isSafeInteger(amount)||amount<=0||amount>1e12)return toast('금액은 1원 이상 정수로 입력해 주세요');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||isNaN(new Date(date+'T12:00:00').getTime()))return toast('올바른 날짜를 입력해 주세요');const tx={id:editing||uid(),type:entryType,amount,date,category:$('entryCat').value,memo:$('entryMemo').value.trim().slice(0,120)};const previousTx=data.tx.map(x=>({...x}));let learned=null;if(editing){const i=data.tx.findIndex(x=>x.id===editing);if(i<0)return toast('거래를 찾을 수 없어요');const before=data.tx[i];if(before.bankExcelKey&&before.category!==tx.category&&tx.memo&&before.type===tx.type)learned=[tx.type+'|'+tx.memo,tx.category];data.tx[i]={...data.tx[i],...tx};if(before.bankExcelKey&&before.type==='expense'&&tx.type==='transfer'&&tx.memo){learned=['expense|'+tx.memo,'계좌 이체'];data.tx=data.tx.map(t=>t.type==='expense'&&t.bankExcelKey&&String(t.memo||'').trim()===tx.memo?{...t,type:'transfer',category:'계좌 이체'}:t)}}else data.tx.push(tx);if(!persist()){data.tx=previousTx;return}if(learned){try{const r=bankCategoryRules();r[learned[0]]=learned[1];localStorage.setItem(BANK_RULES_KEY,JSON.stringify(r))}catch{}}month=date.slice(0,7);selected=date;modal('entryOverlay',false);render();toast(editing?'거래를 수정했어요':'기록 완료! 잘했어요 ✨')};$('deleteEntry').onclick=async()=>{if(!editing||!await fmAsk('이 거래를 삭제할까요?'))return;const previousTx=data.tx;data.tx=data.tx.filter(x=>x.id!==editing);if(!persist()){data.tx=previousTx;return}modal('entryOverlay',false);render();toast('삭제했어요')};
 let bankPending=[];
+// Once: imported 지출 rows sent to an exchange or brokerage become 이체.
+try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_xfer_fix_v1')){const prev=data.tx;data.tx=prev.map(t=>t.type==='expense'&&t.bankExcelKey&&/업비트|두나무|빗썸|코인원|증권/.test(t.memo||'')?{...t,type:'transfer',category:'계좌 이체'}:t);if(persist())localStorage.setItem('firemate_xfer_fix_v1','1');else data.tx=prev}}catch{}
 // 뱅크샐러드 분류 → 앱 분류. A merchant the user re-categorised once wins over the keyword map.
 const BANK_RULES_KEY='firemate_category_rules_v1';
 function bankCategoryRules(){try{const r=JSON.parse(localStorage.getItem(BANK_RULES_KEY)||'{}');return r&&typeof r==='object'?r:{}}catch{return {}}}
@@ -1969,7 +1971,7 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-139',VERSION='3.5.139';
+ const BUILD='fire-mate-v3-5-140',VERSION='3.5.140';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2166,4 +2168,4 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.139"></script></body></html>
+</style><script src="./js/features.js?v=3.5.140"></script></body></html>

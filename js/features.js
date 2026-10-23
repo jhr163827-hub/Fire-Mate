@@ -193,10 +193,9 @@ try{
   const assetTabs=$('view-assets').querySelector('.fm-asset-jump'),tabButtons=[...assetTabs.querySelectorAll('button')];assetTabs.setAttribute('role','tablist');
   const panels=['fmAssetAccountsPanel','fmAssetHoldingsPanel','fmAssetDividendView','fmAssetAnalysisView','fmAssetMarketView'],n=panels.length;
     tabButtons.forEach((button,i)=>{button.setAttribute('role','tab');button.setAttribute('aria-controls',panels[i]);$(panels[i]).setAttribute('role','tabpanel');$(panels[i]).setAttribute('aria-labelledby',button.id);button.addEventListener('keydown',event=>{const offset={ArrowRight:1,ArrowLeft:-1}[event.key];if(offset===undefined&&!['Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?n-1:(i+offset+n)%n;tabButtons[next].click();tabButtons[next].focus({preventScroll:true});});});
-  // Date selection reveals its transactions only when they would otherwise be out of sight.
-  const calendar=$('cal'),day=$('dayTx'),dayHeader=$('selectedTitle'),calendarBack=$('fmBackToCalendar');let calendarY=0;
-  calendarBack.onclick=()=>{scrollTo({top:calendarY,behavior:'instant'});calendar.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});};
-  calendar.addEventListener('click',event=>{if(!event.target.closest('[data-date]'))return;calendarY=scrollY;requestAnimationFrame(()=>{if(!day.querySelector('.tx'))return;const rect=day.getBoundingClientRect(),height=window.visualViewport?.height||innerHeight;if(rect.bottom>height-90){dayHeader.scrollIntoView({block:'start',behavior:'instant'});dayHeader.tabIndex=-1;dayHeader.focus({preventScroll:true});}});});
+  // Picking a date only updates the list under the calendar; the page stays put so the next date is one tap away.
+  const calendar=$('cal');
+  $('fmBackToCalendar').onclick=()=>{calendar.scrollIntoView({block:'start',behavior:'instant'});calendar.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});};
   const syncMainNav=()=>document.querySelectorAll('.bottomnav [data-view]').forEach(button=>{if(button.classList.contains('active'))button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
   new MutationObserver(syncMainNav).observe(document.querySelector('.bottomnav'),{attributes:true,subtree:true,attributeFilter:['class']});syncMainNav();
 

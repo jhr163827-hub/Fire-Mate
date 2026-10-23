@@ -29,9 +29,11 @@ test('US holdings show the after-hours price next to the regular one',async({pag
 test('home lists the largest holdings with today\'s change and opens a holding in one tap',async({page})=>{
  const row=page.locator('#fmHomeHoldings [data-home-holding]');
  await expect(row).toHaveCount(2);
- // Folded on first view so the home screen stays short; one tap opens it.
+ // Behind the "내 종목 · 오늘" tab so the home screen stays short; one tap shows it.
  await expect(row.first()).toBeHidden();
- await page.locator('.fm-home-holdings>summary').click();
+ await expect(page.locator('#homeDailyChange')).toBeVisible();
+ await page.locator('[data-home-tab="1"]').click();
+ await expect(page.locator('#homeDailyChange')).toBeHidden();
  await expect(row.first()).toContainText('JEPQ');
  await expect(row.first()).toContainText('애프터 $55.6');
  await row.first().click();

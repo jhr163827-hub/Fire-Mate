@@ -154,7 +154,6 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertTrue(page.locator('#fmAssetHoldingsPanel').is_visible())
                     self.assertEqual(page.locator('#holdingList .tx').count(), 2,
                                      page.evaluate("""() => ({saved:JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.length,
-                                         filter:document.getElementById('accountFilter').value,
                                          content:document.getElementById('holdingList').textContent.slice(0,100)})"""))
                     # The list can re-render (e.g. after dividend data loads), so read both values from one
                     # connected, laid-out row in a single step instead of two separate element lookups.
@@ -165,12 +164,8 @@ class HomeResponsiveTest(unittest.TestCase):
                             account:getComputedStyle(a).display}}""").json_value()
                     self.assertLessEqual(row['height'],row['font']*1.6,'종목 평가금액은 한 줄로 보여야 합니다')
                     self.assertEqual(row['account'],'block')
-                    page.locator('#fmHoldingSearch').fill('BBB')
-                    self.assertEqual(page.locator('#holdingList .tx').count(), 1)
+                    self.assertEqual(page.locator('#fmHoldingSearch').count(), 0)
                     self.assertIn('베타', page.locator('#holdingList').inner_text())
-                    page.locator('#fmHoldingSort').select_option('profit')
-                    page.locator('#fmHoldingSearch').fill('')
-                    self.assertEqual(page.locator('#holdingList .tx').count(), 2)
                     page.locator('#fmAssetQuickDividend').click()
                     self.assertTrue(page.locator('#fmDividendPanel').is_visible())
                     self.assertLessEqual(page.locator('#fmDivBars').evaluate('e => e.getBoundingClientRect().height'),120)

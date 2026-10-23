@@ -38,7 +38,8 @@ test('old and hand-entered prices are labelled; an exchange rate never fetched i
  await expect(panel).toContainText('10일 전 시세');
  await expect(panel).toContainText('직접 입력가');
  await expect(panel.locator('.fm-stale')).toHaveCount(1);
- await expect(page.locator('#fmAssetQuoteContext summary')).toHaveText('환율 1,400원/USD (기본값) · 시세 상태');
+ // The exchange rate lives in settings, not on the asset card.
+ await expect(page.locator('#fmAssetQuoteContext')).toBeHidden();
 });
 
 test('accounts can be moved in or out of FIRE right from the FIRE screen, and the choice is saved',async({page})=>{

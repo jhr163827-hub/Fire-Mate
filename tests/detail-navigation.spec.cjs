@@ -61,11 +61,9 @@ test('holding detail restores search, account filter, sort and list position',as
   localStorage.setItem('fm_auto_quote_day_v1',new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()));
  });await page.reload();
  await page.locator('.bottomnav [data-view="assets"]').click();await page.locator('#fmAssetQuickHoldings').click();
- await page.locator('#accountFilter').selectOption('legacy-us');await page.locator('#fmHoldingSearch').fill('SPY');await page.locator('#fmHoldingSort').selectOption('name');
  const row=page.locator('.fm-holding-list-row').filter({has:page.locator('[data-holding="detail-15"]')}).locator('.fm-holding-row-main');await row.scrollIntoViewIfNeeded();const y=await page.evaluate(()=>scrollY);
  await row.click();await expect(page.locator('#fmAccountDetail')).toBeVisible();
  for(const label of ['보유 수량','평균 매수가','평가손익','총 수익률'])await expect(page.locator('#fmAccountDetail')).toContainText(label);
  await page.locator('#fmDetailBack').click();await expect(page.locator('#fmAssetHoldingsPanel')).toBeVisible();
- await expect(page.locator('#fmHoldingSearch')).toHaveValue('SPY');await expect(page.locator('#accountFilter')).toHaveValue('legacy-us');await expect(page.locator('#fmHoldingSort')).toHaveValue('name');
  await expect.poll(()=>page.evaluate(()=>scrollY)).toBeCloseTo(y,0);
 });

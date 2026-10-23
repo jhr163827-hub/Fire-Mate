@@ -33,6 +33,28 @@ test('imports map 뱅크샐러드 분류 to app categories and learn a merchant 
  await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='다이소').map(t=>t.category)).toEqual(['주거·관리비','주거·관리비']);
 });
 
+test('money sent to my own account is a transfer, not spending, and one fix teaches the importer',async({page})=>{
+ await page.goto('/index.html');
+ const load=async rows=>{await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
+  await page.locator('#bankExcelConfirm').click()};
+ // 뱅크샐러드 says 지출, but its own category says 이체: no hand fix needed.
+ await load([[ago(1),'08:00','지출','이체','내계좌이체','적금 이체',-500000,'KRW','계좌'],[ago(1),'09:00','지출','기타','','마이뱅크',-300000,'KRW','계좌'],[ago(2),'09:00','지출','기타','','마이뱅크',-200000,'KRW','계좌'],[ago(1),'10:00','지출','기타','','업비트 입금',-300000,'KRW','계좌']]);
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.bankExcelKey).length).toBe(4);
+ const type=async memo=>(await saved(page)).tx.filter(t=>t.memo===memo).map(t=>t.type);
+ expect(await type('적금 이체')).toEqual(['transfer']);
+ // Money moved to an exchange or brokerage is investing, not spending.
+ expect(await type('업비트 입금')).toEqual(['transfer']);
+ // One 마이뱅크 row switched to 이체 by hand moves every 마이뱅크 row and the next import.
+ await page.locator('#settingsOverlay [data-close]').first().click();
+ await page.evaluate(()=>window.fmGo('calendar'));await page.locator('#fmModeList').click();
+ await page.locator('#fmLedgerAllTx .tx',{hasText:'마이뱅크'}).first().locator('[data-edit]').click();
+ await page.locator('#entryTypes button[data-type="transfer"]').click();await page.locator('#saveEntry').click();
+ await expect.poll(()=>type('마이뱅크')).toEqual(['transfer','transfer']);
+ await load([[ago(0),'09:00','지출','기타','','마이뱅크',-100000,'KRW','계좌']]);
+ await expect.poll(()=>type('마이뱅크')).toEqual(['transfer','transfer','transfer']);
+});
+
 test('older imports can be tidied in one confirmed step without touching amounts',async({page})=>{
  const key=(main,memo,amount,type='expense')=>[ago(2),'10:00',type,main,'',memo,amount,'카드'].join('|');
  await seedWith(page,{theme:'dark',rec:[],budgets:{},tx:[

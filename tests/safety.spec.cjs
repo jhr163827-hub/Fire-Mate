@@ -50,17 +50,15 @@ test('backups also carry the small-income and auto-add switches',async({page})=>
  expect(await page.evaluate(()=>localStorage.getItem('firemate_import_auto_v1'))).toBe('1');
 });
 
-test('fixed costs keep monthly bills, skip frequent shops and can be hidden',async({page})=>{
+test('fixed costs and recurring entries are gone, and stored recurring rules no longer create transactions',async({page})=>{
+ await page.addInitScript(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3')||'{}');d.rec=[{id:'r1',start:'2020-01',type:'expense',day:1,amount:17000,category:'통신·구독',memo:'넷플릭스 반복'}];localStorage.setItem('firemate_smart_v3',JSON.stringify(d))});
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('insights'));
- const list=page.locator('#fmFixedList');
- await expect(list).toContainText('넷플릭스');
- await expect(list).not.toContainText('스타벅스');
- // No questions: a wrong row can only be hidden.
- await expect(list.locator('[data-fixed-yes]')).toHaveCount(0);
- await list.locator('[data-fixed-no="넷플릭스"]').click();
- await expect(list).not.toContainText('넷플릭스');
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_fixed_costs_v1')))).toEqual({'넷플릭스':false});
+ await expect(page.locator('#fmFixedList')).toHaveCount(0);
+ await expect(page.locator('#recOverlay')).toHaveCount(0);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
+ expect(saved.rec).toHaveLength(1);
+ expect(saved.tx.filter(t=>t.memo==='넷플릭스 반복')).toHaveLength(0);
 });
 
 test('a merchant left under 기타 is re-categorised in one step and remembered',async({page})=>{

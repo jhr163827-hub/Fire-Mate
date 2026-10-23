@@ -534,7 +534,7 @@ try{
   const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
   const card=document.createElement('div');card.className='card fm-card-x';card.id='fmUncatCard';
   card.innerHTML='<p class="mini" id="fmAutoCatNote" hidden></p><details id="fmUncatFold"><summary id="fmUncatTitle">분류가 필요한 가게</summary><p class="mini">가게 이름으로 분류하지 못한 지출이에요. 한 번 고르면 지난 거래와 다음 가져오기에 모두 적용돼요.</p><div id="fmUncatList"></div></details>';
-  const anchor=$('fmFixedList')?.closest('.card')||$('insightCats')?.closest('.card');if(anchor)anchor.after(card);
+  const anchor=$('insightCats')?.closest('.card');if(anchor)anchor.after(card);
   const render=()=>{
    let d=fmLiveData();
    const groups=new Map();

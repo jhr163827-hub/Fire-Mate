@@ -22,12 +22,10 @@ test('home shows the month pace and an over-budget category; the decorative circ
  expect(await page.locator('#view-home .fm-home-wealth').evaluate(e=>getComputedStyle(e,'::before').display)).toBe('none');
 });
 
-test('소비 분석 finds fixed costs and saves category budgets in their own key',async({page})=>{
+test('소비 분석 saves category budgets in their own key and no longer lists fixed costs',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('insights'));
- await expect(page.locator('#fmFixedList')).toContainText('넷플릭스');
- await expect(page.locator('#fmFixedList')).not.toContainText('들쭉날쭉');
- await expect(page.locator('#fmFixedList .fm-fixed-total')).toHaveText('매달 약 ₩55,000');
+ await expect(page.locator('#fmFixedList')).toHaveCount(0);
  const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
  await page.locator('#fmCatBudgetEdit > summary').click();
  await page.locator('#fmCatB-식비').fill('200000');

@@ -13,7 +13,7 @@ test.use({viewport:{width:360,height:800},isMobile:true,hasTouch:true,reducedMot
 
 test('new profile is told the FIRE estimate uses the example goal and sees no backup nag',async({page})=>{
  await open(page,null);
- await expect(page.locator('#homeFireEtaNote')).toHaveText('기본 예시 목표(6억 5,000만 원·월 300만 원) 기준 · 실제 결과는 달라질 수 있어요');
+ await expect(page.locator('#homeFireEtaNote')).toHaveText('기본 예시 목표(6억 5,000만 원·월 300만 원) 기준');
  await expect(page.locator('#homeRefreshStocks')).toHaveClass(/fm-quote-idle/);
  await expect(page.locator('#homeRefreshStocks')).toHaveCSS('min-height','44px');
  await expect(page.locator('.fm-backup-nudge')).toBeHidden();
@@ -21,7 +21,8 @@ test('new profile is told the FIRE estimate uses the example goal and sees no ba
 
 test('saved plans keep the original note and holdings make the quote button primary',async({page})=>{
  await open(page,longTimeUser,{firemate_last_backup_v1:new Date().toISOString()});
- await expect(page.locator('#homeFireEtaNote')).toHaveText('저장한 조건에 따른 추정 · 실제 결과는 달라질 수 있어요');
+ // Saved plans need no disclaimer line under the estimate.
+ await expect(page.locator('#homeFireEtaNote')).toHaveText('');
  await expect(page.locator('#homeRefreshStocks')).not.toHaveClass(/fm-quote-idle/);
  await expect(page.locator('.fm-backup-nudge')).toBeHidden();
 });

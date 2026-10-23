@@ -1260,7 +1260,7 @@ html[data-theme=light] #view-fire .fm-fire-hero{background:linear-gradient(145de
 #view-assets>.hero.fm-quote-hero>*{grid-column:1/-1;min-width:0}
 #view-assets>.hero.fm-quote-hero>.light:first-child{grid-column:1;grid-row:1;align-self:center;padding-right:0;font-size:12px}
 #view-assets>.hero.fm-quote-hero>button#refreshStocks{position:static;grid-column:2;grid-row:1;min-height:44px;height:44px;min-width:80px;padding:0 12px;align-self:center}
-#view-assets>.hero.fm-quote-hero #netWorth{font-size:clamp(27px,7.3vw,34px)!important;margin:0;line-height:1.2;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#view-assets>.hero.fm-quote-hero #netWorth{font-size:30px!important;margin:0;line-height:1.2;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 #view-assets>.hero.fm-quote-hero .fm-last-quote{font-size:11px;margin:2px 0 5px;overflow-wrap:anywhere}
 #view-assets>.hero.fm-quote-hero .hero-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:1px;padding-top:7px;border-top:1px solid var(--line)}
 #view-assets>.hero.fm-quote-hero .hero-stat{background:transparent!important;padding:0;border-radius:0;gap:3px}
@@ -1596,7 +1596,7 @@ header.top #fmManualUpdate{min-width:92px!important}
 #view-home #homeAssetHero>button#homeRefreshStocks{position:static;grid-column:2;grid-row:1;height:44px;min-width:80px;padding:0 12px}
 #view-home #homeAssetHero .fm-asset-amount-line{padding-top:0}
 #view-home #homeAssetHero #homeLastQuote{display:block;margin:2px 0 5px;font-size:11px;overflow-wrap:anywhere}
-#view-home #homeTotalAssets{font-size:clamp(30px,8vw,38px)!important;line-height:1.2;margin:0}
+#view-home #homeTotalAssets{font-size:30px!important;line-height:1.2;margin:0}
 #view-home #homeDailyChange{margin-top:3px!important;padding:7px 9px;font-variant-numeric:tabular-nums}
 body:has(#view-home.active) #view-home.active{gap:8px}
 #view-home .fm-home-budget{border-radius:18px}
@@ -1697,7 +1697,7 @@ body{word-break:keep-all}
 /* Secondary text reads at 12px or more. Measured on every view: no .mini/small/.small renders above 12px, so nothing shrinks. */
 .mini,small,.small{font-size:12px!important}
 #view-home #homeLastQuote,#view-assets #assetsLastQuote,#fmAssetQuoteContext>summary,#view-calendar .weekday,#view-calendar .txmain span,#view-calendar #fmBackToCalendar,#view-insights .pill,#view-fire #fmGoalLabel,#view-fire .fm-fire-progress-label span,#view-fire .fm-decision-action,#fmComparisonBasis span,#fmComparisonBasis .fm-model-tag,#view-retire .fm-model-value span,#view-retire .fm-fire-target-values span,#view-retire .fm-fire-target-classes span,#view-retire .fm-fire-target-row strong{font-size:12px!important}
-#view-home .fm-home-fire-head>:is(span,button),#view-calendar .fm-ledger-totals span,#monthDeltaBasis,#dailyAvgBasis,#view-assets .fm-quote-hero .hero-stat:nth-child(n) .light.small,#fmDividendEditor div[style*="72px 82px"]>span{font-size:12px!important}
+#view-calendar .fm-ledger-totals span,#monthDeltaBasis,#dailyAvgBasis,#view-assets .fm-quote-hero .hero-stat:nth-child(n) .light.small,#fmDividendEditor div[style*="72px 82px"]>span{font-size:12px!important}
 /* Keep amounts on one line; the retirement summary scales down instead of splitting "-126만 / 6,667원". */
 #view-retire .hero-stat strong{white-space:nowrap;overflow-wrap:normal;font-size:clamp(14px,4.4vw,17px)!important}
 #rpStressSummary strong,#view-retire .fm-fire-target-gap strong{white-space:nowrap}
@@ -2127,3 +2127,63 @@ html,body{overscroll-behavior-y:contain}
 #view-home #homeAssetHero,#view-assets .fm-quote-hero.fm-unified-hero{padding:16px 18px 14px}
 #view-home #homeAssetHero>button#homeRefreshStocks,#view-assets>.hero.fm-quote-hero>button#refreshStocks{min-width:0;padding:0 14px;border:1px solid var(--line);background:none;box-shadow:none;color:var(--green);font-size:13px;border-radius:12px}
 #view-assets #toggleAccountOrder,#view-assets #fmBalanceRowEdit{min-height:44px;padding:0 4px;border:0;background:none;color:var(--green);font-size:13px;font-weight:800}
+/* ===== Skin v4: one look for every screen. Same markup and layout; colors, type and surfaces only.
+   Type: 30 amount · 17 title · 15 body · 13 secondary. One accent (green), red = up/plus, blue = down/minus. ===== */
+:root{--bg:#0f1013;--panel:#1b1d22;--panel2:#25282e;--line:#2d3138;--txt:#f2f4f6;--text:#f2f4f6;--sub:#8d96a1;--green:#3dd598;--green2:#163b2e;--red:#ff5c6a;--up:#ff5c6a;--down:#5a9bff;--yellow:#f5b544}
+html[data-theme=light]{--bg:#f2f4f6;--panel:#fff;--panel2:#f2f4f6;--line:#e5e8eb;--txt:#191f28;--text:#191f28;--sub:#5f6b78;--green:#007a4b;--green2:#e3f6ed;--red:#f04452;--up:#f04452;--down:#3182f6;--yellow:#c77800}
+html body{background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+/* Header: the screen name is the title; brand and controls stay small. */
+html body header.top{margin-bottom:14px;align-items:center}
+html body header.top .eyebrow{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--txt);text-transform:none}
+html body header.top .logo{font-size:11px;font-weight:800;letter-spacing:.02em;color:var(--sub);margin-top:2px}
+html body header.top .logo b{color:var(--sub)}
+html body header.top .logo .mini{display:none}
+html body header.top .iconbtn{border:0;background:var(--panel);border-radius:12px;box-shadow:none}
+html body header.top #fmManualUpdate{color:var(--sub);font-size:12px}
+html body header.top #fmManualUpdate small{color:var(--sub)}
+/* Bottom menu: no pill, the active item is just brighter. */
+html body .bottomnav{background:var(--bg);border-top:1px solid var(--line);box-shadow:none}
+html body .bottomnav .bottom-item{color:var(--sub);font-weight:600}
+html body .bottomnav .bottom-item.active{color:var(--txt);font-weight:800;background:none}
+html body .bottomnav .bottom-item .navicon,html body .bottomnav .bottom-item.active .navicon{background:none}
+html body .bottomnav .bottom-item.active .navicon{color:var(--green)}
+/* Cards: one surface, no border, no gradient. */
+html body .card,html body .hero,html body #view-home>.hero,html body #view-assets>.hero.fm-quote-hero{background:var(--panel);border:0;box-shadow:none;color:var(--txt);border-radius:22px}
+html body .hero .light{color:var(--sub)}
+html body .notice{background:var(--panel2);border:0;color:var(--sub)}
+html body .secondary{background:var(--panel2);border:0;color:var(--txt)}
+html body .progress{background:var(--panel2);height:8px;border-radius:99px}
+html body .mini{color:var(--sub)}
+/* Home */
+html body #view-home>*+*{margin-top:12px}
+html body #view-home #homeAssetHero{padding:20px 20px 16px}
+html body #view-home #homeTotalAssets{font-weight:800;letter-spacing:-.04em}
+html body #view-home #homeAssetHero #homeLastQuote{font-size:13px;color:var(--sub)}
+html body #view-home #homeAssetHero>button#homeRefreshStocks,html body #view-assets>.hero.fm-quote-hero>button#refreshStocks{border:0;background:var(--panel2);color:var(--txt);font-size:13px;font-weight:700;border-radius:12px}
+html body #view-home #homeAssetHero .fm-home-tabs{margin-top:14px}
+html body #view-home #homeAssetHero .fm-home-tabs button{font-size:15px;font-weight:600}
+html body #view-home #homeAssetHero .fm-home-tabs [aria-selected=true]{font-weight:800;border-bottom-color:var(--txt)}
+html body #view-home #homeAssetHero #homeDailyChange{font-size:14px;padding-top:12px}
+html body #view-home .fm-home-budget{padding:20px}
+html body #view-home .fm-home-budget>.light.small{font-size:14px;color:var(--sub)}
+html body #view-home .fm-home-budget-total .big{font-weight:800;letter-spacing:-.04em}
+html body #view-home .fm-home-budget-grid span,html body #view-home .fm-home-budget-usage span{font-size:13px;color:var(--sub)}
+html body #view-home .fm-home-budget-grid strong{font-size:17px;font-weight:700}
+html body #view-home .fm-pace,html body #view-home #fmHomeSaving{font-size:14px;color:var(--sub)}
+html body #view-home .fm-home-actions{border-top-color:var(--line)}
+html body #view-home .fm-home-actions #fmHomeSync{font-size:15px}
+html body #view-home .fm-home-fire{padding:20px}
+html body #view-home .fm-home-fire-head>span{font-size:17px;font-weight:800;color:var(--txt)}
+html body #view-home .fm-home-fire-head>button{font-size:13px;color:var(--sub);background:none;border:0}
+html body #view-home .fm-home-fire,html body #view-home section.card{border:0}
+html body #view-home .home-shortcuts button{background:var(--panel);border:0;border-radius:22px;padding:16px 18px;color:var(--txt);box-shadow:none}
+html body #view-home .home-shortcuts button small{color:var(--sub);font-size:13px}
+html body #view-assets #netWorth{font-weight:800;letter-spacing:-.04em}
+html body #view-assets .fm-quote-hero.fm-unified-hero{padding:20px 20px 16px}
+html body #view-assets .fm-asset-jump button.active{color:var(--txt);border-bottom-color:var(--txt);font-weight:800}
+html body #view-assets #fmAssetAccountsPanel,html body #view-assets #fmAssetHoldingsPanel>.card,html body #view-assets #fmAssetDividendView,html body #view-assets #fmAssetAnalysisView>.card{padding:18px 20px;border:0;border-radius:22px;background:var(--panel)}
+html body #view-assets #fmAssetHoldingsPanel>.card>h3,html body #view-assets #fmAssetAccountsPanel h3{font-size:17px;font-weight:800}
+html body #view-home #homeFireEtaNote:empty{display:none}
+html body #view-assets .cardhead h3{font-size:17px;font-weight:800}
+html body #view-home #homeFireEtaNote:empty{display:none}
+html body #view-assets .cardhead h3{font-size:17px;font-weight:800}

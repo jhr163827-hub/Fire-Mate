@@ -1611,7 +1611,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             page.locator('#fmSpendingOpen').click()
                             # Detailed search (period, amount) opens from the 가계부 search box.
                             page.locator('.bottomnav [data-view="calendar"]').click()
-                            page.locator('#fmLedgerSearchBtn').click()
+                            if page.locator('#fmLedgerSearchArea').is_hidden(): page.locator('#fmLedgerSearchBtn').click()
                             page.locator('#fmLedgerSearchArea [data-go="history"]').click()
                             self.assertTrue(page.locator('#historyList [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'history')

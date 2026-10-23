@@ -7,6 +7,7 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWor
 test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.request().url().endsWith('/chart-data/live-quotes.json')?r.fulfill({json:live}):r.abort());
  await page.route('**/chart-data/IDX-IXIC.json',r=>r.fulfill({json:hist}));
+ await page.route('**/chart-data/IDX-GSPC.json',r=>r.fulfill({status:404,body:''}));
  await page.addInitScript(()=>localStorage.setItem('firemate_onboarding_v1','dismissed'));
  await page.goto('/index.html');
 });

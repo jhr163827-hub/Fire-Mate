@@ -249,8 +249,12 @@ test("selected-day transactions are reachable, calendar returns and backup remai
     localStorage.getItem("firemate_smart_v3"),
   );
   await page.locator('.bottomnav [data-view="calendar"]').click();
-  await page.locator('#cal [aria-current="date"]').click();
-  await expect(page.locator("#selectedTitle")).toBeFocused();
+  const todayCell = page.locator('#cal [aria-current="date"]');
+  await todayCell.scrollIntoViewIfNeeded();
+  const yBefore = await page.evaluate(() => scrollY);
+  await todayCell.click();
+  // Picking a date never moves the page.
+  expect(await page.evaluate(() => scrollY)).toBe(yBefore);
   await expect(page.locator("#dayTx")).toContainText("12,345");
   await page.locator("#fmBackToCalendar").click();
   await expect(page.locator('#cal [aria-pressed="true"]')).toBeFocused();

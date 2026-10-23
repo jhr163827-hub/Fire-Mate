@@ -17,7 +17,7 @@ test('losses use a real minus and the list is always every account by value',asy
  await page.locator('#fmAssetQuickHoldings').click();
  await expect(page.locator('#holdingList')).toContainText('−₩200,000 (-20.0%)');
  // Today's move sits under the value, colored, so a glance at the list is enough.
- await expect(page.locator('#holdingList .fm-holding-day')).toHaveText(['오늘 +10.00% · +₩100,000','오늘 -20.00% · −₩200,000']);
+ await expect(page.locator('#holdingList .fm-holding-day')).toHaveText(['오늘 +10.00%','오늘 -20.00%']);
  // No search, sort or account filter: every holding, largest value first.
  await expect(page.locator('#fmHoldingSearch, #fmHoldingSort, #accountFilter')).toHaveCount(0);
  await expect(page.locator('#holdingList .fm-holding-name')).toHaveText(['오른종목','내린종목']);

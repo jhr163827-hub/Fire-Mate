@@ -2187,3 +2187,11 @@ html body #view-home #homeFireEtaNote:empty{display:none}
 html body #view-assets .cardhead h3{font-size:17px;font-weight:800}
 html body #view-home #homeFireEtaNote:empty{display:none}
 html body #view-assets .cardhead h3{font-size:17px;font-weight:800}
+html body #view-home #fmHomeSaving,html body #view-home .fm-home-budget-usage{display:none}
+html body #view-assets #fmAssetHoldingsPanel .fm-holding-meta:empty{display:none}
+html body #view-assets #fmAssetHoldingsPanel .fm-holding-account{font-size:13px}
+html body #view-assets #fmAssetHoldingsPanel .fm-holding-account .fm-holding-gain{font-size:13px;font-weight:600}
+html body #view-assets #fmAssetHoldingsPanel>.card>.cardhead{display:none}
+html body #view-home #heroMonth{display:none}
+html body #view-home .fm-pace{font-size:13px}
+html body #view-assets #fmAssetHoldingsPanel>.card{padding-top:8px}

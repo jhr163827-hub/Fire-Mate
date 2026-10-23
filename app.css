@@ -2090,3 +2090,18 @@ body.fm-v2 .v2-head span{display:block;font-size:13px;color:var(--sub);margin-to
 .fm-v2-switch small{display:block;font-size:12px;font-weight:500;color:var(--sub)}
 .fm-v2-switch input{width:24px;height:24px;margin:0;flex:none;accent-color:var(--green)}
 .v2-pill,.v2-todo .v2-row{background:var(--panel)}
+/* 전면 개편 2단계: 종목 (자산 화면, 새 화면 모드) */
+.v2-stock-head{display:flex;flex-direction:column;gap:4px;margin:2px 0 6px}
+body.fm-v2 #view-assets>.hero{background:var(--panel);border:0;border-radius:24px;box-shadow:none;color:var(--txt)}
+body.fm-v2 #view-assets>.hero .light{color:var(--sub)}
+body.fm-v2 #view-assets>.hero .flex:has(>#netWorth),body.fm-v2 #view-assets .hero-stat:has(#assetGoalPct),body.fm-v2 #view-assets>.hero>.progress,body.fm-v2 #view-assets .fm-goal-line,body.fm-v2 #assetsSub{display:none}
+body.fm-v2 #view-assets .hero-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid var(--line);padding-top:12px}
+body.fm-v2 #view-assets .hero-row .hero-stat{min-width:0}
+body.fm-v2 #view-assets .hero-row strong{font-size:16px;overflow-wrap:anywhere}
+body.fm-v2 .fm-asset-jump{background:var(--panel);border:0;border-radius:14px}
+body.fm-v2 .fm-asset-jump button.active,body.fm-v2 .fm-asset-jump button[aria-selected=true]{background:var(--panel2);color:var(--txt);border:0;box-shadow:none}
+body.fm-v2 #fmAssetHoldingsPanel>.card,body.fm-v2 #fmAssetAccountsPanel{border:0;border-radius:24px;background:var(--panel)}
+body.fm-v2 .fm-holding-edit{display:none}
+body.fm-v2 .fm-holding-list-row{padding:14px 0;border-color:var(--line)}
+body.fm-v2 .fm-holding-name{font-size:16px}
+body.fm-v2 .fm-holding-value{font-size:16px;font-weight:800}

@@ -49,3 +49,16 @@ test('the switch turns on 오늘 and the new menu; numbers come from the same da
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
  expect(saved.holdings[0].price).toBe(110000);
 });
+test('in the new mode 종목 leads with 투자 평가액 and a clean list; the old screen keeps 순자산',async({page})=>{
+ await page.evaluate(()=>window.fmGo('assets'));
+ await expect(page.locator('#netWorth')).toBeVisible();
+ await expect(page.locator('#v2Invest')).toBeHidden();
+ await page.evaluate(()=>{localStorage.setItem('firemate_ui_v2_v1','1')});await page.reload();
+ await page.locator('#fmNavStocks').click();
+ await expect(page.locator('#v2Invest')).toHaveText('₩1,100,000');
+ await expect(page.locator('#netWorth')).toBeHidden();
+ await expect(page.locator('#assetGoalPct')).toBeHidden();
+ await expect(page.locator('#holdingList .fm-holding-edit').first()).toBeHidden();
+ await page.locator('#holdingList .fm-holding-row-main').first().click();
+ await expect(page.locator('#fmDetailEdit')).toBeVisible();
+});

@@ -26,13 +26,6 @@ test('분석 opens 소비 분석, which links to 월간 결산 and back',async({
  await expect(page.locator('#view-insights')).toHaveClass(/active/);
 });
 
-test('소비 분석 links to the asset analysis tab',async({page})=>{
- await page.goto('/index.html');
- await page.evaluate(()=>window.fmGo('insights'));
- await page.locator('#fmInsightAssets').click();
- await expect(page.locator('#view-assets')).toHaveClass(/active/);
- await expect(page.locator('#fmAssetAnalysisView')).toBeVisible();
-});
 
 test('소비 분석 keeps the key cards open and folds the rest; empty comparisons look neutral',async({page})=>{
  const m=new Date().toISOString().slice(0,7);

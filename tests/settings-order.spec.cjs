@@ -5,7 +5,7 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 test('settings list 내 데이터 → 화면(새 화면 스위치 포함) → 연동 → 가져오기·내보내기 → 게임 → 초기화',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
+ const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden&&e.getClientRects().length).map(e=>
   e.matches('.fm-device-storage')?'data':e.matches('.fm-settings-theme')?'theme':e.matches('.fm-v2-switch')?'new-ui':e.id==='fmArcadeOpen'?'arcade':e.querySelector(':scope>summary')?.textContent.trim()));
  expect(order).toEqual(['data','theme','new-ui','📡 시세 · 환율 연동','📥 가져오기 · 내보내기','arcade','⚠️ 데이터 초기화']);
  // Every backup action is visible without opening a fold.

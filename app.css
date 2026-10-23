@@ -2105,3 +2105,24 @@ body.fm-v2 .fm-holding-edit{display:none}
 body.fm-v2 .fm-holding-list-row{padding:14px 0;border-color:var(--line)}
 body.fm-v2 .fm-holding-name{font-size:16px}
 body.fm-v2 .fm-holding-value{font-size:16px;font-weight:800}
+/* 전면 개편 3단계: 가계부 (새 화면 모드) */
+body.fm-v2 #view-calendar .v2-primary{width:100%;margin:4px 0 12px}
+body.fm-v2 .fm-ledger-compare{background:var(--panel);border:0;border-radius:24px;box-shadow:none}
+.v2-ledger-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.v2-ledger-stats span{display:block;font-size:13px;color:var(--sub)}
+.v2-ledger-stats strong{font-size:17px}
+body.fm-v2 .fm-ledger-switch{background:var(--panel);border:0}
+body.fm-v2 .fm-ledger-switch button.active,body.fm-v2 .fm-ledger-switch button[aria-pressed=true]{background:var(--panel2);color:var(--txt);box-shadow:none}
+body.fm-v2 #view-calendar .fm-ledger-transactions,body.fm-v2 #fmLedgerListPane{background:var(--panel);border:0;border-radius:24px}
+body.fm-v2 #view-calendar #fmCalendarSpent,body.fm-v2 #view-calendar #fmCalendarIncome{color:var(--txt)}
+body.fm-v2 #view-calendar .day{background:var(--panel)}
+/* 전면 개편 4단계: FIRE·설정 (새 화면 모드) */
+body.fm-v2 #view-fire .fm-fire-hero,body.fm-v2 #view-fire .fm-fire-overview,body.fm-v2 #view-fire .fm-fire-chart-card,body.fm-v2 #view-firelife .card,body.fm-v2 #view-retire .card,body.fm-v2 #view-firecalc .card{background:var(--panel);border:0;border-radius:24px;box-shadow:none;color:var(--txt)}
+body.fm-v2 .fm-fire-screen-nav{background:var(--panel)}
+body.fm-v2 .fm-fire-screen-nav button[aria-current=page]{background:var(--panel2);box-shadow:none}
+body.fm-v2 #v2FireSaved{margin:6px 0 0}
+.v2-set{display:flex;flex-direction:column;padding:6px 16px;border-radius:18px;background:var(--panel2)}
+.v2-set h3{margin:8px 0 2px;font-size:13px;color:var(--sub)}
+.v2-set-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:52px;padding:0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--txt);font:inherit;font-size:15px;font-weight:700;text-align:left}
+.v2-set-row:last-child{border-bottom:0}
+.v2-set-row small{display:block;font-size:12px;font-weight:500;color:var(--sub)}

@@ -62,3 +62,31 @@ test('in the new mode 종목 leads with 투자 평가액 and a clean list; the o
  await page.locator('#holdingList .fm-holding-row-main').first().click();
  await expect(page.locator('#fmDetailEdit')).toBeVisible();
 });
+test('in the new mode 가계부 starts with the 뱅크샐러드 button and shows savings; the old ledger has neither',async({page})=>{
+ await page.evaluate(()=>window.fmGo('calendar'));
+ await expect(page.locator('#v2LedgerImport')).toBeHidden();
+ await page.evaluate(()=>{localStorage.setItem('firemate_ui_v2_v1','1')});await page.reload();
+ await page.locator('.bottom-item[data-view="calendar"]').click();
+ await expect(page.locator('#v2LedgerImport')).toBeVisible();
+ await expect(page.locator('#v2LedgerImportNote')).toHaveText('아직 가져온 적 없어요');
+ await expect(page.locator('#v2LedgerSaved')).toHaveText('+₩3,500,000');
+ await expect(page.locator('#fmCalendarSpent')).toHaveText('₩500,000');
+});
+test('in the new mode 설정 lists 내 자산 and 도구, FIRE shows this month\'s savings',async({page})=>{
+ await page.locator('#settingsBottom').click();
+ await expect(page.locator('[data-v2-go="account"]')).toBeHidden();
+ await page.locator('#settingsOverlay [data-close]').first().click();
+ await page.evaluate(()=>{localStorage.setItem('firemate_ui_v2_v1','1')});await page.reload();
+ await page.locator('.bottom-item[data-view="fire"]').click();
+ await expect(page.locator('#v2FireSaved')).toHaveText('이번 달 실제 모은 돈 +₩3,500,000 · 계획의 117%');
+ await page.locator('#settingsBottom').click();
+ await page.locator('[data-v2-go="account"]').click();
+ await expect(page.locator('#fmAssetAccountsPanel')).toBeVisible();
+ await page.locator('#settingsBottom').click();
+ await page.locator('[data-v2-go="monthly"]').click();
+ await expect(page.locator('#view-monthly')).toHaveClass(/active/);
+ await page.evaluate(()=>window.fmGo('home'));
+ await page.locator('#settingsBottom').click();
+ await page.locator('[data-v2-go="retire"]').click();
+ await expect(page.locator('#view-retire')).toHaveClass(/active/);
+});

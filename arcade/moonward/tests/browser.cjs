@@ -254,6 +254,106 @@ function ok(name) {
   await page.click("#yesRestart");
   assert.equal(await page.evaluate(() => moonward.game.s.wave), 0);
   ok("restart is explicit and cancellable");
+  // Actual wave-clear reward, pending reload, choice preview and duplicate callback.
+  await page.evaluate(() => {
+    const g = new moonward.Game(19),
+      s = g.s;
+    s.gold = 1000;
+    ["archer", "thorn", "frost", "bell"].forEach((k, i) => g.summon(i, k));
+    s.gold = 100;
+    s.wave = 6;
+    s.phase = "battle";
+    s.waveTime = 27;
+    s.spawned = 18;
+    s.enemies = [
+      {
+        id: s.nextId++,
+        d: 100,
+        hp: 0,
+        max: 10,
+        speed: 30,
+        kind: "boss",
+        boss: true,
+        slow: 0,
+        poison: 0,
+        dot: 0,
+        source: 0,
+      },
+    ];
+    moonward.setGame(g);
+    moonward.step(1);
+  });
+  await page.waitForSelector("[data-boon]");
+  assert.equal(await page.locator("[data-boon]").count(), 3);
+  assert.ok(await page.isDisabled("#confirmBoon"));
+  await page.keyboard.press("Escape");
+  assert.ok(await page.isVisible("#dialog"));
+  const boonTick = await page.evaluate(() => moonward.game.s.tick);
+  await page.waitForTimeout(150);
+  assert.equal(await page.evaluate(() => moonward.game.s.tick), boonTick);
+  await page.reload();
+  await page.waitForSelector("#resume");
+  await page.click("#resume");
+  await page.waitForSelector("[data-boon]");
+  await page.click('[data-boon="venom"]');
+  assert.match(await page.textContent("#boonDetail"), /10%/);
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: width === 320 ? 568 : 844 });
+    assert.ok(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    );
+    const dims = await page.locator("[data-boon]").evaluateAll((bs) =>
+      bs.map((b) => ({
+        w: b.getBoundingClientRect().width,
+        h: b.getBoundingClientRect().height,
+      })),
+    );
+    assert.ok(dims.every((b) => b.w >= 44 && b.h >= 44));
+    assert.ok(
+      await page.evaluate(
+        () =>
+          document.querySelector(".boonScroll").getBoundingClientRect()
+            .bottom <=
+          document.querySelector("#confirmBoon").getBoundingClientRect().top,
+      ),
+    );
+    await page.click('[data-boon="supply"]');
+    await page.click('[data-boon="venom"]');
+    await page.evaluate(
+      () => (document.querySelector(".boonScroll").scrollTop = 0),
+    );
+    await page.screenshot({
+      path: path.join(out, `boon-choice-${width}.png`),
+      fullPage: true,
+    });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.click('[data-boon="supply"]');
+  const rewardGold = await page.evaluate(() => moonward.game.s.gold);
+  await page.evaluate(() => {
+    window.repeatBoonClick = document.querySelector("#confirmBoon").onclick;
+  });
+  await page.click("#confirmBoon");
+  await page.evaluate(() => window.repeatBoonClick());
+  assert.equal(
+    await page.evaluate(() => moonward.game.s.gold),
+    rewardGold + 125,
+  );
+  await page.reload();
+  await page.waitForSelector("#resume");
+  await page.click("#resume");
+  assert.equal(await page.locator("[data-boon]").count(), 0);
+  assert.match(await page.textContent("#boonStatus"), /달빛 보급/);
+  await page.click("#menu");
+  await page.click("#restart");
+  await page.click("#yesRestart");
+  assert.deepEqual(await page.evaluate(() => moonward.game.s.boons), []);
+  ok(
+    "boss blessing offer, freeze, pending reload, mobile preview, explicit choice, duplicate callback and reset",
+  );
+
   await page.evaluate(async () => {
     const { manage } = await import("./tests/simulate.mjs");
     let g = new moonward.Game(7);

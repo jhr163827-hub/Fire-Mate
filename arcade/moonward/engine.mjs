@@ -9,6 +9,8 @@ import {
   waveSpec,
   tierScale,
   VERSION,
+  BOONS,
+  boonCount,
 } from "./data.mjs";
 export class Game {
   constructor(seed = Date.now()) {
@@ -35,6 +37,9 @@ export class Game {
       history: [],
       stats: { damage: {}, spent: 0, breaches: {} },
       result: null,
+      boons: [],
+      pendingBoon: 0,
+      bossDefeated: false,
     };
     this.events = [];
   }
@@ -148,12 +153,33 @@ export class Game {
   }
   nextWave() {
     let s = this.s;
+    if (s.pendingBoon || s.result) return false;
+    s.bossDefeated = false;
     s.wave++;
     s.phase = "battle";
     s.waveTime = 0;
     s.spawned = 0;
     s.spawnIn = 0;
     this.emit("wave", { wave: s.wave, boss: waveSpec(s.wave).boss });
+  }
+  chooseBoon(key) {
+    const s = this.s;
+    if (
+      !Object.hasOwn(BOONS, key) ||
+      ![6, 12].includes(s.pendingBoon) ||
+      s.phase !== "rest" ||
+      s.result ||
+      s.pendingBoon !== s.wave ||
+      s.boons.some((b) => b.wave === s.pendingBoon)
+    )
+      return false;
+    s.boons.push({ wave: s.pendingBoon, key });
+    s.pendingBoon = 0;
+    if (BOONS[key].gold) s.gold += BOONS[key].gold;
+    if (BOONS[key].heal)
+      s.lives = Math.min(RULES.lives, s.lives + BOONS[key].heal);
+    this.emit("boonChosen", { key });
+    return true;
   }
   spawn() {
     let s = this.s,
@@ -179,6 +205,8 @@ export class Game {
   }
   hit(e, damage, kind) {
     if (e.hp <= 0) return;
+    if (kind === "archer" && e.slow > 0)
+      damage *= 1 + boonCount(this.s, "hunt") * BOONS.hunt.damageBonus;
     if (kind === "archer" && (e.kind === "beetle" || e.boss)) damage *= 0.6;
     const actual = Math.min(e.hp, damage);
     e.hp -= damage;
@@ -187,7 +215,7 @@ export class Game {
   step() {
     let s = this.s,
       dt = RULES.step;
-    if (!this.active() || s.phase === "ready") return;
+    if (!this.active() || s.phase === "ready" || s.pendingBoon) return;
     s.tick++;
     if (s.phase === "rest") {
       s.wait -= dt;
@@ -244,11 +272,11 @@ export class Game {
         }
       if (type.slow) e.slow = 3;
       if (type.poison) {
-        e.dot =
-          e.poison > 0
-            ? Math.max(e.dot, type.poison * scale)
-            : type.poison * scale;
-        e.poison = 4;
+        const stacks = boonCount(s, "venom");
+        const poisonDamage =
+          type.poison * scale * (1 + stacks * BOONS.venom.poisonBonus);
+        e.dot = e.poison > 0 ? Math.max(e.dot, poisonDamage) : poisonDamage;
+        e.poison = 4 + stacks * BOONS.venom.duration;
         e.source = u.id;
       }
       this.emit("shot", { x, y, tx: p.x, ty: p.y, kind: u.kind, tier: u.tier });
@@ -256,6 +284,7 @@ export class Game {
     let alive = [];
     for (let e of s.enemies) {
       if (e.hp <= 0) {
+        if (e.boss) s.bossDefeated = true;
         s.gold += e.boss ? 55 : 5;
         s.kills++;
         this.emit("death", { ...pointAt(e.d), kind: e.kind });
@@ -301,6 +330,14 @@ export class Game {
       else {
         s.phase = "rest";
         s.wait = RULES.intermission;
+        if (
+          [6, 12].includes(s.wave) &&
+          s.bossDefeated &&
+          !s.boons.some((b) => b.wave === s.wave)
+        ) {
+          s.pendingBoon = s.wave;
+          this.emit("boonOffer", { wave: s.wave });
+        }
       }
     }
   }
@@ -433,6 +470,39 @@ export class Game {
             return null;
         }
       }
+      // Missing fields belong to pre-blessing saves; never grant retrospective rewards.
+      if (s.boons === undefined) s.boons = [];
+      if (s.pendingBoon === undefined) s.pendingBoon = 0;
+      if (s.bossDefeated === undefined) s.bossDefeated = false;
+      if (
+        !Array.isArray(s.boons) ||
+        s.boons.length > 2 ||
+        typeof s.bossDefeated !== "boolean" ||
+        ![0, 6, 12].includes(s.pendingBoon)
+      )
+        return null;
+      const awarded = new Set();
+      for (const b of s.boons) {
+        if (
+          !b ||
+          ![6, 12].includes(b.wave) ||
+          b.wave > s.wave ||
+          !Object.hasOwn(BOONS, b.key) ||
+          awarded.has(b.wave) ||
+          !s.history.some((h) => h.wave === b.wave)
+        )
+          return null;
+        awarded.add(b.wave);
+      }
+      if (
+        s.pendingBoon &&
+        (s.phase !== "rest" ||
+          s.pendingBoon !== s.wave ||
+          !s.bossDefeated ||
+          awarded.has(s.pendingBoon) ||
+          !s.history.some((h) => h.wave === s.pendingBoon))
+      )
+        return null;
       let g = new Game();
       g.s = s;
       return g;

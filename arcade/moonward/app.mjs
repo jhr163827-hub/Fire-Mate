@@ -11,6 +11,8 @@ import {
   waveSpec,
   tierScale,
   SAVE_KEY,
+  BOONS,
+  boonCount,
 } from "./data.mjs";
 import { sprites, loadArt } from "./art.mjs";
 const $ = (s) => document.querySelector(s),
@@ -103,6 +105,7 @@ function tone(freq = 440, duration = 0.06) {
 }
 function modal(html, closable = true) {
   paused = true;
+  dialog.classList.remove("boonDialog");
   $("#dialogBody").innerHTML = html;
   $("#closeDialog").hidden = !closable;
   if (!dialog.open) dialog.showModal();
@@ -125,6 +128,7 @@ dialog.addEventListener("cancel", (e) => {
   }
 });
 function menu() {
+  if (game.s.pendingBoon && !saved) return offerBoon();
   modal(
     '<div class="eyebrow">MOONWARD</div><h2>잠깐 쉬어가기</h2><p>진행은 자동 저장됩니다. 돌아오면 이어서 플레이하세요.</p><label class="setting">효과음<input id="sound" type="checkbox" ' +
       (!mute ? "checked" : "") +
@@ -309,7 +313,7 @@ $("#scout").onclick = () => {
   const s = game.s;
   const w = forecast(Math.min(RULES.waves, s.wave + 1));
   modal(
-    `<div class="eyebrow">시간이 멈췄어요 · 작전 정비</div><h2>${w.wave} 웨이브 · ${w.label}</h2><p>${w.composition}</p><p>${w.advice}</p><p>방어 보상 ${w.reward} 조각 + 처치 보상<br>보유 ${s.gold} · 랜덤 50 / 지정 85 / 합성 15</p><button id="planChoice" class="primary" ${s.gold < 85 || s.units.length === PADS.length || s.result ? "disabled" : ""}>역할을 골라 지정 소환</button><p>돌아가서 제단을 선택하면 무료 이동·교환과 합성을 할 수 있어요.</p>`,
+    `<div class="eyebrow">시간이 멈췄어요 · 작전 정비</div><h2>${w.wave} 웨이브 · ${w.label}</h2><p>${w.composition}</p><p>${w.advice}</p><p>방어 보상 ${w.reward} 조각 + 처치 보상<br>보유 ${s.gold} · 랜덤 50 / 지정 85 / 합성 15</p><button id="planChoice" class="primary" ${s.gold < 85 || s.units.length === PADS.length || s.result ? "disabled" : ""}>역할을 골라 지정 소환</button><p>이번 판 축복: ${boonSummary()}</p><p>6·12웨이브 보스를 처치하고 방어하면 축복을 선택합니다.</p><p>돌아가서 제단을 선택하면 무료 이동·교환과 합성을 할 수 있어요.</p>`,
   );
   $("#planChoice").onclick = () => $("#choose").click();
 };
@@ -324,6 +328,8 @@ function update() {
   $("#scout").disabled = !!s.result;
   $("#coach").textContent = coaching(s);
   $("#coach").hidden = !coaching(s);
+  $("#boonStatus").hidden = !s.boons.length;
+  $("#boonStatus").textContent = "축복 · " + boonSummary();
   $("#summon").classList.toggle(
     "guided",
     s.phase === "ready" && !s.units.length,
@@ -349,7 +355,7 @@ function update() {
     let t = TYPES[u.kind],
       boosted = supported(s.units, u);
     $("#selection").innerHTML =
-      `<strong>${t.name} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}</span>`;
+      `<strong>${t.name} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}${u.kind === "thorn" && boonCount(s, "venom") ? " · 독 강화 " + boonCount(s, "venom") + "단계" : ""}${u.kind === "archer" && boonCount(s, "hunt") ? " · 서리 추격 " + boonCount(s, "hunt") + "단계" : ""}</span>`;
     let pair = s.units.some(
       (v) => v.id !== u.id && v.kind === u.kind && v.tier === u.tier,
     );
@@ -375,6 +381,66 @@ function update() {
       `${s.wave} 웨이브 방어! ${Math.ceil(s.wait)}초 뒤 ${waveSpec(s.wave + 1).label} · 배치를 정비하세요.`,
     );
 }
+function boonSummary() {
+  return game.s.boons.length
+    ? game.s.boons
+        .map((b) => `${b.wave}웨이브 ${BOONS[b.key].name}`)
+        .join(" · ")
+    : "아직 선택한 축복이 없어요";
+}
+function offerBoon() {
+  if (!game.s.pendingBoon) return;
+  save();
+  modal(
+    `<div class="boonScroll"><div class="eyebrow">BOSS REWARD · ${game.s.pendingBoon} WAVE</div><h2>숲이 건네는 축복</h2><p>세 가지 중 하나 · 이번 판에만 적용<br>고르는 동안 전투는 멈춰 있어요.</p><div class="boonChoices">${Object.entries(
+      BOONS,
+    )
+      .map(([key, b]) => {
+        const count = boonCount(game.s, key);
+        const relevant =
+          key === "venom"
+            ? game.s.units.filter((u) => u.kind === "thorn").length +
+              "명의 가시 사냥꾼 보유"
+            : key === "hunt"
+              ? `궁수 ${game.s.units.filter((u) => u.kind === "archer").length}명 · 서리 ${game.s.units.filter((u) => u.kind === "frost").length}명 보유`
+              : `보유 ${game.s.gold} → ${game.s.gold + b.gold} 조각`;
+        return `<button class="choice boonChoice" data-boon="${key}" aria-pressed="false"><img src="${sprites[b.art].src}" alt=""><span><b>${b.name}</b><small>${b.desc}</small><small>${relevant}${count ? " · 이전 선택 " + count + "회" : ""}</small></span></button>`;
+      })
+      .join(
+        "",
+      )}</div><p id="boonDetail">축복을 눌러 효과를 확인한 뒤 확정하세요. 같은 축복을 다시 고르면 효과를 더합니다.</p></div><button id="confirmBoon" class="primary" disabled>축복을 먼저 선택하세요</button>`,
+    false,
+  );
+  dialog.classList.add("boonDialog");
+  let chosen = null;
+  dialog.querySelectorAll("[data-boon]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        chosen = b.dataset.boon;
+        dialog
+          .querySelectorAll("[data-boon]")
+          .forEach((v) => v.setAttribute("aria-pressed", String(v === b)));
+        const count = boonCount(game.s, chosen) + 1;
+        const total =
+          chosen === "venom"
+            ? `선택 후 누적: 독 피해 +${Math.round(count * BOONS.venom.poisonBonus * 100)}%, 지속 +${count * BOONS.venom.duration}초.`
+            : chosen === "hunt"
+              ? `선택 후 누적: 둔화된 적에게 궁수 피해 +${Math.round(count * BOONS.hunt.damageBonus * 100)}%.`
+              : "재화는 확정할 때 한 번 지급됩니다.";
+        $("#boonDetail").textContent = BOONS[chosen].detail + " " + total;
+        $("#confirmBoon").disabled = false;
+        $("#confirmBoon").textContent = BOONS[chosen].name + " 확정";
+      }),
+  );
+  $("#confirmBoon").onclick = () => {
+    if (!game.chooseBoon(chosen)) return;
+    save();
+    close();
+    banner(BOONS[chosen].name + " · 축복 획득");
+    tone(880, 0.2);
+    notice(BOONS[chosen].desc);
+  };
+}
 function result() {
   let s = game.s,
     r = s.result;
@@ -382,7 +448,7 @@ function result() {
   save();
   const report = debrief(s);
   modal(
-    `<div class="eyebrow">${r.win ? "THE FOREST REMEMBERS" : "ANOTHER MOON WILL RISE"}</div><h2>${r.win ? "새벽을 지켜냈어요" : "성문의 불빛이 꺼졌어요"}</h2><p>${r.win ? "18번의 습격을 막았습니다. 다음 판에는 다른 조합으로 숲을 지켜보세요." : report.fact + "<br>" + report.tip}</p><div class="resultStats"><div>도달 웨이브<b>${r.wave}</b></div><div>처치<b>${r.kills}</b></div><div>전투 시간<b>${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, "0")}</b></div></div><p>최고 도달 ${best} 웨이브 · 성문 피해 ${s.leaks}</p><button id="again" class="primary">다른 조합으로 다시 도전</button><button id="resultExit">아케이드로 돌아가기</button>`,
+    `<div class="eyebrow">${r.win ? "THE FOREST REMEMBERS" : "ANOTHER MOON WILL RISE"}</div><h2>${r.win ? "새벽을 지켜냈어요" : "성문의 불빛이 꺼졌어요"}</h2><p>${r.win ? "18번의 습격을 막았습니다. 다음 판에는 다른 조합으로 숲을 지켜보세요." : report.fact + "<br>" + report.tip}</p><div class="resultStats"><div>도달 웨이브<b>${r.wave}</b></div><div>처치<b>${r.kills}</b></div><div>전투 시간<b>${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, "0")}</b></div></div><p>이번 판 축복: ${boonSummary()}</p><p>최고 도달 ${best} 웨이브 · 성문 피해 ${s.leaks}</p><button id="again" class="primary">다른 조합으로 다시 도전</button><button id="resultExit">아케이드로 돌아가기</button>`,
     false,
   );
   $("#again").onclick = () => {
@@ -431,7 +497,8 @@ function events() {
     } else if (ev.type === "clear") {
       banner("방어 성공 · +" + ev.reward + " 조각");
       save();
-    } else if (ev.type === "result") result();
+    } else if (ev.type === "boonOffer") offerBoon();
+    else if (ev.type === "result") result();
   }
   effects = effects.slice(-80);
 }
@@ -781,6 +848,7 @@ try {
       saved = null;
       close();
       if (game.s.result) result();
+      else if (game.s.pendingBoon) offerBoon();
     };
     $("#fresh").onclick = () => {
       saved = null;

@@ -128,3 +128,35 @@ export function waveSpec(w) {
   };
 }
 export const tierScale = (t) => 2.55 ** (t - 1);
+
+// Run-only boss blessings. Repeated picks add; they never multiply each other.
+export const BOONS = {
+  venom: {
+    name: "깊은 가시",
+    art: "thorn",
+    desc: "가시의 독 피해 +10% · 지속시간 +1초",
+    detail:
+      "독 피해 13 → 14.3/초, 지속 4 → 5초 (첫 선택·1성 기준). 같은 독은 가장 강한 피해로 갱신됩니다.",
+    poisonBonus: 0.1,
+    duration: 1,
+  },
+  hunt: {
+    name: "서리 추격",
+    art: "frost",
+    desc: "둔화 중인 적에게 궁수 피해 +25%",
+    detail:
+      "서리가 먼저 적을 늦춰야 발동합니다. 갑각·보스의 궁수 피해 감소는 그대로 적용됩니다.",
+    damageBonus: 0.25,
+  },
+  supply: {
+    name: "달빛 보급",
+    art: "bell",
+    desc: "즉시 달빛 조각 +125 · 성문 +3",
+    detail:
+      "랜덤 소환 2회와 합성 1회에 쓸 수 있어요. 성문은 최대 20까지 회복합니다. 전장이 가득 찼다면 합성하거나 저축하세요.",
+    gold: 125,
+    heal: 3,
+  },
+};
+export const boonCount = (s, key) =>
+  (s.boons || []).filter((b) => b.key === key).length;

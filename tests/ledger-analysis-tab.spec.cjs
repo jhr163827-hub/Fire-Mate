@@ -40,7 +40,7 @@ test('소비 분석 keeps the key cards open and folds the rest; empty compariso
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('insights'));
  await expect(page.locator('#fmInsightsMore')).not.toHaveAttribute('open','');
- await expect(page.locator('#fmFixedList')).toBeVisible();
+ await expect(page.locator('#fmCatBudgetEdit')).toBeVisible();
  await expect(page.locator('#coach')).toBeHidden();
  await expect(page.locator('#monthDelta')).toHaveText('비교 불가');
  await expect(page.locator('#monthDelta')).not.toHaveClass(/red|green/);

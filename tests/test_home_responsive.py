@@ -1560,9 +1560,9 @@ class HomeResponsiveTest(unittest.TestCase):
                 page.on('pageerror',lambda exc: errors.append(str(exc)))
                 try:
                     page.goto(URL,wait_until='domcontentloaded')
-                    for field_id in ('accountName','holdingTicker','goal','rpMonthly','recDay'):
+                    for field_id in ('accountName','holdingTicker','goal','rpMonthly'):
                         self.assertTrue(page.locator('#'+field_id).evaluate('(el)=>!!el.labels?.length'),field_id)
-                    for dialog_id in ('entryOverlay','accountOverlay','holdingOverlay','recOverlay'):
+                    for dialog_id in ('entryOverlay','accountOverlay','holdingOverlay'):
                         dialog=page.locator('#'+dialog_id+' [role="dialog"]')
                         self.assertTrue(dialog.get_attribute('aria-labelledby'),dialog_id)
                         self.assertIn('닫기',dialog.locator('[data-close]').get_attribute('aria-label'))

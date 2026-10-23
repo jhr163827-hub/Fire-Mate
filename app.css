@@ -1917,10 +1917,9 @@ html,body{overscroll-behavior-y:contain}
 .fm-card-x{margin-top:12px}
 .fm-card-x h3{margin:0 0 4px;font-size:16px}
 .fm-card-x .mini{margin:0 0 10px}
-.fm-fixed-row,.fm-catb-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px;border-bottom:1px solid var(--line);font-size:14px}
-.fm-fixed-row span,.fm-catb-row span{color:var(--sub);font-size:12px}
-.fm-fixed-row strong,.fm-catb-row strong{white-space:nowrap}
-.fm-fixed-total{margin-top:8px;font-weight:800}
+.fm-catb-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px;border-bottom:1px solid var(--line);font-size:14px}
+.fm-catb-row span{color:var(--sub);font-size:12px}
+.fm-catb-row strong{white-space:nowrap}
 .fm-catb-bar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin:4px 0 8px}
 .fm-catb-bar i{display:block;height:100%;background:var(--green)}
 .fm-catb-bar i.over{background:var(--red)}
@@ -1970,10 +1969,6 @@ html,body{overscroll-behavior-y:contain}
 /* ---- fm-safety-v3592 ---- */
 
 #fmPersistStatus{margin:4px 0 0;font-size:12px;color:var(--sub)}
-.fm-fixed-row.sure strong{color:var(--txt)}
-.fm-fixed-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.fm-fixed-ask{display:flex;gap:6px}
-.fm-fixed-ask button{min-height:36px;padding:0 10px;font-size:12px;border-radius:10px}
 .fm-uncat-row{display:grid;grid-template-columns:minmax(0,1fr) 120px auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .fm-uncat-row div{min-width:0}.fm-uncat-row strong{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fm-uncat-row span{font-size:12px;color:var(--sub)}
 .fm-uncat-row select{min-height:44px;font-size:14px;width:100%}
@@ -1994,7 +1989,6 @@ html,body{overscroll-behavior-y:contain}
 #fmMonthReport .fm-mr-actions button{min-height:44px}
 
 /* ---- fm-autocat-v3594 ---- */
-.fm-fixed-hide{min-height:32px;padding:0 6px;background:none;border:0;box-shadow:none;color:var(--sub);font-size:12px;font-weight:600;text-decoration:underline}
 #fmUncatFold>summary{min-height:44px;display:flex;align-items:center;font-size:15px;font-weight:800;cursor:pointer}
 #fmAutoCatNote button{min-height:36px;padding:0 10px;margin-left:6px;font-size:12px}
 /* ---- fm-design-v3595 ---- */
@@ -2095,3 +2089,4 @@ html,body{overscroll-behavior-y:contain}
 #fmMilestone{border:1px solid var(--green);background:linear-gradient(135deg,var(--panel),var(--panel2))}
 #fmMilestone p{margin:4px 0 0;font-size:14px;color:var(--sub)}
 #view-calendar .day.fm-nospend .num::after{content:' 🌱';font-size:10px}
+.fm-market-ext{display:block;grid-column:1/-1;font-size:12px;font-weight:700;line-height:1.4}

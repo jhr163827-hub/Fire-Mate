@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  window.fmSyncFireScreens(document.querySelector('.view.active')?.id.replace('view-',''));
  const assets=$('view-assets');
  if(assets){
-  const oldTabs=$('fmLegacyAssetTabs');if(oldTabs){oldTabs.hidden=true;oldTabs.style.display='none'}
   const divPanel=$('fmDividendPanel');if(divPanel)divPanel.hidden=false;
   for(const [id,mode] of [['fmAssetQuickAccounts','account'],['fmAssetQuickHoldings','holding'],['fmAssetQuickDividend','dividend'],['fmAssetQuickAnalysis','analysis'],['fmAssetQuickMarket','market']]){
    const btn=$(id);
@@ -387,7 +386,7 @@ try{
    $('fmSyncStatus').textContent=(last?'가져온 내역 '+day(last)+'까지':'아직 가져온 내역이 없어요')+(days===null?'':' · 마지막 가져오기 '+(days<1?'오늘':days+'일 전'));
    const note=$('fmHomeSyncNote');
    // Short on purpose: it is the second line of the home button; the ledger card has the details.
-   if(note){note.textContent=days!==null?(days<1?'오늘 가져옴':days+'일 전 가져옴'):last?day(last)+'까지 있음':'아직 가져온 적 없어요';note.classList.toggle('due',days!==null&&days>=7)}if($('fmLedgerSyncNote'))$('fmLedgerSyncNote').textContent=note?.textContent||''
+   if(note){note.textContent=days!==null?(days<1?'오늘 가져옴':days+'일 전 가져옴'):last?day(last)+'까지 있음':'아직 가져온 적 없어요';note.classList.toggle('due',days!==null&&days>=7)}if($('fmLedgerSyncNote'))$('fmLedgerSyncNote').textContent=note?.textContent||'';const hi=$('fmHeaderImport');if(hi){hi.title='뱅크샐러드 가져오기 · '+(note?.textContent||'');hi.classList.toggle('due',days!==null&&days>=7)}
   };
   for(const el of [$('bankExcelPreview'),$('heroSpent')])if(el)new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
   sync();

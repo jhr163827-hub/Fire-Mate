@@ -86,7 +86,13 @@ test('the ledger top shows what was saved this month and offers the 뱅크샐러
  await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'e',date:m+'-02',type:'expense',category:'식비',amount:500000,bankExcelKey:'k'}]}));
  await page.evaluate(()=>window.fmGo('calendar'));
  await expect(page.locator('#fmCalendarSaved')).toHaveText('+₩3,500,000');
- await expect(page.locator('#fmLedgerImportBtn')).toBeVisible();
+ // Import lives as a small icon in the ledger header; the full-width row is gone to make room.
+ await expect(page.locator('#fmHeaderImport')).toBeVisible();
+ await expect(page.locator('#fmLedgerImportBtn')).toBeHidden();
+ await expect(page.locator('#fmHeaderImport')).toHaveAttribute('title','뱅크샐러드 가져오기 · '+Number(m.slice(5))+'월 2일까지 있음');
+ await page.evaluate(()=>window.fmGo('home'));
+ await expect(page.locator('#fmHeaderImport')).toBeHidden();
+ await page.evaluate(()=>window.fmGo('calendar'));
  await expect(page.locator('#fmLedgerSyncNote')).toHaveText(Number(m.slice(5))+'월 2일까지 있음');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });

@@ -95,6 +95,7 @@ let browser;
     "app.mjs",
     "data.mjs",
     "engine.mjs",
+    "feedback.mjs",
     "art.mjs",
     "style.css",
     ...[
@@ -152,7 +153,9 @@ let browser;
         menuNavigation: "pass",
         existingGameLinks: "unchanged",
         realServiceWorker: "pass",
-        runtimeAssetsCached: 16,
+        runtimeAssetsCached: assets.filter((p) =>
+          p.startsWith("/arcade/moonward/"),
+        ).length,
         offlineMenuAndGameResume: "pass",
         offlineExit: "pass",
         onlineReturn: "pass",

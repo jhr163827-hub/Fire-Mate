@@ -33,7 +33,7 @@
 무조건 전체 게임을 금융 앱의 `ASSETS`에 추가하면 첫 설치·업데이트 때 아트를 모두 내려받게 된다. 이 게임은 진입 때만 로드한다는 요구에 맞춰 기존 arcade 런타임 캐시 정책을 우선 유지하고, 다음을 통합 후 확인한다.
 
 - 메뉴와 `arcade/moonward/` 및 `arcade/moonward/index.html` 경로의 오프라인 재진입.
-- `style.css`, `app.mjs`, `engine.mjs`, `data.mjs`, `art.mjs`.
+- `style.css`, `app.mjs`, `engine.mjs`, `data.mjs`, `art.mjs`, `feedback.mjs`.
 - `art/forest.webp`, `art/archer.webp`, `art/ember.webp`, `art/frost.webp`, `art/thorn.webp`, `art/bell.webp`, `art/wisp.webp`, `art/wolf.webp`, `art/beetle.webp`, `art/boss.webp`.
 - 버전 업데이트 후 구 캐시 삭제와 새 자산 재로드. 최초 진입 전에는 오프라인 플레이가 보장되지 않는다.
 

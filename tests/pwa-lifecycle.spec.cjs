@@ -1,5 +1,7 @@
 const {test,expect}=require('@playwright/test');
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+// The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
+test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}))});
 // The app and both workers are real repository sources; only the release server changes.
 test('real worker update can be deferred, retried and activated without mixing version caches or financial data',async({browser})=>{
  test.setTimeout(90000);
@@ -14,7 +16,7 @@ test('real worker update can be deferred, retried and activated without mixing v
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
  try{for(const [width,theme,isLegacy,reloadIntoCurrent] of [[320,'dark',false,false],[390,'light',true,false],[430,'dark',true,true]]){
   legacy=isLegacy;previous=legacy?'3.5.41':basePrevious;partial=false;
-  released=false;const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true});
+  released=false;const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true});await context.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}));
   await context.route('https://api.frankfurter.dev/**',r=>r.abort());
   // Legacy clients check the repository; current clients must verify the actual release origin.
   await context.route('https://raw.githubusercontent.com/**',r=>r.fulfill({contentType:'text/html',body:(released&&!partial?html:oldHTML())}));

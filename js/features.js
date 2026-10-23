@@ -371,7 +371,7 @@ try{
    });
   }).observe(confirmImport,{attributes:true,attributeFilter:['hidden']});
   new MutationObserver(()=>{if(!gmail.disabled)setTimeout(()=>{fromHome=false},0)}).observe(gmail,{attributes:true,attributeFilter:['disabled']});
-  window.fmImportFromHome=()=>{if(homeBox&&live[0]?.parentElement!==homeBox)homeBox.append(...live);if(gmail.disabled)return;fromHome=true;gmail.click()};
+  window.fmImportFromHome=(b=homeBox)=>{if(b&&live[0]?.parentElement!==b)b.append(...live);if(gmail.disabled)return;fromHome=true;gmail.click()};
   window.fmOpenImport=start=>{
    toPanel();
    const settings=$('settingsOverlay');
@@ -390,7 +390,7 @@ try{
    $('fmSyncStatus').textContent=(last?'가져온 내역 '+day(last)+'까지':'아직 가져온 내역이 없어요')+(days===null?'':' · 마지막 가져오기 '+(days<1?'오늘':days+'일 전'));
    const note=$('fmHomeSyncNote');
    // Short on purpose: it is the second line of the home button; the ledger card has the details.
-   if(note){note.textContent=days!==null?(days<1?'오늘 가져옴':days+'일 전 가져옴'):last?day(last)+'까지 있음':'아직 가져온 적 없어요';note.classList.toggle('due',days!==null&&days>=7)}
+   if(note){note.textContent=days!==null?(days<1?'오늘 가져옴':days+'일 전 가져옴'):last?day(last)+'까지 있음':'아직 가져온 적 없어요';note.classList.toggle('due',days!==null&&days>=7)}if($('fmLedgerSyncNote'))$('fmLedgerSyncNote').textContent=note?.textContent||''
   };
   for(const el of [$('bankExcelPreview'),$('heroSpent')])if(el)new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
   sync();

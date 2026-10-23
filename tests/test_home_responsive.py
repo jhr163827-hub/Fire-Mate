@@ -700,7 +700,6 @@ class HomeResponsiveTest(unittest.TestCase):
             page.goto(URL, wait_until="domcontentloaded")
             page.locator('.bottomnav [data-view="assets"]').click()
             page.locator("#refreshStocks").click()
-            page.locator('#fmAskOk').click()
             page.wait_for_function("""() => Number(localStorage.getItem('firemate_quote_cooldown_v1') || 0) > Date.now()""",
                                    timeout=15000)
             saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings[0]""")
@@ -740,7 +739,6 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.goto(URL, wait_until="domcontentloaded")
                     page.locator('.bottomnav [data-view="assets"]').click()
                     page.locator("#refreshStocks").click()
-                    page.locator('#fmAskOk').click()
                     page.wait_for_function("""() => !document.querySelector('#refreshStocks').disabled && document.querySelector('#quoteProgressText')?.textContent?.includes('완료')""", timeout=20000)
                     saved = page.evaluate("""() => JSON.parse(localStorage.getItem('firemate_smart_v3'))""")
                     holding = saved["holdings"][0]

@@ -61,6 +61,8 @@ test('pulling down on home runs the quiet net-worth refresh',async({page})=>{
  await expect(page.locator('#fmPull')).toHaveText('↻ 놓으면 순자산 업데이트');
  await touch('touchend',260);
  await expect.poll(()=>page.evaluate(()=>window.__pulls)).toBe(1);
+ // The browser's own pull-to-refresh must not take the gesture on home (it already doesn't on 자산).
+ expect(await page.evaluate(()=>getComputedStyle(document.documentElement).overscrollBehaviorY)).toBe('contain');
  // Not on other tabs.
  await page.evaluate(()=>window.fmGo('calendar'));
  await touch('touchstart',100);await touch('touchmove',300);await touch('touchend',300);

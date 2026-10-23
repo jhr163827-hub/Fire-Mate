@@ -437,7 +437,7 @@ try{
   let startY=null,pulled=0,busy=false;
   const active=()=>{const v=document.querySelector('.view.active');return v&&(v.id==='view-home'||v.id==='view-assets')&&!document.querySelector('.modalbg.show')&&!document.getElementById('fmAsk')?.matches(':not([hidden])')};
   addEventListener('touchstart',e=>{startY=(scrollY<=0&&active()&&!busy&&e.touches.length===1)?e.touches[0].clientY:null;pulled=0},{passive:true});
-  addEventListener('touchmove',e=>{if(startY==null)return;pulled=Math.max(0,e.touches[0].clientY-startY);if(scrollY>0){startY=null;pill.style.transform='';return}const y=Math.min(pulled*0.5,70)-56;pill.style.transform='translate(-50%,'+y+'px)';pill.textContent=pulled>110?'↻ 놓으면 순자산 업데이트':'↓ 당겨서 업데이트'},{passive:true});
+  addEventListener('touchmove',e=>{if(startY==null)return;pulled=Math.max(0,e.touches[0].clientY-startY);if(scrollY>0){startY=null;pill.style.transform='';return}if(pulled&&e.cancelable)e.preventDefault();const y=Math.min(pulled*0.5,70)-56;pill.style.transform='translate(-50%,'+y+'px)';pill.textContent=pulled>110?'↻ 놓으면 순자산 업데이트':'↓ 당겨서 업데이트'},{passive:false});
   addEventListener('touchend',async()=>{if(startY==null)return;startY=null;const go=pulled>110;pill.style.transform='';if(!go||typeof window.fmRefreshNetWorth!=='function')return;
    busy=true;pill.textContent='↻ 순자산 업데이트 중…';pill.classList.add('busy');
    const before=$('netWorth')?.textContent||'';let failed=false,ran=true;try{ran=await window.fmRefreshNetWorth()!==false}catch{failed=true}finally{busy=false;pill.classList.remove('busy');pill.textContent=''}const after=$('netWorth')?.textContent||'';if(ran||failed)window.fmToast?.(failed?'업데이트하지 못했어요. 잠시 후 다시 당겨 주세요':'순자산 '+after+(before&&before!==after?' (업데이트됨)':' · 시세 변동 없음'))},{passive:true});

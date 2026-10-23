@@ -29,13 +29,23 @@ test('US holdings show the after-hours price next to the regular one',async({pag
 test('home lists the largest holdings with today\'s change and opens a holding in one tap',async({page})=>{
  const row=page.locator('#fmHomeHoldings [data-home-holding]');
  await expect(row).toHaveCount(2);
+ // Folded on first view so the home screen stays short; one tap opens it.
+ await expect(row.first()).toBeHidden();
+ await page.locator('.fm-home-holdings>summary').click();
  await expect(row.first()).toContainText('JEPQ');
  await expect(row.first()).toContainText('애프터 $55.6');
  await row.first().click();
  await expect(page.locator('#view-assets')).toHaveClass(/active/);
  await expect(page.locator('#fmAccountDetail')).toContainText('JEPQ');
+ // Opened from home, back goes straight home.
  await page.locator('#fmDetailBack').click();
+ await expect(page.locator('#view-home')).toHaveClass(/active/);
+ // From the list itself, back still returns to the list.
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickHoldings').click();
+ await page.locator('#holdingList .fm-holding-row-main').first().click();
+ await page.goBack();
  await expect(page.locator('#fmAssetHoldingsPanel')).toBeVisible();
+ await expect(page.locator('#view-assets')).toHaveClass(/active/);
 });
 test('home shows this month\'s savings against the FIRE plan',async({page})=>{
  const m=new Date().toISOString().slice(0,7);

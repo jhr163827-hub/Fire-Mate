@@ -270,7 +270,7 @@ try{
   };
   // Backup nudge: only once there is data worth losing, and never for brand-new profiles.
   const nudge=document.createElement('section');nudge.className='card fm-backup-nudge';nudge.hidden=true;nudge.setAttribute('aria-labelledby','fmBackupNudgeTitle');
-  nudge.innerHTML='<h3 id="fmBackupNudgeTitle">데이터를 백업해 두세요</h3><p id="fmBackupNudgeText"></p><div class="fm-backup-nudge-actions"><button type="button" class="primary" id="fmBackupNow">메일로 백업 보내기</button><button type="button" class="secondary" id="fmBackupLater">7일 뒤에</button></div>';
+  nudge.innerHTML='<h3 id="fmBackupNudgeTitle">데이터를 백업해 두세요</h3><p id="fmBackupNudgeText"></p><button type="button" class="primary" id="fmBackupDrive"></button><div class="fm-backup-nudge-actions"><button type="button" class="secondary" id="fmBackupNow">파일로 저장</button><button type="button" class="secondary" id="fmBackupLater">7일 뒤에</button></div>';
   (home.querySelector('.fm-onboarding')||home.querySelector('.home-shortcuts')||home.lastElementChild).after(nudge);
   const status=document.createElement('div');status.id='fmBackupStatus';status.className='mini';status.setAttribute('aria-live','polite');
   ($('exportShare')||$('export'))?.after(status);
@@ -281,12 +281,13 @@ try{
    status.textContent=last===null?'마지막 백업: 아직 없어요':'마지막 백업: '+(daysSince(last)<1?'오늘':daysSince(last)+'일 전');
    const start=firstDay(d),due=last!==null?daysSince(last)>=7:start!==null&&daysSince(start)>=3;
    nudge.hidden=!(hasData(d)&&due&&!(snooze!==null&&snooze>Date.now()));
-   $('fmBackupNow').textContent=localStorage.getItem('firemate_drive_backup_v1')==='1'?'드라이브에 백업하기':'메일로 백업 보내기';
-   if(!nudge.hidden)$('fmBackupNudgeText').textContent=(last===null?'아직 백업한 적이 없어요.':'이번 주 백업할까요? 마지막 백업이 '+daysSince(last)+'일 전이에요.')+' 기록은 이 휴대폰에만 저장돼서, 앱이나 브라우저 데이터를 지우면 사라져요.';
+   const drive=localStorage.getItem('firemate_drive_backup_v1')==='1';$('fmBackupDrive').textContent=drive?'드라이브에 백업하기':'☁️ 드라이브 자동 백업 켜기';
+   if(!nudge.hidden)$('fmBackupNudgeText').textContent=(last===null?'아직 백업한 적이 없어요.':'이번 주 백업할까요? 마지막 백업이 '+daysSince(last)+'일 전이에요.')+(drive?'':' 자동 백업을 켜 두면 신경 쓸 일이 없어요.');
   };
   const sync=()=>{const d=saved();syncQuote(d);syncBackup(d)};
-  // With Drive backup on, the reminder backs up there in one tap; otherwise it opens the share sheet.
-  $('fmBackupNow').onclick=()=>{if(localStorage.getItem('firemate_drive_backup_v1')==='1')window.fmDriveBackupNow?.().then(sync);else{($('exportShare')||$('export'))?.click();setTimeout(sync,300)}};
+  // Drive first: one tap turns on (or runs) the Drive backup; "파일로 저장" keeps the share-sheet/download path.
+  $('fmBackupDrive').onclick=()=>{const on=$('fmDriveOn');if(localStorage.getItem('firemate_drive_backup_v1')==='1')window.fmDriveBackupNow?.().then(sync);else if(on){on.checked=true;on.dispatchEvent(new Event('change'));setTimeout(sync,300)}};
+  $('fmBackupNow').onclick=()=>{($('exportShare')||$('export'))?.click();setTimeout(sync,300)};
   $('fmBackupLater').onclick=()=>{try{localStorage.setItem(SNOOZE,new Date(Date.now()+7*DAY).toISOString())}catch{}sync()};
   for(const id of ['export','exportShare'])$(id)?.addEventListener('click',()=>setTimeout(sync,300));
   // Totals re-render after every saved change; follow them instead of polling.

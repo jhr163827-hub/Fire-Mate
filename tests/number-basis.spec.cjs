@@ -13,7 +13,7 @@ test('FIRE progress counts only FIRE assets everywhere; net worth stays the full
  await expect(page.locator('#toast')).toContainText('운용자산 기준');
  await expect(page.locator('#fireAsset')).toHaveText('4,000만 원');
  await expect(page.locator('#firePct')).toHaveText('6.2%');
- await expect(page.locator('#fmFireBasisGap')).toHaveText('전체 순자산 1억 4,000만 원 · FIRE 제외 1억 원 · 계좌 고르기 ›');
+ await expect(page.locator('#fmFireBasisGap')).toHaveText('FIRE 제외 1억 원 · 계좌 고르기');
  expect(await page.evaluate(()=>window.fmFireViewState.plan.net)).toBe(40000000);
  await page.evaluate(()=>window.fmGo('assets'));
  await expect(page.locator('#assetGoalPct')).toHaveCount(0);

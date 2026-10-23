@@ -39,6 +39,6 @@ test('소비 분석 keeps the key cards open and folds the rest; empty compariso
  await expect(page.locator('#monthDelta')).not.toHaveClass(/red|green/);
  await expect(page.locator('#sixChart .fm-six-amount').first()).toHaveText('');
  await page.locator('#fmInsightsMore>summary').click();
- await expect(page.locator('#fmInsightsBudgetLink')).toHaveText('가계부에서 예산 수정 →');
+ await expect(page.locator('#fmInsightsBudgetLink')).toHaveText('가계부에서 예산 수정 ›');
  await expect(page.locator('#coach')).toBeVisible();
 });

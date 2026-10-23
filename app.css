@@ -2092,3 +2092,38 @@ html,body{overscroll-behavior-y:contain}
 #view-home #homeAssetHero .fm-home-tabs [aria-selected=true]{background:var(--panel);color:var(--green);font-weight:800}
 #view-home #homeAssetHero:has(.fm-home-holdings[hidden]) .fm-home-tabs,#view-home #homeAssetHero.fm-show-holdings:not(:has(.fm-home-holdings[hidden])) #homeDailyChange,#view-home #homeAssetHero:not(.fm-show-holdings) .fm-home-holdings{display:none}
 #view-home #homeAssetHero .fm-home-holdings{margin-top:4px;border-top:0;padding-top:0}
+/* Home polish: one surface per card, no boxes inside boxes, quiet secondary actions. */
+#view-home>.hero,#view-home>.card,#view-home>section.card{border-radius:20px;border:1px solid var(--line);background:var(--panel);box-shadow:none}
+#view-home #homeAssetHero{padding:16px 18px 14px}
+#view-home #homeAssetHero .fm-home-tabs{background:none;padding:0;gap:0;margin-top:10px;border-bottom:1px solid var(--line);border-radius:0}
+#view-home #homeAssetHero .fm-home-tabs button{min-height:44px;border-radius:0;font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
+#view-home #homeAssetHero .fm-home-tabs [aria-selected=true]{background:none;color:var(--txt);border-bottom-color:var(--green)}
+#view-home #homeAssetHero #homeDailyChange{background:none;border:0;padding:10px 0 0;font-size:13px}
+#view-home .fm-home-budget{padding:16px 18px}
+#view-home .fm-home-budget #homeBudgetAction{width:auto;min-height:44px;margin:0;padding:0 2px;border:0;background:none;color:var(--green);font-size:13px;font-weight:800}
+#view-home .fm-home-budget-grid{margin-top:8px}
+#view-home .fm-home-budget .progress{height:6px;margin:8px 0 4px}
+#view-home .fm-pace,#view-home #fmHomeSaving{font-size:13px;line-height:1.55}
+#view-home .fm-home-actions{margin-top:12px;padding-top:4px;border-top:1px solid var(--line)}
+#view-home .fm-home-actions #fmHomeSync{display:flex;flex-direction:row;justify-content:space-between;align-items:center;width:100%;min-height:48px;padding:0;border:0;background:none;color:var(--txt);font-size:14px;font-weight:800;text-align:left}
+#view-home .fm-home-actions #fmHomeSync.primary{color:var(--green)}
+#view-home #fmHomeSyncNote{font-size:12px;font-weight:600;color:var(--sub)}
+#view-home .fm-home-fire{padding:16px 18px}
+#view-home .fm-backup-nudge .fm-backup-nudge-actions button{min-height:44px;font-size:14px}
+#view-home .fm-pace .over{color:var(--yellow)}
+#view-assets #fmAssetHoldingsPanel #holdingList .fm-holding-list-row{grid-template-columns:minmax(0,1fr);padding:12px 0}
+#view-assets #fmAssetHoldingsPanel .fm-holding-row-main{gap:3px}
+#view-assets #fmAssetHoldingsPanel .fm-holding-name{font-size:15px}
+#view-assets #fmAssetHoldingsPanel .fm-holding-value{font-size:15px}
+#view-assets #fmAssetHoldingsPanel .fm-holding-account{font-size:12px;color:var(--sub)}
+#view-assets #fmAssetHoldingsPanel .fm-holding-day{font-size:13px}
+#view-assets #fmAssetHoldingsPanel .fm-holding-meta{font-size:12px;color:var(--sub)}
+#view-assets #fmAssetHoldingsPanel .fm-holding-meta .fm-holding-gain{font-size:12px;font-weight:600}
+#view-assets #fmAssetHoldingsPanel .fm-holding-meta .fm-market-ext{color:var(--sub);font-weight:500}
+#view-assets .fm-asset-jump{gap:0;padding:0;background:var(--bg);border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none}
+#view-assets .fm-asset-jump button{border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;font-size:14px}
+#view-assets .fm-asset-jump button.active{background:none;color:var(--txt);border-color:transparent;border-bottom-color:var(--green)}
+#view-assets>.hero.fm-quote-hero{background:var(--panel);border:1px solid var(--line);box-shadow:none;border-radius:20px}
+#view-home #homeAssetHero,#view-assets .fm-quote-hero.fm-unified-hero{padding:16px 18px 14px}
+#view-home #homeAssetHero>button#homeRefreshStocks,#view-assets>.hero.fm-quote-hero>button#refreshStocks{min-width:0;padding:0 14px;border:1px solid var(--line);background:none;box-shadow:none;color:var(--green);font-size:13px;border-radius:12px}
+#view-assets #toggleAccountOrder,#view-assets #fmBalanceRowEdit{min-height:44px;padding:0 4px;border:0;background:none;color:var(--green);font-size:13px;font-weight:800}

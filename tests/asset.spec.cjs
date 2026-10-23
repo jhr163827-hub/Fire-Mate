@@ -28,7 +28,9 @@ test('account detail adds holdings to its own account and preserves existing dat
  expect((await read()).holdings).toEqual(after.holdings);
  await page.locator('button.bottom-item[data-view="assets"]').click();
  await page.locator('#fmAssetQuickHoldings').click();
- await page.locator('[data-holding="qa-existing"]').click();
+ // Editing starts from the holding's detail page (the list rows have no pencil button).
+ await page.locator('[data-holding-row="qa-existing"] .fm-holding-row-main').click();
+ await page.locator('#fmDetailEdit').click();
  await expect(page.locator('#holdingAccount')).toHaveValue('legacy-us');
  await page.locator('[data-close="holdingOverlay"]').first().click();
  expect((await read()).holdings).toEqual(after.holdings);

@@ -1640,7 +1640,6 @@ body.fm-quote-loading :is(#homeRefreshStocks,#refreshStocks)::before{content:'â—
 #view-insights>.statrow .value{font-size:20px;overflow-wrap:anywhere}
 #view-insights .fm-insight-coach{margin-top:10px}
 #view-insights h3{margin-top:16px!important;font-size:15px}
-#view-insights .fm-home-transactions{margin-top:10px;grid-template-columns:minmax(0,1fr)}
 #view-insights #fmInsightAssets{width:100%;min-height:44px;margin-top:10px}
 #view-assets #fmAccountDetail .fm-detail-summary{padding:14px}
 #view-assets #fmAccountDetail .fm-holding-title{font-size:21px;margin:0 0 8px}
@@ -2048,3 +2047,5 @@ html,body{overscroll-behavior-y:contain}
 .fm-monthly-split>span{width:100%;color:var(--sub);font-weight:700}
 .fm-monthly-split strong{font-size:15px}
 .fm-monthly-split small{width:100%;font-size:12px;color:var(--sub)}
+#fmTodayPL[hidden]{display:none}
+#fmLedgerSearchArea [data-go="history"]{min-height:44px;margin-top:6px}

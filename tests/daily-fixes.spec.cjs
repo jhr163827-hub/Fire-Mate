@@ -60,7 +60,7 @@ test('a new month offers last budget and the recent average; analysis links to t
  await seedWith(page,{theme:'dark',rec:[],budgets:{[prev]:1000000},tx:[{id:'p',date:prev+'-10',type:'expense',category:'식비',amount:1500000,memo:'지난달'}]});
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('insights'));
- await expect(page.locator('#budget')).toBeHidden();
+ await expect(page.locator('#budget')).toHaveCount(0);
  // The budget card sits in the folded '이번 달 흐름 더 보기' section.
  await page.locator('#fmInsightsMore>summary').click();
  await page.locator('#fmInsightsBudgetLink').click();

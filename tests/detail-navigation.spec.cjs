@@ -31,7 +31,6 @@ for(const width of [320,390,430])test('report navigation and shared analysis pre
     await page.locator('#fmMonthlyPrev').click();await page.locator('#fmMonthlyNext').click();
    }else{
     await expect(page.locator('#insightCats')).toContainText('식비');
-    await expect(page.locator('#recent')).toContainText('분석 보존 검증');
     await expect(page.locator('#sixChart')).toBeVisible();
    }
    await page.locator('#'+back).click();await expect(page.locator('#view-home')).toHaveClass(/active/);

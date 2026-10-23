@@ -19,13 +19,12 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
 test('the 뱅크샐러드 importer lives in settings, the ledger keeps its calendar, home opens it',async({page})=>{
  await page.goto('/index.html');
- await expect(page.locator('#view-home #fmHomeSync > span').first()).toHaveText('📥 Gmail 가져오기');
+ await expect(page.locator('#view-home #fmHomeSync > span').first()).toHaveText('📥 뱅크샐러드 가져오기');
  await expect(page.locator('#view-home #fmHomeSyncNote')).toHaveText('아직 가져온 적 없어요');
- await expect(page.locator('#view-home #fmHomeRecord')).toHaveText('＋ 직접 기록');
- // Two equal, quiet buttons instead of a large green one.
- const [sync,record]=await Promise.all(['fmHomeSync','fmHomeRecord'].map(id=>page.locator('#'+id).boundingBox()));
- for(const box of [sync,record]){expect(box.height).toBeGreaterThanOrEqual(44);expect(box.height).toBeLessThanOrEqual(52)}
- expect(Math.abs(sync.width-record.width)).toBeLessThanOrEqual(2);
+ // Records come from 뱅크샐러드 only, so home has one quiet import button; manual entry stays in 가계부.
+ await expect(page.locator('#view-home #fmHomeRecord')).toHaveCount(0);
+ const sync=await page.locator('#fmHomeSync').boundingBox();
+ expect(sync.height).toBeGreaterThanOrEqual(44);expect(sync.height).toBeLessThanOrEqual(52);
  await expect(page.locator('#fmHomeSync')).not.toHaveClass(/primary/);
  // 가계부 has no import panel; the calendar follows the budget card.
  await page.evaluate(()=>window.fmGo('calendar'));

@@ -31,7 +31,10 @@ class HomeResponsiveTest(unittest.TestCase):
         if not fold.evaluate('(e)=>e.open'): fold.locator(':scope>summary').click()
 
     def fire_screen(self,page,target):
-        page.locator('.view.active .fm-fire-screen-nav [data-fire-screen="'+target+'"]').click()
+        # 계획 조정 and 전략·위험 open from the 현황 tab.
+        via={'firecalc':'#fmOpenCalculator','retire':'#fmFireStrategyOpen'}.get(target)
+        page.locator('.view.active .fm-fire-screen-nav [data-fire-screen="'+('fire' if via else target)+'"]').click()
+        if via: page.locator(via).click()
 
     def open_portfolio(self,page):
         self.fire_screen(page,'retire')
@@ -235,7 +238,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('.bottomnav [data-view="fire"]').click()
                     self.assertTrue(page.locator('#firePct').is_visible())
                     self.assertTrue(page.locator('#fireYears').is_visible())
-                    self.assertEqual(page.locator('#view-fire .fm-fire-screen-nav button').count(),4)
+                    self.assertEqual(page.locator('#view-fire .fm-fire-screen-nav button').count(),2)
                     positions=page.evaluate("""() => ['.fm-fire-screen-nav','.fm-fire-hero','.fm-fire-overview','#fmForecastDisclosure']
                         .map(selector => document.querySelector('#view-fire '+selector).getBoundingClientRect().y + scrollY)""")
                     self.assertEqual(positions, sorted(positions))
@@ -1572,7 +1575,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     close=page.locator('#entryOverlay [data-close]')
                     self.assertGreaterEqual(close.bounding_box()['height'],44)
                     close.click()
-                    page.locator('#view-calendar [data-go="insights"]').click()
+                    page.locator('#fmModeAnalysis').click()
                     self.assertTrue(page.locator('#view-insights').is_visible())
                     self.assertGreaterEqual(page.locator('#view-insights .monthnav button').first.bounding_box()['height'],44)
                     page.evaluate('history.back()')
@@ -1614,7 +1617,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             page.locator('.bottomnav [data-view="calendar"]').click()
                             self.assertTrue(page.locator('#dayTx [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'calendar')
-                            page.locator('#view-calendar [data-go="insights"]').click()
+                            page.locator('#fmModeAnalysis').click()
                             self.assertTrue(page.locator('#view-insights').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'insights')
                             page.locator('.bottomnav [data-view="fire"]').click()

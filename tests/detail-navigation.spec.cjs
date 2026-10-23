@@ -1,4 +1,6 @@
 const {test,expect}=require('@playwright/test');
+// The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
+test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}))});
 for(const width of [320,390,430])test('report navigation and shared analysis preserve finance and return position '+width,async({page})=>{
  await page.setViewportSize({width,height:568});
  await page.route('https://api.frankfurter.dev/**',r=>r.fulfill({json:{rates:{KRW:1400},date:'2026-10-18'}}));
@@ -38,7 +40,7 @@ for(const width of [320,390,430])test('report navigation and shared analysis pre
    await page.goBack();await expect(page.locator('#view-home')).toHaveClass(/active/);
   }
   await page.locator('.bottomnav [data-view="calendar"]').click();
-  await page.locator('[data-go="insights"]').filter({visible:true}).first().click();
+  await page.locator('#fmModeAnalysis').click();
   await expect(page.locator('#fmInsightsBack')).toHaveText('← 가계부');
   await page.locator('#fmInsightsBack').click();await expect(page.locator('#view-calendar')).toHaveClass(/active/);
   await page.locator('.bottomnav [data-view="home"]').click();

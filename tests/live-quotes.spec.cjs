@@ -27,3 +27,20 @@ test('US holdings show the after-hours price next to the regular one',async({pag
  await page.locator('#accountSummary > *').first().click();
  await expect(page.locator('#fmAccountDetail [data-fm-holding]').first()).toContainText('애프터 $55.6');
 });
+test('home lists the largest holdings with today\'s change and opens a holding in one tap',async({page})=>{
+ const row=page.locator('#fmHomeHoldings [data-home-holding]');
+ await expect(row).toHaveCount(2);
+ await expect(row.first()).toContainText('JEPQ');
+ await expect(row.first()).toContainText('애프터 $55.6');
+ await row.first().click();
+ await expect(page.locator('#view-assets')).toHaveClass(/active/);
+ await expect(page.locator('#fmAccountDetail')).toContainText('JEPQ');
+ await page.locator('#fmDetailBack').click();
+ await expect(page.locator('#fmAssetHoldingsPanel')).toBeVisible();
+});
+test('home shows this month\'s savings against the FIRE plan',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await page.evaluate(m=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.tx=[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'e',date:m+'-02',type:'expense',category:'식비',amount:1000000},{id:'t',date:m+'-03',type:'transfer',category:'이체',amount:500000}];localStorage.setItem('firemate_smart_v3',JSON.stringify(d))},m);
+ await page.reload();
+ await expect(page.locator('#fmHomeSaving')).toContainText('이번 달 모은 돈 +₩3,000,000 · FIRE 계획 월 ₩3,000,000 (100%)');
+});

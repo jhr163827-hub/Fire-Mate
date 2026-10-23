@@ -1,4 +1,6 @@
 const {test,expect}=require('@playwright/test');
+// The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
+test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}))});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 test('cashflow and experiment disclose different rates and all three saves preserve unrelated drafts with quota rollback',async({page})=>{
  await page.route('https://api.frankfurter.dev/**',r=>r.abort());await page.goto('/index.html');
@@ -6,7 +8,8 @@ test('cashflow and experiment disclose different rates and all three saves prese
  const read=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));const before=await read();
  await page.locator('.bottomnav [data-view="fire"]').click();await page.locator('#fmFireRiskOpen').click();
  await expect(page.locator('#fmModelValues')).toContainText('248만');await expect(page.locator('#fmModelValues')).toContainText('173만');
- const nav=id=>page.locator('.view.active [data-fire-screen="'+id+'"]').click();await nav('firelife');
+ // 계획 조정 and 전략·위험 open from the 현황 tab.
+ const nav=async id=>{const via={firecalc:'#fmOpenCalculator',retire:'#fmFireStrategyOpen'}[id];if(via){await page.locator('.view.active [data-fire-screen="fire"]').click();await page.locator(via).click()}else await page.locator('.view.active [data-fire-screen="'+id+'"]').click()};await nav('firelife');
  await page.locator('#fmDividendEditor>summary').click();await expect(page.locator('#fmSaveDividendRates')).toBeDisabled();await page.locator('[data-fm-div-rate]').first().fill('10');await expect(page.locator('#fmSaveDividendRates')).toBeEnabled();
  await page.locator('#fmLifeConditions>summary').click();await page.locator('#rpMonthly').fill('250');await page.locator('#rpSave').click();let after=await read();expect(after.retirement).toEqual({...before.retirement,monthly:250});await expect(page.locator('[data-fm-div-rate]').first()).toHaveValue('10');
  await nav('retire');await page.locator('#fmUniformExperimentInputs>summary').click();await page.locator('#rpYield').fill('5');await page.locator('#fmSaveExperiment').click();after=await read();expect(after.retirement).toEqual({...before.retirement,monthly:250,yield:5});

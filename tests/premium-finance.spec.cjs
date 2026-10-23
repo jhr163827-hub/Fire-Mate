@@ -1,4 +1,6 @@
 const { test, expect } = require("@playwright/test");
+// The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
+test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}))});
 async function seed(page) {
   await page.route("https://api.frankfurter.dev/**", (r) => r.abort());
   await page.goto("/index.html");
@@ -40,7 +42,7 @@ test("decision overview links exact saved baselines, portfolio and independent s
   );
   await page.locator('.bottomnav [data-view="fire"]').click();
   const tabs = await page.locator('#view-fire .fm-fire-screen-nav button').evaluateAll(es=>es.map(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,align:getComputedStyle(e).textAlign})));
-  expect(tabs).toHaveLength(4);
+  expect(tabs).toHaveLength(2);
   for(const tab of tabs){expect(tab.height).toBe(44);expect(Math.abs(tab.width-tabs[0].width)).toBeLessThan(0.1);expect(tab.align).toBe('center');}
   const state = await page.evaluate(() => window.fmFireViewState);
   const months = state.forecast.baselineMonthsToGoal,

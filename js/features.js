@@ -74,13 +74,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   new MutationObserver(tidyQuick).observe(quick,{childList:true});new MutationObserver(tidyDetail).observe(detail,{childList:true});tidyQuick();tidyDetail();
   document.addEventListener('click',e=>{if(e.target?.id==='fmQuickRun'&&quick.querySelector('strong')||e.target?.id==='fmStrRun'&&detail.querySelector('.fm-str-model-summary')){settings.open=false;setTimeout(()=>(e.target.id==='fmQuickRun'?quick:detail).scrollIntoView({block:'start',behavior:'instant'}),0)}});
  }
- // FIRE screen tabs: the 전략·위험 and 조건 비교 tabs on 현황 are the existing open buttons and keep their own handlers.
- for(const button of document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]'))if(button.id!=='fmFireStrategyOpen'&&button.id!=='fmOpenCalculator')button.onclick=()=>document.dispatchEvent(new CustomEvent('fm-fire-navigate',{detail:button.dataset.fireScreen}));
+ // FIRE screen tabs: 현황 and 생활비. 계획 조정 and 전략·위험 open from 현황, so those screens keep 현황 lit.
+ for(const button of document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]'))button.onclick=()=>document.dispatchEvent(new CustomEvent('fm-fire-navigate',{detail:button.dataset.fireScreen}));
  $('fmOverview-strategy').hidden=true;$('fmOverview-portfolio').hidden=true;$('fmFirePortfolioOpen').hidden=true;document.querySelector('#view-fire .fm-fire-calc-card').hidden=true;
  const originalSync=window.fmSyncFireScreens;
  window.fmSyncFireScreens=view=>{
   originalSync?.(view);
-  document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]').forEach(b=>b.setAttribute('aria-current',b.dataset.fireScreen===view?'page':'false'));
+  document.querySelectorAll('.fm-fire-screen-nav [data-fire-screen]').forEach(b=>b.setAttribute('aria-current',b.dataset.fireScreen===({firecalc:'fire',retire:'fire'}[view]||view)?'page':'false'));
   const bar=$('fmRetireSaveBar');if(view==='firelife'||view==='retire'){
    $('view-'+view).append(bar);
    document.dispatchEvent(new CustomEvent('fm-fire-save-scope',{detail:view==='firelife'?'life':'portfolio'}));

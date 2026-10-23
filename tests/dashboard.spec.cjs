@@ -1,4 +1,6 @@
 const {test,expect}=require('@playwright/test');
+// The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
+test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}))});
 test('shared header and quote controls stay aligned through mobile tab and theme changes',async({page})=>{
  await page.route('https://api.frankfurter.dev/**',r=>r.fulfill({json:{rates:{KRW:1400}}}));
  await page.goto('/index.html');

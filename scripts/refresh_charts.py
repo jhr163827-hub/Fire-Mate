@@ -43,4 +43,16 @@ for code in korean_symbols:
         print("KR",code,len(rows))
     except Exception as e:print("FAILED KR",code,str(e)[:180])
     time.sleep(1)
+# Ten years of daily closes for each market index (closes only: the app draws a line, not candles).
+for key,ticker in (config.get("indices") or {}).items():
+    if not __import__("re").fullmatch(r"[A-Z0-9]{2,10}",str(key)):continue
+    try:
+        hist=yf.Ticker(ticker).history(period="10y",interval="1d",auto_adjust=False)
+        rows=[{"date":day.strftime("%Y-%m-%d"),"close":round(float(r["Close"]),4)} for day,r in hist.iterrows() if __import__("math").isfinite(float(r["Close"])) and float(r["Close"])>0]
+        if len(rows)<2:raise ValueError("No index history")
+        (folder/("IDX-"+key+".json")).write_text(json.dumps({"symbol":key,"updatedAt":datetime.datetime.now(datetime.timezone.utc).isoformat(),"source":"Yahoo Finance via yfinance","points":rows},ensure_ascii=False,separators=(",",":"))+"\n",encoding="utf-8")
+        success+=1
+        print("IDX",key,len(rows))
+    except Exception as e:print("FAILED IDX",key,str(e)[:180])
+    time.sleep(1)
 if not success:raise SystemExit("No symbol history updated")

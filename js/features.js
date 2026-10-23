@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(assets){
   const oldTabs=$('fmLegacyAssetTabs');if(oldTabs){oldTabs.hidden=true;oldTabs.style.display='none'}
   const divPanel=$('fmDividendPanel');if(divPanel)divPanel.hidden=false;
-  for(const [id,mode] of [['fmAssetQuickAccounts','account'],['fmAssetQuickHoldings','holding'],['fmAssetQuickDividend','dividend'],['fmAssetQuickAnalysis','analysis']]){
+  for(const [id,mode] of [['fmAssetQuickAccounts','account'],['fmAssetQuickHoldings','holding'],['fmAssetQuickDividend','dividend'],['fmAssetQuickAnalysis','analysis'],['fmAssetQuickMarket','market']]){
    const btn=$(id);
    if(btn)btn.onclick=()=>window.fmSelectAssetView(mode);
   }
@@ -191,8 +191,8 @@ try{
   const refreshContext=()=>{const rate=Number($('assetFx').value),fetched=!!(fmLiveData().balance?.fxCheckedAt||fmLiveData().balance?.fxAt),text=rate>0?'환율 '+rate.toLocaleString('ko-KR')+'원/USD'+(fetched?'':' (기본값)')+' · 시세 상태':'환율·시세 확인';const title=quoteContext.querySelector('summary');if(title.textContent!==text)title.textContent=text;const status=$('fxStatus').textContent||'환율 기준일 확인 필요';if($('fmAssetFxStatus').textContent!==status)$('fmAssetFxStatus').textContent=status;};
   new MutationObserver(refreshContext).observe(assetHero,{childList:true,subtree:true});new MutationObserver(refreshContext).observe($('fxStatus'),{childList:true,subtree:true});refreshContext();
   const assetTabs=$('view-assets').querySelector('.fm-asset-jump'),tabButtons=[...assetTabs.querySelectorAll('button')];assetTabs.setAttribute('role','tablist');
-  const panels=['fmAssetAccountsPanel','fmAssetHoldingsPanel','fmAssetDividendView','fmAssetAnalysisView'];
-    tabButtons.forEach((button,i)=>{button.setAttribute('role','tab');button.setAttribute('aria-controls',panels[i]);$(panels[i]).setAttribute('role','tabpanel');$(panels[i]).setAttribute('aria-labelledby',button.id);button.addEventListener('keydown',event=>{const offset={ArrowRight:1,ArrowLeft:-1}[event.key];if(offset===undefined&&!['Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?3:(i+offset+4)%4;tabButtons[next].click();tabButtons[next].focus({preventScroll:true});});});
+  const panels=['fmAssetAccountsPanel','fmAssetHoldingsPanel','fmAssetDividendView','fmAssetAnalysisView','fmAssetMarketView'],n=panels.length;
+    tabButtons.forEach((button,i)=>{button.setAttribute('role','tab');button.setAttribute('aria-controls',panels[i]);$(panels[i]).setAttribute('role','tabpanel');$(panels[i]).setAttribute('aria-labelledby',button.id);button.addEventListener('keydown',event=>{const offset={ArrowRight:1,ArrowLeft:-1}[event.key];if(offset===undefined&&!['Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?n-1:(i+offset+n)%n;tabButtons[next].click();tabButtons[next].focus({preventScroll:true});});});
   // Date selection reveals its transactions only when they would otherwise be out of sight.
   const calendar=$('cal'),day=$('dayTx'),dayHeader=$('selectedTitle'),calendarBack=$('fmBackToCalendar');let calendarY=0;
   calendarBack.onclick=()=>{scrollTo({top:calendarY,behavior:'instant'});calendar.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});};

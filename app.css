@@ -1023,7 +1023,7 @@ html[data-theme=light] #view-assets .fm-quote-hero .hero-stat{background:rgba(12
 #view-assets .fm-quote-hero{padding:16px 17px;margin-bottom:10px}
 #view-assets .fm-quote-hero .hero-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #view-assets .fm-quote-hero .fm-goal-line{display:none}
-#view-assets .fm-asset-jump{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 12px}
+#view-assets .fm-asset-jump{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:0 0 12px}
 #view-assets .fm-asset-jump button{min-width:0;min-height:48px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--txt);font-weight:750;font-size:clamp(12px,3.4vw,15px)}
 #view-assets .fm-asset-jump button.active{background:var(--green);color:#06140f;border-color:var(--green)}
 #view-assets .fm-main-asset-tabs{display:none}
@@ -2204,3 +2204,17 @@ html body #view-assets .fm-milestone-details .fm-ms-steps{display:flex;flex-wrap
 html body #view-assets .fm-milestone-details .fm-ms-steps span{padding:6px 10px;border-radius:99px;background:var(--panel2);color:var(--sub);font-size:13px;font-weight:600}
 html body #view-assets .fm-milestone-details .fm-ms-steps .on{color:var(--green)}
 html body #view-assets .fm-milestone-details .fm-ms-steps .now{background:var(--txt);color:var(--bg);font-weight:800}
+html body #view-home .fm-home-market{display:block;width:100%;min-height:44px;padding:0 4px;border:0;background:none;color:var(--sub);font-size:13px;font-weight:600;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #view-home .fm-home-market[hidden]{display:none}
+html body #view-home .fm-home-market b{font-weight:700}
+html body #view-assets .fm-asset-jump button{min-width:0;padding-left:2px;padding-right:2px}
+html body #fmMarketList .fm-mk-row{display:grid;grid-template-columns:minmax(0,1fr) auto 72px;align-items:baseline;gap:10px;width:100%;min-height:56px;padding:0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--txt);text-align:left}
+html body #fmMarketList .fm-mk-row span{font-size:15px;font-weight:700}
+html body #fmMarketList .fm-mk-row strong{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+html body #fmMarketList .fm-mk-row b{font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
+html body #fmMarketList .fm-mk-row:last-child{border-bottom:0}
+html body #fmMarketList .fm-mk-chart{padding:12px 0 8px;border-bottom:1px solid var(--line)}
+html body #fmMarketList .fm-mk-chart svg{display:block;width:100%;height:auto;margin:10px 0 6px}
+html body #fmMarketList .fm-mk-per{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+html body #fmMarketList .fm-mk-per button{min-height:40px;border:0;border-radius:10px;background:none;color:var(--sub);font-size:13px;font-weight:700}
+html body #fmMarketList .fm-mk-per [aria-pressed=true]{background:var(--panel2);color:var(--txt)}

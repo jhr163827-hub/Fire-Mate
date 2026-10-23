@@ -38,7 +38,7 @@ for(const width of [320,390,430])test('report navigation and shared analysis pre
    await page.goBack();await expect(page.locator('#view-home')).toHaveClass(/active/);
   }
   await page.locator('.bottomnav [data-view="calendar"]').click();
-  await page.locator('[data-go="insights"]').filter({visible:true}).first().click();
+  await page.locator('#fmModeAnalysis').click();
   await expect(page.locator('#fmInsightsBack')).toHaveText('← 가계부');
   await page.locator('#fmInsightsBack').click();await expect(page.locator('#view-calendar')).toHaveClass(/active/);
   await page.locator('.bottomnav [data-view="home"]').click();

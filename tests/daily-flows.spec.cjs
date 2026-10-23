@@ -20,9 +20,11 @@ for(const [width,theme] of [[320,'dark'],[430,'light']])test(`daily flows stay c
  await expect(page.locator('#homeTotalAssets')).toHaveText('₩3,000,000');
 
  // 2. Record a transaction from home, then edit it → spending, budget and analysis follow.
- await page.locator('#fmHomeRecord').click();
+ await page.locator('.bottomnav [data-view="calendar"]').click();
+ await page.locator('#fmLedgerAddBtn').click();
  await page.locator('#entryAmount').fill('12000');await page.locator('#entryMemo').fill('점심');
  await page.locator('#saveEntry').click();
+ await page.locator('.bottomnav [data-view="home"]').click();
  await expect(page.locator('#heroSpent')).toHaveText('₩12,000');
  await page.locator('.bottomnav [data-view="calendar"]').click();
  await expect(page.locator('#fmCalendarBudget')).toContainText('₩488,000');

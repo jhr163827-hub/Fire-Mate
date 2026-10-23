@@ -2280,3 +2280,4 @@ html body #view-calendar .fm-ledger-compare{padding:12px 16px;margin-bottom:8px}
 html body #view-calendar #fmNoSpendLine,html body #view-calendar .fm-ledger-usage{display:none}
 html body #view-calendar .fm-ledger-compare .progress{margin:8px 0 0}
 html body #view-calendar .day{min-height:46px;padding-top:4px;padding-bottom:4px}
+html body #view-assets #fmAssetHoldingsPanel .fm-holding-name-line .fm-holding-day{font-size:14px}

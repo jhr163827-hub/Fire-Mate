@@ -1660,8 +1660,8 @@ body.fm-quote-loading :is(#homeRefreshStocks,#refreshStocks)::before{content:'�
 #view-calendar .day{height:auto;min-height:54px;padding:4px 1px}
 
 #view-calendar .day.selected{outline:2px solid var(--green);outline-offset:-2px}
-#view-calendar #fmCalendarSpent{color:var(--red)}
-#view-calendar #fmCalendarIncome{color:var(--green)}
+#view-calendar #fmCalendarSpent{color:var(--txt)}
+#view-calendar #fmCalendarIncome{color:var(--txt)}
 #view-calendar #dayTx{scroll-margin-top:12px}
 #view-home #homeLastQuote,#view-assets #assetsLastQuote{font-size:11px}
 
@@ -2218,3 +2218,45 @@ html body #fmMarketList .fm-mk-chart svg{display:block;width:100%;height:auto;ma
 html body #fmMarketList .fm-mk-per{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 html body #fmMarketList .fm-mk-per button{min-height:40px;border:0;border-radius:10px;background:none;color:var(--sub);font-size:13px;font-weight:700}
 html body #fmMarketList .fm-mk-per [aria-pressed=true]{background:var(--panel2);color:var(--txt)}
+/* Skin v4 · 가계부 */
+html body #view-calendar .fm-ledger-month button{background:none;border:0;box-shadow:none;color:var(--sub);font-size:22px;min-width:44px;min-height:44px}
+html body #view-calendar .fm-ledger-month strong{font-size:17px;font-weight:800}
+html body #view-calendar .fm-ledger-header .fm-ledger-totals>div:nth-child(n) strong{color:var(--txt);font-weight:800}
+html body #view-calendar .fm-ledger-totals span{font-size:13px}
+html body #view-calendar .fm-ledger-import{min-height:52px;margin:0 0 12px;padding:0 18px;border:0;border-radius:22px;background:var(--panel);font-size:15px}
+html body #view-calendar .fm-ledger-compare{padding:18px 20px;border:0;border-radius:22px;background:var(--panel);box-shadow:none}
+html body #view-calendar #fmLedgerBudgetEdit{border:0;background:none;color:var(--green);font-size:13px;font-weight:800;padding:0 4px;min-height:44px}
+html body #view-calendar .fm-ledger-usage span,html body #view-calendar .fm-ledger-budget-overview span{font-size:13px;color:var(--sub)}
+html body #view-calendar #fmNoSpendLine{font-size:13px;color:var(--sub)}
+html body #view-calendar .fm-ledger-switch{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:0}
+html body #view-calendar .fm-ledger-switch button{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;color:var(--sub);font-size:15px;font-weight:600;min-height:44px;padding:0 12px}
+html body #view-calendar .fm-ledger-switch button.active{background:none;color:var(--txt);border-bottom-color:var(--txt);font-weight:800}
+html body #view-calendar #fmLedgerSearchBtn,html body #view-calendar #fmLedgerAddBtn{border:0;background:var(--panel);color:var(--txt);border-radius:12px;font-size:14px;font-weight:700}
+html body #view-calendar .day{background:none;border-color:transparent;border-radius:12px}
+html body #view-calendar .day.selected{background:var(--panel2);border-color:var(--txt)}
+html body #view-calendar .day .cost{color:var(--sub);font-weight:600}
+html body #view-calendar .day .income{color:var(--up)}
+html body #view-calendar #fmBackToCalendar{border:0;background:none;color:var(--green);font-size:13px;font-weight:800}
+/* Skin v4 · FIRE */
+html body .fm-fire-screen-nav{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0;gap:0;box-shadow:none}
+html body .fm-fire-screen-nav button,html body .fm-fire-screen-nav button[aria-current=true],html body .fm-fire-screen-nav button[aria-current=page]{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;color:var(--sub);font-size:15px;font-weight:600}
+html body .fm-fire-screen-nav button[aria-current=true],html body .fm-fire-screen-nav button[aria-current=page]{color:var(--txt);border-bottom-color:var(--txt);font-weight:800}
+html body #view-fire .fm-fire-hero,html body #view-fire .card{background:var(--panel);border:0;box-shadow:none;border-radius:22px}
+html body #view-fire .fm-fire-eyebrow{color:var(--sub);font-size:13px}
+html body #view-fire #fireYears{font-size:30px;font-weight:800;letter-spacing:-.04em}
+html body #view-fire .fm-fire-gap{font-size:12px;color:var(--sub)}
+html body #view-fire #fmOpenCalculator,html body #view-fire #fmFireStrategyOpen{border:0;background:var(--panel2);color:var(--txt);border-radius:14px;font-size:15px;font-weight:700;box-shadow:none}
+html body #view-fire #fmFireStrategyOpen{background:var(--panel)}
+/* Skin v4 · 소비 분석 */
+html body #view-insights .card,html body #view-insights .fm-insights-more{background:var(--panel);border:0;box-shadow:none;border-radius:22px}
+/* Skin v4 · 설정: list rows instead of centered big buttons */
+html body #settingsOverlay .modal{background:var(--bg)}
+html body #settingsOverlay .card,html body #settingsOverlay section.fm-device-storage,html body #settingsOverlay details{background:var(--panel);border:0;box-shadow:none;border-radius:20px}
+html body #settingsOverlay .fm-device-storage button.secondary{display:block;width:100%;min-height:52px;padding:0 4px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;color:var(--txt);font-size:15px;font-weight:600;text-align:left}
+html body #view-calendar .day.selected{border-color:var(--txt)}
+html body #view-insights .fm-report-header .secondary{border:0;background:none;color:var(--sub);font-size:14px;padding:0 4px;min-height:44px}
+html body #view-insights .fm-insights-links{gap:0;border-bottom:1px solid var(--line)}
+html body #view-insights .fm-insights-links .secondary{border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;background:none;color:var(--sub);font-size:15px;font-weight:600}
+html body #view-insights .fm-insights-links [aria-current=page]{color:var(--txt);border-bottom-color:var(--txt);font-weight:800}
+html body #view-insights .stat{background:var(--panel2);border:0}
+html body #view-insights .monthnav button{background:none;color:var(--sub)}

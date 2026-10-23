@@ -159,7 +159,7 @@ try{
    else if(Number.isInteger(months)){const now=new Date(),date=new Date(now.getFullYear(),now.getMonth()+months,1);eta.textContent=months===0?'금액 목표 달성 · 생활비와 위험은 별도 점검':date.getFullYear()+'년 '+(date.getMonth()+1)+'월 예상 · 저장 계획 기준';}
    if(state.portfolio){
     const p=state.portfolio;portfolioValue.querySelector('strong').textContent=p.totalTarget>0?(p.gap>0?compactMoney(p.gap)+' 부족':'목표 배분 충족'):'목표 배분 미설정';
-    portfolioValue.querySelector('small').textContent='종목별 목표 금액 대비 · 위 진행률과 별개';
+    portfolioValue.querySelector('small').textContent='';
    }
    const cash=state.cashflow,cashValue=$('fmOverview-cashflow');
    if(cash){

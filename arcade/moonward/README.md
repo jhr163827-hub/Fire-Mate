@@ -6,7 +6,7 @@ FIRE MATE용 독립 랜덤 디펜스. 한 맵, 5종 수호자, 3등급, 18웨이
 
 저장소 루트에서 `python -m http.server 4180`을 실행하고 브라우저에서 `http://localhost:4180/arcade/moonward/`를 연다. ES 모듈을 사용하므로 파일을 `file://`로 직접 열면 안 된다. 런타임 외부 CDN·라이브러리·API·빌드 단계는 없다. 게임에 진입할 때만 약 0.5MB의 게임 코드와 아트가 로드된다(검증 스크린샷 제외).
 
-이 PR은 main 병합·배포·메뉴 연결을 하지 않는다. 통합은 [INTEGRATION.md](INTEGRATION.md) 참조.
+아케이드 메뉴의 **월광 수호단** 카드로 진입한다. FIRE MATE에서는 설정 → 게임 아케이드로 이동할 수 있다. 메뉴·캐시 통합 결과는 [INTEGRATION.md](INTEGRATION.md) 참조.
 
 ## 플레이
 
@@ -48,6 +48,7 @@ FIRE MATE용 독립 랜덤 디펜스. 한 맵, 5종 수호자, 3등급, 18웨이
 node --test arcade/moonward/tests/engine.test.mjs
 node arcade/moonward/tests/simulate.mjs
 node arcade/moonward/tests/browser.cjs
+node arcade/moonward/tests/integration.cjs
 ```
 
 브라우저 검증에는 환경에 설치된 `playwright`와 Chromium이 필요하다. 공용 package.json이나 의존성은 수정하지 않았다. 브라우저 바이너리를 지정할 때는 `MOONWARD_CHROMIUM=/path/to/chromium`, 결과 경로는 `MOONWARD_EVIDENCE=/path/to/evidence`로 설정한다. 테스트 서버는 스크립트 안에서만 열리고 끝나면 닫힌다.

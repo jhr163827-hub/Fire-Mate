@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#101e28" />
+    <title>월광 수호단 · MOONWARD</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <header>
+        <a href="../index.html" id="exit" aria-label="게임 저장하고 나가기"
+          >‹</a
+        >
+        <div>
+          <small>MOONWARD</small>
+          <h1>월광 수호단</h1>
+        </div>
+        <button id="menu" aria-label="설정과 일시정지">Ⅱ</button>
+      </header>
+      <section class="hud" aria-label="전투 현황">
+        <div><span>성문</span><b id="lives">20</b></div>
+        <div>
+          <span>WAVE</span><b id="wave">01 <em>/ 18</em></b>
+        </div>
+        <div><span>달빛 조각</span><b id="gold">180</b></div>
+        <button id="speed" aria-label="전투 배속">1×</button>
+      </section>
+      <div class="wavebar"><i id="progress"></i></div>
+      <section id="field" aria-label="전장">
+        <canvas
+          id="canvas"
+          width="720"
+          height="920"
+          aria-hidden="true"
+        ></canvas>
+        <div id="pads" aria-label="수호자 배치 위치"></div>
+        <div id="banner" role="status"></div>
+        <div class="maplabel">안개숲 · 마지막 성문</div>
+        <div id="pauseLabel" hidden>일시정지</div>
+      </section>
+      <section id="control">
+        <div id="selection">
+          <strong>수호자를 소환하세요</strong
+          ><span>빈 제단 선택 → 소환 · 첫 소환은 궁수</span>
+        </div>
+        <div id="actions">
+          <button id="summon" class="primary">랜덤 소환 <b>50</b></button
+          ><button id="choose">지정 소환 <b>85</b></button>
+        </div>
+        <div id="unitActions" hidden>
+          <button id="move">이동 / 교환</button><button id="merge">합성</button
+          ><button id="sell">판매</button>
+        </div>
+        <button id="start" class="start">첫 웨이브 시작</button>
+        <p id="hint" role="status">수호자 3명을 먼저 소환하면 든든해요.</p>
+      </section>
+      <footer>
+        <span id="saveStatus">진행 자동 저장</span
+        ><button id="guide">수호자 도감</button>
+      </footer>
+    </main>
+    <dialog id="dialog">
+      <div id="dialogBody"></div>
+      <button id="closeDialog">돌아가기</button>
+    </dialog>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

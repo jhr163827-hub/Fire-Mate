@@ -2195,3 +2195,12 @@ html body #view-assets #fmAssetHoldingsPanel>.card>.cardhead{display:none}
 html body #view-home #heroMonth{display:none}
 html body #view-home .fm-pace{font-size:13px}
 html body #view-assets #fmAssetHoldingsPanel>.card{padding-top:8px}
+html body #view-assets .fm-milestone-details .fm-ms-next{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px}
+html body #view-assets .fm-milestone-details .fm-ms-next span{font-size:15px;color:var(--sub)}
+html body #view-assets .fm-milestone-details .fm-ms-next b{color:var(--txt);font-size:17px}
+html body #view-assets .fm-milestone-details .fm-ms-next strong{font-size:20px;font-weight:800}
+html body #view-assets .fm-milestone-details .progress{margin:12px 0 8px}
+html body #view-assets .fm-milestone-details .fm-ms-steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+html body #view-assets .fm-milestone-details .fm-ms-steps span{padding:6px 10px;border-radius:99px;background:var(--panel2);color:var(--sub);font-size:13px;font-weight:600}
+html body #view-assets .fm-milestone-details .fm-ms-steps .on{color:var(--green)}
+html body #view-assets .fm-milestone-details .fm-ms-steps .now{background:var(--txt);color:var(--bg);font-weight:800}

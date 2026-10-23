@@ -34,12 +34,6 @@ test('FIRE says how much more a month brings the date a year closer',async({page
  await expect(page.locator('#fmFireSooner')).toHaveText(/^1년 앞당기려면 매달 [\d,]+만 원 더 모으면 돼요\.$/);
 });
 
-test('with under two months of records the trend shows daily bars',async({page})=>{
- await page.addInitScript(([a,b,c])=>{localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},tx:[],accounts:[{id:'k',name:'KB',kind:'cash',amount:3000000}],holdings:[],dailySnapshots:[{day:a,amount:1000000},{day:b,amount:2000000},{day:c,amount:3000000}]}))},[ago(2),ago(1),ago(0)]);
- await page.goto('/index.html');await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
- await expect(page.locator('#fmTrend > div')).toHaveCount(3);
- await expect(page.locator('#fmTrendDelta')).toHaveText('3일 동안 +₩2,000,000');
-});
 
 test('backups are suggested weekly',async({page})=>{
  await page.addInitScript(d=>{localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},tx:[{id:'t',date:d,type:'expense',category:'식비',amount:9000}]}));localStorage.setItem('firemate_last_backup_v1',new Date(Date.now()-8*86400000).toISOString())},ago(20));

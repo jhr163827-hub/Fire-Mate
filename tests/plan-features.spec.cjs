@@ -35,12 +35,15 @@ test('소비 분석 saves category budgets in their own key and no longer lists 
  expect(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).toBe(before);
 });
 
-test('assets show a monthly net-worth trend with the change from last month',async({page})=>{
+test('asset analysis shows only growth, then the milestone card with the next goal',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('assets'));
  await page.locator('#fmAssetQuickAnalysis').click();
- await expect(page.locator('#fmAssetAnalysisView #fmTrend > div')).toHaveCount(3);
- await expect(page.locator('#fmTrendDelta')).toHaveText('전월 대비 +₩1,000,000');
+ const cards=page.locator('#fmAssetAnalysisView > .card');
+ await expect(cards).toHaveCount(2);
+ await expect(cards.nth(0)).toContainText('내 자산 성장');
+ await expect(cards.nth(1)).toContainText('자산 마일스톤');
+ await expect(page.locator('#assetBadges .fm-ms-steps .now')).toHaveCount(1);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 

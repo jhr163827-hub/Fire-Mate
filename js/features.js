@@ -91,8 +91,6 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(assets){
   const oldTabs=$('fmLegacyAssetTabs');if(oldTabs){oldTabs.hidden=true;oldTabs.style.display='none'}
   const divPanel=$('fmDividendPanel');if(divPanel)divPanel.hidden=false;
-  const composition=assets.querySelector('.fm-asset-composition');
-  if(composition){const subTabs=composition.querySelector('.fm-analysis-tabs');if(subTabs)subTabs.hidden=true;const wrap=composition.querySelector('.fm-asset-donut-wrap');if(wrap)wrap.hidden=false;const more=$('fmCompositionMore');if(more)more.style.display=''}
   for(const [id,mode] of [['fmAssetQuickAccounts','account'],['fmAssetQuickHoldings','holding'],['fmAssetQuickDividend','dividend'],['fmAssetQuickAnalysis','analysis']]){
    const btn=$(id);
    if(btn)btn.onclick=()=>window.fmSelectAssetView(mode);

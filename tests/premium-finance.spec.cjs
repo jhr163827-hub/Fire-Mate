@@ -99,7 +99,7 @@ test("comparison mode and applied assumptions are visible before editing and do 
   await seed(page);
   await page.locator('.bottomnav [data-view="fire"]').click();
   await page.locator("#fmLabOpen").click();
-  await page.locator("#fmFireStrategyOpen").click();
+  await page.locator('[data-lab="retire"]').click();
   const raw = await page.evaluate(() =>
     localStorage.getItem("firemate_smart_v3"),
   );

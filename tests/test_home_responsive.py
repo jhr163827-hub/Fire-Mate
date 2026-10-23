@@ -31,7 +31,7 @@ class HomeResponsiveTest(unittest.TestCase):
         if not page.locator('#view-firelab').is_visible(): page.evaluate("window.fmGo('firelab')")
 
     def open_forecast(self,page):
-        self.lab(page)
+        if not page.locator('#view-fire').is_visible(): page.evaluate("window.fmGo('fire')")
         fold=page.locator('#fmForecastDisclosure')
         if not fold.evaluate('(e)=>e.open'): fold.locator(':scope>summary').click()
 
@@ -250,7 +250,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     page.locator('#fmOpenCalculator').click()
                     self.assertEqual(page.locator('#goal').input_value().replace(',', ''), '75000')
                     page.locator('#fmBackFire').click()
-                    self.lab(page);page.locator('#fmFireStrategyOpen').click()
+                    self.lab(page);page.locator('[data-lab="retire"]').click()
                     self.assertFalse(page.locator('#fmStrategyDetails').evaluate('(e) => e.open'))
                     self.open_strategy_settings(page)
                     self.assertTrue(page.locator('#fmStrategyDetails').evaluate('(e) => e.open'))
@@ -491,7 +491,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertGreaterEqual(hit,44,'#fmLedgerBudgetEdit tap area')
             page.locator('.bottomnav [data-view="fire"]').click()
             self.lab(page)
-            for selector in ('#fmFireStrategyOpen','#fmFireLifeOpen'):
+            for selector in ('[data-lab="retire"]','#fmFireLifeOpen'):
                 self.assertGreaterEqual(page.locator(selector).bounding_box()['height'],44,selector)
         finally:
             page.close()
@@ -1041,7 +1041,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(page.locator('#fmForecastSummaryValue').inner_text(),state['forecast']['summaryValue'])
             page.reload(wait_until='domcontentloaded');page.locator('.bottomnav [data-view="fire"]').tap()
             self.assertEqual(page.evaluate('window.fmFireViewState.cashflow'),state['cashflow'])
-            self.lab(page);page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page)
+            self.lab(page);page.locator('[data-lab="retire"]').tap();self.open_strategy_settings(page)
             page.locator('#fmStrModeDetail').tap()
             result=page.evaluate("""()=>{document.getElementById('fmQuickBudget').value='10000';
                 document.getElementById('fmQuickSpend').value='100';
@@ -1050,7 +1050,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertEqual(result['state']['balances'],[x['series'][30] for x in result['ledger']['displayed']])
             page.evaluate("window.fmGo('firelab')")
             self.assertEqual(page.locator('#fmOverview-strategy').inner_text(),result['state']['text'])
-            self.lab(page);page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page)
+            self.lab(page);page.locator('[data-lab="retire"]').tap();self.open_strategy_settings(page)
             page.locator('#fmQuickSpend').fill('200')
             self.assertIsNone(page.evaluate('window.fmFireViewState.detail'))
             page.evaluate("window.fmGo('firelab')")
@@ -1137,9 +1137,9 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.evaluate("theme=>document.documentElement.dataset.theme=theme",theme)
                         original=page.evaluate("""()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));return {tx:d.tx,holdings:d.holdings,accounts:d.accounts,balance:d.balance,goal:d.fire.goal,monthly:d.fire.monthly,rate:d.fire.rate,withdrawal:d.fire.withdrawal}}""")
                         page.locator('.bottomnav [data-view="fire"]').tap()
-                        # FIRE itself is one card; the rest lives in 🧪 FIRE 실험실.
-                        self.assertEqual(page.locator('#view-fire>.hero,#view-fire>.card').count(),1)
-                        self.assertEqual(page.locator('#view-firelab>.card').count(),2)
+                        # FIRE keeps the estimate and the forecast; the rest lives in 🧪 FIRE 실험실.
+                        self.assertEqual(page.locator('#view-fire>.hero,#view-fire>.card').count(),2)
+                        self.assertEqual(page.locator('#view-firelab>.card').count(),1)
                         self.assertFalse(page.locator('#fmForecastPlot').is_visible())
                         self.open_forecast(page)
                         self.assertTrue(page.locator('#fmForecastPlot').is_visible())
@@ -1235,7 +1235,7 @@ class HomeResponsiveTest(unittest.TestCase):
             self.assertIn('목표 비중 50.0%',rows.inner_text())
             self.assertIn('인정 보유액 10만',page.locator('#fmFirePortfolioProgress').inner_text())
             page.locator('.bottomnav [data-view="fire"]').tap()
-            self.lab(page);page.locator('#fmFireStrategyOpen').tap();self.open_strategy_settings(page);page.locator('#fmStrModeDetail').tap()
+            self.lab(page);page.locator('[data-lab="retire"]').tap();self.open_strategy_settings(page);page.locator('#fmStrModeDetail').tap()
             page.locator('#fmQuickBudget').fill('1000')
             fields=page.locator('[data-fms-type="sale"][data-fms-field="amount"]')
             fields.nth(0).fill('100');fields.nth(1).fill('200')
@@ -1295,7 +1295,7 @@ class HomeResponsiveTest(unittest.TestCase):
             }""")
             self.assertIn('정수로 입력',invalid)
             page.locator('.bottomnav [data-view="fire"]').click()
-            self.lab(page);page.locator('#fmFireStrategyOpen').click()
+            self.lab(page);page.locator('[data-lab="retire"]').click()
             self.open_strategy_settings(page)
             page.locator('#fmStrModeDetail').click()
             field=page.locator('[data-fms-type="sale"][data-fms-field="rate"]').first
@@ -1714,8 +1714,8 @@ class HomeResponsiveTest(unittest.TestCase):
                         dividend=page.locator('[data-fm-div-rate]').first
                         dividend.fill('8.25')
                         page.locator('.bottomnav [data-view="fire"]').click()
-                        self.lab(page)
-                        forecast.locator(':scope > summary').click()
+                        self.open_forecast(page)
+                        if not forecast.evaluate('(el)=>el.open'): forecast.locator(':scope > summary').click()
                         page.locator('[data-forecast-period="30"]').click()
                         self.assertTrue(page.locator('#fmFirePortfolioDetails').evaluate('(el)=>el.open'))
                         self.assertEqual(dividend.input_value(),'8.25')
@@ -1763,7 +1763,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.goto(URL,wait_until='domcontentloaded')
                         if theme=='light':page.locator('#theme').click()
                         page.locator('.bottomnav [data-view="fire"]').click()
-                        self.lab(page);page.locator('#fmFireStrategyOpen').click()
+                        self.lab(page);page.locator('[data-lab="retire"]').click()
                         self.assertTrue(page.locator('#view-retire').is_visible())
                         page.locator('#fmStrategyDetails > summary').click()
                         page.locator('#fmStrModeDetail').click()

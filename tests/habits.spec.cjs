@@ -13,9 +13,9 @@ test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const open=async(page,s=seed(),flags={})=>{await page.addInitScript(([s,flags])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_smart_v3',JSON.stringify(s));Object.assign(window,flags);for(const [k,v] of Object.entries(flags.store||{}))localStorage.setItem(k,v)},[s,flags]);await page.goto('/index.html')};
 
-test('home says what was spent today and what is left this month',async({page})=>{
+test('home shows the month pace in one short line',async({page})=>{
  await open(page);
- await expect(page.locator('#fmPaceLine')).toContainText('오늘 ₩12,000');
+ await expect(page.locator('#fmPaceLine')).not.toContainText('오늘 ₩');
  await expect(page.locator('#fmPaceLine')).toContainText('이 속도면 월');
 });
 

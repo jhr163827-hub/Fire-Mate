@@ -21,7 +21,6 @@
 - Google 드라이브 백업(`firemate_drive_*`)은 앱 전용 폴더(drive.appdata) 한 파일만 쓴다. 토큰은 백업에 넣지 않는다. 앱의 Google 프로젝트에 Drive API가 켜져 있어야 동작한다.
 - FIRE 진행률·남은 금액·도달 예상은 `fireLiquid()`(FIRE 운용자산) 기준이고, 순자산(`netAsset()`)은 자산 표시용이다. 저장되는 `data.fire.asset`은 예전처럼 순자산으로 둔다. 새 계좌는 FIRE 포함이 기본값.
 - 시세 백업: `scripts/refresh_live_quotes.py`(워크플로 `refresh-live-quotes.yml`, 평일 30분마다)가 `chart-symbols.json` 종목의 현재가·프리장·애프터 가격을 `chart-data/live-quotes.json`에 저장한다. 앱은 실시간 조회가 실패하거나 미국 API 키가 없을 때 이 가격을 쓰고(`quoteAt`은 그 시세의 시각), 프리장·애프터는 저장하지 않고 화면에만 표시한다. 새 종목은 `chart-symbols.json`에 추가해야 받아진다.
-- 전면 개편(진행 중): 설정의 "새 화면 사용"(`firemate_ui_v2_v1`)이 켜지면 `body.fm-v2`가 붙고 하단 메뉴가 오늘·종목·가계부·FIRE·설정, 첫 화면이 `#view-today`가 된다. `go('home')`은 새 화면에서 `today`로 바뀐다. 끄면 기존 화면 그대로. 새 화면 스타일은 `body.fm-v2` 아래(`.v2-*`)에만 둔다. 전환 기간에만 코드 크기 상한을 올려 두었고, 기존 화면을 지우는 마지막 단계에서 다시 낮춘다.
 - 화면 글자를 다시 숫자로 읽지 않는다. 계산 결과는 `window.fmFireViewState` 같은 공통 값에서 가져온다.
 
 ## 코드 구조

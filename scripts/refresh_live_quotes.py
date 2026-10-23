@@ -84,6 +84,21 @@ for code in config.get("korean_symbols", []):
         quotes[key] = previous[key]
     time.sleep(0.5)
 
+# Market indices and the dollar rate for the 시장 tab (stored as IDX-<key>).
+for key, ticker in (config.get("indices") or {}).items():
+    if not re.fullmatch(r"[A-Z0-9]{2,10}", str(key)):
+        continue
+    try:
+        q = quote(ticker, False)
+        if q:
+            quotes["IDX-" + key] = q
+            ok += 1
+    except Exception as e:
+        print("FAILED IDX", key, str(e)[:160])
+    if "IDX-" + key not in quotes and "IDX-" + key in previous:
+        quotes["IDX-" + key] = previous["IDX-" + key]
+    time.sleep(0.5)
+
 if not ok:
     raise SystemExit("No quote refreshed")
 out.write_text(json.dumps({"updatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),

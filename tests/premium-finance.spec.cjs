@@ -212,7 +212,7 @@ test("the asset card has no exchange-rate row and asset keyboard tabs expose exa
   await expect(page.locator("#fmAssetHoldingsPanel")).toBeVisible();
   await expect(page.locator("#fmAssetAccountsPanel")).toBeHidden();
   await page.keyboard.press("End");
-  await expect(page.locator("#fmAssetAnalysisView")).toBeVisible();
+  await expect(page.locator("#fmAssetMarketView")).toBeVisible();
   await expect(page.locator("#fmAssetDividendView")).toBeHidden();
   await page.keyboard.press("Home");
   await expect(page.locator("#fmAssetAccountsPanel")).toBeVisible();

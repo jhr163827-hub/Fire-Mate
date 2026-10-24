@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.157</title><link rel="stylesheet" href="./app.css?v=3.5.157"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-157">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.158</title><link rel="stylesheet" href="./app.css?v=3.5.158"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-158">
 
 
 
@@ -333,10 +333,8 @@ window.fmRefreshGoalNotes=()=>fmRenderGoalNotes(fireLiquid());
 function fmHomeDiv(){const el=$('fmHomeDiv');if(!el)return;if(!fmDivFeed){if(!fmDivLoading){fmDivLoading=true;fetch('./dividends.json',{cache:'no-store'}).then(r=>r.json()).then(f=>{fmDivFeed=f?.symbols?f:null}).catch(()=>{}).finally(()=>{fmDivLoading=false;if(fmDivFeed)fmHomeDiv()})}return}
 const day=864e5,now=new Date(localDate(new Date())+'T00:00'),fx=Number(data.balance.fx)||0,qty={},up=[];
 for(const h of data.holdings){let s=String(h.ticker||'').trim().toUpperCase();if(/^\d{6}$/.test(s))s+='.KS';if(Number(h.qty)>0)qty[s]=(qty[s]||0)+Number(h.qty)}
-for(const [s,q] of Object.entries(qty)){const e=fmDivFeed.symbols[s],ev=(e?.events||[]).filter(x=>/^\d{4}-\d\d-\d\d$/.test(x.date)).sort((a,b)=>a.date.localeCompare(b.date)),rate=e?.currency==='USD'?fx:e?.currency==='KRW'?1:0;if(ev.length<2||!rate)continue;
-const a=ev.at(-1),gap=new Date(a.date)-new Date(ev.at(-2).date);if(gap<20*day)continue;let n=new Date(a.date+'T00:00');while(n<now)n=new Date(n.getTime()+gap);
-if(n-now<=7*day)up.push({s,n,v:a.amount*q*rate*(e.currency==='USD'?.85:.846),name:fmDisplayHoldingName(data.holdings.find(h=>String(h.ticker).toUpperCase()===s.replace('.KS',''))||{ticker:s})})}
-up.sort((a,b)=>a.n-b.n);el.hidden=!up.length;if(up.length)el.innerHTML='💰 7일 안 배당 약 <b>'+fmCompactMoney(up.reduce((s,x)=>s+x.v,0))+'원</b>'}
+const today=localDate(now),end=localDate(new Date(now.getTime()+7*day));for(const [s,q] of Object.entries(qty)){const e=fmDivFeed.symbols[s],rate=e?.currency==='USD'?fx:e?.currency==='KRW'?1:0,n=rate&&fmDivProject(e.events||[],today,end)[0];if(n)up.push({n:new Date(n.date+'T00:00'),v:n.amount*q*rate*(e.currency==='USD'?.85:.846)})}
+ up.sort((a,b)=>a.n-b.n);el.hidden=!up.length;if(up.length)el.innerHTML='💰 7일 안 배당 약 <b>'+fmCompactMoney(up.reduce((s,x)=>s+x.v,0))+'원</b>'}
 $('fmHomeDiv').onclick=()=>{go('assets');fmSetAssetView('dividend')};
 function renderHome(){fmRenderHomeMarket();fmHomeDiv();
 
@@ -1129,7 +1127,9 @@ window.fmSelectAssetView=fmSetAssetView;
 
 let fmDivFeed=null,fmDivLoading=false,fmDivSelectedYear=new Date().getFullYear(),fmDivSelectedMonth=new Date().getMonth()+1;
 // Months still ahead get estimated payouts: each symbol repeats its last amount on its last gap (ex-dates only in the feed).
-const fmDivProject=(ev,today,end)=>{const v=ev.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x?.date)&&Number(x.amount)>0).sort((a,b)=>a.date.localeCompare(b.date)),o=[];if(v.length<2)return o;const a=v.at(-1),gap=new Date(a.date)-new Date(v.at(-2).date);if(gap<20*864e5)return o;for(let n=new Date(a.date).getTime()+gap;;n+=gap){const d=new Date(n).toISOString().slice(0,10);if(d>end)break;if(d>today)o.push({...a,date:d,p:1})}return o};
+function fmDivProject(ev,today,end){const v=ev.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x?.date)&&Number(x.amount)>0).sort((a,b)=>a.date.localeCompare(b.date)),o=[];if(v.length<2)return o;const a=v.at(-1),[y,m,d]=a.date.split('-').map(Number),step=Math.round((new Date(a.date)-new Date(v.at(-2).date))/2629746e3);if(step<1)return o;
+ // Step whole calendar months (payers on the 1st must not land twice in one month), keeping the day within the month.
+ for(let k=step;;k+=step){const last=new Date(y,m-1+k+1,0).getDate(),n=localDate(new Date(y,m-1+k,Math.min(d,last)));if(n>end)break;if(n>today)o.push({...a,date:n,p:1})}return o}
 async function fmRenderDividends(){
 const status=$('fmDivStatus'),bars=$('fmDivBars'),list=$('fmDivHoldings');
 if(!status||!bars||!list)return;
@@ -1999,7 +1999,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-157',VERSION='3.5.157';
+ const BUILD='fire-mate-v3-5-158',VERSION='3.5.158';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2213,4 +2213,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.157"></script></body></html>
+</style><script src="./js/features.js?v=3.5.158"></script></body></html>

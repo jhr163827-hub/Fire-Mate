@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.155</title><link rel="stylesheet" href="./app.css?v=3.5.155"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-155">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.156</title><link rel="stylesheet" href="./app.css?v=3.5.156"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-156">
 
 
 
@@ -145,6 +145,7 @@ const parts=[];
 const first=[];
 if(day>=3&&spent>0){const est=Math.round(spent/day*days/1000)*1000;let line='이 속도면 월 <strong>'+won(est)+'</strong>';if(budget){const diff=est-budget;line+=diff>0?' <span class="over">(예산 +'+won(diff)+')</span>':' (예산 안)'}first.push(line)}
 if(first.length)parts.push(first.join(' · '));
+{const pm=fmYm(new Date(now.getFullYear(),now.getMonth()-1,1)),prev=fmSum(fmMonthExpenses(d,pm).filter(t=>Number(t.date.slice(8))<=day));if(prev>0&&spent>0){const pct=Math.round((spent-prev)/prev*100);parts.push('지난달 이맘때보다 <strong>'+(pct>0?'+':pct<0?'−':'')+Math.abs(pct)+'%</strong>'+(pct>0?' 더 썼어요':pct<0?' 덜 썼어요':''))}}
 const cb=fmCatBudgets(),over=Object.entries(cb).filter(([c,v])=>v>0&&fmSum(fmMonthExpenses(d,m).filter(t=>t.category===c))>v).map(([c])=>c);
 if(over.length)parts.push('<span class="over">'+over.map(safe).join('·')+' 예산 초과</span>');
 const pace=$('fmPaceLine');pace.innerHTML=parts.join('<br>');pace.hidden=!parts.length;
@@ -305,7 +306,7 @@ $('bankExcelFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)re
 function fmMonthlyBudgetState(m){const spent=totals(getTx(m)).expense;const raw=Number(data.budgets[m]);const budget=Number.isFinite(raw)&&raw>0?raw:0;return {spent,budget,remaining:budget-spent,usage:budget?spent/budget*100:null}}// Tiny interest and dividend credits (a few won) clutter the ledger; they stay saved but are left out
 // of ledger views and totals unless the setting is turned off.
 function fmTinyIncome(t){let hide=true;try{hide=localStorage.getItem('firemate_hide_small_income_v1')!=='0'}catch{}return hide&&t?.type==='income'&&Number(t.amount)<1000&&(t.category==='배당·이자'||/이자|배당|캐시백|포인트/.test(String(t.memo||'')))}
-function getTx(m=month){return data.tx.filter(t=>typeof t.date==='string'&&t.date.slice(0,7)===m&&!fmTinyIncome(t))}function totals(rows){return rows.reduce((a,t)=>{if(a[t.type]!==undefined)a[t.type]+=Number(t.amount)||0;return a},{expense:0,income:0,transfer:0})}function txHtml(t,showDate=true){const sign=t.type==='expense'?'-':t.type==='income'?'+':'↗',color=t.type==='expense'?'red':t.type==='income'?'green':'';return `<div class="tx"><div class="txicon">${icons[t.category]||'💸'}</div><div class="txmain"><strong>${safe(t.memo||t.category)}</strong><span>${showDate?safe(t.date)+' · ':''}${safe(t.category)}${t.recKey?' · 자동':''}</span></div><div class="txamount ${color}">${sign}${won(t.amount)}</div><button aria-label="거래 수정" data-edit="${safe(t.id)}">✎</button></div>`}function bindEdits(root){root.querySelectorAll('[data-edit]').forEach(e=>e.onclick=()=>{const t=data.tx.find(x=>String(x.id)===e.dataset.edit);if(t)openEntry(t)})}function fmDayHead(day,rows){const [y,m,d]=day.split('-').map(Number),out=rows.reduce((n,t)=>n+(t.type==='expense'?Number(t.amount)||0:0),0),inc=rows.reduce((n,t)=>n+(t.type==='income'?Number(t.amount)||0:0),0);return '<div class="fm-tx-day"><strong>'+m+'월 '+d+'일 ('+'일월화수목금토'[new Date(y,m-1,d).getDay()]+')</strong><span>'+[out?'지출 '+won(out):'',inc?'수입 '+won(inc):''].filter(Boolean).join(' · ')+'</span></div>'}
+function getTx(m=month){return data.tx.filter(t=>typeof t.date==='string'&&t.date.slice(0,7)===m&&!fmTinyIncome(t))}function totals(rows){return rows.reduce((a,t)=>{if(a[t.type]!==undefined)a[t.type]+=Number(t.amount)||0;return a},{expense:0,income:0,transfer:0})}function txHtml(t,showDate=true){const m=t.memo||'',name=m&&!(/\*\*|\d{5,}/.test(m)&&(m.match(/[가-힣]/g)||[]).length<4)?m:t.category+(t.type==='expense'?' 결제':''),sign=t.type==='expense'?'-':t.type==='income'?'+':'↗',color=t.type==='expense'?'red':t.type==='income'?'green':'';return `<div class="tx"><div class="txicon">${icons[t.category]||'💸'}</div><div class="txmain"><strong title="${safe(m)}">${safe(name)}</strong><span>${showDate?safe(t.date)+' · ':''}${safe(t.category)}${t.recKey?' · 자동':''}</span></div><div class="txamount ${color}">${sign}${won(t.amount)}</div><button aria-label="거래 수정" data-edit="${safe(t.id)}">✎</button></div>`}function bindEdits(root){root.querySelectorAll('[data-edit]').forEach(e=>e.onclick=()=>{const t=data.tx.find(x=>String(x.id)===e.dataset.edit);if(t)openEntry(t)})}function fmDayHead(day,rows){const [y,m,d]=day.split('-').map(Number),out=rows.reduce((n,t)=>n+(t.type==='expense'?Number(t.amount)||0:0),0),inc=rows.reduce((n,t)=>n+(t.type==='income'?Number(t.amount)||0:0),0);return '<div class="fm-tx-day"><strong>'+m+'월 '+d+'일 ('+'일월화수목금토'[new Date(y,m-1,d).getDay()]+')</strong><span>'+[out?'지출 '+won(out):'',inc?'수입 '+won(inc):''].filter(Boolean).join(' · ')+'</span></div>'}
 function listTo(el,rows,limit,days=false){const a=[...rows].sort((x,y)=>y.date.localeCompare(x.date)||String(y.id).localeCompare(String(x.id))).slice(0,limit||rows.length);el.innerHTML=a.length?a.map((t,i)=>{const row=txHtml(t,el.id!=='dayTx');if(!days)return row;return (i&&a[i-1].date===t.date?'':fmDayHead(t.date,a.filter(x=>x.date===t.date)))+row.replace('<div class="tx">','<div class="tx" data-day="'+safe(t.date)+'">')}).join(''):'<div class="empty">아직 기록이 없어요. 첫 거래를 남겨보세요 🌱</div>';bindEdits(el)}function catTotals(rows){const a={};rows.filter(t=>t.type==='expense').forEach(t=>a[t.category]=(a[t.category]||0)+Number(t.amount));return Object.entries(a).sort((a,b)=>b[1]-a[1])}function catBars(el,rows){const a=catTotals(rows);const top=a.length?a[0][1]:0;el.innerHTML=a.length?a.map(([name,val])=>`<div class="barrow"><span>${icons[name]||'📌'} ${safe(name)}</span><div class="barbg"><div class="barfill" style="width:${top?Math.min(100,val/top*100):0}%"></div></div><strong>${short(val)}</strong></div>`).join(''):'<div class="empty">이번 달 지출을 기록하면 분석해 드려요</div>'}function prevMonth(m){const [y,mm]=m.split('-').map(Number);return localDate(new Date(y,mm-2,1)).slice(0,7)}function renderHomeDailyChange(current){
 const el=$('homeDailyChange');if(!el)return;
 const now=localDate(new Date()),prior=new Date(now+'T00:00:00');prior.setDate(prior.getDate()-1);
@@ -333,7 +334,7 @@ for(const h of data.holdings){let s=String(h.ticker||'').trim().toUpperCase();if
 for(const [s,q] of Object.entries(qty)){const e=fmDivFeed.symbols[s],ev=(e?.events||[]).filter(x=>/^\d{4}-\d\d-\d\d$/.test(x.date)).sort((a,b)=>a.date.localeCompare(b.date)),rate=e?.currency==='USD'?fx:e?.currency==='KRW'?1:0;if(ev.length<2||!rate)continue;
 const a=ev.at(-1),gap=new Date(a.date)-new Date(ev.at(-2).date);if(gap<20*day)continue;let n=new Date(a.date+'T00:00');while(n<now)n=new Date(n.getTime()+gap);
 if(n-now<=7*day)up.push({s,n,v:a.amount*q*rate*(e.currency==='USD'?.85:.846),name:fmDisplayHoldingName(data.holdings.find(h=>String(h.ticker).toUpperCase()===s.replace('.KS',''))||{ticker:s})})}
-up.sort((a,b)=>a.n-b.n);el.hidden=!up.length;if(up.length)el.innerHTML='💰 7일 안 배당 약 <b>'+fmCompactMoney(up.reduce((s,x)=>s+x.v,0))+'원</b><br><small>'+(up[0].n.getMonth()+1)+'/'+up[0].n.getDate()+' '+safe(up[0].name)+(up.length>1?' 외 '+(up.length-1):'')+' · 지난 배당 기준 추정</small>'}
+up.sort((a,b)=>a.n-b.n);el.hidden=!up.length;if(up.length)el.innerHTML='💰 7일 안 배당 약 <b>'+fmCompactMoney(up.reduce((s,x)=>s+x.v,0))+'원</b> · '+safe(up[0].name)+(up.length>1?' 외 '+(up.length-1):'')}
 $('fmHomeDiv').onclick=()=>{go('assets');fmSetAssetView('dividend')};
 function renderHome(){fmRenderHomeMarket();fmHomeDiv();
 
@@ -1125,6 +1126,8 @@ window.fmSelectAssetView=fmSetAssetView;
 
 
 let fmDivFeed=null,fmDivLoading=false,fmDivSelectedYear=new Date().getFullYear(),fmDivSelectedMonth=new Date().getMonth()+1;
+// Months still ahead get estimated payouts: each symbol repeats its last amount on its last gap (ex-dates only in the feed).
+const fmDivProject=(ev,today,end)=>{const v=ev.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x?.date)&&Number(x.amount)>0).sort((a,b)=>a.date.localeCompare(b.date)),o=[];if(v.length<2)return o;const a=v.at(-1),gap=new Date(a.date)-new Date(v.at(-2).date);if(gap<20*864e5)return o;for(let n=new Date(a.date).getTime()+gap;;n+=gap){const d=new Date(n).toISOString().slice(0,10);if(d>end)break;if(d>today)o.push({...a,date:d,p:1})}return o};
 async function fmRenderDividends(){
 const status=$('fmDivStatus'),bars=$('fmDivBars'),list=$('fmDivHoldings');
 if(!status||!bars||!list)return;
@@ -1156,21 +1159,21 @@ if(!Number.isFinite(rate)||rate<=0){missing.push(sym);continue}
 covered++;
 const isCoveredCall=sym==='498400.KS';
 let grossYear=0,netYear=0,taxYear=0,latest='',uncertain=false;
-for(const e of entry.events){
+for(const e of [...entry.events,...fmDivProject(entry.events,today,yearEnd)]){
 if(!e||!/^\d{4}-\d{2}-\d{2}$/.test(String(e.date))||!Number.isFinite(Number(e.amount))||Number(e.amount)<=0)continue;
 const gross=Number(e.amount)*qty*rate,month=e.date.slice(0,7);
 const taxBase=Number(e.taxBasePerShare);
 const hasTaxBase=e.taxBasePerShare!==null&&e.taxBasePerShare!==undefined&&Number.isFinite(taxBase);
 const tax=isCoveredCall&&!hasTaxBase?0:(isCoveredCall?Math.min(gross,Math.max(0,taxBase*qty*rate))*0.154:gross*(entry.currency==='USD'?0.15:0.154));
-const net=gross-tax;if(month===year+'-'+String(fmDivSelectedMonth).padStart(2,'0')&&e.date<=today)monthEvents.push({sym,name:namesBySymbol[sym]||sym,holdingId:holdingIdsBySymbol[sym],date:e.date,qty,perShare:Number(e.amount),currency:entry.currency,gross,tax,net});
-if(e.date>=cutoff&&e.date<=yearEnd&&e.date<=today){
+const net=gross-tax;if(month===year+'-'+String(fmDivSelectedMonth).padStart(2,'0')&&(e.date<=today||e.p))monthEvents.push({p:e.p,sym,name:namesBySymbol[sym]||sym,holdingId:holdingIdsBySymbol[sym],date:e.date,qty,perShare:Number(e.amount),currency:entry.currency,gross,tax,net});
+if(e.date>=cutoff&&e.date<=yearEnd&&(e.date<=today||e.p)){
 grossYear+=gross;
 if(net===null){unknownGross+=gross;uncertain=true}
 else{netYear+=net;taxYear+=tax}
 }
-if(month in totals&&e.date<=today){grossTotals[month]+=gross;if(net!==null)totals[month]+=net;}
+if(month in totals&&(e.date<=today||e.p)){grossTotals[month]+=gross;if(net!==null)totals[month]+=net;}
 if(month===current&&year===now.getFullYear()){monthGross+=gross;if(net!==null)monthNet+=net}
-if(e.date>latest)latest=e.date;
+if(!e.p&&e.date>latest)latest=e.date;
 }
 annualGross+=grossYear;annualNet+=netYear;annualTax+=taxYear;
 rows.push({sym,name:namesBySymbol[sym]||sym,qty,grossYear,netYear,latest,uncertain});
@@ -1178,16 +1181,16 @@ rows.push({sym,name:namesBySymbol[sym]||sym,qty,grossYear,netYear,latest,uncerta
 $('fmDivGrossLabel').textContent=year+'년 예상 세전 배당금';$('fmDivNetLabel').textContent=year+'년 예상 세후 배당금';
 $('fmDivMonth').textContent=won(annualGross);
 $('fmDivYear').textContent=won(annualNet);
-$('fmDivMonthlyAvg').textContent='월평균 예상 세후 배당금 '+won(Math.round(annualNet/12))+' · 연간 추정액 ÷ 12';
+$('fmDivMonthlyAvg').textContent='월평균 예상 세후 배당금 '+won(Math.round(annualNet/12))+(year>=now.getFullYear()?' · 남은 달은 지난 배당 기준 추정':'');
 $('fmDivTaxSummary').textContent='예상 원천징수 '+won(annualTax)+(unknownGross?' · 일부 국내 ETF 세후 금액 산정 제외 ('+won(unknownGross)+')':'');
 const max=Math.max(1,...Object.values(totals));
-bars.innerHTML=months.map(m=>{const num=Number(m.slice(5)),future=m>current,value=totals[m];return '<button type="button" class="fm-div-col'+(num===fmDivSelectedMonth?' selected':'')+'" data-month="'+num+'" aria-label="'+num+'월 세후 추정 '+Math.round(value/10000)+'만원"><small>'+(future?'예정':value>0?Math.round(value/10000)+'만':'—')+'</small><span class="fm-div-bar" style="height:'+(future?2:Math.max(2,Math.round(value/max*80)))+'px"></span><small>'+num+'월</small></button>'}).join('');
+bars.innerHTML=months.map(m=>{const num=Number(m.slice(5)),future=m>current,value=totals[m];return '<button type="button" class="fm-div-col'+(num===fmDivSelectedMonth?' selected':'')+(future?' est':'')+'" data-month="'+num+'" aria-label="'+num+'월 세후 '+(future?'예상 ':'')+Math.round(value/10000)+'만원"><small>'+(value>0?Math.round(value/10000)+'만':'—')+'</small><span class="fm-div-bar" style="height:'+Math.max(2,Math.round(value/max*80))+'px"></span><small>'+num+'월</small></button>'}).join('');
 bars.querySelectorAll('button').forEach(button=>button.onclick=()=>{fmDivSelectedMonth=Number(button.dataset.month);fmRenderDividends()});
 rows.sort((a,b)=>b.grossYear-a.grossYear);
 monthEvents.sort((a,b)=>a.date.localeCompare(b.date));
 const selectedLabel=year+'년 '+fmDivSelectedMonth+'월';
 const sumGross=monthEvents.reduce((n,x)=>n+x.gross,0),sumNet=monthEvents.reduce((n,x)=>n+(x.net||0),0);
-list.innerHTML='<div class="fm-div-detail-title"><strong>'+selectedLabel+' 상세 내역</strong><span>세전 '+safe(won(sumGross))+' · 세후 '+safe(won(sumNet))+'</span></div>'+ (monthEvents.length?monthEvents.map(x=>'<div class="fm-div-row fm-div-clickable" role="button" tabindex="0" data-div-holding="'+safe(x.holdingId||'')+'" aria-label="'+safe(x.name)+' 배당 내역, 종목 상세 보기"><div><strong>'+safe(x.name)+'</strong><div><small>'+'배당일 '+Number(x.date.slice(5,7))+'/'+Number(x.date.slice(8,10))+'</small></div><div><small>'+safe(x.sym)+' · '+x.qty.toLocaleString('ko-KR')+'주 · 주당 '+safe(x.perShare.toLocaleString('ko-KR'))+' '+safe(x.currency||'')+'</small></div></div><div style="text-align:right"><strong>'+(safe(won(x.net)))+'</strong><div><small>세전 '+safe(won(x.gross))+'</small></div><div><small>세금 '+(safe(won(x.tax)))+'</small></div></div></div>').join(''):'<div class="mini">'+(year+'-'+String(fmDivSelectedMonth).padStart(2,'0')>current?'아직 배당 자료가 확정되지 않은 달입니다.':'해당 월에 확인된 배당 이벤트가 없습니다.')+'</div>');
+list.innerHTML='<div class="fm-div-detail-title"><strong>'+selectedLabel+' 상세 내역</strong><span>세전 '+safe(won(sumGross))+' · 세후 '+safe(won(sumNet))+'</span></div>'+ (monthEvents.length?monthEvents.map(x=>'<div class="fm-div-row fm-div-clickable" role="button" tabindex="0" data-div-holding="'+safe(x.holdingId||'')+'" aria-label="'+safe(x.name)+' 배당 내역, 종목 상세 보기"><div><strong>'+safe(x.name)+'</strong><div><small>'+'배당일 '+Number(x.date.slice(5,7))+'/'+Number(x.date.slice(8,10))+(x.p?' (예상)':'')+'</small></div><div><small>'+safe(x.sym)+' · '+x.qty.toLocaleString('ko-KR')+'주 · 주당 '+safe(x.perShare.toLocaleString('ko-KR'))+' '+safe(x.currency||'')+'</small></div></div><div style="text-align:right"><strong>'+(safe(won(x.net)))+'</strong><div><small>세전 '+safe(won(x.gross))+'</small></div><div><small>세금 '+(safe(won(x.tax)))+'</small></div></div></div>').join(''):'<div class="mini">'+(year+'-'+String(fmDivSelectedMonth).padStart(2,'0')>current?'아직 배당 자료가 확정되지 않은 달입니다.':'해당 월에 확인된 배당 이벤트가 없습니다.')+'</div>');
 
 list.querySelectorAll('.fm-div-clickable').forEach(row=>{const id=row.dataset.divHolding;const open=()=>{if(id&&data.holdings.some(h=>String(h.id)===String(id)))fmOpenHoldingDetail(id,true)};if(!id){row.removeAttribute('role');row.removeAttribute('tabindex');row.removeAttribute('aria-label');return}row.onclick=e=>{if(e.target.closest('button,a,input,select,textarea')&&e.target!==row)return;open()};row.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('button,a,input,select,textarea')){e.preventDefault();open()}}});
 const feedDate=String(fmDivFeed.updatedAt||'').slice(0,10);const feedAge=feedDate?Math.floor((Date.now()-Date.parse(feedDate+'T00:00:00Z'))/86400000):Infinity;const feedErrors=fmDivFeed.errors||{},feedHealth=fmDivFeed.symbolStatus||{};const failedHeld=Object.keys(qtyBySymbol).filter(sym=>feedHealth[sym]?.status==='stale'||(Object.prototype.hasOwnProperty.call(feedErrors,sym)&&!!fmDivFeed.symbols[sym]));status.textContent='현재 보유 수량을 선택 연도 배당 이력에 적용한 추정 · '+covered+'종목 · 자료 '+(feedDate||'날짜 미확인')+(feedAge>3?' · 데이터 갱신 지연':'')+(failedHeld.length?' · 이전 배당 자료 사용: '+failedHeld.join(', '):'')+(missing.length?' · 조회 불가: '+missing.join(', '):'');
@@ -1994,7 +1997,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-155',VERSION='3.5.155';
+ const BUILD='fire-mate-v3-5-156',VERSION='3.5.156';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2208,4 +2211,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.155"></script></body></html>
+</style><script src="./js/features.js?v=3.5.156"></script></body></html>

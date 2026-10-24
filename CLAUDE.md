@@ -38,7 +38,7 @@
 ## 코드를 늘리지 않는 규칙 (자동 검사)
 - **새 기능은 새 `<script>`/`<style>` 블록이나 `js/features.js` 블록을 덧붙이지 말고 해당 화면의 기존 코드를 고친다.**
 - `scripts/check_app.py`가 `scripts/code_budget.json`의 상한(스크립트·스타일 블록 수, `js/` 크기, `index.html`+`js/` 합계 크기, 기능 블록 수, `app.css`의 `!important` 수)을 넘으면 실패한다. 기능 블록을 메인 스크립트로 합치면 index.html은 커져도 합계가 줄면 통과한다.
-- 정리해서 숫자가 줄면 상한도 같이 낮춘다(다시 늘어나지 않게). 상한을 올리는 건 사용자 동의가 있을 때만.
+- 정리해서 숫자가 줄면 상한도 같이 낮춘다(다시 늘어나지 않게). 상한은 필요한 만큼만 올리고(사용자가 묻지 말고 진행하라고 함), PR 본문에 올린 폭을 적는다.
 
 ## 버전 올리기 (index.html·sw.js·app.css를 바꿨을 때)
 `<title>`, `firemate-release`, `const BUILD='fire-mate-v3-5-XX',VERSION='3.5.XX'`, `sw.js`의 `CACHE`, `app.css?v=`·`js/features.js?v=`(링크와 sw ASSETS) — 한 번에:

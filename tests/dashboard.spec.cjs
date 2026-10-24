@@ -68,7 +68,7 @@ test('home shows dividends due in the next 7 days, guessed from each holding\'s 
  await page.goto('/index.html');
  const line=page.locator('#fmHomeDiv');
  // JEPQ: 30-day gap → next payout in 5 days, 0.6 × 100주 × 1,400원 × 85% ≈ 7.1만원. SCHD's next is ~80 days out.
- await expect(line).toContainText('7일 안 배당 약 7.1만원');
+ await expect(line).toContainText('7일 안 배당 약 7.1만원 · JEPQ');
  await expect(line).toContainText('JEPQ');
  await expect(line).not.toContainText('외');
  await line.click();

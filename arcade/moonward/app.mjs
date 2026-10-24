@@ -9,6 +9,8 @@ import {
   LENGTH,
   pointAt,
   waveSpec,
+  bossStatus,
+  BOSSES,
   tierScale,
   SAVE_KEY,
   BOONS,
@@ -327,7 +329,11 @@ PADS.forEach(([x, y], i) => {
 });
 $("#scout").onclick = () => {
   const s = game.s;
-  const w = forecast(Math.min(RULES.waves, s.wave + 1));
+  const w = forecast(
+    s.phase === "battle" && waveSpec(s.wave).boss
+      ? s.wave
+      : Math.min(RULES.waves, s.wave + 1),
+  );
   modal(
     `<div class="eyebrow">시간이 멈췄어요 · 작전 정비</div><h2>${w.wave} 웨이브 · ${w.label}</h2><p>${w.composition}</p><p>${w.advice}</p><p>방어 보상 ${w.reward} 조각 + 처치 보상<br>보유 ${s.gold} · 랜덤 50 / 지정 85 / 합성 15</p><button id="planChoice" class="primary" ${s.gold < 85 || s.units.length === PADS.length || s.result ? "disabled" : ""}>역할을 골라 지정 소환</button><p>이번 판 축복: ${boonSummary()}</p><p>6·12웨이브 보스를 처치하고 방어하면 축복을 선택합니다.</p><p>돌아가서 제단을 선택하면 무료 이동·교환과 합성을 할 수 있어요.</p>`,
   );
@@ -335,9 +341,13 @@ $("#scout").onclick = () => {
 };
 function update() {
   let s = game.s;
-  const preview = forecast(Math.min(RULES.waves, s.wave + 1));
+  const preview = forecast(
+    s.phase === "battle" && waveSpec(s.wave).boss
+      ? s.wave
+      : Math.min(RULES.waves, s.wave + 1),
+  );
   $("#forecastTitle").textContent =
-    `${s.wave < RULES.waves ? "다음" : "최종"} ${preview.wave} · ${preview.label}`;
+    `${s.phase === "battle" && waveSpec(s.wave).boss ? "현재" : s.wave < RULES.waves ? "다음" : "최종"} ${preview.wave} · ${preview.label}`;
   $("#forecastSummary").textContent = preview.composition;
   $("#scout").textContent =
     s.phase === "rest" ? "정비 · 시간 정지" : "작전 보기";
@@ -518,10 +528,12 @@ function events() {
     } else if (ev.type === "wave") {
       banner(
         ev.boss
-          ? "월식의 파수꾼 · 보스 출현"
+          ? waveSpec(ev.wave).label + " · 보스 웨이브"
           : `WAVE ${String(ev.wave).padStart(2, "0")} · ${waveSpec(ev.wave).label}`,
       );
       if (ev.boss) tone(140, 0.5);
+    } else if (ev.type === "bossCue") {
+      banner(ev.text);
     } else if (ev.type === "leak") {
       flash = reduced ? 0 : 0.2;
       tone(120, 0.12);
@@ -733,6 +745,37 @@ function render(t, dt) {
       size,
       size,
     );
+    if (e.pattern) {
+      const label = bossStatus(e),
+        shield =
+          e.pattern === 6 && e.age % BOSSES[6].cycle < BOSSES[6].shieldSeconds;
+      ctx.save();
+      if (shield) {
+        ctx.strokeStyle = "#9de7ff";
+        ctx.lineWidth = 2;
+        ctx.fillStyle = "#93dfff22";
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const a = (Math.PI / 3) * i - Math.PI / 2;
+          const x = p.x + Math.cos(a) * 30,
+            y = p.y - 9 + Math.sin(a) * 32;
+          if (i) ctx.lineTo(x, y);
+          else ctx.moveTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.font = "bold 10px sans-serif";
+      ctx.textAlign = "center";
+      const width = ctx.measureText(label).width + 10,
+        x = Math.max(width / 2 + 2, Math.min(338 - width / 2, p.x));
+      ctx.fillStyle = "#10222fee";
+      ctx.fillRect(x - width / 2, p.y - 70, width, 17);
+      ctx.fillStyle = shield ? "#9de7ff" : "#ffdaa0";
+      ctx.fillText(label, x, p.y - 58);
+      ctx.restore();
+    }
     if (e.slow > 0) {
       ctx.strokeStyle = "#a8f3ff";
       ctx.lineWidth = 1.3;

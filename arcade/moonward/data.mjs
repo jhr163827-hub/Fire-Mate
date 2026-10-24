@@ -116,10 +116,10 @@ export function waveSpec(w) {
     speed: 33 + w * 0.62,
     spacing: Math.max(0.55, 1.1 - w * 0.02),
     boss,
-    bossHP: Math.round(650 * 1.27 ** (w - 1)),
+    bossHP: Math.round(650 * 1.27 ** (w - 1) * (BOSSES[w]?.health || 1)),
     reward: 35 + w * 3,
     label: boss
-      ? "월식의 파수꾼"
+      ? BOSSES[w]?.name || "월식의 파수꾼"
       : w % 3 === 0
         ? "질주하는 그림자"
         : w % 3 === 1
@@ -187,3 +187,59 @@ export const EVOLUTIONS = {
 };
 export const unitName = (u) =>
   u.evolved ? EVOLUTIONS[u.kind].name : TYPES[u.kind].name;
+
+export const BOSSES = {
+  6: {
+    name: "월갑 파수꾼",
+    cycle: 8,
+    shieldSeconds: 3,
+    shieldDamage: 0.55,
+    exposedDamage: 1.15,
+    health: 0.9,
+    advice:
+      "8초 주기: 보호막 3초(피해 45% 감소) → 노출 5초(피해 15% 증가). 서리로 오래 붙잡고 가시·지원으로 빈틈을 노리세요.",
+  },
+  12: {
+    name: "안개 소환사",
+    firstCall: 8,
+    callInterval: 8,
+    maxCalls: 2,
+    addsPerCall: 2,
+    warning: 2,
+    addHealth: 0.45,
+    addGap: 18,
+    health: 0.9,
+    advice:
+      "등장 8초·16초에 졸개 2마리씩 소환합니다. 2초 전 소환 예고를 보고 잿불·관통궁을 보스 주변 경로에 배치하세요. 소환 졸개는 조각을 주지 않습니다.",
+  },
+  18: {
+    name: "월식 군주",
+    rageHealth: 0.5,
+    warning: 3,
+    rageSpeed: 1.25,
+    health: 0.25,
+    advice:
+      "체력 절반에서 3초 예고 후 이동이 25% 빨라집니다. 예고 중 길 후반에 서리와 공격수를 옮겨 마지막 돌파에 대비하세요.",
+  },
+};
+export function bossStatus(e) {
+  if (e.pattern === 6)
+    return (e.age || 0) % BOSSES[6].cycle < BOSSES[6].shieldSeconds
+      ? "보호막 · 피해 감소"
+      : "노출 · 공격 기회";
+  if (e.pattern === 12)
+    return e.calls < BOSSES[12].maxCalls &&
+      e.age >=
+        BOSSES[12].firstCall -
+          BOSSES[12].warning +
+          e.calls * BOSSES[12].callInterval
+      ? "졸개 소환 임박"
+      : "안개 소환사";
+  if (e.pattern === 18)
+    return e.rageAt != null
+      ? e.age < e.rageAt
+        ? "가속 예고 · 후반 방어"
+        : "격노 · 이동 가속"
+      : "월식 군주";
+  return "";
+}

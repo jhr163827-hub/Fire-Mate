@@ -30,6 +30,7 @@ for (const strategy of ["balanced", "random", "archer", "ember"])
       runs.push({
         seed,
         win: g.s.result.win,
+        finalBossDefeated: g.s.wave === 18 && g.s.bossDefeated,
         wave: g.s.wave,
         gold: g.s.gold,
         lives: g.s.lives,

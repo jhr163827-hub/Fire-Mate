@@ -1,4 +1,4 @@
-import { PADS, TYPES, waveSpec, RULES } from "./data.mjs";
+import { PADS, TYPES, waveSpec, RULES, BOSSES } from "./data.mjs";
 
 export function supported(units, unit) {
   return units.some(
@@ -22,14 +22,14 @@ export function forecast(wave) {
     composition:
       `${w.count}마리 · ` +
       (w.boss
-        ? `보스 1 · 질주 ${fast}`
+        ? `보스 1 · 질주 ${fast}${wave === 12 ? " · 추가 소환 최대 4" : ""}`
         : fast
           ? `질주 ${fast}`
           : tanks
             ? `갑각 ${tanks}`
             : "일반 침입자"),
     advice: w.boss
-      ? "보스는 성문 피해 5. 가시의 독과 별종의 가속으로 오래 공격하세요. 궁수 피해는 40% 감소합니다."
+      ? BOSSES[wave].advice + " 보스 성문 피해 5 · 궁수 피해 40% 감소."
       : fast
         ? "질주 적은 1.5배 빠릅니다. 서리로 늦추고 길 후반에도 공격할 수 있게 배치하세요."
         : tanks

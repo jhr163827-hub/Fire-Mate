@@ -13,6 +13,7 @@ import {
   BOONS,
   boonCount,
   EVOLUTIONS,
+  BOSSES,
 } from "./data.mjs";
 export class Game {
   constructor(seed = Date.now()) {
@@ -224,6 +225,7 @@ export class Game {
       dot: 0,
       source: 0,
       boss,
+      ...(boss ? { pattern: s.wave, age: 0, calls: 0, rageAt: null } : {}),
     });
     s.spawned++;
   }
@@ -232,6 +234,11 @@ export class Game {
     if (kind === "archer" && e.slow > 0)
       damage *= 1 + boonCount(this.s, "hunt") * BOONS.hunt.damageBonus;
     if (kind === "archer" && (e.kind === "beetle" || e.boss)) damage *= 0.6;
+    if (e.pattern === 6)
+      damage *=
+        e.age % BOSSES[6].cycle < BOSSES[6].shieldSeconds
+          ? BOSSES[6].shieldDamage
+          : BOSSES[6].exposedDamage;
     const actual = Math.min(e.hp, damage);
     e.hp -= damage;
     this.s.stats.damage[kind] = (this.s.stats.damage[kind] || 0) + actual;
@@ -246,6 +253,49 @@ export class Game {
       if (s.wait <= 0) this.nextWave();
       return;
     }
+    // Boss clocks advance only with the fixed simulation step; legacy bosses stay unchanged.
+    const adds = [];
+    for (const e of s.enemies) {
+      if (!e.pattern || e.hp <= 0) continue;
+      const previous = e.age,
+        rule = BOSSES[e.pattern];
+      e.age += dt;
+      if (e.pattern === 12 && e.calls < rule.maxCalls) {
+        const due = rule.firstCall + e.calls * rule.callInterval;
+        if (previous < due - rule.warning && e.age >= due - rule.warning)
+          this.emit("bossCue", { text: "2초 뒤 졸개 소환 · 광역 배치" });
+        if (e.age >= due) {
+          e.calls++;
+          for (let i = 0; i < rule.addsPerCall; i++) {
+            const hp = waveSpec(s.wave).hp * rule.addHealth;
+            adds.push({
+              id: s.nextId++,
+              d: Math.max(0, e.d - rule.addGap * (i + 1)),
+              hp,
+              max: hp,
+              speed: waveSpec(s.wave).speed,
+              kind: "wisp",
+              boss: false,
+              minion: true,
+              slow: 0,
+              poison: 0,
+              dot: 0,
+              source: 0,
+            });
+          }
+          this.emit("bossCue", { text: "졸개 소환 · 보스 주변을 공격하세요" });
+        }
+      }
+      if (
+        e.pattern === 18 &&
+        e.rageAt === null &&
+        e.hp <= e.max * rule.rageHealth
+      ) {
+        e.rageAt = e.age + rule.warning;
+        this.emit("bossCue", { text: "3초 뒤 격노 · 길 후반을 방어하세요" });
+      }
+    }
+    s.enemies.push(...adds);
     // One strongest field contribution per enemy; duration uses fixed simulation steps.
     for (const e of s.enemies) {
       const p = pointAt(e.d);
@@ -352,12 +402,18 @@ export class Game {
     for (let e of s.enemies) {
       if (e.hp <= 0) {
         if (e.boss) s.bossDefeated = true;
-        s.gold += e.boss ? 55 : 5;
+        s.gold += e.boss ? 55 : e.minion ? 0 : 5;
         s.kills++;
         this.emit("death", { ...pointAt(e.d), kind: e.kind });
         continue;
       }
-      e.d += e.speed * dt * (e.slow > 0 ? (e.boss ? 0.76 : 0.52) : 1);
+      e.d +=
+        e.speed *
+        dt *
+        (e.slow > 0 ? (e.boss ? 0.76 : 0.52) : 1) *
+        (e.pattern === 18 && e.rageAt !== null && e.age >= e.rageAt
+          ? BOSSES[18].rageSpeed
+          : 1);
       if (e.d >= LENGTH) {
         let loss = e.boss ? 5 : 1;
         s.lives -= loss;
@@ -516,6 +572,24 @@ export class Game {
           !Number.isInteger(e.id) ||
           e.id < 1 ||
           e.id >= s.nextId
+        )
+          return null;
+        if (
+          e.minion !== undefined &&
+          (e.minion !== true || e.kind !== "wisp" || e.boss)
+        )
+          return null;
+        if (
+          e.pattern !== undefined &&
+          (!e.boss ||
+            e.kind !== "boss" ||
+            e.pattern !== s.wave ||
+            ![6, 12, 18].includes(e.pattern) ||
+            !finite(e.age) ||
+            !Number.isInteger(e.calls) ||
+            e.calls < 0 ||
+            e.calls > BOSSES[12].maxCalls ||
+            (e.rageAt !== null && !finite(e.rageAt)))
         )
           return null;
         ids.add(e.id);

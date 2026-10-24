@@ -507,6 +507,93 @@ function ok(name) {
   });
   await page.evaluate(() => moonward.pause(true));
   await page.setViewportSize({ width: 390, height: 844 });
+  // Actual UI/renderer with deterministic encounters; these are not human full-run sessions.
+  for (const wave of [6, 12, 18]) {
+    await page.evaluate((wave) => {
+      const g = new moonward.Game(42);
+      g.s.gold = 1000;
+      for (const [pad, kind] of [
+        [0, "archer"],
+        [1, "ember"],
+        [2, "frost"],
+        [3, "thorn"],
+      ]) {
+        const u = g.summon(pad, kind);
+        u.cd = 999;
+      }
+      g.s.wave = wave;
+      g.s.phase = "battle";
+      g.s.spawned = 12 + wave - 1;
+      g.spawn();
+      g.s.enemies[0].d = 200;
+      if (wave === 18) g.s.enemies[0].hp = g.s.enemies[0].max / 2;
+      moonward.setGame(g);
+      moonward.pause(true);
+      moonward.step(1);
+    }, wave);
+    assert.match(
+      await page.textContent("#forecastTitle"),
+      new RegExp("현재 " + wave),
+    );
+    await page.click("#scout");
+    assert.match(
+      await page.textContent("#dialog"),
+      wave === 6 ? /보호막/ : wave === 12 ? /졸개/ : /25%/,
+    );
+    await page.click("#closeDialog");
+    await page.evaluate(() => moonward.pause(true));
+    if (wave === 12) {
+      await page.evaluate(() => moonward.step(181));
+      assert.match(await page.textContent("#banner"), /소환/);
+    }
+    if (wave === 18) assert.match(await page.textContent("#banner"), /격노/);
+    await page.evaluate(() => moonward.pause(false));
+    await page.screenshot({
+      path: path.join(out, `boss-${wave}-390.jpg`),
+      type: "jpeg",
+      quality: 80,
+      fullPage: true,
+    });
+    await page.evaluate(() => {
+      moonward.pause(true);
+      moonward.save();
+    });
+    const before = await page.evaluate(() => moonward.game.serialize());
+    await page.reload();
+    await page.waitForFunction(() => window.moonward);
+    await page.click("#resume");
+    await page.evaluate(() => moonward.pause(true));
+    assert.equal(
+      await page.evaluate(() => moonward.game.s.enemies[0].pattern),
+      wave,
+    );
+    const saved = JSON.parse(before);
+    assert.equal(
+      await page.evaluate(() => moonward.game.s.enemies[0].calls),
+      saved.enemies[0].calls,
+    );
+    if (wave === 12) {
+      await page.evaluate(() => moonward.step(330));
+      assert.equal(
+        await page.evaluate(
+          () => moonward.game.s.enemies.filter((e) => e.minion).length,
+        ),
+        4,
+      );
+    }
+    if (wave === 18) {
+      await page.evaluate(() => moonward.step(100));
+      assert.ok(
+        await page.evaluate(
+          () =>
+            moonward.game.s.enemies[0].age >= moonward.game.s.enemies[0].rageAt,
+        ),
+      );
+    }
+  }
+  ok(
+    "three boss patterns: live scouting, telegraphs, summon cap, rage and save/resume",
+  );
   report.performance = await page.evaluate(async () => {
     moonward.pause(true);
     moonward.game.s.gold = 1000;

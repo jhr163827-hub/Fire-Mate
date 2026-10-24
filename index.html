@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.158</title><link rel="stylesheet" href="./app.css?v=3.5.158"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-158">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.159</title><link rel="stylesheet" href="./app.css?v=3.5.159"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-159">
 
 
 
@@ -14,7 +14,7 @@
   
   <div class="fm-home-holdings" hidden><div id="fmHomeHoldings"></div><button type="button" id="fmHomeAllHoldings">전체 종목 ›</button></div>
 </div>
-<button type="button" id="fmHomeMarket" class="fm-home-market" hidden></button><button type="button" id="fmHomeDiv" class="fm-home-market" hidden></button><div class="hero fm-home-budget"><div class="light small">이번 달 지출 <span id="heroMonth"></span></div><div class="fm-home-budget-total"><div class="big" id="heroSpent">₩0</div><button type="button" id="homeBudgetAction" class="fm-home-budget-action">가계부에서 예산 설정 ›</button></div><div class="fm-home-budget-grid"><div><span>월 예산</span><strong id="heroBudget">미설정</strong></div><div><span id="heroLeftLabel">남은 예산</span><strong id="heroLeft">미설정</strong></div></div><div class="fm-home-budget-usage"><span>예산 사용률</span><strong id="heroUsage">예산 설정 후 표시</strong></div><div class="progress" role="progressbar" aria-label="월 예산 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="homeBudgetMeter"><div id="budgetProgress"></div></div><div class="fm-home-budget-secondary" hidden=""><span id="heroCompare">이번 달 소비 현황</span><span id="heroToday">₩0</span><span id="heroDays">0일</span></div><div class="fm-pace" id="fmPaceLine"></div><div class="fm-home-saving" id="fmHomeSaving" hidden></div><div class="fm-home-actions"><button type="button" id="fmHomeSync" class="secondary fm-home-record"><span>📥 뱅크샐러드 가져오기</span><span id="fmHomeSyncNote" aria-live="polite"></span></button></div></div><section class="card fm-home-fire" aria-label="FIRE 진행 상황"><div class="fm-home-fire-head"><span>FIRE 진행 상황</span><button type="button" data-go="fire">FIRE 상세 ›</button></div><div class="hero-row">
+<button type="button" id="fmHomeMarket" class="fm-home-market" hidden></button><button type="button" id="fmHomeDiv" class="fm-home-market" hidden></button><div class="hero fm-home-budget"><div class="light small">이번 달 지출 <span id="heroMonth"></span><span id="fmPayDay"></span></div><div class="fm-home-budget-total"><div class="big" id="heroSpent">₩0</div><button type="button" id="homeBudgetAction" class="fm-home-budget-action">가계부에서 예산 설정 ›</button></div><div class="fm-home-budget-grid"><div><span>월 예산</span><strong id="heroBudget">미설정</strong></div><div><span id="heroLeftLabel">남은 예산</span><strong id="heroLeft">미설정</strong></div></div><div class="fm-home-budget-usage"><span>예산 사용률</span><strong id="heroUsage">예산 설정 후 표시</strong></div><div class="progress" role="progressbar" aria-label="월 예산 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="homeBudgetMeter"><div id="budgetProgress"></div></div><div class="fm-home-budget-secondary" hidden=""><span id="heroCompare">이번 달 소비 현황</span><span id="heroToday">₩0</span><span id="heroDays">0일</span></div><div class="fm-pace" id="fmPaceLine"></div><div class="fm-home-saving" id="fmHomeSaving" hidden></div><div class="fm-home-actions"><button type="button" id="fmHomeSync" class="secondary fm-home-record"><span>📥 뱅크샐러드 가져오기</span><span id="fmHomeSyncNote" aria-live="polite"></span></button></div></div><section class="card fm-home-fire" aria-label="FIRE 진행 상황"><div class="fm-home-fire-head"><span>FIRE 진행 상황</span><button type="button" data-go="fire">FIRE 상세 ›</button></div><div class="hero-row">
     
     <div class="hero-stat"><span class="light small">목표 달성률</span><strong id="homeAssetPercent">0%</strong></div>
   </div><div class="progress"><div id="homeAssetProgress"></div></div><div class="fm-fire-eta"><span>목표 도달 예상</span><strong id="homeFireEta">계산 중…</strong><small id="homeFireEtaNote">월 투자금과 예상 수익률 기준</small></div></section><div class="home-shortcuts"><button type="button" id="fmMonthlyOpen">월간 결산 ›</button><button type="button" id="fmSpendingOpen">소비 분석 ›</button></div></section>
@@ -336,7 +336,9 @@ for(const h of data.holdings){let s=String(h.ticker||'').trim().toUpperCase();if
 const today=localDate(now),end=localDate(new Date(now.getTime()+7*day));for(const [s,q] of Object.entries(qty)){const e=fmDivFeed.symbols[s],rate=e?.currency==='USD'?fx:e?.currency==='KRW'?1:0,n=rate&&fmDivProject(e.events||[],today,end)[0];if(n)up.push({n:new Date(n.date+'T00:00'),v:n.amount*q*rate*(e.currency==='USD'?.85:.846)})}
  up.sort((a,b)=>a.n-b.n);el.hidden=!up.length;if(up.length)el.innerHTML='💰 7일 안 배당 약 <b>'+fmCompactMoney(up.reduce((s,x)=>s+x.v,0))+'원</b>'}
 $('fmHomeDiv').onclick=()=>{go('assets');fmSetAssetView('dividend')};
-function renderHome(){fmRenderHomeMarket();fmHomeDiv();
+// Payday is the 25th; on a weekend it comes the Friday before.
+function fmPayDay(){const t=new Date(localDate(new Date())+'T00:00');let p;for(let k=0;;k++){p=new Date(t.getFullYear(),t.getMonth()+k,25);const w=p.getDay();if(w===6)p.setDate(24);if(w===0)p.setDate(23);if(p>=t)break}const d=Math.round((p-t)/864e5);$('fmPayDay').textContent=d?'💼 월급 D-'+d:'💼 오늘 월급날'}
+function renderHome(){fmRenderHomeMarket();fmHomeDiv();fmPayDay();
 
 const homeNetWorth=netAsset();
 const homeFire=fireLiquid();fmRenderGoalNotes(homeFire);
@@ -1999,7 +2001,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-158',VERSION='3.5.158';
+ const BUILD='fire-mate-v3-5-159',VERSION='3.5.159';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2213,4 +2215,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.158"></script></body></html>
+</style><script src="./js/features.js?v=3.5.159"></script></body></html>

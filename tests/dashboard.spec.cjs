@@ -85,3 +85,13 @@ test('dividend estimates step whole months, so a payer on the 1st shows once per
  await expect(rows).toHaveCount(1);
  if(now.getMonth()<11){await page.locator('.fm-div-col[data-month="'+(now.getMonth()+2)+'"]').click();await expect(rows).toHaveCount(1);await expect(rows).toContainText('/1 (예상)')}
 });
+
+test('home shows days to payday: the 25th, or the Friday before when it falls on a weekend',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,20,9,0));// Tue 10/20 → 10/23 (Fri), since 10/25 is a Sunday
+ await page.goto('/index.html');
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 월급 D-3');
+ await page.clock.setFixedTime(new Date(2026,9,23,9,0));await page.reload();
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 오늘 월급날');
+ await page.clock.setFixedTime(new Date(2026,9,24,9,0));await page.reload();// next: 11/25 (Wed)
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 월급 D-32');
+});

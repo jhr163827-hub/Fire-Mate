@@ -22,3 +22,17 @@ Use case stylized-concept. Production SPRITE ATLAS for original 2D fantasy tower
 ## Boss extraction prompt
 
 Extract only the bottom-right armored moon guardian boss into one standalone transparent game sprite. Preserve the exact design and painted style: silver crescent horns, dark armored body, violet chest crystal, dark cape. Entire character including horns and boots visible with 12% transparent margin around all edges. Remove all other characters and all their fragments. No backdrop, text, ground or scenery. Centered square composition, original character unchanged.
+
+## Evolution sprites — 2026-10-24
+
+Built-in image generation (imagegen skill), two independent edits using the game's original archer/ember sprite as the edit reference. No external asset pack, character or audio used. Original alpha was preserved while downsampling into 208×208 WebP tiles with the illustration contained within 192×192. The new files together are about 36 KB. Existing assets were not replaced. Runtime size is 59 world pixels. Preview and battlefield captures were inspected for small-size readability.
+
+Project assets: `art/archer-evolved.webp`, `art/ember-evolved.webp`.
+
+### Archer prompt
+
+Use case: precise-object-edit. Production standalone transparent game sprite for MOONWARD, evolved moon-piercing archer. Reference is the original base unit; preserve its original identity, face, green hood, hand-painted miniature fantasy style, slightly overhead full-body view. Evolve the equipment into a conspicuously huge silver-and-gold CRESCENT longbow taller than the figure with one luminous pale-blue spear-like arrow; split flowing emerald cape, silver moon pauldrons. Strong silhouette readable at only 55 CSS pixels. Entire figure including bow visible, centered square composition, 12% transparent margin; no scenery, floor, shadow backdrop, text, UI, watermark or other figures. Genuine alpha transparency. New sibling asset, do not overwrite reference.
+
+### Ember prompt
+
+Use case: precise-object-edit. Production standalone transparent game sprite for MOONWARD, evolved cinder-ground alchemist. Reference is original base unit; preserve original face, red hood, goggles, warm orange and brown palette and detailed hand-painted miniature fantasy style. Evolve equipment into large brass furnace backpack with TWO short glowing chimney stacks, holding a long bronze ladle/censer launcher with molten-orange flask at the tip. Distinct broad furnace silhouette and diagonal long weapon must read at 55 CSS pixels. Slight overhead full-body view, entire figure and equipment visible, centered square, 12% transparent margin. No floor, scenery, background, text, watermark, UI, additional character or wide particle cloud. Genuine alpha transparency. New sibling asset; do not overwrite reference.

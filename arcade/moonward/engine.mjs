@@ -1,3 +1,4 @@
+import { piercingLine } from "./evolution.mjs";
 import { supported } from "./feedback.mjs";
 import {
   RULES,
@@ -11,6 +12,7 @@ import {
   VERSION,
   BOONS,
   boonCount,
+  EVOLUTIONS,
 } from "./data.mjs";
 export class Game {
   constructor(seed = Date.now()) {
@@ -28,6 +30,7 @@ export class Game {
       spawnIn: 0,
       units: [],
       enemies: [],
+      fields: [],
       nextId: 1,
       kills: 0,
       leaks: 0,
@@ -137,12 +140,33 @@ export class Game {
     this.emit("merge", { pad: u.pad, kind: u.kind });
     return true;
   }
+  evolve(id) {
+    const s = this.s,
+      u = s.units.find((v) => v.id === id),
+      rule = EVOLUTIONS[u?.kind];
+    if (
+      !this.active() ||
+      s.pendingBoon ||
+      !u ||
+      !rule ||
+      u.tier !== 3 ||
+      u.evolved ||
+      s.gold < rule.cost
+    )
+      return false;
+    s.gold -= rule.cost;
+    s.stats.spent += rule.cost;
+    u.evolved = true;
+    this.emit("evolve", { pad: u.pad, kind: u.kind });
+    return true;
+  }
   sell(id) {
     let s = this.s,
       u = s.units.find((u) => u.id === id);
     if (!u || !this.active()) return false;
     s.gold += Math.floor(30 * 2 ** (u.tier - 1));
     s.units = s.units.filter((x) => x !== u);
+    s.fields = s.fields.filter((f) => f.owner !== id);
     return true;
   }
   start() {
@@ -222,6 +246,22 @@ export class Game {
       if (s.wait <= 0) this.nextWave();
       return;
     }
+    // One strongest field contribution per enemy; duration uses fixed simulation steps.
+    for (const e of s.enemies) {
+      const p = pointAt(e.d);
+      let damage = 0;
+      for (const f of s.fields) {
+        if (Math.hypot(p.x - f.x, p.y - f.y) <= EVOLUTIONS.ember.radius)
+          damage = Math.max(
+            damage,
+            EVOLUTIONS.ember.dps * Math.min(dt, f.life),
+          );
+      }
+      if (damage) this.hit(e, damage, "ember");
+    }
+    s.fields = s.fields
+      .map((f) => ({ ...f, life: f.life - dt }))
+      .filter((f) => f.life > 0);
     s.waveTime += dt;
     let w = waveSpec(s.wave);
     s.spawnIn -= dt;
@@ -253,13 +293,32 @@ export class Game {
             ? Number(a.slow > 0) - Number(b.slow > 0) || b.d - a.d
             : b.d - a.d,
       );
-      let e = targets[0];
+      const line =
+        u.evolved && u.kind === "archer" ? piercingLine(u, targets) : null;
+      let e = line ? line.hits[0] : targets[0];
       if (!e) continue;
       let scale = tierScale(u.tier),
         boost = supported(s.units, u);
       u.cd = type.interval / (boost ? 1.25 : 1);
       this.hit(e, type.damage * scale, u.kind);
       let p = pointAt(e.d);
+      if (line) {
+        for (const other of line.hits.slice(1))
+          this.hit(
+            other,
+            type.damage * scale * EVOLUTIONS.archer.secondary,
+            u.kind,
+          );
+      }
+      if (u.evolved && u.kind === "ember") {
+        s.fields = s.fields.filter((f) => f.owner !== u.id);
+        s.fields.push({
+          owner: u.id,
+          x: p.x,
+          y: p.y,
+          life: EVOLUTIONS.ember.duration,
+        });
+      }
       if (type.splash)
         for (let other of s.enemies) {
           if (
@@ -279,7 +338,15 @@ export class Game {
         e.poison = 4 + stacks * BOONS.venom.duration;
         e.source = u.id;
       }
-      this.emit("shot", { x, y, tx: p.x, ty: p.y, kind: u.kind, tier: u.tier });
+      this.emit("shot", {
+        x,
+        y,
+        tx: line ? line.tx : p.x,
+        ty: line ? line.ty : p.y,
+        kind: u.kind,
+        tier: u.tier,
+        evolved: !!u.evolved,
+      });
     }
     let alive = [];
     for (let e of s.enemies) {
@@ -318,6 +385,7 @@ export class Game {
       !s.enemies.length &&
       s.waveTime >= RULES.minWaveTime
     ) {
+      s.fields = [];
       s.gold += w.reward;
       s.history.push({
         wave: s.wave,
@@ -342,6 +410,7 @@ export class Game {
     }
   }
   finish(win) {
+    this.s.fields = [];
     this.s.phase = "ended";
     this.s.result = {
       win,
@@ -419,6 +488,8 @@ export class Game {
           u.pad >= PADS.length ||
           pads.has(u.pad) ||
           ![1, 2, 3].includes(u.tier) ||
+          (u.evolved !== undefined && typeof u.evolved !== "boolean") ||
+          (u.evolved && (!Object.hasOwn(EVOLUTIONS, u.kind) || u.tier !== 3)) ||
           !finite(u.cd, -100) ||
           !finite(u.id) ||
           ids.has(u.id) ||
@@ -503,6 +574,28 @@ export class Game {
           !s.history.some((h) => h.wave === s.pendingBoon))
       )
         return null;
+      if (s.fields === undefined) s.fields = [];
+      if (
+        !Array.isArray(s.fields) ||
+        s.fields.length > PADS.length ||
+        (s.phase !== "battle" && s.fields.length)
+      )
+        return null;
+      const owners = new Set();
+      for (const f of s.fields) {
+        if (
+          !f ||
+          !finite(f.x, -20, 360) ||
+          !finite(f.y, 0, 468) ||
+          !finite(f.life, 0, EVOLUTIONS.ember.duration) ||
+          owners.has(f.owner) ||
+          !s.units.some(
+            (u) => u.id === f.owner && u.kind === "ember" && u.evolved,
+          )
+        )
+          return null;
+        owners.add(f.owner);
+      }
       let g = new Game();
       g.s = s;
       return g;

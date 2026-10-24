@@ -523,3 +523,22 @@ dialog.boonDialog {
     padding: 8px;
   }
 }
+
+.evolutionPortrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 12px;
+  background: radial-gradient(ellipse, #394d48, #101f2b);
+  padding: 12px 0;
+}
+.evolutionPortrait img {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+}
+.evolutionPortrait span {
+  color: #e8cf98;
+  font-size: 24px;
+}

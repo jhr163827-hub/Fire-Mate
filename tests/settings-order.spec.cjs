@@ -35,6 +35,12 @@ test('certificates can be added, edited and deleted, and ride along in backups',
  await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('일반기계기사');await page.locator('#fmCertGoal').check();await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('.fm-cert-goal')).toHaveText('🎯일반기계기사도전 중');
  await expect(page.locator('#fmCertSub')).toHaveText('새내기 수집가 · 도전 중 1');
+ // A goal with an exam date counts down; the form label follows the goal checkbox.
+ await page.locator('.fm-cert-goal').click();await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
+ await page.locator('#fmCertDate').fill(await page.evaluate(()=>{const d=new Date();d.setDate(d.getDate()+23);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}));
+ await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('.fm-cert-goal .fm-cert-dday')).toHaveText('D-23');
+ await expect(page.locator('#fmCertSub')).toHaveText('새내기 수집가 · 도전 중 1 · D-23');
  await page.locator('[data-close="fmCertOverlay"]').click();await expect(page.locator('#fmCertOverlay')).toBeHidden();
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const backup=JSON.parse(require('fs').readFileSync(await download.path(),'utf8'));

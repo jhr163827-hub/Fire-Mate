@@ -2360,3 +2360,6 @@ html body #view-calendar #fmLedgerAllTx .fm-ledger-day[open]>.fm-ledger-date{bac
 html body #view-calendar #fmLedgerAllTx .fm-ledger-date{border-bottom:0}
 html body #view-calendar #fmLedgerAllTx .fm-ledger-date strong{font-size:13px;color:var(--sub);font-weight:700}
 html body #view-calendar #dayTx .tx{position:relative}
+#fmCertOverlay .fm-cert-dday{position:absolute;top:12px;right:12px;z-index:1;padding:3px 9px;border-radius:999px;background:var(--green);color:var(--bg);font-size:12px;font-weight:800}
+#fmCertOverlay .fm-cert-dday.done{background:var(--panel2);color:var(--sub)}
+#fmCertOverlay .fm-cert-datelbl{display:grid;gap:4px;font-size:12px;color:var(--sub)}

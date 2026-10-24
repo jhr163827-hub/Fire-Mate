@@ -72,3 +72,16 @@ test('home shows dividends due in the next 7 days, guessed from each holding\'s 
  await line.click();
  await expect(page.locator('#fmAssetDividendView')).toBeVisible();
 });
+
+test('dividend estimates step whole months, so a payer on the 1st shows once per month',async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ const now=new Date(),first=k=>{const d=new Date(now.getFullYear(),now.getMonth()+k,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01'};
+ await page.route('**/dividends.json*',r=>r.fulfill({json:{symbols:{JEPQ:{currency:'USD',events:[{date:first(-2),amount:0.5},{date:first(-1),amount:0.5},{date:first(0),amount:0.5}]}}}}));
+ await page.addInitScript(()=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({tx:[],accounts:[{id:'a',name:'미국',kind:'investment',amount:0,fire:true}],holdings:[{id:'h1',accountId:'a',ticker:'JEPQ',type:'USD',qty:100,price:58,cost:55}],fire:{asset:0,goal:100000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0}}))});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickDividend').click();
+ const rows=page.locator('#fmDivHoldings .fm-div-row',{hasText:'JEPQ'});
+ await page.locator('.fm-div-col[data-month="'+(now.getMonth()+1)+'"]').click();
+ await expect(rows).toHaveCount(1);
+ if(now.getMonth()<11){await page.locator('.fm-div-col[data-month="'+(now.getMonth()+2)+'"]').click();await expect(rows).toHaveCount(1);await expect(rows).toContainText('/1 (예상)')}
+});

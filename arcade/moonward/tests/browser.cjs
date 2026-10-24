@@ -353,6 +353,105 @@ function ok(name) {
   ok(
     "boss blessing offer, freeze, pending reload, mobile preview, explicit choice, duplicate callback and reset",
   );
+  await page.evaluate(() => {
+    const g = new moonward.Game(12);
+    g.s.gold = 1000;
+    const a = g.summon(0, "archer"),
+      e = g.summon(1, "ember");
+    a.tier = e.tier = 3;
+    g.summon(2, "frost");
+    g.summon(3, "bell");
+    g.s.gold = 199;
+    moonward.setGame(g);
+  });
+  await page.click('[data-pad="0"]');
+  await page.click("#merge");
+  assert.ok(await page.isDisabled("#confirmEvolve"));
+  assert.match(await page.textContent("#dialogBody"), /월광 관통궁/);
+  await page.click("#closeDialog");
+  assert.equal(
+    await page.evaluate(() => !!moonward.game.s.units[0].evolved),
+    false,
+  );
+  await page.evaluate(() => {
+    moonward.game.s.gold = 600;
+    moonward.setGame(moonward.game);
+  });
+  await page.click("#merge");
+  await page.evaluate(() => {
+    window.repeatEvolution = document.querySelector("#confirmEvolve").onclick;
+  });
+  await page.click("#confirmEvolve");
+  await page.evaluate(() => repeatEvolution());
+  assert.equal(await page.evaluate(() => moonward.game.s.gold), 400);
+  assert.match(await page.textContent("#selection"), /월광 관통궁/);
+  await page.click('[data-pad="1"]');
+  await page.click("#merge");
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: width === 320 ? 568 : 844 });
+    assert.ok(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    );
+    await page.locator("#confirmEvolve").scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: path.join(out, `evolution-preview-${width}.png`),
+      fullPage: true,
+    });
+  }
+  await page.click("#confirmEvolve");
+  assert.equal(await page.evaluate(() => moonward.game.s.gold), 200);
+  await page.evaluate(() => {
+    const g = moonward.game;
+    g.s.wave = 5;
+    g.start();
+    g.s.spawned = 18;
+    g.s.enemies = Array.from({ length: 12 }, (_, i) => ({
+      id: g.s.nextId++,
+      d: 40 + i * 18,
+      hp: 5000,
+      max: 5000,
+      speed: 35,
+      kind: "wisp",
+      boss: false,
+      slow: 0,
+      poison: 0,
+      dot: 0,
+      source: 0,
+    }));
+    moonward.step(2);
+    moonward.pause(true);
+    moonward.save();
+  });
+  assert.ok(await page.evaluate(() => moonward.game.s.fields.length > 0));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: path.join(out, "evolution-battle-390.png"),
+    fullPage: true,
+  });
+  await page.reload();
+  await page.waitForSelector("#resume");
+  await page.click("#resume");
+  await page.evaluate(() => moonward.pause(true));
+  assert.equal(
+    await page.evaluate(
+      () => moonward.game.s.units.filter((u) => u.evolved).length,
+    ),
+    2,
+  );
+  assert.ok(await page.evaluate(() => moonward.game.s.fields.length > 0));
+  await page.click('[data-pad="1"]');
+  await page.click("#sell");
+  await page.click("#confirmSell");
+  assert.equal(await page.evaluate(() => moonward.game.s.fields.length), 0);
+  await page.click("#menu");
+  await page.click("#restart");
+  await page.click("#yesRestart");
+  assert.equal(await page.evaluate(() => moonward.game.s.fields.length), 0);
+  ok(
+    "both evolution previews, affordability, cancel, duplicate confirm, attacks, field save/resume, sell and reset",
+  );
 
   await page.evaluate(async () => {
     const { manage } = await import("./tests/simulate.mjs");
@@ -410,6 +509,14 @@ function ok(name) {
   await page.setViewportSize({ width: 390, height: 844 });
   report.performance = await page.evaluate(async () => {
     moonward.pause(true);
+    moonward.game.s.gold = 1000;
+    for (const u of moonward.game.s.units.filter((u) =>
+      ["archer", "ember"].includes(u.kind),
+    )) {
+      u.tier = 3;
+      moonward.game.evolve(u.id);
+    }
+    moonward.step(1);
     let base = moonward.game.s.enemies[0] || {
       id: 100,
       hp: 100,

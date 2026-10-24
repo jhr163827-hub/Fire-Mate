@@ -135,3 +135,25 @@ test('the automatic morning quote refresh does not pop a toast',async({page})=>{
  await page.waitForTimeout(1500);
  await expect(page.locator('#toast')).toBeHidden();
 });
+
+test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{
+ const d=ago(1),row=(time,amount,memo='주식회사 티머니')=>[d,time,'지출','교통','',memo,amount,'KRW','카드'];
+ // 뱅크샐러드 writes 지출 as negative; the +12,700 row is the cancellation of the 08:00 charge.
+ const rows=[row('08:00',-12700),row('08:05',12700),row('08:10',-12700),row('09:00',-3000,'GS25')];
+ const key=(time,amount,memo='주식회사 티머니')=>[d,time,'expense','교통','',memo,amount,'카드'].join('|');
+ // The old importer stored all three 티머니 rows as spending.
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:['08:00','08:05','08:10'].map((t,i)=>({id:'old'+i,date:d,type:'expense',category:'교통',amount:12700,memo:'주식회사 티머니',bankExcelKey:key(t,12700)}))});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
+ await expect(page.locator('#bankExcelPreview')).toContainText('결제 취소 1건');
+ await expect(page.locator('#bankExcelPreview')).toContainText('이미 있던 2건 정리');
+ await page.locator('#bankExcelConfirm').click();
+ const tmoney=async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').length;
+ await expect.poll(tmoney).toBe(1);
+ expect((await saved(page)).tx.filter(t=>t.memo==='GS25').length).toBe(1);
+ // Undo puts the cleaned-up rows back as they were.
+ await page.locator('#bankImportUndo').click();
+ await expect.poll(tmoney).toBe(3);
+ expect((await saved(page)).tx.filter(t=>t.memo==='GS25').length).toBe(0);
+});

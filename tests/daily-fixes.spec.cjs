@@ -55,11 +55,11 @@ test('money sent to my own account is a transfer, not spending, and one fix teac
  await expect.poll(()=>type('마이뱅크')).toEqual(['transfer','transfer','transfer']);
 });
 
-test('exchange deposits already imported as spending become transfers once',async({page})=>{
- await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'u',date:ago(1),type:'expense',category:'쇼핑',amount:300000,memo:'업비트 입금',bankExcelKey:'k-u'},{id:'s',date:ago(1),type:'expense',category:'쇼핑',amount:9000,memo:'쿠팡',bankExcelKey:'k-s'}]});
+test('exchange and 청약 deposits already imported as spending become transfers once',async({page})=>{
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'u',date:ago(1),type:'expense',category:'쇼핑',amount:300000,memo:'업비트 입금',bankExcelKey:'k-u'},{id:'c',date:ago(1),type:'expense',category:'문화·취미',amount:30000,memo:'762907**47 ,2609-117회차',bankExcelKey:'k-c'},{id:'s',date:ago(1),type:'expense',category:'쇼핑',amount:9000,memo:'쿠팡',bankExcelKey:'k-s'}]});
  await page.goto('/index.html');
- await expect.poll(async()=>(await saved(page)).tx.map(t=>t.type)).toEqual(['transfer','expense']);
- expect(await page.evaluate(()=>localStorage.getItem('firemate_xfer_fix_v1'))).toBe('1');
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.type)).toEqual(['transfer','transfer','expense']);
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_xfer_fix2_v1'))).toBe('1');
 });
 
 test('older imports can be tidied in one confirmed step without touching amounts',async({page})=>{

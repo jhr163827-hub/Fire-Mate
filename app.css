@@ -2391,3 +2391,13 @@ html body #view-fire .fm-fire-hero #fmOpenCalculator{margin-top:2px}
 /* 실험실: 설명 문장은 숨기고 숫자·입력만 */
 html body .fm-why{display:none}
 html body #fmStrategyPlanBasis{display:none}
+html body #fmAssetGrowthHelp{display:none}
+html body .fm-growth-chart{position:relative;margin-top:12px;color:var(--c);touch-action:pan-y}
+html body .fm-growth-chart svg{display:block;width:100%;height:170px;overflow:visible}
+html body .fm-growth-axis{display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--sub)}
+html body .fm-growth-tip{position:absolute;top:-6px;z-index:1;width:120px;padding:4px 8px;border-radius:8px;background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700;text-align:center;pointer-events:none}
+html body .fm-growth-tip[hidden]{display:none}
+html body .fm-year-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html body .fm-year-grid>div:first-child{grid-column:1/-1}
+html body #fmYearToggle{margin-left:auto;min-height:40px;padding:0 14px;font-size:13px}
+html body #view-home #fmHomeDiv+#fmHomeYear,html body #view-home #fmHomeMarket+#fmHomeDiv[hidden]+#fmHomeYear{margin-top:-8px}

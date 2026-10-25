@@ -33,7 +33,7 @@
 - 스타일은 `app.css`. body 안의 `<style id="fm-premium-finance">` 1개만 인라인으로 남아 있다(옮기면 `!important`가 app.css 상한을 넘음).
 - 메인 스크립트가 내보내는 도우미: `fmGo`, `fmOpenEntry`, `fmFireViewState`, `fmRefreshNetWorth`, `fmOpenImport`, `fmLiveData()`(메모리의 현재 데이터, 읽기 전용으로 쓸 것). `fmAsk`도 메인 스크립트에 있다.
 - 소스 문자열을 검사하는 테스트는 `tests/app-source.cjs`(index.html + js 파일 합친 것)를 쓴다.
-- 테스트 전용 표시 플래그: `__fmMonthReportAnyDay`, `__fmWeekReportAnyDay`, `__fmMilestoneTest`, `__fmStartTest`.
+- 테스트 전용 표시 플래그: `__fmMonthReportAnyDay`, `__fmWeekReportAnyDay`, `__fmMilestoneTest`, `__fmStartTest`, `__fmYearAnyDay`(홈 연말 결산 줄).
 
 ## 코드를 늘리지 않는 규칙 (자동 검사)
 - **새 기능은 새 `<script>`/`<style>` 블록이나 `js/features.js` 블록을 덧붙이지 말고 해당 화면의 기존 코드를 고친다.**

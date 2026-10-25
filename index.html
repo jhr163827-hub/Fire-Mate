@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.171</title><link rel="stylesheet" href="./app.css?v=3.5.171"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-171">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.172</title><link rel="stylesheet" href="./app.css?v=3.5.172"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-172">
 
 
 
@@ -258,8 +258,7 @@ const FM_INVEST=/증권|나무|NH|엔에이치|키움|미래에셋|한국투자|
 function fmTxText(t){const k=String(t.bankExcelKey||'').split('|');return [t.memo,k[3],k[4],k.length>7?k[k.length-1]:''].join(' ')}
 // 비상금: savings accounts by memo, or 토스 나눠모으기·세이프박스 by BankSalad's account name; interest is not a deposit.
 function fmIsSafe(t){return t.type==='transfer'&&!/이자/.test(t.memo||'')&&(/카카오뱅크|카뱅|토스(?!증권)|비바리퍼블리카|세이프박스|비상금/.test(t.memo||'')||/나눠모으기|채우기|세이프박스/.test(fmTxText(t)))}
-// A 내계좌이체 whose memo is just a name is money sent to one's own brokerage account.
-function fmIsInvest(t){const k=String(t.bankExcelKey||'').split('|');return !fmIsSafe(t)&&((t.type==='transfer'||t.type==='expense'&&/투자/.test(k[4]||''))&&FM_INVEST.test(fmTxText(t))||t.type==='transfer'&&/내계좌/.test(k[3]||'')&&/^[가-힣]{2,4}$/.test(t.memo||''))}
+function fmIsInvest(t){const k=String(t.bankExcelKey||'').split('|');return !fmIsSafe(t)&&(t.type==='transfer'||t.type==='expense'&&/투자/.test(k[4]||''))&&FM_INVEST.test(fmTxText(t))}
 // Once: rows already imported as spending become 이체.
 try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_xfer_fix3_v1')){const prev=data.tx;data.tx=prev.map(t=>t.type==='expense'&&t.bankExcelKey&&FM_OWN_XFER.test(t.memo||'')?{...t,type:'transfer',category:'계좌 이체'}:t);if(persist())localStorage.setItem('firemate_xfer_fix3_v1','1');else data.tx=prev}}catch{}
 // 뱅크샐러드 분류 → 앱 분류. A merchant the user re-categorised once wins over the keyword map.
@@ -2050,7 +2049,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-171',VERSION='3.5.171';
+ const BUILD='fire-mate-v3-5-172',VERSION='3.5.172';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2264,4 +2263,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.171"></script></body></html>
+</style><script src="./js/features.js?v=3.5.172"></script></body></html>

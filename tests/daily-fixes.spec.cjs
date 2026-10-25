@@ -152,6 +152,24 @@ test('outgoing 이체 rows (negative) are imported, not treated as cancellations
  expect(tx.some(t=>t.id==='keep')).toBe(true);
 });
 
+test('a 내계좌이체 going out to an untracked own account counts as investing; a salary move between linked accounts does not',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,25,19,0));
+ const d='2026-10-23',R=(time,main,memo,amount,pay)=>[d,time,'이체',main,'미분류',memo,amount,'KRW',pay];
+ const rows=[R('09:00','내계좌이체','홍길동',4544911,'토스뱅크 통장'),R('09:00','내계좌이체','홍길동',-4544911,'국민은행 급여통장'),R('09:10','내계좌이체','홍길동',-1000000,'토스뱅크 통장'),R('09:11','내계좌이체','홍길동',-1700000,'토스뱅크 통장'),R('09:12','이체','업비트 입금',-300000,'토스뱅크 통장'),
+  // 토스 비상금 pot: 채우기 pairs with an out row named 비상금; 꺼내기 comes back as an in row named 비상금.
+  R('09:13','내계좌이체','비상금',-100000,'토스뱅크 통장'),R('09:13','내계좌이체','채우기',100000,'토스뱅크 나눠모으기 통장'),R('09:14','내계좌이체','세이프박스에 보관',400000,'세이프박스'),R('20:00','내계좌이체','비상금',50000,'토스뱅크 통장'),R('20:00','내계좌이체','꺼내기',-50000,'토스뱅크 나눠모으기 통장')];
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.length).toBe(10);
+ const plan=await page.evaluate(()=>document.getElementById('fmHomePlanRows').textContent);
+ expect(plan).toContain('💰 투자300만 / 300만');
+ expect(plan).toContain('🐷 비상금45만 / 50만');
+ expect(plan).toContain('10/23 비상금 −₩50,000');
+});
+
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{
  const d=ago(1),row=(time,amount,memo='주식회사 티머니')=>[d,time,'지출','교통','',memo,amount,'KRW','카드'];
  // 뱅크샐러드 writes 지출 as negative; the +12,700 row is the cancellation of the 08:00 charge.

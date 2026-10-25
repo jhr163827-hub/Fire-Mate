@@ -157,3 +157,8 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .theme-card{display:grid;justify-items:center;gap:3px;padding:6px 4px;border-radius:12px;border:2px solid #e3cfa3;background:#fffaf0;font-size:11px;min-height:0}.theme-card.on{border-color:#e2a83a;background:#fff1c9}.theme-card i{width:100%;height:30px;border-radius:8px;border:1px solid #0001}.theme-card span{font-weight:700;line-height:1.2;text-align:center}.theme-card small{color:#8a6a55}.theme-card:disabled{opacity:.5}
 /* Portrait: smaller HUD so the room gets the space. */
 @media(orientation:portrait){.orientation-hint{padding:5px 10px;font-size:11px}.restaurant-hud{gap:6px}.restaurant-hud>div{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:7px 10px;border-radius:12px}.restaurant-hud small{font-size:11px}.restaurant-hud strong{font-size:16px;margin:0}.chef-card{padding:8px 12px}.chef-card small{display:none}.restaurant-world{margin-top:2px}}
+/* Seated guests: hips on the cushion (body lowered), knees bent toward the table, lower legs hanging over the seat edge. */
+.room-actor[data-pose="seated"] .room-posture,.room-actor[data-pose="eating"] .room-posture{transform:translateY(-9px)}
+.room-actor[data-pose="seated"] .room-legs,.room-actor[data-pose="eating"] .room-legs{transform:none}
+.room-actor[data-pose="seated"] .room-leg-left,.room-actor[data-pose="eating"] .room-leg-left{transform:rotate(-58deg);transform-origin:-4px 2px}
+.room-actor[data-pose="seated"] .room-leg-right,.room-actor[data-pose="eating"] .room-leg-right{transform:rotate(-58deg);transform-origin:4px 2px}

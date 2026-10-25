@@ -131,3 +131,14 @@ test('home month plan checks investing, 청약, bills and savings off the ledger
  await expect(rows).toContainText('🐷 비상금40만 / 50만');
  await expect(rows).toContainText('남은 30만원은 ISA로 💪');
 });
+
+test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{
+ const d=new Date(),pm=new Date(d.getFullYear(),d.getMonth()-1,1),p=pm.getFullYear()+'-'+String(pm.getMonth()+1).padStart(2,'0');
+ await page.addInitScript(p=>localStorage.setItem('firemate_pl_history_v1',JSON.stringify({[p+'-10']:[1000000,1000000],[p+'-28']:[1100000,1000000]})),p);
+ await load(page,seed({holdings:[{id:'h',accountId:'a',ticker:'005930',type:'KRW',qty:10,price:90000,cost:100000}]}));
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
+ const rows=page.locator('#fmPlMonths .fm-pl-row:not(.fm-pl-head)');
+ await expect(rows).toHaveCount(2);
+ await expect(rows.nth(0)).toContainText('−₩100,000');await expect(rows.nth(0)).toContainText('-10.00%');
+ await expect(rows.nth(1)).toContainText(p.replace('-','/'));await expect(rows.nth(1)).toContainText('+₩100,000');await expect(rows.nth(1)).toContainText('+10.00%');
+});

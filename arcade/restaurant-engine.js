@@ -38,7 +38,8 @@ function seatingAction(action){if(!readable||!seatingSupported()||!furnitureSupp
 const fmt=ms=>{const sec=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),ss=sec%60;return h?h+'시간'+(m?' '+m+'분':''):m?m+'분'+(ss?' '+ss+'초':''):ss+'초'};
 const known=job=>!!job&&Number.isInteger(job.recipe)&&!!recipes[job.recipe]&&Number.isFinite(job.ends);
 // Temporary balance, NOT original game constants. Every batch keeps its previous total reward.
-const milestones=[0,4,12,24];
+// Chef levels past Lv4 (v1.16) keep growing: each adds 2% to every plate sold, up to +12% at Lv10.
+const milestones=[0,4,12,24,40,60,85,115,150,200];
 function growthSupported(){return data.growth===undefined||!!data.growth&&data.growth.version===1&&Number.isSafeInteger(data.growth.xp)&&data.growth.xp>=0}
 function progress(){const xp=growthSupported()?(data.growth?.xp||0):0;let level=1;for(let i=1;i<milestones.length;i++)if(xp>=milestones[i])level=i+1;return {xp,level,next:milestones[level]??null,base:milestones[level-1]}}
 const unlockedLevel=()=>Math.max(data.level,progress().level);
@@ -90,6 +91,7 @@ const classicGuests=()=>navigator.webdriver&&window.__restaurantClassicGuests===
 const guestType=g=>GUEST_TYPES[g?.type]?g.type:'regular';
 // Browser tests may shorten patience (navigator.webdriver only); play always uses the table above.
 const patienceFor=g=>classicGuests()?Infinity:GUEST_TYPES[guestType(g)].patience*(navigator.webdriver&&Number(window.__restaurantPatienceScale)>0?Number(window.__restaurantPatienceScale):1);
+const levelBonus=batch=>classicGuests()||!validPlate(batch)?0:Math.round(batch.value*Math.min(.12,Math.max(0,progress().level-4)*.02));
 const masteryBonus=batch=>{if(classicGuests()||!validPlate(batch))return 0;const st=mastery(batch.recipe).stage;return Math.round(batch.value*(st===2?.2:st===1?.1:0))};
 const tipFor=g=>{if(classicGuests())return 0;const w=Number(g?.wait),rate=!Number.isFinite(w)?0:w<5000?.25:w<12000?.1:0;return Math.round((Number(g?.batch?.value)||0)*rate*GUEST_TYPES[guestType(g)].tip)};
 // The room's shop score (themes and placed decor) adds up to 10% more VIP guests.
@@ -135,7 +137,7 @@ function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-last
    if(transaction(d=>{const service=upgradeService(d),slot=service.stock[guest.counter];const lot=slot.batches[0],ordinal=lot.total-lot.remaining+1;service.guests[i].batch={id:lot.source.id+'/plate-'+ordinal,recipe:lot.source.recipe,value:lot.price,kind:'plate',origin:{id:lot.source.id,ordinal}};lot.remaining--;if(!lot.remaining)slot.batches.shift();if(!slot.batches.length)service.stock[guest.counter]=null;service.guests[i].phase='serving';if(!classicGuests())service.guests[i].wait=Math.round(elapsed);if(d.staff){d.staff.assignments??={};d.staff.assignments[service.guests[i].id]=worker}}))phaseElapsed.set(i,0)}
   else if(guest.phase==='serving'){if(transaction(d=>{const g=upgradeService(d).guests[i];g.phase='eating';if(d.staff?.assignments)delete d.staff.assignments[g.id]}))phaseElapsed.set(i,0)}
   else if(guest.phase==='eating'){const batch=guest.batch;if(!validMeal(batch))continue;const before=progress(),plate=validPlate(batch);
-   const tip=plate?tipFor(guest):0,bonus=plate?masteryBonus(batch):0;if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value+tip+bonus;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true;if(!classicGuests()){g.tip=tip;const st={...stats()};st.happy++;st.tips+=tip;d.guestStats=st}}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(bonus?' · 숙련 +'+bonus:'')+(tip?' · 팁 +'+tip:'')+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
+   const tip=plate?tipFor(guest):0,lvb=plate?levelBonus(batch):0,bonus=(plate?masteryBonus(batch):0)+lvb;if(transaction(d=>{const g=upgradeService(d).guests[i];if(!g.paid){d.coins+=g.batch.value+tip+bonus;d.served++;if(validPlate(g.batch)){d.growth??={version:1,xp:0};d.growth.xp++}g.paid=true;if(!classicGuests()){g.tip=tip;const st={...stats()};st.happy++;st.tips+=tip;d.guestStats=st}}g.phase='leaving'})){phaseElapsed.set(i,0);const after=progress();notify(recipes[batch.recipe].name+(plate?' 1접시 판매':' 이전 주문 정산')+' · +'+batch.value+'코인'+(bonus-lvb?' · 숙련 +'+(bonus-lvb):'')+(lvb?' · 레벨 +'+lvb:'')+(tip?' · 팁 +'+tip:'')+(plate?' · +1 XP':'')+(after.level>before.level?' · 셰프 Lv'+after.level+' 달성!':''))}}
   else if(guest.phase==='leaving'){if(transaction(d=>{upgradeService(d).guests[i]=null}))phaseElapsed.delete(i)}
  }
 }

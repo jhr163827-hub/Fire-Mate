@@ -113,3 +113,10 @@ test('올해 결산 sums the year: saved, dividends, top spend, no-spend days an
  await page.locator('#fmYearToggle').click();
  await expect(page.locator('#fmMonthlyMonth')).not.toContainText('결산');
 });
+
+test('FIRE counts this month\'s transfers to brokers and exchanges against the investing plan',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'a',date:m+'-02',type:'transfer',category:'계좌 이체',amount:1200000,memo:'키움증권'},{id:'b',date:m+'-02',type:'transfer',category:'계좌 이체',amount:300000,memo:'업비트 입금'},{id:'c',date:m+'-02',type:'transfer',category:'계좌 이체',amount:30000,memo:'762907**47 ,2609-117회차'}]}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireInvest')).toHaveText('📤 투자로 보낸 돈 ₩1,500,000 · 계획 300만의 50%');
+});

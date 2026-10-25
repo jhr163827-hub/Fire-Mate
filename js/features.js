@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(cashValue&&/부족/.test(cashValue.textContent))cashValue.style.color='var(--yellow)';
    metric('fmOverview-portfolio',state.portfolio?{value:state.portfolio.value,note:'목표 구성과 실제 보유 비교 · 금액 목표와 별개'}:null);
    $('fmOpenCalculator').textContent=state.draft?.dirty?'조건 비교 •':'조건 비교';$('fmOpenCalculator').setAttribute('aria-label',state.draft?.dirty?'조건 비교 · 미저장 조건 이어보기':'조건 비교');
-   const p=state.plan;if(p)$('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 운용자산은 남은 금액·도달 계산에서 0으로 가정':'');
+   const p=state.plan;if(p)$('fmFireBasisNote').textContent='계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 · 연 '+p.rate+'%'+(p.net<0?' · 음수 운용자산은 남은 금액·도달 계산에서 0으로 가정':'');
    const difference=$('fmFirePlanDifference'),different=p&&state.portfolio&&Math.abs(p.goal-state.portfolio.totalTarget)>0.01;
    difference.hidden=!different;if(different)difference.textContent='금액 목표와 배분 합계가 달라요. 생활비는 목표 배분 기준입니다.';
    $('fmOverview-strategy').textContent=state.mode==='detail'?(state.detail?.text||'종목별 장기 비교 · 조건 확인 후 계산'):'배당·자산 매도 비교 · 저장 계획에 미반영';
@@ -153,7 +153,7 @@ try{
    const state=window.fmFireViewState||{},forecast=state.forecast;
    const months=forecast?.baselineMonthsToGoal;
    if(months===null)eta.textContent='저장된 조건으로 100년 내 목표 미도달';
-   else if(Number.isInteger(months)){const now=new Date(),date=new Date(now.getFullYear(),now.getMonth()+months,1);eta.textContent=months===0?'금액 목표 달성 · 생활비와 위험은 별도 점검':date.getFullYear()+'년 '+(date.getMonth()+1)+'월 예상 · 저장 계획 기준';}
+   else if(Number.isInteger(months)){const now=new Date(),date=new Date(now.getFullYear(),now.getMonth()+months,1);eta.textContent=months===0?'금액 목표 달성 · 생활비와 위험은 별도 점검':date.getFullYear()+'년 '+(date.getMonth()+1)+'월 도달 예상';}
    if(state.portfolio){
     const p=state.portfolio;portfolioValue.querySelector('strong').textContent=p.totalTarget>0?(p.gap>0?compactMoney(p.gap)+' 부족':'목표 배분 충족'):'목표 배분 미설정';
     portfolioValue.querySelector('small').textContent='';

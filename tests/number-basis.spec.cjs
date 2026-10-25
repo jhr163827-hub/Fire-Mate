@@ -182,13 +182,12 @@ test('the payday plan is edited in settings, not on home; 세이프박스 deposi
 test('a 내계좌이체 to one\'s own name (salary moved between own accounts) is not investing; a 채우기 alone is not 비상금; interest and the 청약 mirror row are not listed',async({page})=>{
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  const x=(id,memo,main,sub,pay,amount,date='2026-10-23')=>({id,date,type:'transfer',category:'계좌 이체',amount,memo,bankExcelKey:[date,'10:00','transfer',main,sub,memo,amount,pay].join('|')});
- await load(page,seed({tx:[x('a','채우기','내계좌이체','미분류','토스뱅크 나눠모으기 통장',100000),x('b','홍길동','내계좌이체','미분류','토스뱅크 통장',3000000),x('c','정기이자 입금','저축','미분류','세이프박스',93,'2026-10-24'),x('d','입금 내역','미분류','미분류','주택청약종합저축',30000),x('e','세이프박스에 보관','내계좌이체','미분류','세이프박스',400000)]}));
+ await load(page,seed({tx:[x('a','채우기','내계좌이체','미분류','토스뱅크 나눠모으기 통장',100000),x('b','홍길동','내계좌이체','미분류','토스뱅크 통장',3000000),x('b0','토뱅 홍길동','내계좌이체','미분류','온라인자립예탁금',3000000),x('c','정기이자 입금','저축','미분류','세이프박스',93,'2026-10-24'),x('d','입금 내역','미분류','미분류','주택청약종합저축',30000),x('e','세이프박스에 보관','내계좌이체','미분류','세이프박스',400000)]}));
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
  await expect(rows).toContainText('💰 투자0 / 300만');
  await expect(rows).toContainText('🐷 비상금40만 / 50만');
- await rows.locator('summary',{hasText:'안 잡힌 이체'}).click();
- await expect(rows.locator('.fm-plan-other p')).toHaveCount(1);
+ await expect(rows.locator('.fm-plan-other')).toHaveCount(0);
 });
 
 test('pay that lands early (추석) starts the cycle on the 급여 day',async({page})=>{
@@ -196,6 +195,32 @@ test('pay that lands early (추석) starts the cycle on the 급여 day',async({p
  await load(page,seed({tx:[{id:'p',date:'2026-09-23',type:'income',category:'급여',amount:4500000,memo:'급여'}]}));
  await page.locator('#fmHomePlanSum').click();
  await expect(page.locator('#fmHomePlanRows')).toContainText('9/23 월급 ~ 10/23 월급 전');
+});
+
+test('rows imported before directions were kept still sort out: unpaired transfers out of 토스 are investing, pairs are moves; a row can be re-filed from the 가계부 editor',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,25,19,0));
+ const d='2026-10-23',x=(id,sec,memo,amount,pay,main='내계좌이체',type='transfer')=>({id,date:d,type,category:'계좌 이체',amount,memo,bankExcelKey:[d,String(sec).padStart(5,'0'),type,main,'미분류',memo,amount,pay].join('|')});
+ await load(page,seed({tx:[
+  x('s1',35944,'토뱅 홍길동',4544911,'온라인자립예탁금'),x('s2',35945,'홍길동',4544911,'토스뱅크 통장'),
+  x('b1',36111,'홍길동',1000000,'토스뱅크 통장'),x('b2',35978,'홍길동',1740000,'토스뱅크 통장'),
+  x('k1',36242,'홍길동',300000,'토스뱅크 통장'),x('k2',36242,'홍길동',300000,'MY 입출금통장'),x('u',36278,'업비트 입금',300000,'MY 입출금통장','온라인쇼핑'),
+  x('c1',36348,'홍길동',400000,'토스뱅크 통장'),x('c2',36348,'홍길동',400000,'입출금통장'),x('c3',36369,'세이프박스',400000,'입출금통장'),x('c4',36369,'세이프박스에 보관',400000,'세이프박스'),
+  x('t1',36390,'비상금',100000,'토스뱅크 통장'),x('t2',36390,'채우기',100000,'토스뱅크 나눠모으기 통장'),
+  x('j1',36330,'홍길동',30000,'토스뱅크 통장'),x('j2',36330,'홍길동',30000,'KB나라사랑우대통장'),x('j3',74720,'762907**47 ,2609-117회차',30000,'KB나라사랑우대통장'),x('j4',74720,'입금 내역',30000,'주택청약종합저축','미분류'),
+  x('o',40000,'홍길동',250000,'토스뱅크 통장','이체')]}));
+ await page.locator('#fmHomePlanSum').click();
+ const rows=page.locator('#fmHomePlanRows');
+ await expect(rows).toContainText('💰 투자304만 / 300만');
+ await expect(rows).toContainText('🐷 비상금50만 / 50만');
+ await expect(rows).toContainText('🏠 청약3만 / 3만');
+ await rows.locator('summary',{hasText:'투자'}).click();
+ await expect(rows).toContainText('10/23 토스뱅크 통장 → 증권계좌 ₩1,740,000');
+ // The one transfer it could not place opens in the 가계부 editor; filing it as 투자 counts it.
+ await rows.locator('summary',{hasText:'안 잡힌 이체'}).click();
+ await rows.locator('[data-plan-tx="o"]').click();
+ await page.locator('#entryCat').selectOption('투자');await page.locator('#saveEntry').click();
+ await page.locator('#fmHomePlanSum').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await expect(page.locator('#fmHomePlanRows')).toContainText('💰 투자329만 / 300만');
 });
 
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{

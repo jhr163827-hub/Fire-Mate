@@ -542,3 +542,117 @@ dialog.boonDialog {
   color: #e8cf98;
   font-size: 24px;
 }
+
+/* The guide keeps its section controls and return action visible on short phones. */
+dialog.guideDialog {
+  overflow: hidden;
+}
+.guideDialog #dialogBody {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(85dvh - 110px);
+}
+#guideScroll {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 2px 3px 4px;
+  overscroll-behavior: contain;
+}
+.guideNav,
+.guideKinds {
+  display: flex;
+  gap: 8px;
+}
+.guideNav {
+  flex-shrink: 0;
+  padding-bottom: 10px;
+}
+.guideNav button,
+.guideKinds button {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+.guideKinds button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  font-size: 12px;
+}
+.guideKinds img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.guideDialog [aria-pressed="true"] {
+  border-color: #dec18b;
+  background: #354440;
+}
+.guideDialog h3 {
+  color: #f3dcab;
+  font-size: 20px;
+  margin: 14px 0 10px;
+}
+.guideDialog h4 {
+  color: #e8d3aa;
+  font-size: 14px;
+  margin: 16px 0 0;
+}
+.guideProgress {
+  background: #233b43;
+  border: 1px solid #48605e;
+  border-radius: 10px;
+  padding: 12px;
+}
+.guideProgress > b {
+  font-size: 14px;
+  color: #f0dba9;
+}
+.guideProgress p {
+  margin: 8px 0;
+}
+.guideProgress small {
+  display: block;
+  color: #b3c6cb;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.guideCost {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+.guideCost strong {
+  color: #f0dba9;
+  font-size: 24px;
+}
+.guideDialog summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: #d5bf97;
+  font-size: 13px;
+}
+.guideDialog .guideRecipe,
+.guideDialog .guideNote {
+  font-size: 11px;
+}
+@media (max-width: 350px) {
+  dialog.guideDialog {
+    padding: 14px;
+  }
+  .guideDialog #dialogBody {
+    max-height: calc(85dvh - 94px);
+  }
+  .guideNav button {
+    padding: 6px;
+  }
+  .guideDialog .evolutionPortrait img {
+    width: 80px;
+    height: 80px;
+  }
+}

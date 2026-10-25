@@ -14,7 +14,7 @@ test('spending bars are scaled to the largest category',async({page})=>{
 
 test('restore first saves the current data, and backups carry the time',async({page})=>{
  await open(page,seed());
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
  const [backup]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  expect(backup.suggestedFilename()).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}-\d{4}\.json$/);
  const text=require('fs').readFileSync(await backup.path(),'utf8');

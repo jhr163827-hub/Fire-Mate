@@ -372,7 +372,7 @@ try{
    const settings=$('settingsOverlay');
    if(!settings?.classList.contains('show'))$('settingsBottom')?.click();
    const group=panel.closest('details.fm-settings-group'),fold=$('fmLedgerImport');
-   if(group)group.open=true;if(fold)fold.open=true;
+   if(group)group.open=true;if(fold)fold.open=true;if($('fmStorage'))$('fmStorage').open=true;
    panel.scrollIntoView({block:'start'});
    if(start&&!gmail.disabled)gmail.click();
   };

@@ -102,3 +102,15 @@ test('ledger calendar marks payday with 💼 (Friday before when the 25th is a w
  await expect(page.locator('.day[data-date="2026-10-23"] .num')).toContainText('💼');
  await expect(page.locator('.day[data-date="2026-10-25"] .num')).not.toContainText('💼');
 });
+
+test('dividend tab shows how much of monthly spending the dividends cover',async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ const d=new Date(),y=d.getFullYear(),pm=new Date(y,d.getMonth()-1,1),m=pm.getFullYear()+'-'+String(pm.getMonth()+1).padStart(2,'0');
+ // 0.5 USD × 100주 × 1,400원 × 85% = 59,500원 a month; spend last month 1,190,000원 → 5%.
+ const ev=Array.from({length:14},(_,i)=>{const e=new Date(y,d.getMonth()-12+i,1);return {date:e.getFullYear()+'-'+String(e.getMonth()+1).padStart(2,'0')+'-01',amount:0.5}}).filter(e=>e.date<=new Date().toISOString().slice(0,10));
+ await page.route('**/dividends.json*',r=>r.fulfill({json:{symbols:{JEPQ:{currency:'USD',events:ev}}}}));
+ await page.addInitScript(m=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({tx:[{id:'e',date:m+'-05',type:'expense',category:'식비',amount:1190000}],accounts:[{id:'a',name:'미국',kind:'investment',amount:0,fire:true}],holdings:[{id:'h1',accountId:'a',ticker:'JEPQ',type:'USD',qty:100,price:58,cost:55}],fire:{asset:0,goal:100000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0}}))},m);
+ await page.goto('/index.html');await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickDividend').click();
+ await expect(page.locator('#fmDivCover')).toContainText('🌱 배당으로 월 지출의 5%');
+ await expect(page.locator('#fmDivCover')).toContainText('(최근 1달 평균)');
+});

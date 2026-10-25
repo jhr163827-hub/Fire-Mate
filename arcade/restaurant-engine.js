@@ -92,7 +92,8 @@ const guestType=g=>GUEST_TYPES[g?.type]?g.type:'regular';
 const patienceFor=g=>classicGuests()?Infinity:GUEST_TYPES[guestType(g)].patience*(navigator.webdriver&&Number(window.__restaurantPatienceScale)>0?Number(window.__restaurantPatienceScale):1);
 const masteryBonus=batch=>{if(classicGuests()||!validPlate(batch))return 0;const st=mastery(batch.recipe).stage;return Math.round(batch.value*(st===2?.2:st===1?.1:0))};
 const tipFor=g=>{if(classicGuests())return 0;const w=Number(g?.wait),rate=!Number.isFinite(w)?0:w<5000?.25:w<12000?.1:0;return Math.round((Number(g?.batch?.value)||0)*rate*GUEST_TYPES[guestType(g)].tip)};
-const pickType=()=>{const r=Math.random();return r<.12?'vip':r<.35?'hungry':'regular'};
+// The room's shop score (themes and placed decor) adds up to 10% more VIP guests.
+const pickType=()=>{const r=Math.random(),vip=.12+Math.min(.1,Math.max(0,Number(window.restaurantVipBonus)||0));return r<vip?'vip':r<vip+.23?'hungry':'regular'};
 const stats=()=>{const v=data.guestStats;return v&&v.version===1?v:{version:1,happy:0,angry:0,tips:0}};
 let phaseElapsed=new Map(),lastTick=performance.now(),timer=null,suspended=false;
 function transfer(i){const job=data.stoves[i];if(!known(job)||Date.now()<job.ends)return;
@@ -152,6 +153,10 @@ window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{
  guestMood:i=>{const g=data.service?.guests?.[i];if(!g||!supported(data.service))return null;const type=guestType(g),left=g.phase==='waiting'?Math.max(0,1-(phaseElapsed.get(i)||0)/patienceFor(g)):null;return {type,label:GUEST_TYPES[type].label,phase:g.phase,left,angry:!!g.angry,tip:Number(g.tip)||0}},
  guestStats:()=>({...stats()}),
  progress:()=>({...progress(),supported:growthSupported(),unlockedLevel:unlockedLevel()}),
+ // Goals and away rewards live in their own keys; coins move only through these two calls.
+ recipes:()=>recipes.map((r,n)=>({name:r.name,emoji:r.emoji,lv:r.lv,completed:mastery(n).completed})),
+ reward:amount=>Number.isSafeInteger(amount)&&amount>0&&amount<=5000&&readable&&transaction(d=>{d.coins+=amount}),
+ spend:amount=>Number.isSafeInteger(amount)&&amount>0&&readable&&data.coins>=amount&&transaction(d=>{d.coins-=amount}),
  setSuspended:value=>{suspended=!!value;setActive()},
  serviceMotion:()=>({progress:data.service?.guests.map((_,i)=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})||[0,0],unused:[0,1].map(i=>{const g=data.service?.guests?.[i];return g?Math.min(1,((phaseElapsed.get(i)||0)+(!suspended&&!document.hidden&&timer?Math.max(0,Math.min(250,performance.now()-lastTick)):0))/(durations[g.phase]||1)):0})})
 });

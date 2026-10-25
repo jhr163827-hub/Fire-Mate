@@ -173,15 +173,16 @@ test('the payday plan is edited in settings, not on home; 토스 transfers count
  await expect(page.locator('#fmHomePlanRows summary.ok',{hasText:'비상금'})).toHaveText('🐷 비상금10만 / 10만');
 });
 
-test('a 내계좌이체 to one\'s own name counts as investing, 토스 나눠모으기 as 비상금; interest and the 청약 mirror row are not listed',async({page})=>{
+test('a 내계좌이체 to one\'s own name (salary moved between own accounts) is not investing; 토스 나눠모으기 is 비상금; interest and the 청약 mirror row are not listed',async({page})=>{
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  const x=(id,memo,main,sub,pay,amount,date='2026-10-23')=>({id,date,type:'transfer',category:'계좌 이체',amount,memo,bankExcelKey:[date,'10:00','transfer',main,sub,memo,amount,pay].join('|')});
  await load(page,seed({tx:[x('a','채우기','내계좌이체','미분류','토스뱅크 나눠모으기 통장',100000),x('b','홍길동','내계좌이체','미분류','토스뱅크 통장',3000000),x('c','정기이자 입금','저축','미분류','세이프박스',93,'2026-10-24'),x('d','입금 내역','미분류','미분류','주택청약종합저축',30000),x('e','카카오뱅크','이체','미분류','국민은행',400000)]}));
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
- await expect(rows).toContainText('💰 투자300만 / 300만');
+ await expect(rows).toContainText('💰 투자0 / 300만');
  await expect(rows).toContainText('🐷 비상금50만 / 50만');
- await expect(rows).not.toContainText('안 잡힌 이체');
+ await rows.locator('summary',{hasText:'안 잡힌 이체'}).click();
+ await expect(rows.locator('.fm-plan-other p')).toHaveCount(1);
 });
 
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{

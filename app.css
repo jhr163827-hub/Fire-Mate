@@ -2409,3 +2409,12 @@ html body .fm-div-cover strong{font-size:15px}
 html body .fm-div-cover b{color:var(--green);font-size:18px}
 html body .fm-div-cover .progress{height:8px;margin:8px 0 6px}
 html body .fm-div-cover small{font-size:12px;color:var(--sub)}
+html body #view-home .fm-home-plan{margin:-8px 0 0;padding:0 4px}
+html body #view-home .fm-home-plan>summary{min-height:34px;display:flex;align-items:center;font-size:13px;font-weight:600;color:var(--sub)}
+html body #view-home .fm-home-plan>summary b{color:var(--txt);margin-left:4px}
+html body #view-home #fmHomePlanRows{display:grid;gap:2px;margin:2px 0 8px;padding:10px 12px;border-radius:14px;background:var(--panel)}
+html body #view-home #fmHomePlanRows>div{display:flex;justify-content:space-between;min-height:30px;align-items:center;font-size:14px}
+html body #view-home #fmHomePlanRows>div.ok span:last-child{color:var(--green);font-weight:700}
+html body #view-home #fmHomePlanRows>div.ok span:last-child::after{content:' ✓'}
+html body #view-home #fmHomePlanRows>div.over span:last-child{color:var(--up);font-weight:700}
+html body #view-home #fmHomePlanRows p{margin:6px 0 0;font-size:13px;font-weight:700;color:var(--green)}

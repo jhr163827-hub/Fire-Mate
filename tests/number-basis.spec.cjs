@@ -120,3 +120,14 @@ test('FIRE counts this month\'s transfers to brokers and exchanges against the i
  await page.evaluate(()=>window.fmGo('fire'));
  await expect(page.locator('#fmFireInvest')).toHaveText('📤 투자로 보낸 돈 ₩1,500,000 · 계획 300만의 50%');
 });
+
+test('home month plan checks investing, 청약, bills and savings off the ledger and shows what living money is left for ISA',async({page})=>{
+ const m=new Date().toISOString().slice(0,7),x=(id,type,amount,memo,category='계좌 이체')=>({id,date:m+'-02',type,category,amount,memo});
+ await load(page,seed({tx:[x('a','transfer',2000000,'NH투자증권'),x('b','transfer',1000000,'삼성증권'),x('c','transfer',30000,'762907**47 ,2609-117회차'),x('d','expense',100000,'삼성화재 보험료','기타'),x('e','expense',70000,'SKT 통신요금','통신·구독'),x('f','transfer',400000,'카카오뱅크'),x('g','expense',500000,'김밥천국','식비')]}));
+ await expect(page.locator('#fmHomePlanSum')).toHaveText('📋 이번 달 계획 4/5 · 생활비 30만원 남음');
+ await page.locator('#fmHomePlanSum').click();
+ const rows=page.locator('#fmHomePlanRows');
+ await expect(rows.locator('div.ok')).toHaveCount(5);// 투자 300만, 청약, 보험, 핸드폰 + 생활비 under plan; 비상금 40/50 not yet
+ await expect(rows).toContainText('🐷 비상금40만 / 50만');
+ await expect(rows).toContainText('남은 30만원은 ISA로 💪');
+});

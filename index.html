@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.163</title><link rel="stylesheet" href="./app.css?v=3.5.163"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-163">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.164</title><link rel="stylesheet" href="./app.css?v=3.5.164"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-164">
 
 
 
@@ -14,12 +14,12 @@
   
   <div class="fm-home-holdings" hidden><div id="fmHomeHoldings"></div><button type="button" id="fmHomeAllHoldings">전체 종목 ›</button></div>
 </div>
-<button type="button" id="fmHomeMarket" class="fm-home-market" hidden></button><button type="button" id="fmHomeDiv" class="fm-home-market" hidden></button><div class="hero fm-home-budget"><div class="light small">이번 달 지출 <span id="heroMonth"></span><span id="fmPayDay"></span></div><div class="fm-home-budget-total"><div class="big" id="heroSpent">₩0</div><button type="button" id="homeBudgetAction" class="fm-home-budget-action">가계부에서 예산 설정 ›</button></div><div class="fm-home-budget-grid"><div><span>월 예산</span><strong id="heroBudget">미설정</strong></div><div><span id="heroLeftLabel">남은 예산</span><strong id="heroLeft">미설정</strong></div></div><div class="fm-home-budget-usage"><span>예산 사용률</span><strong id="heroUsage">예산 설정 후 표시</strong></div><div class="progress" role="progressbar" aria-label="월 예산 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="homeBudgetMeter"><div id="budgetProgress"></div></div><div class="fm-home-budget-secondary" hidden=""><span id="heroCompare">이번 달 소비 현황</span><span id="heroToday">₩0</span><span id="heroDays">0일</span></div><div class="fm-pace" id="fmPaceLine"></div><div class="fm-home-saving" id="fmHomeSaving" hidden></div><div class="fm-home-actions"><button type="button" id="fmHomeSync" class="secondary fm-home-record"><span>📥 뱅크샐러드 가져오기</span><span id="fmHomeSyncNote" aria-live="polite"></span></button></div></div><section class="card fm-home-fire" aria-label="FIRE 진행 상황"><div class="fm-home-fire-head"><span>FIRE 진행 상황</span><button type="button" data-go="fire">FIRE 상세 ›</button></div><div class="hero-row">
+<button type="button" id="fmHomeMarket" class="fm-home-market" hidden></button><button type="button" id="fmHomeDiv" class="fm-home-market" hidden></button><button type="button" id="fmHomeYear" class="fm-home-market" hidden></button><div class="hero fm-home-budget"><div class="light small">이번 달 지출 <span id="heroMonth"></span><span id="fmPayDay"></span></div><div class="fm-home-budget-total"><div class="big" id="heroSpent">₩0</div><button type="button" id="homeBudgetAction" class="fm-home-budget-action">가계부에서 예산 설정 ›</button></div><div class="fm-home-budget-grid"><div><span>월 예산</span><strong id="heroBudget">미설정</strong></div><div><span id="heroLeftLabel">남은 예산</span><strong id="heroLeft">미설정</strong></div></div><div class="fm-home-budget-usage"><span>예산 사용률</span><strong id="heroUsage">예산 설정 후 표시</strong></div><div class="progress" role="progressbar" aria-label="월 예산 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="homeBudgetMeter"><div id="budgetProgress"></div></div><div class="fm-home-budget-secondary" hidden=""><span id="heroCompare">이번 달 소비 현황</span><span id="heroToday">₩0</span><span id="heroDays">0일</span></div><div class="fm-pace" id="fmPaceLine"></div><div class="fm-home-saving" id="fmHomeSaving" hidden></div><div class="fm-home-actions"><button type="button" id="fmHomeSync" class="secondary fm-home-record"><span>📥 뱅크샐러드 가져오기</span><span id="fmHomeSyncNote" aria-live="polite"></span></button></div></div><section class="card fm-home-fire" aria-label="FIRE 진행 상황"><div class="fm-home-fire-head"><span>FIRE 진행 상황</span><button type="button" data-go="fire">FIRE 상세 ›</button></div><div class="hero-row">
     
     <div class="hero-stat"><span class="light small">목표 달성률</span><strong id="homeAssetPercent">0%</strong></div>
   </div><div class="progress"><div id="homeAssetProgress"></div></div><div class="fm-fire-eta"><span>목표 도달 예상</span><strong id="homeFireEta">계산 중…</strong><small id="homeFireEtaNote">월 투자금과 예상 수익률 기준</small></div></section><div class="home-shortcuts"><button type="button" id="fmMonthlyOpen">월간 결산 ›</button><button type="button" id="fmSpendingOpen">소비 분석 ›</button></div></section>
 <section class="view fm-report-view" id="view-monthly" aria-labelledby="fmMonthlyTitle"><div id="fmMonthlyOverlay">
-<div class="fm-report-header"><button type="button" class="secondary" id="fmMonthlyClose">← 홈</button><h2 id="fmMonthlyTitle">월간 결산</h2></div>
+<div class="fm-report-header"><button type="button" class="secondary" id="fmMonthlyClose">← 홈</button><h2 id="fmMonthlyTitle">월간 결산</h2><button type="button" class="secondary" id="fmYearToggle">올해 결산</button></div>
 <div class="flex" style="justify-content:space-between;align-items:center;gap:8px;margin:12px 0"><button type="button" class="secondary" id="fmMonthlyPrev" aria-label="이전 달"></button><strong id="fmMonthlyMonth"></strong><button type="button" class="secondary" id="fmMonthlyNext" aria-label="다음 달"></button></div>
 <div id="fmMonthlyContent" aria-live="polite"></div><button type="button" class="secondary" id="fmMonthlyRecord" style="width:100%;margin-top:12px" hidden>오늘 자산 기록 남기기</button>
 <p class="mini" style="margin-top:10px">계좌 이체는 지출에서 제외합니다.</p>
@@ -1647,10 +1647,14 @@ const peak=Math.max(...shown.map(v=>v[1]));const pct=change!==null&&shown[0][1]>
 const growthHelp=$('fmAssetGrowthHelp');if(growthHelp)growthHelp.hidden=shown.length<=1;
 const head='<div style="display:flex;flex-direction:column;align-items:flex-start;gap:5px"><strong style="font-size:clamp(22px,5vw,30px)">'+won(last[1])+'</strong><div class="mini" style="display:flex;align-items:baseline;gap:7px;flex-wrap:wrap">'+(change===null?'<span>첫 기록</span>':'<span style="color:'+(change>0?'var(--up)':change<0?'var(--down)':'var(--sub)')+';font-weight:700">'+(change>=0?'+':'-')+won(Math.abs(change))+(pct===null?'':' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)')+'</span><span>기간 첫 기록 대비</span>')+'</div></div>';
 if(shown.length===1){host.innerHTML=head+'<div class="notice" style="margin-top:12px">🌱 첫 기록 완료 · 다음 날짜의 기록부터 자산 변화 그래프가 표시돼요.</div>';return}
-const w=640,h=shown.length<7?140:210,pad=32,values=shown.map(x=>x[1]),min=Math.min(...values),max=Math.max(...values),span=max-min||Math.max(1,Math.abs(max)*.1),lo=min-span*.12,hi=max+span*.12;
-const px=i=>pad+(w-pad*2)*i/(shown.length-1),py=v=>h-pad-(v-lo)/(hi-lo)*(h-pad*2);
+const w=640,h=200,pad=6,values=shown.map(x=>x[1]),min=Math.min(...values),max=Math.max(...values),span=max-min||Math.max(1,Math.abs(max)*.1),lo=min-span*.1,hi=max+span*.1,col=change>0?'var(--up)':change<0?'var(--down)':'var(--green)';
+const px=i=>pad+(w-pad*2)*i/(shown.length-1),py=v=>pad+(hi-v)/(hi-lo)*(h-pad*2);
 const path=shown.map((x,i)=>(i?'L':'M')+px(i).toFixed(1)+' '+py(x[1]).toFixed(1)).join(' ');
-host.innerHTML=head+'<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="일별 순자산 변화" style="width:100%;height:auto;display:block;margin-top:10px"><line x1="'+pad+'" y1="'+(h-pad)+'" x2="'+(w-pad)+'" y2="'+(h-pad)+'" stroke="currentColor" opacity=".2"/><path d="'+path+'" fill="none" stroke="#29bc92" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'+shown.map((x,i)=>'<circle cx="'+px(i)+'" cy="'+py(x[1])+'" r="'+(shown.length>60?2:4)+'" fill="#29bc92"><title>'+safe(x[0])+' '+won(x[1])+'</title></circle>').join('')+'<text x="'+pad+'" y="'+(h-8)+'" font-size="13" fill="currentColor">'+safe(shown[0][0])+'</text><text x="'+(w-pad)+'" y="'+(h-8)+'" text-anchor="end" font-size="13" fill="currentColor">'+safe(last[0])+'</text></svg><div class="mini">'+shown.length+'일 기록 · 입출금 포함 · 미기록일은 연결 표시</div><div class="fm-growth-stats"><div><small>기간 증가액</small><strong>'+fmSW(change)+'</strong></div><div><small>기간 증가율</small><strong>'+(pct===null?'—':(pct>=0?'+':'')+pct.toFixed(2)+'%')+'</strong></div><div><small>기록상 최고 자산</small><strong>'+won(peak)+'</strong></div></div>';
+// Toss-style: one line with a soft fill; touch or hover reads the day's value.
+host.innerHTML=head+'<div class="fm-growth-chart" style="--c:'+col+'"><div class="fm-growth-tip" hidden></div><svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" role="img" aria-label="일별 순자산 변화"><defs><linearGradient id="fmGrowthFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".22"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="'+path+' L'+px(shown.length-1).toFixed(1)+' '+h+' L'+px(0).toFixed(1)+' '+h+'Z" fill="url(#fmGrowthFill)"/><path d="'+path+'" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><line class="fm-growth-cursor" y1="0" y2="'+h+'" stroke="currentColor" stroke-opacity=".4" vector-effect="non-scaling-stroke" visibility="hidden"/></svg><div class="fm-growth-axis"><span>'+safe(shown[0][0].slice(5).replace('-','/'))+'</span><span>'+safe(last[0].slice(5).replace('-','/'))+'</span></div></div><div class="mini">최고 '+won(peak)+' · 최저 '+won(min)+'</div>';
+const chart=host.querySelector('.fm-growth-chart'),svg=chart.querySelector('svg'),tip=chart.querySelector('.fm-growth-tip'),cur=chart.querySelector('.fm-growth-cursor');
+const show=e=>{const r=svg.getBoundingClientRect(),i=Math.max(0,Math.min(shown.length-1,Math.round((e.clientX-r.left)/r.width*(shown.length-1)))),x=px(i);cur.setAttribute('x1',x);cur.setAttribute('x2',x);cur.setAttribute('visibility','visible');tip.hidden=false;tip.textContent=Number(shown[i][0].slice(5,7))+'/'+Number(shown[i][0].slice(8))+' · '+won(shown[i][1]);tip.style.left=Math.min(Math.max(0,x/w*r.width-60),r.width-120)+'px'};
+svg.onpointerdown=svg.onpointermove=show;svg.onpointerleave=()=>{tip.hidden=true;cur.setAttribute('visibility','hidden')};
 }
 $('assetChartPeriod').onchange=renderAssetGrowth;
 let fmDailyMonth='all',fmDailyFilter='all';
@@ -1963,7 +1967,16 @@ const shift=(m,d)=>{const [y,mo]=m.split('-').map(Number);const n=new Date(y,mo-
 const currency=n=>won(Math.round(Number(n)||0));
 const card=(label,value,note='')=>'<div style="background:var(--panel2);border-radius:12px;padding:12px;min-width:0"><div class="mini">'+label+'</div><strong style="font-size:17px;overflow-wrap:anywhere">'+value+'</strong>'+(note?'<div class="mini">'+note+'</div>':'')+'</div>';
 const snapshots=()=>Array.isArray(data.dailySnapshots)?data.dailySnapshots.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.day)&&Number.isFinite(Number(x.amount))).slice().sort((a,b)=>a.day.localeCompare(b.day)):[];
+// Year view: the same screen with a whole year (selected = 'YYYY').
+function yearReport(){const y=selected,rows=Array.from({length:12},(_,i)=>getTx(y+'-'+String(i+1).padStart(2,'0'))).flat(),tot=totals(rows),exp=rows.filter(t=>t.type==='expense'),today=localDate(new Date());
+$m('fmMonthlyMonth').textContent=y+'년 결산';$m('fmMonthlyNext').disabled=y>=today.slice(0,4);$m('fmMonthlyRecord').hidden=true;$m('fmYearToggle').textContent='월간 보기';$m('fmMonthlyTitle').textContent='연간 결산';
+const cats=new Map(),months=new Map(),spent=new Set(exp.map(t=>t.date));for(const t of exp){cats.set(t.category||'기타',(cats.get(t.category||'기타')||0)+Number(t.amount));months.set(t.date.slice(5,7),(months.get(t.date.slice(5,7))||0)+Number(t.amount))}
+const cat=[...cats].sort((a,b)=>b[1]-a[1])[0],mon=[...months].sort((a,b)=>b[1]-a[1])[0],dv=rows.filter(t=>t.type==='income'&&t.category==='배당·이자').reduce((n,t)=>n+Number(t.amount),0);
+let free=0;const f0=rows.map(t=>t.date).sort()[0];if(f0)for(let d=new Date(f0+'T00:00');localDate(d)<=today&&d.getFullYear()==y;d.setDate(d.getDate()+1))if(!spent.has(localDate(d)))free++;
+const s=snapshots(),start=s.filter(x=>x.day<y+'-01-01').at(-1)||s.find(x=>x.day.startsWith(y)),end=s.filter(x=>x.day.startsWith(y)).at(-1),delta=start&&end&&start!==end?end.amount-start.amount:null,certs=fmCerts().filter(c=>!c.goal&&String(c.date).startsWith(y)).length;
+$m('fmMonthlyContent').innerHTML='<div class="fm-year-grid">'+card('💰 모은 돈',fmSW(tot.income-tot.expense),'수입 '+currency(tot.income)+' · 지출 '+currency(tot.expense))+card('📈 자산 변화',delta===null?'기록 부족':fmSW(delta))+card('🌱 배당·이자',currency(dv))+card('🧘 무지출 날',free+'일')+card('🛒 가장 많이 쓴 곳',cat?safe(cat[0]):'—',cat?currency(cat[1]):'')+card('🔥 제일 많이 쓴 달',mon?Number(mon[0])+'월':'—',mon?currency(mon[1]):'')+card('🎓 딴 자격증',certs+'개')+'</div>'}
 function report(){
+if(selected.length===4)return yearReport();$m('fmYearToggle').textContent='올해 결산';$m('fmMonthlyTitle').textContent='월간 결산';
 $m('fmMonthlyMonth').textContent=selected.replace('-','년 ')+'월';
 $m('fmMonthlyNext').disabled=selected>=currentMonth();
 const tx=getTx(selected),tot=totals(tx),budget=fmMonthlyBudgetState(selected);
@@ -1992,8 +2005,11 @@ $m('fmMonthlyOpen').addEventListener('click',()=>{selected=currentMonth();go('mo
 if(active==='monthly')window.fmRenderMonthly();
 $m('fmMonthlyClose').addEventListener('click',close);
 
-$m('fmMonthlyPrev').addEventListener('click',()=>{selected=shift(selected,-1);report()});
-$m('fmMonthlyNext').addEventListener('click',()=>{if(selected<currentMonth()){selected=shift(selected,1);report()}});
+$m('fmMonthlyPrev').addEventListener('click',()=>{selected=selected.length===4?String(selected-1):shift(selected,-1);report()});
+$m('fmMonthlyNext').addEventListener('click',()=>{if(selected.length===4){if(selected<currentMonth().slice(0,4))selected=String(+selected+1)}else if(selected<currentMonth())selected=shift(selected,1);report()});
+$m('fmYearToggle').addEventListener('click',()=>{selected=selected.length===4?currentMonth():currentMonth().slice(0,4);report()});
+// December and January: a home line opens the year's 결산.
+{const n=new Date(),y=n.getMonth()===0?n.getFullYear()-1:n.getFullYear(),b=$m('fmHomeYear');b.hidden=!(n.getMonth()===11||n.getMonth()===0)&&!window.__fmYearAnyDay;b.textContent='🎉 '+y+'년 결산 보기 ›';b.onclick=()=>{selected=String(y);go('monthly')}}
 $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘 현재 자산을 기록할까요? 같은 날짜의 기존 기록이 있으면 오늘 값으로 갱신됩니다.'))return;recordDailyNetWorth();report();toast('오늘 자산 기록을 확인했어요')});
 })();
 
@@ -2001,7 +2017,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-163',VERSION='3.5.163';
+ const BUILD='fire-mate-v3-5-164',VERSION='3.5.164';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2215,4 +2231,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.163"></script></body></html>
+</style><script src="./js/features.js?v=3.5.164"></script></body></html>

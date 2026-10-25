@@ -26,8 +26,8 @@ for(const width of [320,390,430])test('report navigation and shared analysis pre
    const header=page.locator('#view-'+view+' .fm-report-header');await expect(header).toBeVisible();
    expect((await page.locator('#'+back).boundingBox()).height).toBeGreaterThanOrEqual(44);
    if(view==='monthly'){
-    await expect(page.locator('#fmMonthlyContent')).toContainText('123,456원');
-    await expect(page.locator('#fmMonthlyContent')).toContainText('3,000,000원');
+    await expect(page.locator('#fmMonthlyContent')).toContainText('₩123,456');
+    await expect(page.locator('#fmMonthlyContent')).toContainText('₩3,000,000');
     await page.locator('#fmMonthlyPrev').click();await page.locator('#fmMonthlyNext').click();
    }else{
     await expect(page.locator('#insightCats')).toContainText('식비');

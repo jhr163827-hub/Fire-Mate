@@ -136,6 +136,12 @@ test('home plan follows the payday cycle and checks investing, 청약, bills and
  await expect(rows).toContainText('10/26 카카오뱅크 ₩400,000');
  await expect(rows).toContainText('남은 30만원은 ISA로 💪');
  await expect(rows).toContainText('10/23 월급 ~ 11/25 월급 전');
+ // ‹ 지난 주기 shows the cycle before payday.
+ await rows.locator('#fmPlanBack').click();
+ await expect(rows).toContainText('9/25 월급 ~ 10/23 월급 전');
+ await expect(rows).toContainText('🛒 생활비90만 / 80만');
+ await rows.locator('#fmPlanBack').click();
+ await expect(rows).toContainText('10/23 월급 ~ 11/25 월급 전');
 });
 
 test('the week after payday, home says to move last cycle\'s unspent living money to ISA',async({page})=>{

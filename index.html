@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.172</title><link rel="stylesheet" href="./app.css?v=3.5.172"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-172">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.173</title><link rel="stylesheet" href="./app.css?v=3.5.173"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-173">
 
 
 
@@ -357,11 +357,13 @@ const n=new Date(today+'T00:00');let s=fmPayDate(n.getFullYear(),n.getMonth());i
 const cyc=(s,e)=>{const a=localDate(s),z=localDate(e);
 const rows=data.tx.filter(t=>typeof t.date==='string'&&t.date>=a&&t.date<z&&!fmTinyIncome(t)),sum=f=>rows.filter(f).reduce((n,t)=>n+Number(t.amount),0),m=t=>t.memo||'',ins=t=>t.type==='expense'&&!fmIsInvest(t)&&/보험|생명|화재|손해|손보|해상|메리츠|라이나|AIA|처브|흥국|교보|동양|ABL|라이프|AXA|캐롯|KB손|DB손/.test(fmTxText(t)),phone=t=>t.type==='expense'&&(t.category==='통신·구독'&&/SK|KT|LG|U\+|통신|모바일|알뜰/.test(m(t))||/SK텔레콤|SKT|KT통신|LG ?U\+|휴대폰/.test(m(t)));
 const fs=[fmIsInvest,t=>/청약|\d+-\d+회차/.test(m(t)),ins,phone,fmIsSafe],items=[['💰','투자',plan.invest],['🏠','청약',plan.sub],['🛡️','보험',plan.ins],['📱','핸드폰',plan.phone],['🐷','비상금',plan.safe]].map(([e,n,p],i)=>[e,n,sum(fs[i]),p,rows.filter(fs[i])]),life=sum(t=>t.type==='expense'&&!fmIsInvest(t)&&!ins(t)&&!phone(t)),done=items.filter(([,,v,p])=>v>=p*9500).length,left=plan.life*1e4-life;return {items,life,done,left,spent:life>0,other:rows.filter(t=>t.type==='transfer'&&t.amount>=1000&&!/청약/.test(fmTxText(t))&&!fs.some(f=>f(t)))}};
-const {items,life,done,left,other}=cyc(s,e),pc=cyc(fmPayDate(s.getFullYear(),s.getMonth()-1),s),prev=pc.left,isa=n-s<7*864e5&&pc.spent&&prev>0;
+const ps=fmPayDate(s.getFullYear(),s.getMonth()-1),cur=cyc(s,e),{items,done,left}=cur,pc=cyc(ps,s),prev=pc.left,isa=n-s<7*864e5&&pc.spent&&prev>0;
 // The first week after payday: move what the last cycle didn't spend on living costs to ISA.
 $('fmHomePlanSum').innerHTML=isa?'💼 월급 들어왔어요 · 지난달 남은 <b>'+fmCompactMoney(prev)+'원</b> ISA로 💪':'📋 월급 주기 계획 <b>'+done+'/'+items.length+'</b>'+(left>0?' · 생활비 '+fmCompactMoney(left)+'원 남음':' · 생활비 '+fmCompactMoney(-left)+'원 초과');
-$('fmHomePlanRows').innerHTML='<small>'+(s.getMonth()+1)+'/'+s.getDate()+' 월급 ~ '+(e.getMonth()+1)+'/'+e.getDate()+' 월급 전 · 눌러서 잡힌 거래 보기</small>'+items.map(([e,n,v,p,l])=>'<details><summary class="'+(v>=p*9500?'ok':'')+'"><span>'+e+' '+n+'</span><span>'+fmCompactMoney(v)+' / '+p+'만</span></summary>'+(l.map(t=>'<p>'+Number(t.date.slice(5,7))+'/'+Number(t.date.slice(8))+' '+safe(t.memo||t.category)+' <b>'+won(t.amount)+'</b></p>').join('')||'<p>잡힌 거래 없음</p>')+'</details>').join('')+'<div class="'+(left>=0?'ok':'over')+'"><span>🛒 생활비</span><span>'+fmCompactMoney(life)+' / '+plan.life+'만</span></div>'+(left>0?'<p>남은 '+fmCompactMoney(left)+'원은 ISA로 💪</p>':'')+(other.length?'<details class="fm-plan-other"><summary><span>↔️ 계획에 안 잡힌 이체</span><span>'+other.length+'건</span></summary>'+other.map(t=>'<p>'+Number(t.date.slice(5,7))+'/'+Number(t.date.slice(8))+' '+safe(fmTxText(t).trim())+' <b>'+won(t.amount)+'</b></p>').join('')+'</details>':'')}
-fmPlanForm();
+// ‹ 지난 주기 shows the cycle before, so money sent just before payday can be checked.
+const b=fmPlanBack,v=b?pc:cur,vs=b?ps:s,ve=b?s:e;
+$('fmHomePlanRows').innerHTML='<small><span>'+(vs.getMonth()+1)+'/'+vs.getDate()+' 월급 ~ '+(ve.getMonth()+1)+'/'+ve.getDate()+' 월급 전</span><button type="button" id="fmPlanBack">'+(b?'이번 주기 ›':'‹ 지난 주기')+'</button></small>'+v.items.map(([e,n,v,p,l])=>'<details><summary class="'+(v>=p*9500?'ok':'')+'"><span>'+e+' '+n+'</span><span>'+fmCompactMoney(v)+' / '+p+'만</span></summary>'+(l.map(t=>'<p>'+Number(t.date.slice(5,7))+'/'+Number(t.date.slice(8))+' '+safe(t.memo||t.category)+' <b>'+won(t.amount)+'</b></p>').join('')||'<p>잡힌 거래 없음</p>')+'</details>').join('')+'<div class="'+(v.left>=0?'ok':'over')+'"><span>🛒 생활비</span><span>'+fmCompactMoney(v.life)+' / '+plan.life+'만</span></div>'+(v.left>0?'<p>남은 '+fmCompactMoney(v.left)+'원은 ISA로 💪</p>':'')+(v.other.length?'<details class="fm-plan-other"><summary><span>↔️ 계획에 안 잡힌 이체</span><span>'+v.other.length+'건</span></summary>'+v.other.map(t=>'<p>'+Number(t.date.slice(5,7))+'/'+Number(t.date.slice(8))+' '+safe(fmTxText(t).trim())+' <b>'+won(t.amount)+'</b></p>').join('')+'</details>':'');$('fmPlanBack').onclick=()=>{fmPlanBack=!fmPlanBack;fmHomePlan()}}
+let fmPlanBack=false;fmPlanForm();
 function renderHome(){fmRenderHomeMarket();fmHomeDiv();fmPayDay();fmHomePlan();
 
 const homeNetWorth=netAsset();
@@ -2049,7 +2051,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-172',VERSION='3.5.172';
+ const BUILD='fire-mate-v3-5-173',VERSION='3.5.173';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2263,4 +2265,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.172"></script></body></html>
+</style><script src="./js/features.js?v=3.5.173"></script></body></html>

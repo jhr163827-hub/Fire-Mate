@@ -58,3 +58,59 @@ test('home and assets share quote loading, duplicate prevention, failure and off
  expect(requests).toBe(2);
  expect(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).toBe(before);
 });
+
+test('home shows dividends due in the next 7 days, guessed from each holding\'s last payout gap',async({page})=>{
+ // Keep the saved 1,400원 rate: no live exchange-rate lookup.
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+ await page.route('**/dividends.json*',r=>r.fulfill({json:{symbols:{JEPQ:{currency:'USD',events:[{date:iso(-55),amount:0.5},{date:iso(-25),amount:0.6}]},SCHD:{currency:'USD',events:[{date:iso(-100),amount:0.3},{date:iso(-10),amount:0.3}]}}}}));
+ await page.addInitScript(()=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({tx:[],accounts:[{id:'a',name:'미국',kind:'investment',amount:0,fire:true}],holdings:[{id:'h1',accountId:'a',ticker:'JEPQ',type:'USD',qty:100,price:58,cost:55},{id:'h2',accountId:'a',ticker:'SCHD',type:'USD',qty:10,price:28,cost:25}],fire:{asset:0,goal:100000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0}}))});
+ await page.goto('/index.html');
+ const line=page.locator('#fmHomeDiv');
+ // JEPQ: 30-day gap → next payout in 5 days, 0.6 × 100주 × 1,400원 × 85% ≈ 7.1만원. SCHD's next is ~80 days out.
+ await expect(line).toHaveText('💰 7일 안 배당 약 7.1만원');
+ await line.click();
+ await expect(page.locator('#fmAssetDividendView')).toBeVisible();
+});
+
+test('dividend estimates step whole months, so a payer on the 1st shows once per month',async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ const now=new Date(),first=k=>{const d=new Date(now.getFullYear(),now.getMonth()+k,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01'};
+ await page.route('**/dividends.json*',r=>r.fulfill({json:{symbols:{JEPQ:{currency:'USD',events:[{date:first(-2),amount:0.5},{date:first(-1),amount:0.5},{date:first(0),amount:0.5}]}}}}));
+ await page.addInitScript(()=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({tx:[],accounts:[{id:'a',name:'미국',kind:'investment',amount:0,fire:true}],holdings:[{id:'h1',accountId:'a',ticker:'JEPQ',type:'USD',qty:100,price:58,cost:55}],fire:{asset:0,goal:100000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0}}))});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickDividend').click();
+ const rows=page.locator('#fmDivHoldings .fm-div-row',{hasText:'JEPQ'});
+ await page.locator('.fm-div-col[data-month="'+(now.getMonth()+1)+'"]').click();
+ await expect(rows).toHaveCount(1);
+ if(now.getMonth()<11){await page.locator('.fm-div-col[data-month="'+(now.getMonth()+2)+'"]').click();await expect(rows).toHaveCount(1);await expect(rows).toContainText('/1 (예상)')}
+});
+
+test('home shows days to payday: the 25th, or the Friday before when it falls on a weekend',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,20,9,0));// Tue 10/20 → 10/23 (Fri), since 10/25 is a Sunday
+ await page.goto('/index.html');
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 월급 D-3');
+ await page.clock.setFixedTime(new Date(2026,9,23,9,0));await page.reload();
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 오늘 월급날');
+ await page.clock.setFixedTime(new Date(2026,9,24,9,0));await page.reload();// next: 11/25 (Wed)
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 월급 D-32');
+});
+
+test('ledger calendar marks payday with 💼 (Friday before when the 25th is a weekend)',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,20,9,0));
+ await page.goto('/index.html');await page.evaluate(()=>window.fmGo('calendar'));
+ await expect(page.locator('.day[data-date="2026-10-23"] .num')).toContainText('💼');
+ await expect(page.locator('.day[data-date="2026-10-25"] .num')).not.toContainText('💼');
+});
+
+test('dividend tab shows how much of monthly spending the dividends cover',async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ const d=new Date(),y=d.getFullYear(),pm=new Date(y,d.getMonth()-1,1),m=pm.getFullYear()+'-'+String(pm.getMonth()+1).padStart(2,'0');
+ // 0.5 USD × 100주 × 1,400원 × 85% = 59,500원 a month; spend last month 1,190,000원 → 5%.
+ const ev=Array.from({length:14},(_,i)=>{const e=new Date(y,d.getMonth()-12+i,1);return {date:e.getFullYear()+'-'+String(e.getMonth()+1).padStart(2,'0')+'-01',amount:0.5}}).filter(e=>e.date<=new Date().toISOString().slice(0,10));
+ await page.route('**/dividends.json*',r=>r.fulfill({json:{symbols:{JEPQ:{currency:'USD',events:ev}}}}));
+ await page.addInitScript(m=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({tx:[{id:'e',date:m+'-05',type:'expense',category:'식비',amount:1190000}],accounts:[{id:'a',name:'미국',kind:'investment',amount:0,fire:true}],holdings:[{id:'h1',accountId:'a',ticker:'JEPQ',type:'USD',qty:100,price:58,cost:55}],fire:{asset:0,goal:100000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0}}))},m);
+ await page.goto('/index.html');await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickDividend').click();
+ await expect(page.locator('#fmDivCover')).toContainText('🌱 배당으로 월 지출의 5%');
+ await expect(page.locator('#fmDivCover')).toContainText('(최근 1달 평균)');
+});

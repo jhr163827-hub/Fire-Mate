@@ -31,7 +31,7 @@ test('"직접 기록으로 시작" opens the entry dialog and is remembered',asy
 test('FIRE says how much more a month brings the date a year closer',async({page})=>{
  await page.addInitScript(()=>{localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},tx:[],accounts:[{id:'k',name:'KB',kind:'cash',amount:100000000}],holdings:[],fire:{asset:10000,goal:65000,monthly:300,rate:6,withdrawal:4}}))});
  await page.goto('/index.html');await page.evaluate(()=>window.fmGo('fire'));
- await expect(page.locator('#fmFireSooner')).toHaveText(/^1년 앞당기려면 매달 [\d,]+만 원 더 모으면 돼요\.$/);
+ await expect(page.locator('#fmFireSooner')).toHaveText(/^💡 월 [\d,]+만 원 더 모으면 1년 빨라져요$/);
 });
 
 

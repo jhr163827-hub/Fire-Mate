@@ -70,15 +70,15 @@ test('월간 결산 splits the net worth change into savings and investment/othe
  await load(page,seed({accounts:[],balance:{fx:1400,cash:11500000,other:0,debt:0},tx:[{id:'i',date:ym+'-01',type:'income',category:'급여',amount:3000000},{id:'e',date:ym+'-01',type:'expense',category:'식비',amount:1000000}],dailySnapshots:[{day:prevDay,amount:10000000,recordedAt:prevDay+'T12:00:00Z'},{day:ym+'-01',amount:11500000,recordedAt:ym+'-01T12:00:00Z'}]}));
  await page.locator('#fmMonthlyOpen').click();
  const split=page.locator('.fm-monthly-split');
- await expect(split).toContainText('저축 +2,000,000원');
- await expect(split).toContainText('투자·기타 -500,000원');
+ await expect(split).toContainText('저축 +₩2,000,000');
+ await expect(split).toContainText('투자·기타 −₩500,000');
 });
 
 test('FIRE shows this month\'s actual savings against the plan',async({page})=>{
  const m=new Date().toISOString().slice(0,7);
  await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'e',date:m+'-02',type:'expense',category:'식비',amount:500000}]}));
  await page.evaluate(()=>window.fmGo('fire'));
- await expect(page.locator('#fmFireSaved')).toHaveText('이번 달 실제 모은 돈 +₩3,500,000 · 계획의 117%');
+ await expect(page.locator('#fmFireSaved')).toHaveText('이번 달 +₩3,500,000 모음 · 계획의 117% 👍');
 });
 
 test('the ledger top shows what was saved this month and offers the 뱅크샐러드 import',async({page})=>{
@@ -95,4 +95,28 @@ test('the ledger top shows what was saved this month and offers the 뱅크샐러
  await page.evaluate(()=>window.fmGo('calendar'));
  await expect(page.locator('#fmLedgerSyncNote')).toHaveText(Number(m.slice(5))+'월 2일까지 있음');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
+test('올해 결산 sums the year: saved, dividends, top spend, no-spend days and certificates',async({page})=>{
+ const y=String(new Date().getFullYear());
+ await page.addInitScript(y=>{window.__fmYearAnyDay=true;localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',date:y+'-03-02'},{id:'g',name:'SQLD',goal:true,date:y+'-12-01'}]}))},y);
+ await load(page,seed({tx:[{id:'i',date:y+'-01-10',type:'income',category:'급여',amount:3000000},{id:'d',date:y+'-01-11',type:'income',category:'배당·이자',amount:120000},{id:'e1',date:y+'-01-02',type:'expense',category:'식비',amount:500000},{id:'e2',date:y+'-01-03',type:'expense',category:'쇼핑',amount:200000}]}));
+ await page.locator('#fmHomeYear').click();
+ const c=page.locator('#fmMonthlyContent');
+ await expect(page.locator('#fmMonthlyMonth')).toHaveText(y+'년 결산');
+ await expect(c).toContainText('💰 모은 돈+₩2,420,000');
+ await expect(c).toContainText('🌱 배당·이자₩120,000');
+ await expect(c).toContainText('🛒 가장 많이 쓴 곳식비');
+ await expect(c).toContainText('🔥 제일 많이 쓴 달1월');
+ await expect(c).toContainText('🎓 딴 자격증1개');
+ await expect(c).toContainText('🧘 무지출 날');
+ await page.locator('#fmYearToggle').click();
+ await expect(page.locator('#fmMonthlyMonth')).not.toContainText('결산');
+});
+
+test('FIRE counts this month\'s transfers to brokers and exchanges against the investing plan',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'a',date:m+'-02',type:'transfer',category:'계좌 이체',amount:1200000,memo:'키움증권'},{id:'b',date:m+'-02',type:'transfer',category:'계좌 이체',amount:300000,memo:'업비트 입금'},{id:'c',date:m+'-02',type:'transfer',category:'계좌 이체',amount:30000,memo:'762907**47 ,2609-117회차'}]}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireInvest')).toHaveText('📤 투자로 보낸 돈 ₩1,500,000 · 계획 300만의 50%');
 });

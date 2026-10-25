@@ -130,3 +130,6 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .room-mood-face{font-size:15px;text-anchor:middle;font-weight:800;fill:#5a3d16;paint-order:stroke;stroke:#fff8e6;stroke-width:3px}
 .room-mood-vip{font-size:10px;text-anchor:middle;font-weight:900;fill:#b5761b;paint-order:stroke;stroke:#fff8e6;stroke-width:3px;letter-spacing:.5px}
 .room-mood-track{fill:#00000030}
+.room-mandu-head{animation:restaurant-mandu-nod 3.2s ease-in-out infinite;transform-origin:0 -12px}.room-mandu-z{animation:restaurant-mandu-z 2.6s ease-in-out infinite}.room-mandu,.room-chef-cat{pointer-events:none}
+@keyframes restaurant-mandu-nod{50%{transform:rotate(4deg) translateY(1px)}}@keyframes restaurant-mandu-z{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(6px,-10px)}}
+.restaurant-paused .room-mandu *{animation-play-state:paused!important}@media(prefers-reduced-motion:reduce){.room-mandu *{animation:none!important}}

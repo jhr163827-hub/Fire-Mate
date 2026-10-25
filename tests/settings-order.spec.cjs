@@ -2,12 +2,12 @@ const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
-test('settings list 게임 아케이드 → 자격증 → 월급 주기 계획 → 내 데이터 → 초기화, without mail, quote or export sections',async({page})=>{
+test('settings list 게임 아케이드 → 자격증 → 위시리스트 → 월급 주기 계획 → 내 데이터 → 초기화, without mail, quote or export sections',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
-  e.id==='fmArcadeOpen'?'arcade':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
- expect(order).toEqual(['arcade','certs','📋 월급 주기 계획','data','⚠️ 데이터 초기화']);
+  e.id==='fmArcadeOpen'?'arcade':e.id==='fmWishOpen'?'wish':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
+ expect(order).toEqual(['arcade','certs','wish','📋 월급 주기 계획','data','⚠️ 데이터 초기화']);
  for(const id of ['export','fmBackupStatus','importBtn'])await expect(page.locator('.fm-device-storage #'+id)).toBeVisible();
  await expect(page.locator('#exportShare')).toBeHidden();
  await expect(page.locator('#csvExport')).toHaveCount(0);
@@ -45,4 +45,23 @@ test('certificates can be added, edited and deleted, and ride along in backups',
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const backup=JSON.parse(require('fs').readFileSync(await download.path(),'utf8'));
  expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name)).toEqual(['정보처리기사','일반기계기사']);
+});
+
+test('위시리스트 adds items with a price, checks them off when bought, deletes after asking, and survives reload',async({page})=>{
+ await page.goto('/index.html');
+ await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmWishSub')).toHaveText('갖고 싶은 걸 적어 두세요');
+ await page.locator('#fmWishOpen').click();
+ await page.locator('#fmWishName').fill('아이패드');await page.locator('#fmWishPrice').fill('1,200,000');await page.locator('#fmWishForm button').click();
+ await page.locator('#fmWishName').fill('러닝화');await page.locator('#fmWishPrice').fill('150000');await page.locator('#fmWishForm button').click();
+ await expect(page.locator('#fmWishHero')).toContainText('0 / 2');
+ await expect(page.locator('#fmWishHero')).toContainText('남은 2개 · ₩1,350,000');
+ await page.locator('[aria-label="러닝화 샀어요"]').click();
+ await expect(page.locator('.fm-wish-item.done')).toContainText('러닝화');
+ await expect(page.locator('#fmWishHero')).toContainText('1 / 2');
+ await page.locator('[aria-label="아이패드 지우기"]').click();
+ await page.getByRole('button',{name:'지우기',exact:true}).click();
+ await expect(page.locator('.fm-wish-item')).toHaveCount(1);
+ await page.reload();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list.map(w=>[w.name,w.price,w.done]))).toEqual([['러닝화',150000,true]]);
 });

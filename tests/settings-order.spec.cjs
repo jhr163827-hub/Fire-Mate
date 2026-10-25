@@ -51,21 +51,30 @@ test('certificates can be added, edited and deleted, and ride along in backups',
  expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name)).toEqual(['정보처리기사','일반기계기사']);
 });
 
-test('위시리스트 adds items with a price, checks them off when bought, deletes after asking, and survives reload',async({page})=>{
+test('위시리스트 adds items, edits price, saving, link and 꼭, checks them off, deletes after asking, and survives reload',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmWishSub')).toHaveText('갖고 싶은 걸 적어 두세요');
  await page.locator('#fmWishOpen').click();
- await page.locator('#fmWishName').fill('아이패드');await page.locator('#fmWishPrice').fill('1,200,000');await page.locator('#fmWishForm button').click();
- await page.locator('#fmWishName').fill('러닝화');await page.locator('#fmWishPrice').fill('150000');await page.locator('#fmWishForm button').click();
- await expect(page.locator('#fmWishHero')).toContainText('갖고 싶은 것 2개₩1,350,0000 / 2 샀어요');
+ await page.locator('#fmWishName').fill('아이패드');await page.locator('#fmWishPrice').fill('1200000');await expect(page.locator('#fmWishPrice')).toHaveValue('1,200,000');await page.locator('#fmWishForm button').click();
+ await page.locator('#fmWishName').fill('러닝화');await page.locator('#fmWishForm button').click();
+ await expect(page.locator('#fmWishHero')).toContainText('갖고 싶은 것 2개');
+ await expect(page.locator('#fmWishHero')).toContainText('₩1,200,000');
+ // Every new wish starts the 30-day rule; one without a price asks for it.
+ await expect(page.locator('.fm-wish-item',{hasText:'아이패드'})).toContainText('30일 더 고민');
+ await page.locator('.fm-wish-item',{hasText:'러닝화'}).locator('.fm-wish-noprice').click();
+ await page.locator('#fmWishEPrice').fill('150000');await page.locator('[data-wish-add="50000"]').click();
+ await page.locator('#fmWishELink').fill('shop.example.com/shoe');await page.locator('#fmWishEPri').check();
+ await page.locator('#fmWishEForm button.primary').click();await expect(page.locator('#fmWishSheet')).toBeHidden();
+ const shoe=page.locator('.fm-wish-item',{hasText:'러닝화'});
+ await expect(page.locator('.fm-wish-item').first()).toContainText('러닝화');// 꼭 goes to the top
+ await expect(shoe).toContainText('₩150,000 · ₩50,000 모음');await expect(shoe).toContainText('🔥 꼭');
+ await expect(page.locator('#fmWishHero')).toContainText('₩1,300,000');
  await page.locator('[aria-label="러닝화 샀어요"]').click();
- await expect(page.locator('.fm-wish-item.done')).toContainText('러닝화');
- await expect(page.locator('#fmWishHero')).toContainText('1 / 2 샀어요');
- await expect(page.locator('.fm-wish-sec')).toHaveText('산 것 ✓');
- await page.locator('[aria-label="아이패드 지우기"]').click();
- await page.getByRole('button',{name:'지우기',exact:true}).click();
+ await expect(page.locator('.fm-wish-sec')).toHaveText('산 것 ✓ · ₩150,000');
+ await page.locator('[data-wish-edit]',{hasText:'아이패드'}).click();await page.locator('#fmWishEDel').click();
+ await page.getByRole('button',{name:'지우기',exact:true}).last().click();
  await expect(page.locator('.fm-wish-item')).toHaveCount(1);
  await page.reload();
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list.map(w=>[w.name,w.price,w.done]))).toEqual([['러닝화',150000,true]]);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list.map(w=>[w.name,w.price,w.saved,w.link,w.pri,w.done]))).toEqual([['러닝화',150000,50000,'https://shop.example.com/shoe',true,true]]);
 });

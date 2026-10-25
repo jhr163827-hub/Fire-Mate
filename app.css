@@ -2446,7 +2446,7 @@ html body #fmWishOverlay{z-index:41}
 #fmWishOverlay .fm-wish-hero em{font-style:normal;font-size:12px;font-weight:600;opacity:.85}
 #fmWishOverlay .fm-wish-form{display:grid;grid-template-columns:1fr 96px 48px;gap:6px;padding:6px;margin-bottom:16px;border-radius:18px;background:color-mix(in srgb,var(--txt) 7%,transparent)}#fmWishOverlay .fm-wish-form input{min-width:0;min-height:44px;border:0;background:transparent;font-size:15px}#fmWishOverlay .fm-wish-form input+input{border-left:1px solid var(--line);border-radius:0;padding-left:10px}
 #fmWishOverlay .fm-wish-form button{min-height:44px;padding:0;border-radius:14px;font-size:24px;font-weight:700;line-height:1}
-#fmWishOverlay .fm-wish-item{display:grid;grid-template-columns:30px 40px 1fr 32px;align-items:center;gap:10px;padding:12px;margin-bottom:8px;border-radius:18px;background:color-mix(in srgb,var(--txt) 6%,transparent);border:0}
+#fmWishOverlay .fm-wish-item{display:grid;grid-template-columns:30px 1fr;align-items:center;gap:10px;padding:12px;margin-bottom:8px;border-radius:18px;background:color-mix(in srgb,var(--txt) 6%,transparent);border:0}
 #fmWishOverlay .fm-wish-dot{display:grid;place-items:center;width:40px;height:40px;border-radius:14px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);font-weight:800;font-size:17px}
 #fmWishOverlay .fm-wish-name{display:grid;gap:2px;font-size:15px;font-weight:700;word-break:keep-all;min-width:0}#fmWishOverlay .fm-wish-name small{font-size:13px;font-weight:600;color:var(--sub)}
 #fmWishOverlay .fm-wish-check{width:28px;height:28px;min-height:0;padding:0;border-radius:50%;border:2px solid var(--sub);background:transparent;color:#fff;font-weight:900;font-size:15px;opacity:.8}
@@ -2454,3 +2454,17 @@ html body #fmWishOverlay{z-index:41}
 #fmWishOverlay .fm-wish-sec{margin:18px 4px 8px;font-size:14px;color:var(--sub)}#fmWishOverlay .fm-wish-empty{text-align:center;color:var(--sub);padding:36px 0;font-size:15px}
 html body #settingsOverlay #fmStorage{padding:0 18px}html body #settingsOverlay #fmStorage>summary{display:flex;align-items:center;gap:8px;min-height:56px;font-size:16px;font-weight:700;cursor:pointer}html body #settingsOverlay #fmStorage>summary span{white-space:nowrap}html body #settingsOverlay #fmStorage>summary small{margin-left:auto;margin-right:22px;white-space:nowrap;font-size:12px;font-weight:500;color:var(--sub)}html body #settingsOverlay #fmStorage[open]{padding-bottom:12px}
 #fmWishOverlay .fm-wish-del{width:32px;height:32px;min-height:0;padding:0;border:0;background:transparent;color:var(--sub);font-size:15px}
+#fmWishOverlay .fm-wish-open{display:grid;grid-template-columns:40px 1fr;align-items:center;gap:10px;min-height:0;padding:0;border:0;background:none;color:inherit;text-align:left}
+#fmWishOverlay .fm-wish-name>span:first-child{font-size:15px;font-weight:700}#fmWishOverlay .fm-wish-name small.fm-wish-noprice{color:var(--green)}
+#fmWishOverlay .fm-wish-mini{display:block;height:5px;margin-top:4px;border-radius:99px;background:color-mix(in srgb,var(--txt) 12%,transparent);overflow:hidden}#fmWishOverlay .fm-wish-mini i{display:block;height:100%;background:var(--green);border-radius:99px}
+#fmWishOverlay .fm-wish-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}#fmWishOverlay .fm-wish-chips i{font-style:normal;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--txt) 9%,transparent);color:var(--sub)}#fmWishOverlay .fm-wish-chips i.hot{background:#f0629230;color:#ff8fb1}#fmWishOverlay .fm-wish-chips i.ok{background:color-mix(in srgb,var(--green) 22%,transparent);color:var(--green)}
+#fmWishOverlay .fm-wish-empty small{font-size:12px}
+#fmWishOverlay .fm-wish-sheet{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center;background:#0008}#fmWishOverlay .fm-wish-sheet[hidden]{display:none}
+#fmWishOverlay .fm-wish-sheet form{display:grid;gap:10px;width:100%;max-width:560px;max-height:92%;overflow:auto;padding:20px 16px max(20px,env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:var(--bg);animation:fmWishUp .22s ease-out}
+#fmWishOverlay .fm-wish-sheet label{display:grid;gap:4px;font-size:12px;font-weight:600;color:var(--sub)}#fmWishOverlay .fm-wish-sheet input{min-height:46px;font-size:16px}
+#fmWishOverlay .fm-wish-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}#fmWishOverlay .fm-wish-quick{display:flex;gap:6px;justify-content:flex-end;margin-top:-4px}#fmWishOverlay .fm-wish-quick button{min-height:32px;padding:0 10px;border-radius:99px;border:0;background:color-mix(in srgb,var(--green) 18%,transparent);color:var(--green);font-weight:700;font-size:12px}
+#fmWishOverlay .fm-wish-linkrow{display:grid;grid-template-columns:1fr auto;gap:6px}#fmWishOverlay .fm-wish-linkrow button{min-height:46px;padding:0 14px}
+#fmWishOverlay label.fm-wish-pri{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--txt)}#fmWishOverlay label.fm-wish-pri input{width:22px;min-height:22px;height:22px}
+#fmWishOverlay .fm-wish-actions{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px;margin-top:4px}#fmWishOverlay .fm-wish-actions button{min-height:48px}#fmWishOverlay #fmWishEDel{color:var(--red,#ff6b6b)}
+@keyframes fmWishUp{from{transform:translateY(40px);opacity:.4}}
+#fmWishOverlay label.fm-wish-pri input{accent-color:var(--green)}

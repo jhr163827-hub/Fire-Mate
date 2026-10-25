@@ -522,7 +522,7 @@ try{
   const $=id=>document.getElementById(id);
   const statusLine=document.createElement('p');statusLine.id='fmPersistStatus';
   $('fmBackupStatus')?.after(statusLine);
-  const showPersist=async()=>{try{const kept=await navigator.storage?.persisted?.();statusLine.textContent=kept===true?'🔒 저장 보호 켜짐 · 휴대폰이 공간 정리로 지우지 않아요':kept===false?'저장 보호 꺼짐 · 홈 화면에 설치하면 켜질 수 있어요. 백업을 꼭 해 두세요':''}catch{statusLine.textContent=''}};
+  const showPersist=async()=>{try{const kept=await navigator.storage?.persisted?.();statusLine.textContent=kept===true?'🔒 저장 보호 켜짐':kept===false?'저장 보호 꺼짐 · 백업해 두세요':''}catch{statusLine.textContent=''}};
   (async()=>{try{if(navigator.storage?.persist&&!(await navigator.storage.persisted()))await navigator.storage.persist()}catch{}showPersist()})();
   $('settingsBottom')?.addEventListener('click',showPersist);
   const LISTS={expense:['식비','카페·간식','주거·관리비','교통','쇼핑','의료·건강','문화·취미','통신·구독','여행'],income:['급여','상여금','부수입','배당·이자']};

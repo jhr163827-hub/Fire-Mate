@@ -160,3 +160,30 @@ export const BOONS = {
 };
 export const boonCount = (s, key) =>
   (s.boons || []).filter((b) => b.key === key).length;
+
+export const EVOLUTIONS = {
+  archer: {
+    name: "월광 관통궁",
+    cost: 200,
+    art: "archer-evolved",
+    width: 14,
+    targets: 3,
+    secondary: 0.4,
+    desc: "직선상 최대 3명 관통 · 첫 적 100%, 추가 적 40% 피해",
+    detail:
+      "여러 적이 일렬로 겹치는 방향을 우선 조준합니다. 기본 공격력·속도·사거리는 그대로이며 갑각 저항과 서리 추격은 각 적에게 적용됩니다.",
+  },
+  ember: {
+    name: "잔불 연금술사",
+    cost: 200,
+    art: "ember-evolved",
+    radius: 32,
+    duration: 2.4,
+    dps: 24,
+    desc: "폭발 자리에 2.4초 잔불 · 범위 안의 적에게 초당 24 피해",
+    detail:
+      "수호자마다 가장 최근 잔불 하나만 유지합니다. 잔불이 겹쳐도 피해는 중첩되지 않습니다. 서리로 적을 붙잡으면 더 오래 태울 수 있어요.",
+  },
+};
+export const unitName = (u) =>
+  u.evolved ? EVOLUTIONS[u.kind].name : TYPES[u.kind].name;

@@ -13,6 +13,8 @@ import {
   SAVE_KEY,
   BOONS,
   boonCount,
+  EVOLUTIONS,
+  unitName,
 } from "./data.mjs";
 import { sprites, loadArt } from "./art.mjs";
 const $ = (s) => document.querySelector(s),
@@ -234,9 +236,23 @@ $("#move").onclick = () => {
   );
   update();
 };
+function evolvePreview(u) {
+  const rule = EVOLUTIONS[u.kind];
+  modal(
+    `<div class="eyebrow">FINAL EVOLUTION</div><h2>${rule.name}</h2><div class="evolutionPortrait"><img src="${sprites[u.kind].src}" alt="진화 전 ${TYPES[u.kind].name}"><span>→</span><img src="${sprites[rule.art].src}" alt="진화 후 ${rule.name}"></div><p><b>${rule.desc}</b></p><p>${rule.detail}</p><p>3성 수호자 유지 · 위치와 축복 유지<br>진화 비용 ${rule.cost} · 보유 ${game.s.gold} 조각<br>판매 시 진화 비용은 돌려받지 않습니다.</p><button id="confirmEvolve" class="primary" ${game.s.gold < rule.cost ? "disabled" : ""}>${game.s.gold < rule.cost ? rule.cost - game.s.gold + " 조각 더 필요" : rule.cost + " 조각으로 진화 확정"}</button>`,
+  );
+  $("#confirmEvolve").onclick = () => {
+    if (!game.evolve(u.id)) return;
+    save();
+    close();
+    tone(1100, 0.25);
+    notice(rule.desc);
+  };
+}
 $("#merge").onclick = () => {
   let u = unit();
   if (!u) return;
+  if (u.tier === 3 && EVOLUTIONS[u.kind] && !u.evolved) return evolvePreview(u);
   let partners = game.s.units.filter(
     (v) => v.id !== u.id && v.kind === u.kind && v.tier === u.tier,
   );
@@ -271,7 +287,7 @@ $("#sell").onclick = () => {
   let u = unit();
   if (!u) return;
   modal(
-    `<h2>수호자를 돌려보낼까요?</h2><p>${TYPES[u.kind].name} ${"★".repeat(u.tier)}<br>${Math.floor(30 * 2 ** (u.tier - 1))} 조각을 돌려받습니다. 이 수호자는 사라집니다.</p><button id="confirmSell">판매 확정</button>`,
+    `<h2>수호자를 돌려보낼까요?</h2><p>${unitName(u)} ${"★".repeat(u.tier)}<br>${Math.floor(30 * 2 ** (u.tier - 1))} 조각을 돌려받습니다. 이 수호자는 사라집니다.</p><button id="confirmSell">판매 확정</button>`,
   );
   $("#confirmSell").onclick = () => {
     game.sell(u.id);
@@ -287,7 +303,7 @@ $("#guide").onclick = () =>
         (k) =>
           `<div class="choice"><img src="${sprites[k].src}" alt=""><p><b style="color:${TYPES[k].color}">${TYPES[k].name}</b><br>${TYPES[k].desc}</p></div>`,
       ).join("") +
-      "<p>적이 성문에 도착하면 생명 −1, 보스는 −5. 6·12·18 웨이브에 보스가 등장합니다. 18 웨이브를 지키면 승리합니다.<br>별종의 가속은 중첩되지 않고 독은 가장 강한 피해로 갱신됩니다.</p>",
+      "<p>3성 궁수·잿불은 선택 후 진화 버튼에서 최종 진화를 미리 볼 수 있어요. 각 200 조각이 필요하며 새 판에서는 초기화됩니다.</p><p>적이 성문에 도착하면 생명 −1, 보스는 −5. 6·12·18 웨이브에 보스가 등장합니다. 18 웨이브를 지키면 승리합니다.<br>별종의 가속은 중첩되지 않고 독은 가장 강한 피해로 갱신됩니다.</p>",
   );
 PADS.forEach(([x, y], i) => {
   let b = document.createElement("button");
@@ -355,12 +371,21 @@ function update() {
     let t = TYPES[u.kind],
       boosted = supported(s.units, u);
     $("#selection").innerHTML =
-      `<strong>${t.name} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}${u.kind === "thorn" && boonCount(s, "venom") ? " · 독 강화 " + boonCount(s, "venom") + "단계" : ""}${u.kind === "archer" && boonCount(s, "hunt") ? " · 서리 추격 " + boonCount(s, "hunt") + "단계" : ""}</span>`;
+      `<strong>${unitName(u)} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${u.evolved ? (u.kind === "archer" ? "관통 · 직선 밀집" : "광역 · 잔불 지대") : t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}${u.kind === "thorn" && boonCount(s, "venom") ? " · 독 강화 " + boonCount(s, "venom") + "단계" : ""}${u.kind === "archer" && boonCount(s, "hunt") ? " · 서리 추격 " + boonCount(s, "hunt") + "단계" : ""}</span>`;
     let pair = s.units.some(
       (v) => v.id !== u.id && v.kind === u.kind && v.tier === u.tier,
     );
-    $("#merge").disabled = u.tier === 3 || !pair || s.gold < 15;
-    $("#merge").textContent = u.tier === 3 ? "최고 등급" : "합성 · 15";
+    const evolution = u.tier === 3 && EVOLUTIONS[u.kind];
+    $("#merge").disabled = evolution
+      ? !!u.evolved
+      : u.tier === 3 || !pair || s.gold < 15;
+    $("#merge").textContent = evolution
+      ? u.evolved
+        ? "진화 완료"
+        : "진화 · " + evolution.cost
+      : u.tier === 3
+        ? "최고 등급"
+        : "합성 · 15";
     $("#move").textContent = moving ? "이동 취소" : "이동 / 교환";
   } else
     $("#selection").innerHTML =
@@ -371,7 +396,7 @@ function update() {
     b.innerHTML = v ? "<span>" + "★".repeat(v.tier) + "</span>" : "";
     b.setAttribute(
       "aria-label",
-      v ? `${i + 1}번 ${TYPES[v.kind].name} ${v.tier}성` : `${i + 1}번 빈 제단`,
+      v ? `${i + 1}번 ${unitName(v)} ${v.tier}성` : `${i + 1}번 빈 제단`,
     );
     b.setAttribute("aria-pressed", String(i === selected));
   });
@@ -477,9 +502,15 @@ function events() {
       if (shots.length > 80) shots.shift();
     } else if (ev.type === "death") {
       effects.push({ ...ev, life: 0.45, color: "#a0d0bf" });
-    } else if (ev.type === "summon" || ev.type === "merge") {
+    } else if (
+      ev.type === "summon" ||
+      ev.type === "merge" ||
+      ev.type === "evolve"
+    ) {
       let [x, y] = PADS[ev.pad];
       effects.push({ x, y, life: 0.7, color: TYPES[ev.kind].color, big: true });
+      if (ev.type === "evolve")
+        banner("최종 진화 · " + EVOLUTIONS[ev.kind].name);
       if (ev.type === "summon" && ev.tier === 2) {
         banner("희귀 소환 · " + TYPES[ev.kind].name + " ★★");
         tone(1000, 0.3);
@@ -568,6 +599,32 @@ function render(t, dt) {
       ctx.stroke();
     }
   }
+  for (const f of game.s.fields) {
+    ctx.save();
+    const r = EVOLUTIONS.ember.radius;
+    ctx.globalAlpha = Math.min(1, f.life * 2) * 0.8;
+    const glow = ctx.createRadialGradient(f.x, f.y, 2, f.x, f.y, r);
+    glow.addColorStop(0, "#ffad433a");
+    glow.addColorStop(0.7, "#db531c55");
+    glow.addColorStop(1, "#a62b0000");
+    ctx.fillStyle = glow;
+    ctx.fillRect(f.x - r, f.y - r, r * 2, r * 2);
+    for (let i = 0; i < 7; i++) {
+      const a = i * 2.399,
+        radius = (((i % 3) + 1) * r) / 4;
+      const x = f.x + Math.cos(a) * radius,
+        y = f.y + Math.sin(a) * radius;
+      const height = reduced || paused ? 8 : 8 + Math.sin(t / 150 + i) * 2;
+      ctx.fillStyle = i % 2 ? "#ffbf62" : "#eb6e35";
+      ctx.beginPath();
+      ctx.moveTo(x - 3, y + 3);
+      ctx.quadraticCurveTo(x - 5, y - 2, x + 1, y - height);
+      ctx.quadraticCurveTo(x - 1, y - 1, x + 4, y - 4);
+      ctx.quadraticCurveTo(x + 6, y + 4, x - 3, y + 3);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
   let sel = unit();
   if (sel) {
     let [x, y] = PADS[sel.pad];
@@ -622,7 +679,7 @@ function render(t, dt) {
     let [x, y] = PADS[u.pad],
       bounce = reduced || paused ? 0 : Math.sin(t / 350 + u.id) * 1.2,
       attack = shots.some((s) => s.x === x && s.y === y && s.life > 0.12);
-    let size = 49 + (u.tier - 1) * 3;
+    let size = u.evolved ? 59 : 49 + (u.tier - 1) * 3;
     ctx.save();
     ctx.translate(x, y);
     if (u.kind === "bell") {
@@ -643,7 +700,7 @@ function render(t, dt) {
       }
     }
     ctx.drawImage(
-      sprites[u.kind],
+      sprites[u.evolved ? EVOLUTIONS[u.kind].art : u.kind],
       -size / 2,
       -size * 0.75 + bounce - (attack ? 2 : 0),
       size,
@@ -713,6 +770,28 @@ function render(t, dt) {
     }
   }
   for (let s of shots) {
+    if (s.evolved && s.kind === "archer") {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, s.life / 0.18);
+      ctx.strokeStyle = "#93e5ff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.tx, s.ty);
+      ctx.stroke();
+      ctx.strokeStyle = "#fff3ce";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      const a = Math.atan2(s.ty - s.y, s.tx - s.x);
+      ctx.beginPath();
+      ctx.moveTo(s.tx - 9 * Math.cos(a - 0.45), s.ty - 9 * Math.sin(a - 0.45));
+      ctx.lineTo(s.tx, s.ty);
+      ctx.lineTo(s.tx - 9 * Math.cos(a + 0.45), s.ty - 9 * Math.sin(a + 0.45));
+      ctx.stroke();
+      ctx.restore();
+      if (!paused) s.life -= dt;
+      continue;
+    }
     let k = 1 - s.life / 0.18;
     ctx.strokeStyle = TYPES[s.kind].color;
     ctx.lineWidth = s.kind === "ember" ? 3 : 1.5;

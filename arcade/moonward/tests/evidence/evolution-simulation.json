@@ -1,0 +1,3026 @@
+[
+  {
+    "strategy": "balanced",
+    "mode": "none",
+    "wins": 15,
+    "avgWave": 18,
+    "avgGold": 966,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 1018,
+        "lives": 1,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 938,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 3,
+        "win": true,
+        "wave": 18,
+        "gold": 1053,
+        "lives": 14,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 4,
+        "win": true,
+        "wave": 18,
+        "gold": 1048,
+        "lives": 13,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 1088,
+        "lives": 8,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 898,
+        "lives": 9,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 1053,
+        "lives": 1,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 773,
+        "lives": 10,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 1144,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 893,
+        "lives": 8,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 958,
+        "lives": 8,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 18,
+        "gold": 959,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 13,
+        "win": true,
+        "wave": 18,
+        "gold": 938,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 18,
+        "gold": 589,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 978,
+        "lives": 12,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 853,
+        "lives": 13,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 999,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 18,
+        "gold": 1184,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 1053,
+        "lives": 1,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 908,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      }
+    ]
+  },
+  {
+    "strategy": "balanced",
+    "mode": "archer",
+    "wins": 18,
+    "avgWave": 18,
+    "avgGold": 649,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 673,
+        "lives": 12,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 578,
+        "lives": 12,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 3,
+        "win": true,
+        "wave": 18,
+        "gold": 658,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 2
+      },
+      {
+        "seed": 4,
+        "win": true,
+        "wave": 18,
+        "gold": 648,
+        "lives": 13,
+        "firstEvolution": 8,
+        "evolved": 2
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 713,
+        "lives": 13,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 513,
+        "lives": 12,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 678,
+        "lives": 6,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 183,
+        "lives": 12,
+        "firstEvolution": 7,
+        "evolved": 3
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 954,
+        "lives": 0,
+        "firstEvolution": 8,
+        "evolved": 1
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 518,
+        "lives": 13,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 593,
+        "lives": 15,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 12,
+        "win": true,
+        "wave": 18,
+        "gold": 523,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 3
+      },
+      {
+        "seed": 13,
+        "win": true,
+        "wave": 18,
+        "gold": 778,
+        "lives": 12,
+        "firstEvolution": 7,
+        "evolved": 1
+      },
+      {
+        "seed": 14,
+        "win": true,
+        "wave": 18,
+        "gold": 363,
+        "lives": 8,
+        "firstEvolution": 11,
+        "evolved": 2
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 788,
+        "lives": 14,
+        "firstEvolution": 8,
+        "evolved": 1
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 463,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 819,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 1
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 1113,
+        "lives": 7,
+        "firstEvolution": 11,
+        "evolved": 1
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 863,
+        "lives": 3,
+        "firstEvolution": 13,
+        "evolved": 1
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 563,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 2
+      }
+    ]
+  },
+  {
+    "strategy": "balanced",
+    "mode": "ember",
+    "wins": 16,
+    "avgWave": 18,
+    "avgGold": 617,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 828,
+        "lives": 3,
+        "firstEvolution": 10,
+        "evolved": 1
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 563,
+        "lives": 9,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 3,
+        "win": true,
+        "wave": 18,
+        "gold": 658,
+        "lives": 15,
+        "firstEvolution": 9,
+        "evolved": 2
+      },
+      {
+        "seed": 4,
+        "win": true,
+        "wave": 18,
+        "gold": 848,
+        "lives": 13,
+        "firstEvolution": 12,
+        "evolved": 1
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 688,
+        "lives": 8,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 523,
+        "lives": 14,
+        "firstEvolution": 9,
+        "evolved": 2
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 18,
+        "gold": 759,
+        "lives": 0,
+        "firstEvolution": 12,
+        "evolved": 1
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 378,
+        "lives": 11,
+        "firstEvolution": 12,
+        "evolved": 2
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 944,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 1
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 523,
+        "lives": 14,
+        "firstEvolution": 11,
+        "evolved": 2
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 383,
+        "lives": 13,
+        "firstEvolution": 8,
+        "evolved": 3
+      },
+      {
+        "seed": 12,
+        "win": true,
+        "wave": 18,
+        "gold": 668,
+        "lives": 4,
+        "firstEvolution": 8,
+        "evolved": 2
+      },
+      {
+        "seed": 13,
+        "win": true,
+        "wave": 18,
+        "gold": 563,
+        "lives": 9,
+        "firstEvolution": 8,
+        "evolved": 2
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 18,
+        "gold": 404,
+        "lives": 0,
+        "firstEvolution": 10,
+        "evolved": 1
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 378,
+        "lives": 12,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 463,
+        "lives": 15,
+        "firstEvolution": 13,
+        "evolved": 2
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 609,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 913,
+        "lives": 7,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 703,
+        "lives": 11,
+        "firstEvolution": 10,
+        "evolved": 2
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 548,
+        "lives": 12,
+        "firstEvolution": 10,
+        "evolved": 2
+      }
+    ]
+  },
+  {
+    "strategy": "balanced",
+    "mode": "both",
+    "wins": 18,
+    "avgWave": 18,
+    "avgGold": 307,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 483,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 178,
+        "lives": 12,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 3,
+        "win": true,
+        "wave": 18,
+        "gold": 258,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 4
+      },
+      {
+        "seed": 4,
+        "win": true,
+        "wave": 18,
+        "gold": 458,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 3
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 323,
+        "lives": 15,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 103,
+        "lives": 10,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 518,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 123,
+        "lives": 10,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 754,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 123,
+        "lives": 14,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 93,
+        "lives": 9,
+        "firstEvolution": 7,
+        "evolved": 5
+      },
+      {
+        "seed": 12,
+        "win": true,
+        "wave": 18,
+        "gold": 98,
+        "lives": 10,
+        "firstEvolution": 8,
+        "evolved": 5
+      },
+      {
+        "seed": 13,
+        "win": true,
+        "wave": 18,
+        "gold": 378,
+        "lives": 12,
+        "firstEvolution": 7,
+        "evolved": 3
+      },
+      {
+        "seed": 14,
+        "win": true,
+        "wave": 18,
+        "gold": 128,
+        "lives": 1,
+        "firstEvolution": 10,
+        "evolved": 3
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 188,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 113,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 429,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 3
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 713,
+        "lives": 7,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 513,
+        "lives": 13,
+        "firstEvolution": 10,
+        "evolved": 3
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 163,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 4
+      }
+    ]
+  },
+  {
+    "strategy": "random",
+    "mode": "none",
+    "wins": 10,
+    "avgWave": 18,
+    "avgGold": 1152,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 18,
+        "gold": 1239,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 1173,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 18,
+        "gold": 1139,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 18,
+        "gold": 1224,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 1373,
+        "lives": 5,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 1158,
+        "lives": 1,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 1183,
+        "lives": 6,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 958,
+        "lives": 13,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 1109,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 1368,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 18,
+        "gold": 1074,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 18,
+        "gold": 999,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 18,
+        "gold": 829,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 18,
+        "gold": 994,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 1238,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 1368,
+        "lives": 4,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 1124,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 1138,
+        "lives": 10,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 18,
+        "gold": 1129,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 1218,
+        "lives": 13,
+        "firstEvolution": 0,
+        "evolved": 0
+      }
+    ]
+  },
+  {
+    "strategy": "random",
+    "mode": "archer",
+    "wins": 19,
+    "avgWave": 18,
+    "avgGold": 850,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 1183,
+        "lives": 7,
+        "firstEvolution": 7,
+        "evolved": 1
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 823,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 3,
+        "win": true,
+        "wave": 18,
+        "gold": 898,
+        "lives": 3,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 4,
+        "win": true,
+        "wave": 18,
+        "gold": 1003,
+        "lives": 11,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 1008,
+        "lives": 12,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 818,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 828,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 368,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 9,
+        "win": true,
+        "wave": 18,
+        "gold": 883,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 1218,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 1
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 843,
+        "lives": 5,
+        "firstEvolution": 9,
+        "evolved": 2
+      },
+      {
+        "seed": 12,
+        "win": true,
+        "wave": 18,
+        "gold": 558,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 13,
+        "win": true,
+        "wave": 18,
+        "gold": 593,
+        "lives": 7,
+        "firstEvolution": 9,
+        "evolved": 2
+      },
+      {
+        "seed": 14,
+        "win": true,
+        "wave": 18,
+        "gold": 753,
+        "lives": 13,
+        "firstEvolution": 9,
+        "evolved": 2
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 1058,
+        "lives": 8,
+        "firstEvolution": 8,
+        "evolved": 1
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 1008,
+        "lives": 12,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 939,
+        "lives": 0,
+        "firstEvolution": 12,
+        "evolved": 1
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 563,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 3
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 843,
+        "lives": 5,
+        "firstEvolution": 9,
+        "evolved": 2
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 813,
+        "lives": 12,
+        "firstEvolution": 5,
+        "evolved": 2
+      }
+    ]
+  },
+  {
+    "strategy": "random",
+    "mode": "ember",
+    "wins": 16,
+    "avgWave": 18,
+    "avgGold": 893,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 1163,
+        "lives": 3,
+        "firstEvolution": 8,
+        "evolved": 1
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 818,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 18,
+        "gold": 964,
+        "lives": 0,
+        "firstEvolution": 9,
+        "evolved": 1
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 18,
+        "gold": 1224,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 1178,
+        "lives": 6,
+        "firstEvolution": 8,
+        "evolved": 1
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 988,
+        "lives": 7,
+        "firstEvolution": 8,
+        "evolved": 1
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 998,
+        "lives": 9,
+        "firstEvolution": 7,
+        "evolved": 1
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 563,
+        "lives": 14,
+        "firstEvolution": 11,
+        "evolved": 2
+      },
+      {
+        "seed": 9,
+        "win": true,
+        "wave": 18,
+        "gold": 1033,
+        "lives": 3,
+        "firstEvolution": 10,
+        "evolved": 1
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 1008,
+        "lives": 12,
+        "firstEvolution": 8,
+        "evolved": 2
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 833,
+        "lives": 3,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 12,
+        "win": true,
+        "wave": 18,
+        "gold": 703,
+        "lives": 3,
+        "firstEvolution": 6,
+        "evolved": 2
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 18,
+        "gold": 669,
+        "lives": 0,
+        "firstEvolution": 10,
+        "evolved": 1
+      },
+      {
+        "seed": 14,
+        "win": true,
+        "wave": 18,
+        "gold": 908,
+        "lives": 4,
+        "firstEvolution": 11,
+        "evolved": 1
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 658,
+        "lives": 8,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 1163,
+        "lives": 3,
+        "firstEvolution": 12,
+        "evolved": 1
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 574,
+        "lives": 0,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 748,
+        "lives": 12,
+        "firstEvolution": 10,
+        "evolved": 2
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 848,
+        "lives": 6,
+        "firstEvolution": 8,
+        "evolved": 2
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 828,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 2
+      }
+    ]
+  },
+  {
+    "strategy": "random",
+    "mode": "both",
+    "wins": 19,
+    "avgWave": 18,
+    "avgGold": 565,
+    "runs": [
+      {
+        "seed": 1,
+        "win": true,
+        "wave": 18,
+        "gold": 988,
+        "lives": 8,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 2,
+        "win": true,
+        "wave": 18,
+        "gold": 428,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 3,
+        "win": true,
+        "wave": 18,
+        "gold": 718,
+        "lives": 7,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 4,
+        "win": true,
+        "wave": 18,
+        "gold": 1003,
+        "lives": 11,
+        "firstEvolution": 7,
+        "evolved": 2
+      },
+      {
+        "seed": 5,
+        "win": true,
+        "wave": 18,
+        "gold": 813,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 6,
+        "win": true,
+        "wave": 18,
+        "gold": 628,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 7,
+        "win": true,
+        "wave": 18,
+        "gold": 618,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 8,
+        "win": true,
+        "wave": 18,
+        "gold": 268,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 9,
+        "win": true,
+        "wave": 18,
+        "gold": 683,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 10,
+        "win": true,
+        "wave": 18,
+        "gold": 823,
+        "lives": 15,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 11,
+        "win": true,
+        "wave": 18,
+        "gold": 458,
+        "lives": 8,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 12,
+        "win": true,
+        "wave": 18,
+        "gold": 158,
+        "lives": 14,
+        "firstEvolution": 6,
+        "evolved": 5
+      },
+      {
+        "seed": 13,
+        "win": true,
+        "wave": 18,
+        "gold": 408,
+        "lives": 10,
+        "firstEvolution": 9,
+        "evolved": 3
+      },
+      {
+        "seed": 14,
+        "win": true,
+        "wave": 18,
+        "gold": 563,
+        "lives": 15,
+        "firstEvolution": 9,
+        "evolved": 3
+      },
+      {
+        "seed": 15,
+        "win": true,
+        "wave": 18,
+        "gold": 478,
+        "lives": 12,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 16,
+        "win": true,
+        "wave": 18,
+        "gold": 813,
+        "lives": 13,
+        "firstEvolution": 6,
+        "evolved": 3
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 389,
+        "lives": 0,
+        "firstEvolution": 6,
+        "evolved": 4
+      },
+      {
+        "seed": 18,
+        "win": true,
+        "wave": 18,
+        "gold": 163,
+        "lives": 15,
+        "firstEvolution": 8,
+        "evolved": 5
+      },
+      {
+        "seed": 19,
+        "win": true,
+        "wave": 18,
+        "gold": 473,
+        "lives": 11,
+        "firstEvolution": 8,
+        "evolved": 4
+      },
+      {
+        "seed": 20,
+        "win": true,
+        "wave": 18,
+        "gold": 418,
+        "lives": 13,
+        "firstEvolution": 5,
+        "evolved": 4
+      }
+    ]
+  },
+  {
+    "strategy": "archer",
+    "mode": "none",
+    "wins": 0,
+    "avgWave": 17,
+    "avgGold": 28,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      }
+    ]
+  },
+  {
+    "strategy": "archer",
+    "mode": "archer",
+    "wins": 0,
+    "avgWave": 16,
+    "avgGold": 10,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      }
+    ]
+  },
+  {
+    "strategy": "archer",
+    "mode": "ember",
+    "wins": 0,
+    "avgWave": 17,
+    "avgGold": 28,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 17,
+        "gold": 28,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      }
+    ]
+  },
+  {
+    "strategy": "archer",
+    "mode": "both",
+    "wins": 0,
+    "avgWave": 16,
+    "avgGold": 10,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 16,
+        "gold": 10,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      }
+    ]
+  },
+  {
+    "strategy": "ember",
+    "mode": "none",
+    "wins": 0,
+    "avgWave": 18,
+    "avgGold": 64,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      }
+    ]
+  },
+  {
+    "strategy": "ember",
+    "mode": "archer",
+    "wins": 0,
+    "avgWave": 18,
+    "avgGold": 64,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 18,
+        "gold": 64,
+        "lives": 0,
+        "firstEvolution": 0,
+        "evolved": 0
+      }
+    ]
+  },
+  {
+    "strategy": "ember",
+    "mode": "ember",
+    "wins": 0,
+    "avgWave": 17,
+    "avgGold": 3,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      }
+    ]
+  },
+  {
+    "strategy": "ember",
+    "mode": "both",
+    "wins": 0,
+    "avgWave": 17,
+    "avgGold": 3,
+    "runs": [
+      {
+        "seed": 1,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 2,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 3,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 4,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 5,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 6,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 7,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 8,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 9,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 10,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 11,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 12,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 13,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 14,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 15,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 16,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 17,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 18,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 19,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      },
+      {
+        "seed": 20,
+        "win": false,
+        "wave": 17,
+        "gold": 3,
+        "lives": 0,
+        "firstEvolution": 7,
+        "evolved": 4
+      }
+    ]
+  }
+]

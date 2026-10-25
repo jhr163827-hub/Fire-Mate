@@ -5,7 +5,9 @@ export async function loadArt() {
   await Promise.all(
     [
       "archer",
+      "archer-evolved",
       "ember",
+      "ember-evolved",
       "frost",
       "thorn",
       "bell",

@@ -133,3 +133,16 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .room-mandu-head{animation:restaurant-mandu-nod 3.2s ease-in-out infinite;transform-origin:0 -12px}.room-mandu-z{animation:restaurant-mandu-z 2.6s ease-in-out infinite}.room-mandu,.room-chef-cat{pointer-events:none}
 @keyframes restaurant-mandu-nod{50%{transform:rotate(4deg) translateY(1px)}}@keyframes restaurant-mandu-z{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(6px,-10px)}}
 .restaurant-paused .room-mandu *{animation-play-state:paused!important}@media(prefers-reduced-motion:reduce){.room-mandu *{animation:none!important}}
+#restaurantSound{min-width:44px;font-size:18px}
+.restaurant-coach{position:relative;z-index:6;display:flex;margin:8px 0;align-items:center;gap:8px;max-width:min(420px,calc(100vw - 32px));padding:8px 8px 8px 12px;border-radius:18px;background:#fffdf5;border:2px solid #e8c78c;box-shadow:0 6px 16px #6b4a3330;pointer-events:none;animation:restaurant-coach-in .35s ease-out}
+.restaurant-coach span{font-size:22px}.restaurant-coach p{margin:0;font-size:13px;font-weight:700;line-height:1.35;color:#5a3d26}.restaurant-coach button{pointer-events:auto;flex:none;min-width:32px;min-height:32px;border:0;border-radius:50%;background:#f3e4c6;color:#6b4a33}
+.restaurant-levelup{position:fixed;left:50%;top:40%;z-index:7;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;padding:16px 26px;border-radius:24px;background:linear-gradient(#fff6d8,#ffe2a1);border:3px solid #e2a83a;box-shadow:0 10px 30px #7a4c1a40;pointer-events:none}
+.restaurant-levelup span{font-size:36px}.restaurant-levelup strong{font-size:26px;color:#a8541a}.restaurant-levelup small{color:#8a6a55}.restaurant-levelup.show{animation:restaurant-pop 2.6s ease-out forwards}
+.room-fx-coin,.room-fx-heart,.room-fx-sparkle{animation:restaurant-fx-rise 1.5s ease-out forwards}.room-fx-sparkle{animation-name:restaurant-fx-sparkle}
+.room-item.coach-target .selection{display:block;fill:#fff2b1aa;stroke:#e2a83a;stroke-width:3;animation:restaurant-coach-pulse 1.1s ease-in-out infinite}
+@keyframes restaurant-fx-rise{0%{opacity:0;transform:translateY(6px) scale(.7)}15%{opacity:1;transform:translateY(0) scale(1.1)}100%{opacity:0;transform:translateY(-30px) scale(1)}}
+@keyframes restaurant-fx-sparkle{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(1) translateY(-14px)}}
+@keyframes restaurant-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}20%{transform:translate(-50%,-50%) scale(1)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%)}}
+@keyframes restaurant-coach-in{from{opacity:0;transform:translateY(-8px)}}@keyframes restaurant-coach-pulse{50%{opacity:.45}}
+@media(prefers-reduced-motion:reduce){.restaurant-coach,.restaurant-levelup.show,.room-item.coach-target .selection{animation:none}}
+@media(orientation:landscape) and (min-width:560px){.restaurant-coach{position:fixed;margin:0;left:max(10px,env(safe-area-inset-left));top:108px;max-width:300px;padding:6px 6px 6px 10px;animation:none}.restaurant-coach p{font-size:12px}.restaurant-coach span{font-size:18px}}

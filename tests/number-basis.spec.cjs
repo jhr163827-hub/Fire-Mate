@@ -138,6 +138,41 @@ test('home plan follows the payday cycle and checks investing, 청약, bills and
  await expect(rows).toContainText('10/23 월급 ~ 11/25 월급 전');
 });
 
+test('the week after payday, home says to move last cycle\'s unspent living money to ISA',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,26,9,0));
+ await load(page,seed({tx:[{id:'a',date:'2026-10-10',type:'expense',category:'식비',amount:500000,memo:'장보기'}]}));
+ await expect(page.locator('#fmHomePlanSum')).toHaveText('💼 월급 들어왔어요 · 지난달 남은 30만원 ISA로 💪');
+ await page.clock.setFixedTime(new Date(2026,9,31,9,0));await page.reload();
+ await expect(page.locator('#fmHomePlanSum')).toContainText('📋 월급 주기 계획');
+});
+
+test('home plan counts investing by BankSalad category or account even when the memo is just a name, and lists other transfers',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,28,9,0));
+ const x=(id,memo,main,sub,pay,amount)=>({id,date:'2026-10-26',type:'transfer',category:'계좌 이체',amount,memo,bankExcelKey:['2026-10-26','10:00','transfer',main,sub,memo,amount,pay].join('|')});
+ await load(page,seed({tx:[x('a','홍길동','이체','투자','카카오뱅크',1000000),x('b','홍길동','이체','내계좌이체','NH투자증권 CMA',500000),x('c','엄마','이체','미분류','카카오뱅크',200000),{id:'d',date:'2026-10-26',type:'expense',category:'식비',amount:100000,memo:'마트'}]}));
+ await page.locator('#fmHomePlanSum').click();
+ const rows=page.locator('#fmHomePlanRows');
+ await expect(rows).toContainText('💰 투자150만 / 300만');
+ await rows.locator('summary',{hasText:'안 잡힌 이체'}).click();
+ await expect(rows).toContainText('10/26 엄마 이체 미분류 카카오뱅크 ₩200,000');
+ await expect(rows).toContainText('🛒 생활비10만 / 80만');
+});
+
+test('the payday plan is edited in settings, not on home; 토스 transfers count as 비상금',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,28,9,0));
+ await load(page,seed({tx:[{id:'a',date:'2026-10-26',type:'transfer',category:'계좌 이체',amount:100000,memo:'토스 비상금통장'}]}));
+ await expect(page.locator('#fmHomePlan input')).toHaveCount(0);
+ await page.locator('#settingsBottom').click();
+ await page.locator('.fm-set-plan summary').click();
+ await page.locator('[data-plan="safe"]').fill('10');await page.locator('[data-plan="safe"]').blur();
+ await page.locator('[data-plan="pay"]').fill('10');await page.locator('[data-plan="pay"]').blur();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_month_plan_v1')))).toMatchObject({safe:10,pay:10});
+ await expect(page.locator('#fmPayDay')).toHaveText('💼 월급 D-13');
+ await page.locator('[data-plan="pay"]').fill('25');await page.locator('[data-plan="pay"]').blur();
+ await page.locator('#fmHomePlanSum').click({force:true});
+ await expect(page.locator('#fmHomePlanRows summary.ok',{hasText:'비상금'})).toHaveText('🐷 비상금10만 / 10만');
+});
+
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{
  const d=new Date(),pm=new Date(d.getFullYear(),d.getMonth()-1,1),p=pm.getFullYear()+'-'+String(pm.getMonth()+1).padStart(2,'0');
  await page.addInitScript(p=>localStorage.setItem('firemate_pl_history_v1',JSON.stringify({[p+'-10']:[1000000,1000000],[p+'-28']:[1100000,1000000]})),p);

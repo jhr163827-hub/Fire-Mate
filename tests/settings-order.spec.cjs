@@ -2,12 +2,12 @@ const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
-test('settings list 게임 아케이드 → 자격증 → 내 데이터 → 초기화, without mail, quote or export sections',async({page})=>{
+test('settings list 게임 아케이드 → 자격증 → 월급 주기 계획 → 내 데이터 → 초기화, without mail, quote or export sections',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
   e.id==='fmArcadeOpen'?'arcade':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
- expect(order).toEqual(['arcade','certs','data','⚠️ 데이터 초기화']);
+ expect(order).toEqual(['arcade','certs','📋 월급 주기 계획','data','⚠️ 데이터 초기화']);
  for(const id of ['export','fmBackupStatus','importBtn'])await expect(page.locator('.fm-device-storage #'+id)).toBeVisible();
  await expect(page.locator('#exportShare')).toBeHidden();
  await expect(page.locator('#csvExport')).toHaveCount(0);

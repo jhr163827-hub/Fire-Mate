@@ -78,7 +78,7 @@ test('FIRE shows this month\'s actual savings against the plan',async({page})=>{
  const m=new Date().toISOString().slice(0,7);
  await load(page,seed({tx:[{id:'i',date:m+'-01',type:'income',category:'급여',amount:4000000},{id:'e',date:m+'-02',type:'expense',category:'식비',amount:500000}]}));
  await page.evaluate(()=>window.fmGo('fire'));
- await expect(page.locator('#fmFireSaved')).toHaveText('이번 달 실제 모은 돈 +₩3,500,000 · 계획의 117%');
+ await expect(page.locator('#fmFireSaved')).toHaveText('이번 달 +₩3,500,000 모음 · 계획의 117% 👍');
 });
 
 test('the ledger top shows what was saved this month and offers the 뱅크샐러드 import',async({page})=>{

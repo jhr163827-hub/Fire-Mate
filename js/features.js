@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(cashValue&&/부족/.test(cashValue.textContent))cashValue.style.color='var(--yellow)';
    metric('fmOverview-portfolio',state.portfolio?{value:state.portfolio.value,note:'목표 구성과 실제 보유 비교 · 금액 목표와 별개'}:null);
    $('fmOpenCalculator').textContent=state.draft?.dirty?'조건 비교 •':'조건 비교';$('fmOpenCalculator').setAttribute('aria-label',state.draft?.dirty?'조건 비교 · 미저장 조건 이어보기':'조건 비교');
-   const p=state.plan;if(p)$('fmFireBasisNote').textContent='저장 계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 투자 · 연 '+p.rate+'% 가정'+(p.net<0?' · 음수 운용자산은 남은 금액·도달 계산에서 0으로 가정':'');
+   const p=state.plan;if(p)$('fmFireBasisNote').textContent='계획 · 월 '+Number(p.monthly).toLocaleString('ko-KR')+'만 원 · 연 '+p.rate+'%'+(p.net<0?' · 음수 운용자산은 남은 금액·도달 계산에서 0으로 가정':'');
    const difference=$('fmFirePlanDifference'),different=p&&state.portfolio&&Math.abs(p.goal-state.portfolio.totalTarget)>0.01;
    difference.hidden=!different;if(different)difference.textContent='금액 목표와 배분 합계가 달라요. 생활비는 목표 배분 기준입니다.';
    $('fmOverview-strategy').textContent=state.mode==='detail'?(state.detail?.text||'종목별 장기 비교 · 조건 확인 후 계산'):'배당·자산 매도 비교 · 저장 계획에 미반영';
@@ -134,7 +134,7 @@ try{
   $('fmSaveExperiment').onclick=()=>{const button=$('rpSave'),scope=button.dataset.scope;button.dataset.scope='experiment';button.onclick();button.dataset.scope=scope};
   $('fmCancelExperiment').onclick=()=>{document.dispatchEvent(new CustomEvent('fm-retirement-cancel',{detail:{scope:'experiment'}}));advanced.open=false};
   document.addEventListener('fm-retirement-saved',e=>{if(e.detail?.scope==='experiment'){advanced.open=false;requestAnimationFrame(()=>$('fmLifeScenario').scrollIntoView({block:'start',behavior:'instant'}))}});
-  const updateExpense=()=>{const value=$('rpMonthly').value.trim(),saved=window.fmFireViewState?.plan?.lifeMonthly,dirty=value===''||Number(value.replace(/,/g,''))!==saved;draftStatus.textContent=dirty?'월 생활비 수정 중 · 저장 전 결과는 유지됩니다':'저장된 월 생활비 · 목표 배분과 실험에 공통 적용';if($('view-firelife').classList.contains('active'))$('rpSave').disabled=!dirty};
+  const updateExpense=()=>{const value=$('rpMonthly').value.trim(),saved=window.fmFireViewState?.plan?.lifeMonthly,dirty=value===''||Number(value.replace(/,/g,''))!==saved;draftStatus.textContent=dirty?'월 생활비 수정 중 · 저장 전 결과는 유지됩니다':'';if($('view-firelife').classList.contains('active'))$('rpSave').disabled=!dirty};
   $('rpMonthly').addEventListener('input',updateExpense);conditions.addEventListener('toggle',updateExpense);
   const originalFireSync=window.fmSyncFireScreens;window.fmSyncFireScreens=view=>{originalFireSync?.(view);if(view==='firelife')updateExpense();else $('rpSave').disabled=false};
   // The income form remains a separate atomic save, with no overlapping expense fields.
@@ -144,7 +144,7 @@ try{
    $('fmCancelDividendRates').textContent=dirty?'변경 취소':'닫기';
    editor.querySelector('summary').textContent='배당률·세금·보험료 수정';
    let notice=$('fmIncomeDraftStatus');if(!notice){notice=document.createElement('p');notice.id='fmIncomeDraftStatus';notice.className='mini';notice.setAttribute('role','status');editor.querySelector('summary').after(notice)}
-   notice.textContent=dirty?'수입 가정 수정 중 · 저장 전 결과는 유지됩니다':'종목별 수입 가정만 저장합니다. 월 생활비는 아래에서 수정해요.';
+   notice.textContent=dirty?'수입 가정 수정 중 · 저장 전 결과는 유지됩니다':'';
   };
   income.addEventListener('input',updateIncome);income.addEventListener('click',()=>queueMicrotask(updateIncome));
   new MutationObserver(updateIncome).observe(income,{childList:true});updateIncome();
@@ -153,7 +153,7 @@ try{
    const state=window.fmFireViewState||{},forecast=state.forecast;
    const months=forecast?.baselineMonthsToGoal;
    if(months===null)eta.textContent='저장된 조건으로 100년 내 목표 미도달';
-   else if(Number.isInteger(months)){const now=new Date(),date=new Date(now.getFullYear(),now.getMonth()+months,1);eta.textContent=months===0?'금액 목표 달성 · 생활비와 위험은 별도 점검':date.getFullYear()+'년 '+(date.getMonth()+1)+'월 예상 · 저장 계획 기준';}
+   else if(Number.isInteger(months)){const now=new Date(),date=new Date(now.getFullYear(),now.getMonth()+months,1);eta.textContent=months===0?'금액 목표 달성 · 생활비와 위험은 별도 점검':date.getFullYear()+'년 '+(date.getMonth()+1)+'월 도달 예상';}
    if(state.portfolio){
     const p=state.portfolio;portfolioValue.querySelector('strong').textContent=p.totalTarget>0?(p.gap>0?compactMoney(p.gap)+' 부족':'목표 배분 충족'):'목표 배분 미설정';
     portfolioValue.querySelector('small').textContent='';
@@ -459,7 +459,7 @@ try{
   const box=document.createElement('details');box.id='fmHealthCalc';box.className='card';
   const field=(id,label,hint,val,step)=>'<label for="fmHc-'+id+'">'+label+(hint?'<small>'+hint+'</small>':'')+'</label><input id="fmHc-'+id+'" inputmode="decimal" autocomplete="off" value="'+val+'"'+(step?' step="'+step+'"':'')+'>';
   box.innerHTML='<summary>🏥 은퇴 후 건강보험료 계산기</summary>'+
-   '<p class="fm-hc-note" style="margin-top:0">회사를 그만두면 지역가입자가 돼요. 소득과 재산으로 보험료가 정해져요. 금액은 만원 단위로 넣어 주세요.</p>'+
+   '<p class="fm-hc-note fm-why" style="margin-top:0">회사를 그만두면 지역가입자가 돼요. 소득과 재산으로 보험료가 정해져요. 금액은 만원 단위로 넣어 주세요.</p>'+
    '<div class="fm-hc-grid">'+
    field('finance','배당·이자 (연, 만원)','연 1,000만 원 이하면 반영 안 돼요',v.finance)+
    field('pension','공적연금 (연, 만원)','국민연금 등 · 50%만 반영',v.pension)+
@@ -470,7 +470,7 @@ try{
    '</div><div class="fm-hc-result" id="fmHcResult" aria-live="polite"></div>'+
    '<div class="fm-hc-actions"><button type="button" class="secondary" id="fmHcFill">배당 금액 채우기</button><button type="button" class="primary" id="fmHcApply">생활비 계산에 넣기</button></div>'+
    '<div class="fm-hc-actions" style="grid-template-columns:1fr"><a class="secondary" href="https://www.nhis.or.kr" target="_blank" rel="noopener" style="border:1px solid var(--line);border-radius:12px;text-decoration:none;color:var(--txt)">재산분은 건강보험공단 ‘보험료 모의계산’에서 확인 ↗</a></div>'+
-   '<p class="fm-hc-note">추정치예요. 실제 보험료는 공단이 매년 11월 전년도 소득으로 다시 정해요. 연 소득 합계가 2,000만 원 이하이고 재산 요건을 맞추면 가족의 피부양자가 돼 보험료가 없을 수 있어요.</p>';
+   '<p class="fm-hc-note fm-why">추정치예요. 실제 보험료는 공단이 매년 11월 전년도 소득으로 다시 정해요. 연 소득 합계가 2,000만 원 이하이고 재산 요건을 맞추면 가족의 피부양자가 돼 보험료가 없을 수 있어요.</p>';
   const anchor=host.querySelector(':scope>.card');if(anchor)anchor.after(box);else host.append(box);
   const $=id=>box.querySelector('#fmHc-'+id);
   const num=id=>{const n=Number(String($(id).value).replace(/[^\d.]/g,''));return Number.isFinite(n)&&n>0?n:0};
@@ -522,7 +522,7 @@ try{
   const $=id=>document.getElementById(id);
   const statusLine=document.createElement('p');statusLine.id='fmPersistStatus';
   $('fmBackupStatus')?.after(statusLine);
-  const showPersist=async()=>{try{const kept=await navigator.storage?.persisted?.();statusLine.textContent=kept===true?'🔒 저장 보호 켜짐 · 휴대폰이 공간 정리로 지우지 않아요':kept===false?'저장 보호 꺼짐 · 홈 화면에 설치하면 켜질 수 있어요. 백업을 꼭 해 두세요':''}catch{statusLine.textContent=''}};
+  const showPersist=async()=>{try{const kept=await navigator.storage?.persisted?.();statusLine.textContent=kept===true?'🔒 저장 보호 켜짐':kept===false?'저장 보호 꺼짐 · 백업해 두세요':''}catch{statusLine.textContent=''}};
   (async()=>{try{if(navigator.storage?.persist&&!(await navigator.storage.persisted()))await navigator.storage.persist()}catch{}showPersist()})();
   $('settingsBottom')?.addEventListener('click',showPersist);
   const LISTS={expense:['식비','카페·간식','주거·관리비','교통','쇼핑','의료·건강','문화·취미','통신·구독','여행'],income:['급여','상여금','부수입','배당·이자']};

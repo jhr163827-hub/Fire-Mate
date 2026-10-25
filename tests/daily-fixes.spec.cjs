@@ -166,8 +166,25 @@ test('a 내계좌이체 going out to an untracked own account counts as investin
  await expect.poll(async()=>(await saved(page)).tx.length).toBe(10);
  const plan=await page.evaluate(()=>document.getElementById('fmHomePlanRows').textContent);
  expect(plan).toContain('💰 투자300만 / 300만');
- expect(plan).toContain('🐷 비상금45만 / 50만');
+ expect(plan).toContain('10/23 토스뱅크 통장 → 증권계좌 ₩1,700,000');
+ expect(plan).toContain('🐷 비상금 꺼냄 5만50만 / 50만');
  expect(plan).toContain('10/23 비상금 −₩50,000');
+});
+
+test('one payment BankSalad records twice (간편결제 + 머니) is imported once, and old copies are cleaned up once with a backup',async({page})=>{
+ const d=ago(1),row=(time,payment,memo='주식회사 놀유니버스',amount=-60000)=>[d,time,'지출','여행/숙박','',memo,amount,'KRW',payment];
+ const key=(time,payment)=>[d,time,'expense','여행/숙박','','주식회사 놀유니버스',60000,payment].join('|');
+ // An earlier import stored both records of one payment.
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'a',date:d,type:'expense',category:'여행',amount:60000,memo:'주식회사 놀유니버스',bankExcelKey:key('17:04:11','카카오페이 간편결제')},{id:'b',date:d,type:'expense',category:'여행',amount:60000,memo:'주식회사 놀유니버스',bankExcelKey:key('17:04:11','카카오페이 머니')}]});
+ await page.goto('/index.html');
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id)).toEqual(['a']);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dup_backup_v1')).map(t=>t.id))).toEqual(['b']);
+ // A new pair in a file comes in once; two separate rides at different times both count.
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([row('13:44:10','카카오페이 머니','숙소',-40000),row('13:44:10','카카오페이 간편결제','숙소',-40000),row('11:06:38','카카오페이 간편결제','택시',-6700),row('11:17:53','카카오페이 간편결제','택시',-6700)])});
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='숙소').length).toBe(1);
+ expect((await saved(page)).tx.filter(t=>t.memo==='택시').length).toBe(2);
 });
 
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{

@@ -2418,3 +2418,7 @@ html body #view-home #fmHomePlanRows>div.ok span:last-child{color:var(--green);f
 html body #view-home #fmHomePlanRows>div.ok span:last-child::after{content:' ✓'}
 html body #view-home #fmHomePlanRows>div.over span:last-child{color:var(--up);font-weight:700}
 html body #view-home #fmHomePlanRows p{margin:6px 0 0;font-size:13px;font-weight:700;color:var(--green)}
+html body .fm-pl-row{display:grid;grid-template-columns:72px 1fr 76px;gap:8px;align-items:center;min-height:40px;border-bottom:1px solid var(--line);font-size:14px;font-variant-numeric:tabular-nums}
+html body .fm-pl-row>:not(:first-child){text-align:right}
+html body .fm-pl-row:last-of-type{border-bottom:0}
+html body .fm-pl-head{min-height:30px;font-size:12px;color:var(--sub)}

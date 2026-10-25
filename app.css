@@ -2371,3 +2371,5 @@ html body #view-assets .fm-div-col.est .fm-div-bar{opacity:.4}
 html body #view-assets .fm-div-col.est small:first-child{color:var(--sub)}
 html body #view-home .fm-home-budget{position:relative}
 html body #view-home #fmPayDay{position:absolute;top:16px;right:18px;padding:3px 10px;border-radius:999px;background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700}
+html body #view-insights .two>.stat[hidden]{display:none}
+html body #view-insights .two:has(>.stat[hidden])>.stat{grid-column:1/-1}

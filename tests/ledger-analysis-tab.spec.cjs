@@ -35,8 +35,8 @@ test('소비 분석 keeps the key cards open and folds the rest; empty compariso
  await expect(page.locator('#fmInsightsMore')).not.toHaveAttribute('open','');
  await expect(page.locator('#fmCatBudgetEdit')).toBeVisible();
  await expect(page.locator('#coach')).toBeHidden();
- await expect(page.locator('#monthDelta')).toHaveText('비교 불가');
- await expect(page.locator('#monthDelta')).not.toHaveClass(/red|green/);
+ // No last-month spending to compare: the card steps aside and 하루 평균 takes the row.
+ await expect(page.locator('#monthDelta')).toBeHidden();
  await expect(page.locator('#sixChart .fm-six-amount').first()).toHaveText('');
  await page.locator('#fmInsightsMore>summary').click();
  await expect(page.locator('#fmInsightsBudgetLink')).toHaveText('가계부에서 예산 수정 ›');

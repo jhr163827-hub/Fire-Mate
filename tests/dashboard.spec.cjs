@@ -95,3 +95,10 @@ test('home shows days to payday: the 25th, or the Friday before when it falls on
  await page.clock.setFixedTime(new Date(2026,9,24,9,0));await page.reload();// next: 11/25 (Wed)
  await expect(page.locator('#fmPayDay')).toHaveText('💼 월급 D-32');
 });
+
+test('ledger calendar marks payday with 💼 (Friday before when the 25th is a weekend)',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,20,9,0));
+ await page.goto('/index.html');await page.evaluate(()=>window.fmGo('calendar'));
+ await expect(page.locator('.day[data-date="2026-10-23"] .num')).toContainText('💼');
+ await expect(page.locator('.day[data-date="2026-10-25"] .num')).not.toContainText('💼');
+});

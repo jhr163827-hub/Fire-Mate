@@ -70,8 +70,8 @@ test('월간 결산 splits the net worth change into savings and investment/othe
  await load(page,seed({accounts:[],balance:{fx:1400,cash:11500000,other:0,debt:0},tx:[{id:'i',date:ym+'-01',type:'income',category:'급여',amount:3000000},{id:'e',date:ym+'-01',type:'expense',category:'식비',amount:1000000}],dailySnapshots:[{day:prevDay,amount:10000000,recordedAt:prevDay+'T12:00:00Z'},{day:ym+'-01',amount:11500000,recordedAt:ym+'-01T12:00:00Z'}]}));
  await page.locator('#fmMonthlyOpen').click();
  const split=page.locator('.fm-monthly-split');
- await expect(split).toContainText('저축 +2,000,000원');
- await expect(split).toContainText('투자·기타 -500,000원');
+ await expect(split).toContainText('저축 +₩2,000,000');
+ await expect(split).toContainText('투자·기타 −₩500,000');
 });
 
 test('FIRE shows this month\'s actual savings against the plan',async({page})=>{

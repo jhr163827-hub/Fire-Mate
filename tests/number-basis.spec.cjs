@@ -121,15 +121,21 @@ test('FIRE counts this month\'s transfers to brokers and exchanges against the i
  await expect(page.locator('#fmFireInvest')).toHaveText('📤 투자로 보낸 돈 ₩1,500,000 · 계획 300만의 50%');
 });
 
-test('home month plan checks investing, 청약, bills and savings off the ledger and shows what living money is left for ISA',async({page})=>{
- const m=new Date().toISOString().slice(0,7),x=(id,type,amount,memo,category='계좌 이체')=>({id,date:m+'-02',type,category,amount,memo});
- await load(page,seed({tx:[x('a','transfer',2000000,'NH투자증권'),x('b','transfer',1000000,'삼성증권'),x('c','transfer',30000,'762907**47 ,2609-117회차'),x('d','expense',100000,'삼성화재 보험료','기타'),x('e','expense',70000,'SKT 통신요금','통신·구독'),x('f','transfer',400000,'카카오뱅크'),x('g','expense',500000,'김밥천국','식비')]}));
- await expect(page.locator('#fmHomePlanSum')).toHaveText('📋 이번 달 계획 4/5 · 생활비 30만원 남음');
+test('home plan follows the payday cycle and checks investing, 청약, bills and savings off the ledger',async({page})=>{
+ // 2026-10-25 is a Sunday, so October's payday is Fri 10/23 and the cycle runs to Wed 11/25.
+ await page.clock.setFixedTime(new Date(2026,9,28,9,0));
+ const x=(id,type,amount,memo,category='계좌 이체')=>({id,date:'2026-10-26',type,category,amount,memo});
+ await load(page,seed({tx:[x('a','transfer',2000000,'NH투자증권'),x('b','transfer',1000000,'삼성증권'),x('c','transfer',30000,'762907**47 ,2609-117회차'),x('d','expense',100000,'삼성화재 보험료','기타'),x('e','expense',70000,'SKT 통신요금','통신·구독'),x('f','transfer',400000,'카카오뱅크'),x('g','expense',500000,'김밥천국','식비'),{id:'old',date:'2026-10-22',type:'expense',category:'식비',amount:900000,memo:'지난 주기'}]}));
+ await expect(page.locator('#fmHomePlanSum')).toHaveText('📋 월급 주기 계획 4/5 · 생활비 30만원 남음');
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
- await expect(rows.locator('div.ok')).toHaveCount(5);// 투자 300만, 청약, 보험, 핸드폰 + 생활비 under plan; 비상금 40/50 not yet
+ await expect(rows.locator('summary.ok, div.ok')).toHaveCount(5);// 투자 300만, 청약, 보험, 핸드폰 + 생활비 under plan; 비상금 40/50 not yet
  await expect(rows).toContainText('🐷 비상금40만 / 50만');
+ // Each line lists the transactions it counted.
+ await rows.locator('summary',{hasText:'비상금'}).click();
+ await expect(rows).toContainText('10/26 카카오뱅크 ₩400,000');
  await expect(rows).toContainText('남은 30만원은 ISA로 💪');
+ await expect(rows).toContainText('10/23 월급 ~ 11/25 월급 전');
 });
 
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{

@@ -453,6 +453,141 @@ function ok(name) {
     "both evolution previews, affordability, cancel, duplicate confirm, attacks, field save/resume, sell and reset",
   );
 
+  await page.evaluate(() => {
+    const g = new moonward.Game(19);
+    g.s.gold = 1000;
+    g.summon(0, "archer").tier = 2;
+    g.summon(1, "archer");
+    g.s.gold = 180;
+    moonward.setGame(g);
+    moonward.pause(true);
+    moonward.save();
+  });
+  await page.click("#guide");
+  const guideState = await page.evaluate(() => moonward.game.serialize());
+  assert.match(await page.textContent(".guideProgress"), /1성 1명 더 필요/);
+  assert.equal(await page.textContent(".guideCost strong"), "315");
+  await page.click('[data-guide-kind="ember"]');
+  assert.equal(await page.textContent(".guideCost strong"), "585");
+  await page.click('[data-guide-mode="rules"]');
+  assert.match(await page.textContent("#guideScroll"), /11회 연속/);
+  await page.click('[data-guide-mode="evolution"]');
+  await page.click('[data-guide-kind="archer"]');
+  assert.equal(
+    await page.evaluate(() => moonward.game.serialize()),
+    guideState,
+  );
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 844, height: 390 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.locator("#guideScroll").evaluate((e) => (e.scrollTop = 0));
+    const bounds = await page.evaluate(() => {
+      const b = document.querySelector("#closeDialog").getBoundingClientRect();
+      return {
+        bottom: b.bottom,
+        top: b.top,
+        height: b.height,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+        controls: [
+          ...document.querySelectorAll(".guideNav button,.guideKinds button"),
+        ].map((e) => ({
+          w: e.getBoundingClientRect().width,
+          h: e.getBoundingClientRect().height,
+        })),
+      };
+    });
+    assert.ok(
+      bounds.top >= 0 &&
+        bounds.bottom <= viewport.height &&
+        bounds.height >= 44 &&
+        !bounds.overflow,
+      JSON.stringify(bounds),
+    );
+    assert.ok(bounds.controls.every((b) => b.w >= 44 && b.h >= 44));
+    if (viewport.width < 400)
+      await page.screenshot({
+        path: path.join(out, `guide-${viewport.width}.jpg`),
+        type: "jpeg",
+        quality: 85,
+        fullPage: true,
+      });
+    if (viewport.width === 320) {
+      await page.locator(".guideProgress").scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: path.join(out, "guide-progress-320.jpg"),
+        type: "jpeg",
+        quality: 85,
+        fullPage: true,
+      });
+      assert.ok(await page.locator("#closeDialog").isVisible());
+      assert.ok(
+        await page
+          .locator("#guideScroll")
+          .evaluate((e) => e.scrollWidth <= e.clientWidth),
+      );
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.click("#guideSelect");
+  assert.equal(await page.locator("#dialog").evaluate((e) => e.open), false);
+  assert.match(await page.textContent("#selection"), /달빛 궁수/);
+  assert.equal(
+    await page.evaluate(() => moonward.game.serialize()),
+    guideState,
+  );
+  await page.reload();
+  await page.waitForFunction(() => window.moonward);
+  await page.click("#resume");
+  await page.click("#guide");
+  assert.equal(await page.textContent(".guideCost strong"), "315");
+  await page.click("#closeDialog");
+  ok(
+    "evolution guide: both recipes, exact owned-material cost, rules, no mutation, reload and small/landscape controls",
+  );
+  await page.evaluate(() => {
+    const g = new moonward.Game(23);
+    g.s.gold = 1000;
+    g.summon(0, "archer").tier = 3;
+    g.s.gold = 199;
+    moonward.setGame(g);
+    moonward.pause(true);
+  });
+  await page.click("#guide");
+  await page.click("#guideSelect");
+  assert.equal(await page.locator("#confirmEvolve").isDisabled(), true);
+  assert.equal(
+    await page
+      .locator("#dialog")
+      .evaluate((e) => e.classList.contains("guideDialog")),
+    false,
+  );
+  await page.click("#closeDialog");
+  await page.evaluate(() => {
+    moonward.game.s.gold = 200;
+  });
+  await page.click("#guide");
+  await page.click("#guideSelect");
+  assert.equal(await page.evaluate(() => moonward.game.s.gold), 200);
+  await page.click("#confirmEvolve");
+  await page.click("#guide");
+  assert.match(await page.textContent(".guideProgress"), /이번 판 진화 완료/);
+  assert.equal(await page.evaluate(() => moonward.game.s.gold), 0);
+  await page.click("#closeDialog");
+  await page.click("#start");
+  await page.click("#guide");
+  const guideTick = await page.evaluate(() => moonward.game.s.tick);
+  await page.waitForTimeout(180);
+  assert.equal(await page.evaluate(() => moonward.game.s.tick), guideTick);
+  await page.click("#closeDialog");
+  await page.waitForTimeout(100);
+  assert.ok((await page.evaluate(() => moonward.game.s.tick)) > guideTick);
+  ok(
+    "guide links to explicit evolution confirmation, respects insufficient gold, shows completion and pauses battle",
+  );
+
   await page.evaluate(async () => {
     const { manage } = await import("./tests/simulate.mjs");
     let g = new moonward.Game(7);

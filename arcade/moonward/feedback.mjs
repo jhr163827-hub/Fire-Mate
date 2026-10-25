@@ -1,4 +1,4 @@
-import { PADS, TYPES, waveSpec, RULES, BOSSES } from "./data.mjs";
+import { PADS, TYPES, waveSpec, RULES, BOSSES, EVOLUTIONS } from "./data.mjs";
 
 export function supported(units, unit) {
   return units.some(
@@ -99,4 +99,40 @@ export function debrief(s) {
   if (s.gold >= RULES.choice)
     tip += ` 남은 ${s.gold} 조각은 지정 소환에 쓸 수 있었어요.`;
   return { fact, tip };
+}
+
+// A deterministic plan using guaranteed 1-star summons; random summons can cost less.
+// Existing units are never reserved, consumed or moved by this read-only calculation.
+export function evolutionPlan(s, kind) {
+  const rule = EVOLUTIONS[kind];
+  if (!rule) return null;
+  const owned = s.units.filter((u) => u.kind === kind);
+  const complete = owned.some((u) => u.evolved);
+  const counts = [1, 2, 3].map(
+    (t) => owned.filter((u) => u.tier === t && !u.evolved).length,
+  );
+  const candidate = [...owned].sort(
+    (a, b) =>
+      Number(!!b.evolved) - Number(!!a.evolved) ||
+      b.tier - a.tier ||
+      a.pad - b.pad,
+  )[0];
+  const missing =
+    complete || counts[2] ? 0 : Math.max(0, 4 - counts[0] - counts[1] * 2);
+  const merges =
+    complete || counts[2] ? 0 : counts[1] >= 2 ? 1 : counts[1] === 1 ? 2 : 3;
+  const cost = complete
+    ? 0
+    : missing * RULES.choice + merges * RULES.mergeCost + rule.cost;
+  return {
+    complete,
+    counts,
+    missing,
+    merges,
+    cost,
+    shortfall: Math.max(0, cost - s.gold),
+    candidate: candidate?.id ?? null,
+    ready: !complete && counts[2] > 0,
+    full: s.units.length >= PADS.length,
+  };
 }

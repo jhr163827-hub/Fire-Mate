@@ -1,0 +1,42 @@
+{
+  "checks": [
+    "first summon and battle through real controls",
+    "pause, audio, reduced effects and speed controls",
+    "merge preview and explicit material selection",
+    "move/swap and cancel/confirm sell",
+    "guaranteed-role summon",
+    "save/reload twice preserves waiting resume and financial sentinel",
+    "full 18-wave browser-engine run, boss, victory and retry",
+    "loss explanation and clean restart",
+    "scouting pauses rest, preview matches boss, support rate, choice and evidence-based retry",
+    "restart is explicit and cancellable",
+    "boss blessing offer, freeze, pending reload, mobile preview, explicit choice, duplicate callback and reset",
+    "both evolution previews, affordability, cancel, duplicate confirm, attacks, field save/resume, sell and reset",
+    "evolution guide: both recipes, exact owned-material cost, rules, no mutation, reload and small/landscape controls",
+    "guide links to explicit evolution confirmation, respects insufficient gold, shows completion and pauses battle",
+    "320/360/375/390/430/768 widths, no horizontal overflow, 44px controls",
+    "landscape rotation and scrollable guide dialog",
+    "three boss patterns: live scouting, telegraphs, summon cap, rage and save/resume",
+    "30/60/100-enemy render benchmark (headless desktop only)",
+    "bounded effect queues",
+    "simulated visibility hide stops ticks and return requires resume",
+    "simulated pagehide disposes renderer and bfcache pageshow resumes safely",
+    "corrupt storage fails safely to fresh session",
+    "no uncaught browser errors"
+  ],
+  "errors": [],
+  "performance": {
+    "30": {
+      "median": 0.29999999998835847,
+      "p95": 0.40000000002328306
+    },
+    "60": {
+      "median": 0.30000000004656613,
+      "p95": 0.5
+    },
+    "100": {
+      "median": 0.5999999999767169,
+      "p95": 1
+    }
+  }
+}

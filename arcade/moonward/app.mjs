@@ -1,4 +1,10 @@
-import { supported, forecast, coaching, debrief } from "./feedback.mjs";
+import {
+  supported,
+  forecast,
+  coaching,
+  debrief,
+  evolutionPlan,
+} from "./feedback.mjs";
 import { Game } from "./engine.mjs";
 import {
   RULES,
@@ -109,7 +115,7 @@ function tone(freq = 440, duration = 0.06) {
 }
 function modal(html, closable = true) {
   paused = true;
-  dialog.classList.remove("boonDialog");
+  dialog.classList.remove("boonDialog", "guideDialog");
   $("#dialogBody").innerHTML = html;
   $("#closeDialog").hidden = !closable;
   if (!dialog.open) dialog.showModal();
@@ -298,15 +304,85 @@ $("#sell").onclick = () => {
     update();
   };
 };
-$("#guide").onclick = () =>
+
+function guide(
+  kind = EVOLUTIONS[unit()?.kind] ? unit().kind : "archer",
+  mode = "evolution",
+) {
+  const s = game.s,
+    rule = EVOLUTIONS[kind],
+    plan = evolutionPlan(s, kind);
+  const nav = `<h2>수호자 도감</h2><div class="guideNav" role="group" aria-label="도감 분류"><button data-guide-mode="evolution" aria-pressed="${mode === "evolution"}">진화 조합</button><button data-guide-mode="rules" aria-pressed="${mode === "rules"}">수호자·규칙</button></div>`;
+  const rules =
+    `<p>첫 소환은 궁수입니다. 네 번째 랜덤 소환마다 없는 역할을 우선 보장합니다. 랜덤 소환의 2성 확률은 4%, 11회 연속 2성이 없으면 다음은 2성 보장입니다. 지정 소환은 1성입니다.</p>` +
+    KEYS.map(
+      (k) =>
+        `<div class="choice"><img src="${sprites[k].src}" alt=""><p><b style="color:${TYPES[k].color}">${TYPES[k].name}</b><br>${TYPES[k].desc}</p></div>`,
+    ).join("") +
+    `<p>같은 종류·등급 2명과 ${RULES.mergeCost} 조각으로 합성합니다. 1성 4명 → 2성 2명 → 3성 1명. 한 번 합성할 때 공격력·독 피해는 2.55배가 됩니다.</p><p>적이 성문에 도착하면 생명 −1, 보스는 −5. 6·12·18웨이브에 보스가 등장하며 성문을 지켜 18웨이브를 마치면 승리합니다. 별종 가속은 중첩되지 않고 독은 가장 강한 피해로 갱신됩니다.</p>`;
+  const selection = `<div class="guideKinds" role="group" aria-label="진화 종류">${Object.keys(
+    EVOLUTIONS,
+  )
+    .map(
+      (k) =>
+        `<button data-guide-kind="${k}" aria-pressed="${k === kind}"><img src="${sprites[EVOLUTIONS[k].art].src}" alt=""><span>${k === "archer" ? "관통궁" : "잔불"} 조합</span></button>`,
+    )
+    .join("")}</div>`;
+  const progress = plan.complete
+    ? `<b>이번 판 진화 완료</b><p>새 판에서는 다시 조합합니다. 다른 역할을 보강해 남은 웨이브에 대비하세요.</p>`
+    : `<b>${plan.ready ? (s.gold >= rule.cost ? "3성 준비 완료 · 진화 가능" : "3성 준비 완료 · 조각을 모으세요") : plan.missing ? `1성 ${plan.missing}명 더 필요 · 합성 ${plan.merges}회 남음` : `재료 준비 완료 · 합성 ${plan.merges}회 남음`}</b><p>보유: 1성 ${plan.counts[0]}명 · 2성 ${plan.counts[1]}명 · 3성 ${plan.counts[2]}명</p><div class="guideCost"><span>앞으로 필요한 조각</span><strong>${plan.cost}</strong></div><p>${plan.missing ? `지정 소환 ${plan.missing}회 × ${RULES.choice} + ` : ""}${plan.merges ? `합성 ${plan.merges}회 × ${RULES.mergeCost} + ` : ""}진화 ${rule.cost}<br>보유 ${s.gold} · ${plan.shortfall ? `${plan.shortfall} 조각 더 필요` : "필요 조각 확보"}</p><small>지정 소환으로 부족한 1성을 채우는 기준입니다. 랜덤 소환 결과에 따라 실제 비용은 달라집니다.${plan.full && plan.missing ? " 제단이 가득 찼어요. 합성·판매로 빈자리를 먼저 만드세요." : ""}</small>`;
+  const synergy =
+    kind === "archer"
+      ? "서리로 적을 모으고, 별종의 가속을 받는 자리에 배치하세요. 직선 구간을 길게 바라볼수록 관통을 활용하기 좋아요. 보스 단독 상대에는 가시를 보완하세요."
+      : "서리가 불꽃 위에 적을 붙잡아 주면 지속 피해를 더 줍니다. 길이 꺾이는 밀집 구간에 배치하세요. 잔불을 여러 개 겹쳐도 피해는 중첩되지 않아요.";
   modal(
-    "<h2>수호자 도감</h2><p>첫 소환은 궁수입니다. 랜덤 소환 네 번째마다 없는 역할을 우선 보장합니다. 랜덤 소환은 4% 확률로 2성입니다. 11회 연속 2성이 없으면 다음 랜덤 소환은 2성 보장. 지정 소환은 1성입니다. 같은 종류·등급 2명과 15 조각으로 합성하세요.</p>" +
-      KEYS.map(
-        (k) =>
-          `<div class="choice"><img src="${sprites[k].src}" alt=""><p><b style="color:${TYPES[k].color}">${TYPES[k].name}</b><br>${TYPES[k].desc}</p></div>`,
-      ).join("") +
-      "<p>3성 궁수·잿불은 선택 후 진화 버튼에서 최종 진화를 미리 볼 수 있어요. 각 200 조각이 필요하며 새 판에서는 초기화됩니다.</p><p>적이 성문에 도착하면 생명 −1, 보스는 −5. 6·12·18 웨이브에 보스가 등장합니다. 18 웨이브를 지키면 승리합니다.<br>별종의 가속은 중첩되지 않고 독은 가장 강한 피해로 갱신됩니다.</p>",
+    nav +
+      `<div id="guideScroll">` +
+      (mode === "rules"
+        ? rules
+        : selection +
+          `<h3>${rule.name}</h3><div class="evolutionPortrait"><img src="${sprites[kind].src}" alt="진화 전 ${TYPES[kind].name}"><span aria-hidden="true">→</span><img src="${sprites[rule.art].src}" alt="진화 후 ${rule.name}"></div><p><b>${rule.desc}</b></p><p class="guideRecipe">1성 4명 → 2성 2명 → 3성 1명 → 진화</p><section class="guideProgress" aria-label="현재 조합 진행">${progress}</section><h4>함께 쓰면 좋아요</h4><p>${synergy}</p><details><summary>진화 효과 자세히</summary><p>${rule.detail}</p><p>3성·위치·축복은 유지됩니다. 판매하면 진화 비용은 돌려받지 못합니다.</p></details>${plan.candidate !== null && !s.result ? `<button id="guideSelect" class="primary">${plan.ready ? "3성 수호자 선택 · 진화 미리보기" : "보유 수호자 선택"}</button>` : ""}<p class="guideNote">도감은 조합 안내입니다. 소환·합성·진화는 전장에서 직접 선택해 확정하세요.</p>`) +
+      `</div>`,
   );
+  dialog.classList.add("guideDialog");
+  dialog.scrollTop = 0;
+  dialog.querySelectorAll("[data-guide-mode]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        guide(kind, b.dataset.guideMode);
+        dialog
+          .querySelector(`[data-guide-mode="${b.dataset.guideMode}"]`)
+          .focus();
+      }),
+  );
+  dialog.querySelectorAll("[data-guide-kind]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        guide(b.dataset.guideKind);
+        dialog
+          .querySelector(`[data-guide-kind="${b.dataset.guideKind}"]`)
+          .focus();
+      }),
+  );
+  if ($("#guideSelect"))
+    $("#guideSelect").onclick = () => {
+      const target = game.s.units.find((u) => u.id === plan.candidate);
+      if (!target || game.s.result) return;
+      selected = target.pad;
+      moving = false;
+      if (plan.ready) evolvePreview(target);
+      else {
+        close();
+        notice(
+          unitName(target) +
+            (target.evolved
+              ? " 선택 · 다른 역할을 보강해 보세요."
+              : " 선택 · 같은 종류와 등급 2명으로 합성하세요."),
+        );
+      }
+    };
+}
+$("#guide").onclick = () => guide();
 PADS.forEach(([x, y], i) => {
   let b = document.createElement("button");
   b.className = "pad";

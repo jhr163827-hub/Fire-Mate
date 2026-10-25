@@ -1,0 +1,640 @@
+[
+  {
+    "seed": 1,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 23.7,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 34.1,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 43.1,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 2,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 27,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 33.9,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 37.7,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 3,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 26.3,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 32.4,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 37.1,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 4,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 31.7,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 37.1,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 38.7,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 5,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 27.1,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 35.7,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 40.9,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 6,
+    "win": true,
+    "finalBossDefeated": false,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 24.5,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 27.8,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 48.2,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 7,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 26.1,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 35.2,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 39.9,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 8,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 29.5,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 36.2,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 37.8,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 9,
+    "win": false,
+    "finalBossDefeated": false,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 31.4,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 33.3,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 21,
+        "calls": 0,
+        "rage": false
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요"
+    ]
+  },
+  {
+    "seed": 10,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 25.2,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 40.6,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 42.3,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 11,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 33,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 37.6,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 32.7,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 12,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 27.9,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 28.9,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 45.5,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 13,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 22.3,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 33.9,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 38,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 14,
+    "win": false,
+    "finalBossDefeated": false,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 24.5,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 32.5,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 30.4,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 15,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 21.4,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 29.7,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 36.1,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 16,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 22.1,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 38,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 35.3,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 17,
+    "win": false,
+    "finalBossDefeated": false,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 21.4,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 36.2,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 19.4,
+        "calls": 0,
+        "rage": false
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요"
+    ]
+  },
+  {
+    "seed": 18,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 20.9,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 28.3,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 46.1,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 19,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 27.3,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 37.8,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 38.4,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  },
+  {
+    "seed": 20,
+    "win": true,
+    "finalBossDefeated": true,
+    "bosses": [
+      {
+        "wave": 6,
+        "age": 13.2,
+        "calls": 0,
+        "rage": false
+      },
+      {
+        "wave": 12,
+        "age": 28.5,
+        "calls": 2,
+        "rage": false
+      },
+      {
+        "wave": 18,
+        "age": 40.3,
+        "calls": 0,
+        "rage": true
+      }
+    ],
+    "cues": [
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "2초 뒤 졸개 소환 · 광역 배치",
+      "졸개 소환 · 보스 주변을 공격하세요",
+      "3초 뒤 격노 · 길 후반을 방어하세요"
+    ]
+  }
+]

@@ -125,7 +125,7 @@ test('home plan follows the payday cycle and checks investing, 청약, bills and
  // 2026-10-25 is a Sunday, so October's payday is Fri 10/23 and the cycle runs to Wed 11/25.
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  const x=(id,type,amount,memo,category='계좌 이체')=>({id,date:'2026-10-26',type,category,amount,memo});
- await load(page,seed({tx:[x('a','transfer',2000000,'NH투자증권'),x('b','transfer',1000000,'삼성증권'),x('c','transfer',30000,'762907**47 ,2609-117회차'),x('d','expense',100000,'삼성화재 보험료','기타'),x('e','expense',70000,'SKT 통신요금','통신·구독'),x('f','transfer',400000,'카카오뱅크'),x('g','expense',500000,'김밥천국','식비'),{id:'old',date:'2026-10-22',type:'expense',category:'식비',amount:900000,memo:'지난 주기'}]}));
+ await load(page,seed({tx:[x('a','transfer',2000000,'NH투자증권'),x('b','transfer',1000000,'삼성증권'),x('c','transfer',30000,'762907**47 ,2609-117회차'),x('d','expense',100000,'삼성화재 보험료','기타'),x('e','expense',70000,'SKT 통신요금','통신·구독'),x('f','transfer',400000,'세이프박스에 보관'),x('g','expense',500000,'김밥천국','식비'),{id:'old',date:'2026-10-22',type:'expense',category:'식비',amount:900000,memo:'지난 주기'}]}));
  await expect(page.locator('#fmHomePlanSum')).toHaveText('📋 월급 주기 계획 4/5 · 생활비 30만원 남음');
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
@@ -133,7 +133,7 @@ test('home plan follows the payday cycle and checks investing, 청약, bills and
  await expect(rows).toContainText('🐷 비상금40만 / 50만');
  // Each line lists the transactions it counted.
  await rows.locator('summary',{hasText:'비상금'}).click();
- await expect(rows).toContainText('10/26 카카오뱅크 ₩400,000');
+ await expect(rows).toContainText('10/26 세이프박스에 보관 ₩400,000');
  await expect(rows).toContainText('남은 30만원은 ISA로 💪');
  await expect(rows).toContainText('10/23 월급 ~ 11/25 월급 전');
  // ‹ 지난 주기 shows the cycle before payday.
@@ -164,9 +164,9 @@ test('home plan counts investing by BankSalad category or account even when the 
  await expect(rows).toContainText('🛒 생활비10만 / 80만');
 });
 
-test('the payday plan is edited in settings, not on home; 토스 transfers count as 비상금',async({page})=>{
+test('the payday plan is edited in settings, not on home; 세이프박스 deposits count as 비상금',async({page})=>{
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
- await load(page,seed({tx:[{id:'a',date:'2026-10-26',type:'transfer',category:'계좌 이체',amount:100000,memo:'토스 비상금통장'}]}));
+ await load(page,seed({tx:[{id:'a',date:'2026-10-26',type:'transfer',category:'계좌 이체',amount:100000,memo:'세이프박스에 보관'}]}));
  await expect(page.locator('#fmHomePlan input')).toHaveCount(0);
  await page.locator('#settingsBottom').click();
  await page.locator('.fm-set-plan summary').click();
@@ -179,16 +179,23 @@ test('the payday plan is edited in settings, not on home; 토스 transfers count
  await expect(page.locator('#fmHomePlanRows summary.ok',{hasText:'비상금'})).toHaveText('🐷 비상금10만 / 10만');
 });
 
-test('a 내계좌이체 to one\'s own name (salary moved between own accounts) is not investing; 토스 나눠모으기 is 비상금; interest and the 청약 mirror row are not listed',async({page})=>{
+test('a 내계좌이체 to one\'s own name (salary moved between own accounts) is not investing; a 채우기 alone is not 비상금; interest and the 청약 mirror row are not listed',async({page})=>{
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  const x=(id,memo,main,sub,pay,amount,date='2026-10-23')=>({id,date,type:'transfer',category:'계좌 이체',amount,memo,bankExcelKey:[date,'10:00','transfer',main,sub,memo,amount,pay].join('|')});
- await load(page,seed({tx:[x('a','채우기','내계좌이체','미분류','토스뱅크 나눠모으기 통장',100000),x('b','홍길동','내계좌이체','미분류','토스뱅크 통장',3000000),x('c','정기이자 입금','저축','미분류','세이프박스',93,'2026-10-24'),x('d','입금 내역','미분류','미분류','주택청약종합저축',30000),x('e','카카오뱅크','이체','미분류','국민은행',400000)]}));
+ await load(page,seed({tx:[x('a','채우기','내계좌이체','미분류','토스뱅크 나눠모으기 통장',100000),x('b','홍길동','내계좌이체','미분류','토스뱅크 통장',3000000),x('c','정기이자 입금','저축','미분류','세이프박스',93,'2026-10-24'),x('d','입금 내역','미분류','미분류','주택청약종합저축',30000),x('e','세이프박스에 보관','내계좌이체','미분류','세이프박스',400000)]}));
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
  await expect(rows).toContainText('💰 투자0 / 300만');
- await expect(rows).toContainText('🐷 비상금50만 / 50만');
+ await expect(rows).toContainText('🐷 비상금40만 / 50만');
  await rows.locator('summary',{hasText:'안 잡힌 이체'}).click();
  await expect(rows.locator('.fm-plan-other p')).toHaveCount(1);
+});
+
+test('pay that lands early (추석) starts the cycle on the 급여 day',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,8,28,9,0));
+ await load(page,seed({tx:[{id:'p',date:'2026-09-23',type:'income',category:'급여',amount:4500000,memo:'급여'}]}));
+ await page.locator('#fmHomePlanSum').click();
+ await expect(page.locator('#fmHomePlanRows')).toContainText('9/23 월급 ~ 10/23 월급 전');
 });
 
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{

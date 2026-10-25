@@ -70,3 +70,13 @@ test('wallpaper and floor themes are bought once, change the room and raise the 
  expect((await read(page)).coins).toBe(0);
  await expect(page.locator('[data-theme-id="tile"]')).toBeDisabled();
 });
+test('chef levels go past Lv4 and each adds 2% to plates sold, shown on the level path',async({page})=>{
+ await open(page,{coins:500,served:300,level:5,stoves:[{recipe:2,ends:-1000},null],decor:0,growth:{version:1,xp:200}});
+ await expect(page.locator('#chefLevel')).toHaveText('셰프 Lv10');
+ await page.locator('[data-room-stove="0"]').click();
+ let seen=false;for(let t=0;t<40&&!seen;t++){await page.clock.runFor(500);seen=/레벨 \+1/.test(await page.locator('#status').textContent())}
+ expect(seen).toBe(true);
+ await page.locator('#openGoals').click();
+ await expect(page.locator('.goal-path span')).toHaveCount(10);
+ await expect(page.locator('.goal-path span').last()).toContainText('Lv10💰+12%');
+});

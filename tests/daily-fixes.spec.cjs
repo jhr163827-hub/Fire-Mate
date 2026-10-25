@@ -136,6 +136,22 @@ test('the automatic morning quote refresh does not pop a toast',async({page})=>{
  await expect(page.locator('#toast')).toBeHidden();
 });
 
+test('outgoing 이체 rows (negative) are imported, not treated as cancellations',async({page})=>{
+ const d=ago(1),row=(time,amount,memo,main,pay)=>[d,time,'이체',main,'미분류',memo,amount,'KRW',pay];
+ const rows=[row('09:00',-1000000,'삼성증권','내계좌이체','토스뱅크 통장'),row('09:01',-30000,'청약 1회차','이체','토스뱅크 통장'),row('09:02',30000,'입금 내역','미분류','주택청약종합저축')];
+ // An earlier import already stored this month's 청약 transfer; it must stay.
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'keep',date:ago(20),type:'transfer',category:'계좌 이체',amount:30000,memo:'청약 1회차'}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
+ await expect(page.locator('#bankExcelPreview')).not.toContainText('결제 취소');
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.length).toBe(4);
+ const tx=(await saved(page)).tx;
+ expect(tx.find(t=>t.memo==='삼성증권')).toMatchObject({type:'transfer',amount:1000000});
+ expect(tx.some(t=>t.id==='keep')).toBe(true);
+});
+
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{
  const d=ago(1),row=(time,amount,memo='주식회사 티머니')=>[d,time,'지출','교통','',memo,amount,'KRW','카드'];
  // 뱅크샐러드 writes 지출 as negative; the +12,700 row is the cancellation of the 08:00 charge.

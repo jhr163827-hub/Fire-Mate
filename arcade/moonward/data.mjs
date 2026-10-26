@@ -243,3 +243,13 @@ export function bossStatus(e) {
       : "월식 군주";
   return "";
 }
+
+// Presentation coordinates only: never alter simulation or saved state.
+export const projectPoint = (p, landscape) => landscape ? {x:p.y,y:p.x} : {x:p.x,y:p.y};
+export const ROLE_HINTS = {
+  archer: {title:'집중', effect:'한 적을 빠르게 공격'},
+  ember: {title:'광역', effect:'뭉친 적을 함께 공격'},
+  frost: {title:'둔화', effect:'적을 느리게 만들어 시간 확보'},
+  thorn: {title:'맹독', effect:'독으로 강적에게 지속 피해'},
+  bell: {title:'가속', effect:'주변 아군의 공격 속도 증가'},
+};

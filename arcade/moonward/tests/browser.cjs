@@ -826,6 +826,52 @@ function ok(name) {
   await page.waitForFunction(() => moonward);
   assert.equal(await page.evaluate(() => moonward.game.s.wave), 0);
   ok("corrupt storage fails safely to fresh session");
+  // Rotate the same paused match: presentation must not mutate simulation.
+  if (await page.isVisible("#fresh")) await page.click("#fresh");
+  if (await page.isVisible("#dialog")) await page.click("#closeDialog");
+  await page.evaluate(() => {
+    const g = new moonward.Game(7); g.s.gold=2000;
+    ['archer','ember','frost','thorn','bell'].forEach((k,i)=>g.summon(i,k));
+    moonward.setGame(g); moonward.pause(true);
+  });
+  const rotationState = await page.evaluate(() => JSON.stringify(moonward.game.s));
+  for(const [width,height] of [[568,320],[667,375],[844,390],[915,412],[1024,768]]) {
+    await page.setViewportSize({width,height}); await page.waitForTimeout(180);
+    const layout=await page.evaluate(() => {
+      const field=document.querySelector('#field').getBoundingClientRect();
+      const control=document.querySelector('#control').getBoundingClientRect();
+      const rects=[...document.querySelectorAll('.pad')].map(b=>b.getBoundingClientRect());
+      return {canvas:document.querySelector('canvas').width,
+        overflow:document.documentElement.scrollWidth>innerWidth || document.documentElement.scrollHeight>innerHeight,
+        side:field.right<=control.left,
+        pads:rects.every(r=>r.width>=44&&r.height>=44&&r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight),
+        overlaps:rects.some((a,i)=>rects.some((b,j)=>i<j&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top)),
+        actions:['summon','choose','move','merge','sell'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.height>=44&&r.top>=control.top&&r.bottom<=control.bottom;})};
+    });
+    assert.equal(layout.canvas,920); assert.equal(layout.overflow,false);
+    assert.ok(layout.side&&layout.pads&&layout.actions,JSON.stringify({width,height,...layout})); assert.equal(layout.overlaps,false);
+    assert.equal(await page.evaluate(()=>JSON.stringify(moonward.game.s)),rotationState);
+    if(width===568||width===844) await page.screenshot({path:path.join(out,`landscape-${width}.jpg`)});
+  }
+  await page.setViewportSize({width:844,height:390});
+  await page.click('#choose');
+  assert.match(await page.textContent('[data-kind="frost"]'),/둔화/);
+  await page.screenshot({path:path.join(out,'roles-landscape.jpg')});
+  await page.click('[data-kind="frost"]');
+  await page.evaluate(()=>moonward.pause(true));
+  assert.equal(await page.evaluate(()=>moonward.game.s.units.filter(u=>u.kind==='frost').length),2);
+  await page.click('#start');
+  await page.evaluate(()=>moonward.pause(false));
+  await page.waitForTimeout(1200);
+  await page.screenshot({path:path.join(out,'landscape-844.jpg')});
+  await page.setViewportSize({width:568,height:320}); await page.waitForTimeout(180);
+  await page.screenshot({path:path.join(out,'landscape-568.jpg')});
+  await page.evaluate(()=>moonward.pause(true));
+  const afterChoice=await page.evaluate(()=>JSON.stringify(moonward.game.s));
+  await page.setViewportSize({width:390,height:844}); await page.waitForTimeout(180);
+  assert.equal(await page.evaluate(()=>document.querySelector('canvas').width),720);
+  assert.equal(await page.evaluate(()=>JSON.stringify(moonward.game.s)),afterChoice);
+  ok('five landscape sizes: visible 44px controls, no overlapping pads, role choice and rotation state');
   assert.deepEqual(report.errors, []);
   ok("no uncaught browser errors");
   fs.writeFileSync(

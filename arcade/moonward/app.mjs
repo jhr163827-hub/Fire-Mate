@@ -1,3 +1,4 @@
+import { ROLE_HINTS, projectPoint } from "./data.mjs";
 import {
   supported,
   forecast,
@@ -217,7 +218,7 @@ $("#choose").onclick = () => {
     "<h2>필요한 역할을 선택</h2><p>85 조각 · 확정 소환으로 조합을 완성하세요.</p>" +
       KEYS.map(
         (k) =>
-          `<button class="choice" data-kind="${k}"><img src="${sprites[k].src}" alt=""><span>${TYPES[k].name}<small>${TYPES[k].role}</small></span></button>`,
+          `<button class="choice" data-kind="${k}"><img src="${sprites[k].src}" alt=""><span>${ROLE_HINTS[k].title}<small>${TYPES[k].name} · ${ROLE_HINTS[k].effect}</small></span>${roleIcon(k)}</button>`,
       ).join(""),
   );
   dialog.querySelectorAll("[data-kind]").forEach(
@@ -383,6 +384,31 @@ function guide(
     };
 }
 $("#guide").onclick = () => guide();
+function roleIcon(kind) {
+  const paths = {
+    archer: '<path d="M3 21 24 6m-9 0h9v9M5 16l4 4-5 5-2-2z"/>',
+    ember: '<path d="m16 2 3 8 8-3-4 8 7 4-9 2-2 9-5-8-8 4 3-9-7-4 9-2z"/>',
+    frost: '<path d="M16 2v28M4 9l24 14M4 23 28 9M12 5l4 4 4-4M12 27l4-4 4 4"/>',
+    thorn: '<path d="M16 2C13 10 5 15 5 21a11 9 0 0 0 22 0C27 15 19 10 16 2zM10 21c0 4 3 5 5 5"/>',
+    bell: '<path d="m3 13 7-8 7 8m-14 10 7-8 7 8m1-10 7-8 5 8m-12 10 7-8 5 8"/>',
+  };
+  return `<svg class="roleIcon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[kind]}</svg>`;
+}
+const landscapeQuery = matchMedia("(orientation: landscape) and (min-width: 560px)");
+let landscape = landscapeQuery.matches;
+const viewPoint = p => projectPoint(p, landscape);
+const viewPad = i => { const p = viewPoint({x:PADS[i][0], y:PADS[i][1]}); return [p.x,p.y]; };
+function syncLayout() {
+  landscape = landscapeQuery.matches;
+  canvas.width = landscape ? 920 : 720;
+  canvas.height = landscape ? 720 : 920;
+  document.querySelectorAll(".pad").forEach((b,i) => {
+    const [x,y] = viewPad(i);
+    b.style.left = x / (landscape ? 460 : 360) * 100 + "%";
+    b.style.top = y / (landscape ? 360 : 460) * 100 + "%";
+  });
+}
+landscapeQuery.addEventListener("change", syncLayout);
 PADS.forEach(([x, y], i) => {
   let b = document.createElement("button");
   b.className = "pad";
@@ -403,6 +429,7 @@ PADS.forEach(([x, y], i) => {
   };
   $("#pads").append(b);
 });
+syncLayout();
 $("#scout").onclick = () => {
   const s = game.s;
   const w = forecast(
@@ -457,7 +484,7 @@ function update() {
     let t = TYPES[u.kind],
       boosted = supported(s.units, u);
     $("#selection").innerHTML =
-      `<strong>${unitName(u)} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${u.evolved ? (u.kind === "archer" ? "관통 · 직선 밀집" : "광역 · 잔불 지대") : t.role} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}${u.kind === "thorn" && boonCount(s, "venom") ? " · 독 강화 " + boonCount(s, "venom") + "단계" : ""}${u.kind === "archer" && boonCount(s, "hunt") ? " · 서리 추격 " + boonCount(s, "hunt") + "단계" : ""}</span>`;
+      `<strong>${u.evolved ? (u.kind === "archer" ? "관통" : "잔불 광역") : ROLE_HINTS[u.kind].title} · ${unitName(u)} <span style="display:inline;color:${t.color}">${"★".repeat(u.tier)}</span></strong><span>${u.evolved ? (u.kind === "archer" ? "관통 · 직선 밀집" : "광역 · 잔불 지대") : ROLE_HINTS[u.kind].effect} · 공격 ${Math.round(t.damage * tierScale(u.tier))} / ${(t.interval / (boosted ? 1.25 : 1)).toFixed(2)}초${boosted ? " · 가속 +25%" : ""}${u.kind === "thorn" && boonCount(s, "venom") ? " · 독 강화 " + boonCount(s, "venom") + "단계" : ""}${u.kind === "archer" && boonCount(s, "hunt") ? " · 서리 추격 " + boonCount(s, "hunt") + "단계" : ""}</span>`;
     let pair = s.units.some(
       (v) => v.id !== u.id && v.kind === u.kind && v.tier === u.tier,
     );
@@ -472,17 +499,17 @@ function update() {
       : u.tier === 3
         ? "최고 등급"
         : "합성 · 15";
-    $("#move").textContent = moving ? "이동 취소" : "이동 / 교환";
+    $("#move").textContent = moving ? "이동 취소" : "이동·교환";
   } else
     $("#selection").innerHTML =
       `<strong>${selected + 1}번 달빛 제단</strong><span>랜덤 50 · 지정 85 / 같은 수호자 2명으로 합성</span>`;
   document.querySelectorAll(".pad").forEach((b, i) => {
     let v = s.units.find((u) => u.pad === i);
     b.classList.toggle("selected", i === selected);
-    b.innerHTML = v ? "<span>" + "★".repeat(v.tier) + "</span>" : "";
+    b.innerHTML = v ? "<span>" + "★".repeat(v.tier) + "</span><em>" + (v.evolved && v.kind === "archer" ? "관통" : ROLE_HINTS[v.kind].title) + "</em>" : "";
     b.setAttribute(
       "aria-label",
-      v ? `${i + 1}번 ${unitName(v)} ${v.tier}성` : `${i + 1}번 빈 제단`,
+      v ? `${i + 1}번 ${ROLE_HINTS[v.kind].title} ${unitName(v)} ${v.tier}성` : `${i + 1}번 빈 제단`,
     );
     b.setAttribute("aria-pressed", String(i === selected));
   });
@@ -623,18 +650,19 @@ function events() {
 }
 function strokePath() {
   ctx.beginPath();
-  PATH.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  PATH.forEach(([x, y], i) => { const p=viewPoint({x,y}); i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y); });
 }
 function render(t, dt) {
   ctx.setTransform(2, 0, 0, 2, 0, 0);
-  ctx.clearRect(0, 0, 360, 460);
-  if (bg.complete && bg.naturalWidth) ctx.drawImage(bg, 0, 0, 360, 460);
+  const w = landscape ? 460 : 360, h = landscape ? 360 : 460;
+  ctx.clearRect(0, 0, w, h);
+  if (bg.complete && bg.naturalWidth) { const scale = Math.max(w/bg.naturalWidth,h/bg.naturalHeight); ctx.drawImage(bg,(w-bg.naturalWidth*scale)/2,(h-bg.naturalHeight*scale)/2,bg.naturalWidth*scale,bg.naturalHeight*scale); }
   else {
     ctx.fillStyle = "#193332";
-    ctx.fillRect(0, 0, 360, 460);
+    ctx.fillRect(0, 0, w, h);
   }
   ctx.fillStyle = "#071b2433";
-  ctx.fillRect(0, 0, 360, 460);
+  ctx.fillRect(0, 0, w, h);
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
   strokePath();
@@ -654,6 +682,8 @@ function render(t, dt) {
   ctx.stroke();
   ctx.setLineDash([]);
   ctx.lineCap = "round";
+  ctx.save();
+  if (landscape) ctx.translate(251, -262);
   // Carved gate with warm moonstone, visually independent from the enemy sprites.
   ctx.fillStyle = "#263c46";
   ctx.fillRect(153, 428, 51, 32);
@@ -670,13 +700,16 @@ function render(t, dt) {
   ctx.beginPath();
   ctx.arc(179, 440, 18, Math.PI, 0);
   ctx.stroke();
+  ctx.restore();
   if (game.s.wave <= 1) {
     ctx.fillStyle = "#f4e2bd";
     ctx.font = "bold 11px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText("침입 →", 8, 55);
+    ctx.fillText(landscape ? "침입 ↓" : "침입 →", landscape ? 45 : 8, landscape ? 15 : 55);
     ctx.textAlign = "center";
-    ctx.fillText("성문 보호", 179, 416);
+    ctx.fillText("성문 보호", landscape ? 430 : 179, landscape ? 154 : 416);
+    ctx.save();
+    if (landscape) ctx.transform(0,1,1,0,0,0);
     ctx.strokeStyle = "#eed195";
     ctx.lineWidth = 2;
     for (const x of [26, 46]) {
@@ -686,8 +719,10 @@ function render(t, dt) {
       ctx.lineTo(x - 4, 76);
       ctx.stroke();
     }
+    ctx.restore();
   }
-  for (const f of game.s.fields) {
+  for (const original of game.s.fields) {
+    const f = {...original,...viewPoint(original)};
     ctx.save();
     const r = EVOLUTIONS.ember.radius;
     ctx.globalAlpha = Math.min(1, f.life * 2) * 0.8;
@@ -715,7 +750,7 @@ function render(t, dt) {
   }
   let sel = unit();
   if (sel) {
-    let [x, y] = PADS[sel.pad];
+    let [x, y] = viewPad(sel.pad);
     ctx.beginPath();
     ctx.arc(x, y, TYPES[sel.kind].range, 0, Math.PI * 2);
     ctx.fillStyle = TYPES[sel.kind].color + "0c";
@@ -725,7 +760,7 @@ function render(t, dt) {
     ctx.stroke();
   }
   for (let i = 0; i < PADS.length; i++) {
-    let [x, y] = PADS[i];
+    let [x, y] = viewPad(i);
     ctx.fillStyle = "#0b2026aa";
     ctx.beginPath();
     ctx.ellipse(x, y + 10, 18, 9, 0, 0, Math.PI * 2);
@@ -743,7 +778,7 @@ function render(t, dt) {
     }
   }
   if (sel?.kind === "bell") {
-    const [x, y] = PADS[sel.pad];
+    const [x, y] = viewPad(sel.pad);
     ctx.save();
     ctx.strokeStyle = "#d0b8ff88";
     ctx.lineWidth = 1;
@@ -753,7 +788,7 @@ function render(t, dt) {
     ctx.stroke();
     ctx.setLineDash([]);
     for (const v of game.s.units) {
-      const [vx, vy] = PADS[v.pad];
+      const [vx, vy] = viewPad(v.pad);
       if (v.id !== sel.id && Math.hypot(vx - x, vy - y) <= TYPES.bell.aura) {
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -764,9 +799,9 @@ function render(t, dt) {
     ctx.restore();
   }
   for (let u of game.s.units) {
-    let [x, y] = PADS[u.pad],
+    let [x, y] = viewPad(u.pad),
       bounce = reduced || paused ? 0 : Math.sin(t / 350 + u.id) * 1.2,
-      attack = shots.some((s) => s.x === x && s.y === y && s.life > 0.12);
+      attack = shots.some((s) => s.x === PADS[u.pad][0] && s.y === PADS[u.pad][1] && s.life > 0.12);
     let size = u.evolved ? 59 : 49 + (u.tier - 1) * 3;
     ctx.save();
     ctx.translate(x, y);
@@ -804,7 +839,7 @@ function render(t, dt) {
     ctx.restore();
   }
   for (let e of game.s.enemies) {
-    let p = pointAt(e.d),
+    let p = viewPoint(pointAt(e.d)),
       size = e.boss ? 60 : 32,
       bob =
         reduced || paused
@@ -845,11 +880,12 @@ function render(t, dt) {
       ctx.font = "bold 10px sans-serif";
       ctx.textAlign = "center";
       const width = ctx.measureText(label).width + 10,
-        x = Math.max(width / 2 + 2, Math.min(338 - width / 2, p.x));
+        x = Math.max(width / 2 + 2, Math.min(w - 22 - width / 2, landscape ? w/2 : p.x)),
+        labelY = landscape ? h-26 : p.y-70;
       ctx.fillStyle = "#10222fee";
-      ctx.fillRect(x - width / 2, p.y - 70, width, 17);
+      ctx.fillRect(x - width / 2, labelY, width, 17);
       ctx.fillStyle = shield ? "#9de7ff" : "#ffdaa0";
-      ctx.fillText(label, x, p.y - 58);
+      ctx.fillText(label, x, labelY+12);
       ctx.restore();
     }
     if (e.slow > 0) {
@@ -888,7 +924,9 @@ function render(t, dt) {
       );
     }
   }
-  for (let s of shots) {
+  for (let original of shots) {
+    const target = viewPoint({x:original.tx,y:original.ty});
+    const s = {...original,...viewPoint(original),tx:target.x,ty:target.y};
     if (s.evolved && s.kind === "archer") {
       ctx.save();
       ctx.globalAlpha = Math.max(0, s.life / 0.18);
@@ -908,7 +946,7 @@ function render(t, dt) {
       ctx.lineTo(s.tx - 9 * Math.cos(a + 0.45), s.ty - 9 * Math.sin(a + 0.45));
       ctx.stroke();
       ctx.restore();
-      if (!paused) s.life -= dt;
+      if (!paused) original.life -= dt;
       continue;
     }
     let k = 1 - s.life / 0.18;
@@ -937,9 +975,10 @@ function render(t, dt) {
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
-    if (!paused) s.life -= dt;
+    if (!paused) original.life -= dt;
   }
-  for (let e of effects) {
+  for (let original of effects) {
+    const e = {...original,...viewPoint(original)};
     ctx.globalAlpha = Math.max(0, e.life * 1.5);
     ctx.strokeStyle = e.color;
     ctx.lineWidth = 1.5;
@@ -966,13 +1005,13 @@ function render(t, dt) {
         );
       }
     ctx.globalAlpha = 1;
-    if (!paused) e.life -= dt;
+    if (!paused) original.life -= dt;
   }
   shots = shots.filter((s) => s.life > 0);
   effects = effects.filter((e) => e.life > 0);
   if (flash > 0) {
     ctx.fillStyle = `rgba(210,98,85,${flash})`;
-    ctx.fillRect(0, 0, 360, 460);
+    ctx.fillRect(0, 0, w, h);
     flash = Math.max(0, flash - dt);
   }
 }
@@ -1026,6 +1065,7 @@ window.addEventListener("pagehide", () => {
 window.addEventListener("pageshow", (e) => {
   if (e.persisted) {
     disposed = false;
+    syncLayout();
     last = 0;
     menu();
     raf = requestAnimationFrame(frame);

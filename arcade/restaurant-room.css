@@ -162,3 +162,7 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .room-actor[data-pose="seated"] .room-legs,.room-actor[data-pose="eating"] .room-legs{transform:none}
 .room-actor[data-pose="seated"] .room-leg-left,.room-actor[data-pose="eating"] .room-leg-left{transform:rotate(-58deg);transform-origin:-4px 2px}
 .room-actor[data-pose="seated"] .room-leg-right,.room-actor[data-pose="eating"] .room-leg-right{transform:rotate(-58deg);transform-origin:4px 2px}
+/* Seated guests look at their table: face turned toward it, near hand resting forward on the table. */
+.room-actor[data-pose="seated"] .room-face,.room-actor[data-pose="eating"] .room-face{transform:translateX(3.5px)}
+.room-actor[data-pose="seated"] .room-head,.room-actor[data-pose="eating"] .room-head{transform:rotate(5deg);transform-origin:0 -16px}
+.room-actor[data-pose="seated"] .room-serving-hand{transform:rotate(-62deg);transform-origin:9px -12px}

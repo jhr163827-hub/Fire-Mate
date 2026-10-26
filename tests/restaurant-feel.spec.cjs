@@ -39,6 +39,8 @@ test('오늘의 주문 count sales and tips and pay out once; 만두 pays for ti
  test.setTimeout(90000);// a minute of game time on the fake clock takes ~20s of real time
  await open(page,{coins:500,served:5,level:1,stoves:[{recipe:0,ends:-1000},{recipe:1,ends:-1000}],decor:0});
  // Leaving the page stamps the time, so the 2-hour gap is planted as the next page starts.
+ // Today's three orders are picked from the date; fix them so the test does not depend on the day.
+ await page.addInitScript(()=>{const d=new Date(),day=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();if(!sessionStorage.getItem('daily')){sessionStorage.setItem('daily','1');localStorage.setItem('firemate_restaurant_daily_v1',JSON.stringify({day,list:[{kind:'sell',goal:8,reward:30,text:'아무 요리나 8접시 팔기',progress:0,claimed:false},{kind:'tip',goal:3,reward:25,text:'팁 3번 받기',progress:0,claimed:false},{kind:'cook',goal:3,reward:20,text:'요리 3번 시작하기',progress:0,claimed:false}]}))}});
  await page.addInitScript(()=>{if(sessionStorage.getItem('away'))return;sessionStorage.setItem('away','1');localStorage.setItem('firemate_restaurant_idle_v1',JSON.stringify({at:Date.now()-2*3600e3,pending:0}))});await page.reload();
  await expect(page.locator('#restaurantAway')).toContainText('만두가 36코인을 모았어요');
  await page.locator('#restaurantAwayTake').click();

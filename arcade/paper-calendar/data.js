@@ -19,6 +19,36 @@ function anomaly(number,names){const first=names.slice(0,24),targetIndex=(number
 function cipher(number,names){const pool=names.slice(0,24),codes=shuffle(Array.from({length:24},(_,i)=>120+i*17),number*311),targetIndex=(number*7+3)%24,answer=pool[targetIndex],symbols=['○','△','□','◇','☆','▽','⊕','♣','♠','☾'],code=String(codes[targetIndex]),encoded=[...code].map(d=>symbols[+d]).join(' ');return {answer,cells:pool,targetIndex,codes,encoded,symbols,clues:[`봉인된 숫자는 ${encoded}.`,'기호를 숫자로 바꾼 뒤 대장에서 같은 번호의 이름을 찾아라.'],sheets:[{kind:'memo',title:'봉인된 세 기호',lines:[`봉인 카드의 기호: ${encoded}`,'기호표를 해독해 세 자리 숫자를 만들라.']},{kind:'cipher-key',title:'낡은 기호표',symbols},{kind:'code-ledger',title:'번호가 적힌 명단',names:pool,codes}]}}
 function make(number){const names=shuffle(NAMES,20261027+number*97),type=TYPES[number-1],base={number,id:'day'+number,title:TITLES[number-1],place:PLACES[number-1],type,seal:SEALS[number-1],theme:['ochre','plum','teal','navy'][(number-1)%4]};const puzzle=({grid,archive,schedule,cards,anomaly,cipher})[type](number,names);const innocent=names.find(n=>n!==puzzle.answer&&puzzle.cells.includes(n));return {...base,...puzzle,innocent}}
 const CASES=Array.from({length:30},(_,i)=>make(i+1));
-function survivors(p){if(p.type==='grid'){let r=Math.floor(p.targetIndex/6),c=p.targetIndex%6;return p.cells.filter((_,i)=>Math.floor(i/6)===r&&i%6===c)}if(p.type==='archive'){let mentioned=p.sheets.filter(s=>s.kind==='document').flatMap(s=>s.names);return p.cells.filter(n=>!mentioned.includes(n))}if(p.type==='schedule'){let t=p.records[p.targetIndex];return p.records.filter(r=>r.route===t.route&&r.color===t.color&&Math.abs(r.minute-t.minute)<=4).map(r=>r.name)}if(p.type==='anomaly')return p.cells.filter(n=>!p.first.includes(n));if(p.type==='cipher'){const decoded=[...p.encoded.replace(/ /g,'')].map(symbol=>p.symbols.indexOf(symbol)).join('');return p.cells.filter((_,i)=>String(p.codes[i])===decoded)}if(p.type==='cards'){let f=c=>[c.suit,c.size,c.rank>=10?'인물 카드':c.rank===1?'에이스':'숫자 카드',c.name[0]];let target=p.cards[p.targetIndex],tf=f(target),key=p.clues.map(line=>line.includes('무늬')?0:line.includes('묶음')?1:line.includes('카드다')?2:3);return p.cards.filter(c=>key.every(k=>f(c)[k]===tf[k])).map(c=>c.name)}}
+function survivors(p){
+ if(p.type==='grid'){
+  const rowName=p.clues[0].match(/^범인은 ([가-힣]{3})(?:과|와) 같은 가로줄/)[1];
+  const colName=p.clues[1].match(/^범인은 ([가-힣]{3})(?:과|와) 같은 세로줄/)[1];
+  const row=Math.floor(p.cells.indexOf(rowName)/6),col=p.cells.indexOf(colName)%6;
+  return p.cells.filter((_,i)=>Math.floor(i/6)===row&&i%6===col&&p.cells[i]!==p.innocent)
+ }
+ if(p.type==='archive'){
+  const mentioned=p.sheets.filter(s=>s.kind==='document').flatMap(s=>s.names);
+  return p.cells.filter(n=>!mentioned.includes(n))
+ }
+ if(p.type==='schedule'){
+  const memo=p.sheets[0].lines.join(' '),route=memo.match(/문은 ([가-힣]+)\./)[1],color=memo.match(/통행증은 ([가-힣]+)\./)[1],minute=+memo.match(/21:(\d+)/)[1];
+  return p.records.filter(r=>r.route===route&&r.color===color&&Math.abs(r.minute-minute)<=4).map(r=>r.name)
+ }
+ if(p.type==='anomaly')return p.cells.filter(n=>!p.first.includes(n));
+ if(p.type==='cipher'){
+  const decoded=[...p.encoded.replace(/ /g,'')].map(symbol=>p.symbols.indexOf(symbol)).join('');
+  return p.cells.filter((_,i)=>String(p.codes[i])===decoded)
+ }
+ if(p.type==='cards'){
+  return p.cards.filter(card=>p.clues.every(line=>{
+   if(line.includes('무늬다'))return card.suit===line.match(/([♠♥♦♣]) 무늬/)[1];
+   if(line.includes('묶음'))return card.size===+line.match(/(\d+)장/)[1];
+   if(line.includes('성은'))return card.name[0]===line.match(/성은 ([가-힣])씨/)[1];
+   if(line.includes('카드는'))return (card.rank>=10?'인물 카드':card.rank===1?'에이스':'숫자 카드')===line.match(/카드는 (.+)다/)[1];
+   return false
+  })).map(c=>c.name)
+ }
+ return []
+}
 root.PaperCalendar={CASES,SEALS,survivors,make};
 })(typeof window!=='undefined'?window:module.exports);

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.179</title><link rel="stylesheet" href="./app.css?v=3.5.179"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-179">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.180</title><link rel="stylesheet" href="./app.css?v=3.5.180"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-180">
 
 
 
@@ -838,7 +838,7 @@ el.innerHTML=`<div class="fm-mk-per">${[[30,'1개월'],[90,'3개월'],[365,'1년
 function fmExtPrice(x){const q=x?.type==='USD'&&fmLive?.quotes?.[x.ticker],at=Date.parse(q?.extAt||'');if(!(Number(q?.ext)>0)||!(Date.now()-at<57600000))return '';const base=Number(q.price)||Number(x.price),d=base>0?(q.ext-base)/base*100:0;return ' <span class="fm-market-ext" style="color:'+(d>0?'var(--up)':d<0?'var(--down)':'var(--sub)')+'">'+(q.extKind==='pre'?'프리장':'애프터')+' $'+Number(q.ext).toLocaleString('ko-KR',{maximumFractionDigits:4})+' ('+(d>0?'+':'')+d.toFixed(2)+'%)</span>'}
 // +₩1,000 / −₩1,000
 function fmSW(n){return (n>0?'+':n<0?'−':'')+won(Math.abs(n))}
-function fmQuoteAge(h){const at=Date.parse(h?.quoteAt||'');if(!Number.isFinite(at))return Number(h?.price)>0?' · 직접 입력가':'';const days=Math.floor((Date.now()-at)/86400000);return days>=3?' · <span class="fm-stale">'+days+'일 전 시세</span>':''}
+function fmQuoteAge(h){const at=Date.parse(h?.quoteAt||'');if(h?.type==='KRW')return Number.isFinite(at)?' · '+safe(new Date(at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))+' 기준':' · 시세 시각 미확인';if(!Number.isFinite(at))return Number(h?.price)>0?' · 직접 입력가':'';const days=Math.floor((Date.now()-at)/86400000);return days>=3?' · <span class="fm-stale">'+days+'일 전 시세</span>':''}
 function fmFiniteNumber(value){const n=Number(value);return Number.isFinite(n)?n:0}
 function assetValue(h){const fx=(h.type==='USD'||h.type==='CRYPTO_USD')?fmFiniteNumber(data.balance.fx):1;return fmFiniteNumber(fmFiniteNumber(h.qty)*fmFiniteNumber(h.price)*fx)}
 function assetCost(h){const fx=(h.type==='USD'||h.type==='CRYPTO_USD')?fmFiniteNumber(data.balance.fx):1;return fmFiniteNumber(fmFiniteNumber(h.qty)*fmFiniteNumber(h.cost)*fx)}
@@ -1264,7 +1264,7 @@ function fmVisibleHoldings(){return [...data.holdings].sort((a,b)=>assetValue(b)
 function renderAssets(){renderAccounts();fmRenderBalanceRow();fmImportNudge();renderAssetGrowth();if(!$('fmDividendPanel').hidden)fmRenderDividends();if(fmDetailAccountId===null)fmSetAssetView(fmAssetView);if(!data.accounts.some(a=>a.id===selectedAccount))selectedAccount='all';const investment=data.holdings.reduce((a,h)=>a+assetValue(h),0),cost=data.holdings.reduce((a,h)=>a+assetCost(h),0),net=netAsset();
 fmRenderGoalNotes(net);$('netWorth').textContent=won(net);$('investmentValue').textContent=won(investment);$('investProfit').textContent=fmSW(investment-cost);{let d=0,base=0;for(const h of data.holdings){const p=Number(h.dayChangePct);if(!h.dayChangeAt||h.dayChangePct==null||!Number.isFinite(p))continue;const v=assetValue(h),c=v-v/(1+p/100);d+=c;base+=v-c}const el=$('fmTodayPL');el.hidden=!base;el.innerHTML='<span class="light small">오늘 변동</span><strong style="color:'+(d>0?'var(--up)':d<0?'var(--down)':'var(--sub)')+'">'+fmSW(d)+' <span>('+(d>0?'+':'')+(base?d/base*100:0).toFixed(2)+'%)</span></strong>'}$('investReturnPct').textContent=cost>0?((investment-cost)/cost*100>=0?'+':'')+((investment-cost)/cost*100).toFixed(2)+'%':'—';$('assetsSub').textContent='자산 '+won(investment+accountAmount()+Number(data.balance.cash||0)+Number(data.balance.other||0))+' − 부채 '+won(data.balance.debt||0);
 for(const [key,field] of [['fx','assetFx'],['cash','assetCash'],['other','assetOther'],['debt','assetDebt']])$(field).value=field==='assetFx'?(data.balance[key]??0):moneyFormat(data.balance[key]??0);if(data.balance.fxAt)$('fxStatus').textContent='마지막 환율 기준일 '+data.balance.fxAt+' · 1 USD = '+Number(data.balance.fx).toLocaleString('ko-KR')+'원';
-$('holdingList').innerHTML=fmVisibleHoldings().length?fmVisibleHoldings().map(h=>{const val=assetValue(h),gain=val-assetCost(h),ret=assetCost(h)>0?gain/assetCost(h)*100:0,p=Number(h.dayChangePct),ok=h.dayChangeAt&&h.dayChangePct!=null&&Number.isFinite(p),c=v=>v>0?'var(--up)':v<0?'var(--down)':'var(--sub)';return `<div class="tx fm-holding-list-row" data-holding-row="${safe(h.id)}"><div class="fm-holding-row-main"><div class="fm-holding-name-line"><strong class="fm-holding-name">${safe(fmDisplayHoldingName(h))}</strong><span class="fm-holding-value">${won(val)}</span></div><div class="fm-holding-subline"><span class="fm-holding-account">수익 <b class="fm-holding-gain" style="color:${c(gain)}">${fmSW(gain)} (${ret>=0?"+":""}${ret.toFixed(1)}%)</b></span><span class="fm-holding-day" style="color:${c(p*ok)}">${ok?`오늘 ${p>=0?"+":""}${p.toFixed(2)}%`:"오늘 —"}</span></div><div class="fm-holding-meta">${fmQuoteAge(h)}${fmExtPrice(h).replace(/ style="[^"]*"/,'')}</div></div></div>`}).join(''):'<div class="empty">아직 보유 종목이 없어요. 종목을 등록해 보세요.</div>';
+$('holdingList').innerHTML=fmVisibleHoldings().length?fmVisibleHoldings().map(h=>{const val=assetValue(h),gain=val-assetCost(h),ret=assetCost(h)>0?gain/assetCost(h)*100:0,p=Number(h.dayChangePct),ok=h.dayChangeAt&&h.dayChangePct!=null&&Number.isFinite(p),c=v=>v>0?'var(--up)':v<0?'var(--down)':'var(--sub)';return `<div class="tx fm-holding-list-row" data-holding-row="${safe(h.id)}"><div class="fm-holding-row-main"><div class="fm-holding-name-line"><strong class="fm-holding-name">${safe(fmDisplayHoldingName(h))}</strong><span class="fm-holding-value">${won(val)}</span></div><div class="fm-holding-subline"><span class="fm-holding-account">수익 <b class="fm-holding-gain" style="color:${c(gain)}">${fmSW(gain)} (${ret>=0?"+":""}${ret.toFixed(1)}%)</b></span><span class="fm-holding-day" style="color:${c(p*ok)}">${ok?`${new Date(h.dayChangeAt).toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'})===priceDay()?'오늘':'최근'} ${p>=0?"+":""}${p.toFixed(2)}%`:"오늘 —"}</span></div><div class="fm-holding-meta">${fmQuoteAge(h)}${fmExtPrice(h).replace(/ style="[^"]*"/,'')}</div></div></div>`}).join(''):'<div class="empty">아직 보유 종목이 없어요. 종목을 등록해 보세요.</div>';
 $('holdingList').querySelectorAll('.fm-holding-list-row').forEach(row=>{const id=row.dataset.holdingRow;if(!id)return;const main=row.querySelector('.fm-holding-row-main');if(main){main.setAttribute('role','button');main.setAttribute('tabindex','0');main.setAttribute('aria-label','종목 상세 보기');main.onclick=()=>fmOpenHoldingDetail(id,true);main.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fmOpenHoldingDetail(id,true)}}}});
 const M=[...new Set([1e7,3e7,5e7,1e8,2e8,3e8,5e8,1e9,(+data.fire.goal||0)*1e4])].filter(Boolean).sort((a,b)=>a-b),done=M.filter(n=>net>=n),next=M.find(n=>net<n),prev=done.at(-1)||0,lab=n=>n>=1e8?n/1e8+'억':n/1e7+'천만',mo=(+data.fire.monthly||0)*1e4,left=next-net,k=Math.ceil(left/mo);const ms=$('fmMilestoneSummary');if(ms)ms.textContent=(prev?'달성 '+lab(prev):'첫 목표 도전')+(next?' · 다음 '+lab(next):' · 모든 목표 달성');$('assetBadges').innerHTML=(next?`<div class="fm-ms-next"><span>다음 목표 <b>${lab(next)}</b></span><strong>${fmStrMoney(Math.ceil(left/1e4))} 남음</strong></div><div class="progress"><div style="width:${Math.max(2,(net-prev)/(next-prev)*100).toFixed(1)}%"></div></div>${mo>0?`<p class="mini">월 ${fmStrMoney(mo/1e4)}씩 모으면 약 ${k>=12?Math.floor(k/12)+'년'+(k%12?' '+k%12+'개월':''):k+'개월'} (수익 제외)</p>`:''}`:'<div class="fm-ms-next"><strong>모든 목표 달성 🎉</strong></div>')+`<div class="fm-ms-steps">${M.map(n=>`<span class="${net>=n?'on':n===next?'now':''}">${net>=n?'✓ ':''}${lab(n)}</span>`).join('')}</div>`;}
 const KR_STOCK_NAMES=[['005930','삼성전자'],['000660','SK하이닉스'],['035420','NAVER'],['035720','카카오'],['005380','현대차'],['068270','셀트리온'],['373220','LG에너지솔루션'],['207940','삼성바이오로직스'],['360750','TIGER 미국S&P500'],['379800','KODEX 미국S&P500TR'],['379810','KODEX 미국나스닥100TR'],['133690','TIGER 미국나스닥100'],['069500','KODEX 200'],['102110','TIGER 200'],['305540','TIGER 2차전지테마'],['252670','KODEX 200선물인버스2X']];
@@ -1767,7 +1767,12 @@ const originalRender=render;render=function(){originalRender();if(['retire','fir
 // Local-only API key; manual refreshes are not restricted by app-level time or daily count.
 const PRICE_KEY='firemate_td_key_v1',PRICE_LOG='firemate_td_checks_v1';
 const KRX_URL='https://noisy-firefly-5699.bold-cell-9d68.workers.dev/quotes';
-const krQuoteCache=new Map();
+function fmKrQuoteTime(q){
+const date=String(q?.date||'').replace(/-/g,'');
+const raw=q?.at||q?.quoteAt||q?.timestamp;
+const at=raw?new Date(typeof raw==='number'&&raw<1e12?raw*1000:raw):/^\d{8}$/.test(date)?new Date(date.slice(0,4)+'-'+date.slice(4,6)+'-'+date.slice(6,8)+'T15:30:00+09:00'):null;
+return at&&Number.isFinite(at.getTime())&&at.getTime()<=Date.now()+60000?at.toISOString():null;
+}
 function priceDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function priceLog(){try{return JSON.parse(localStorage.getItem(PRICE_LOG)||'[]')}catch{return []}}
 function todayChecks(){return priceLog().filter(x=>x.day===priceDay())}
@@ -1832,25 +1837,23 @@ try{localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:
 priceStatus('조회 중…');
 // Query independent markets concurrently. US requests still obey Twelve Data credit limits.
 const fmQuoteStarted=performance.now();
+const krQuoteTimes=new Map();
 let fmUsElapsed=null;
 let fmUsMode='대상 없음',fmUsWaitMs=0;
 await Promise.all([
-(async()=>{ // Avoid repeated KRX requests during the same session.
+(async()=>{ // Manual refresh always requests a new quote.
 // Codes are fetched together; each commit is synchronous, so updates never interleave.
 let krDone=0;await Promise.all(krSymbols.map(async code=>{
 try{
-const cached=krQuoteCache.get(code);let quote;
-if(cached&&Date.now()-cached.time<600000){quote=cached.quote}
-else{
+let quote;
 const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);let response;
 try{response=await fetch(KRX_URL+'?code='+encodeURIComponent(code),{signal:controller.signal,cache:'no-store'})}
 finally{clearTimeout(timer)}
 const payload=await response.json();
 if(!response.ok)throw Error(payload.error||'KRX HTTP '+response.status);
 if(payload.code!==code||payload.currency!=='KRW'||!Number.isFinite(Number(payload.price))||Number(payload.price)<=0)throw Error('유효하지 않은 KRX 가격');
-quote=payload;krQuoteCache.set(code,{quote,time:Date.now()});
-}
-const at=new Date().toISOString();
+quote=payload;
+const at=fmKrQuoteTime(quote);krQuoteTimes.set(code,at);
 // KRX Worker may return only closing price. Use the existing daily chart
 // only when its latest close exactly matches the returned quote.
 let chartPrev=NaN;
@@ -1865,7 +1868,7 @@ if(latest&&prior&&Number(latest.close)===Number(quote.price)&&Number(prior.close
 }
 }catch(e){console.warn('국내 ETF 전일 종가 대체 조회 실패:',code,e)}
 }
-fmCommitQuoteUpdate(()=>{data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){if(Number(h.price)!==Number(quote.price))changed++;h.price=Number(quote.price);h.quoteAt=at;const prevRaw=quote.previous_close??quote.prevClose??quote.prev_close??quote.previousClose??quote.prev_closing_price??quote.previousClosingPrice;const prev=prevRaw==null?chartPrev:Number(String(prevRaw).replace(/,/g,''));const suppliedPct=quote.change_percent??quote.changePercent??quote.change_pct??quote.change_rate??quote.changeRate??quote.fluctuation_rate??quote.fluctuationRate;const parsedPct=suppliedPct==null?NaN:Number(String(suppliedPct).replace(/[%+,\s]/g,''));const changeRaw=quote.change??quote.change_amount??quote.changeAmount??quote.price_change??quote.priceChange;const change=changeRaw==null?NaN:Number(String(changeRaw).replace(/,/g,''));const derivedPrev=Number.isFinite(change)?Number(quote.price)-change:NaN;const nextPct=Number.isFinite(prev)&&prev>0?(Number(quote.price)-prev)/prev*100:(Number.isFinite(parsedPct)?parsedPct:(Number.isFinite(derivedPrev)&&derivedPrev>0?change/derivedPrev*100:null));if(nextPct!==null&&Number.isFinite(nextPct)){h.dayChangePct=nextPct;h.dayChangeAt=at;}if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}})});ok++;
+fmCommitQuoteUpdate(()=>{data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){if(Number(h.price)!==Number(quote.price))changed++;h.price=Number(quote.price);h.quoteAt=at;const prevRaw=quote.previous_close??quote.prevClose??quote.prev_close??quote.previousClose??quote.prev_closing_price??quote.previousClosingPrice;const prev=prevRaw==null?chartPrev:Number(String(prevRaw).replace(/,/g,''));const suppliedPct=quote.change_percent??quote.changePercent??quote.change_pct??quote.change_rate??quote.changeRate??quote.fluctuation_rate??quote.fluctuationRate;const parsedPct=suppliedPct==null?NaN:Number(String(suppliedPct).replace(/[%+,\s]/g,''));const changeRaw=quote.change??quote.change_amount??quote.changeAmount??quote.price_change??quote.priceChange;const change=changeRaw==null?NaN:Number(String(changeRaw).replace(/,/g,''));const derivedPrev=Number.isFinite(change)?Number(quote.price)-change:NaN;const nextPct=Number.isFinite(prev)&&prev>0?(Number(quote.price)-prev)/prev*100:(Number.isFinite(parsedPct)?parsedPct:(Number.isFinite(derivedPrev)&&derivedPrev>0?change/derivedPrev*100:null));h.dayChangePct=Number.isFinite(nextPct)?nextPct:null;h.dayChangeAt=h.dayChangePct===null?null:at;if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}})});ok++;
 }catch(e){failed.push({symbol:'KR:'+code,reason:String(e.message).slice(0,160)})}
 priceStatus('국내 조회 '+(++krDone)+'/'+krSymbols.length);quoteProgress(++quoteDone,quoteTotal);
 }));
@@ -1969,8 +1972,8 @@ fmUsElapsed=(performance.now()-fmUsStarted)/1000;
 
 })()
 ]);
-// Symbols the live sources missed (or US without an API key) take the scheduled backup price, stamped with its own time.
-let fmLiveExtra=0;if(await fmLoadLiveQuotes())for(const [sym,kind,id] of [...symbolsWithKey.filter(s=>!key||failed.some(f=>f.symbol===s)).map(s=>[s,'USD',s]),...krSymbols.filter(c=>failed.some(f=>f.symbol==='KR:'+c)).map(c=>[c,'KRW','KR:'+c])]){const q=fmLive.quotes?.[kind==='KRW'?'KR-'+sym:sym],price=Number(q?.price),prev=Number(q?.prevClose),at=q?.at||fmLive.updatedAt;if(!(price>0))continue;const pct=prev>0?(price-prev)/prev*100:null;fmCommitQuoteUpdate(()=>{data.holdings.forEach(h=>{if(h.type===kind&&h.ticker===sym){if(Number(h.price)!==price)changed++;h.price=price;h.quoteAt=at;h.dayChangePct=pct;h.dayChangeAt=pct===null?null:at}})});ok++;if(!key&&kind==='USD')fmLiveExtra++;failed=failed.filter(f=>f.symbol!==id)}
+// Domestic closing quotes can succeed but be older than the scheduled snapshot. Compare source times, never request times.
+let fmLiveExtra=0;if(await fmLoadLiveQuotes())for(const [sym,kind,id] of [...symbolsWithKey.filter(s=>!key||failed.some(f=>f.symbol===s)).map(s=>[s,'USD',s]),...krSymbols.map(c=>[c,'KRW','KR:'+c])]){const q=fmLive.quotes?.[kind==='KRW'?'KR-'+sym:sym],price=Number(q?.price),prev=Number(q?.prevClose),at=q?.at||fmLive.updatedAt;if(!Number.isFinite(price)||price<=0)continue;if(kind==='KRW'&&(!Number.isFinite(Date.parse(q?.at))||Date.parse(q.at)>Date.now()+60000||(krQuoteTimes.get(sym)&&Date.parse(q.at)<=Date.parse(krQuoteTimes.get(sym)))))continue;const wasFailed=failed.some(f=>f.symbol===id);const pct=prev>0?(price-prev)/prev*100:null;fmCommitQuoteUpdate(()=>{data.holdings.forEach(h=>{if(h.type===kind&&h.ticker===sym){if(Number(h.price)!==price)changed++;h.price=price;h.quoteAt=at;h.dayChangePct=pct;h.dayChangeAt=pct===null?null:at}})});if(kind!=='KRW'||wasFailed)ok++;if(!key&&kind==='USD')fmLiveExtra++;failed=failed.filter(f=>f.symbol!==id)}
 const fmUsSeconds=Number.isFinite(fmUsElapsed)?fmUsElapsed:null;
 const fmQuoteSeconds=((performance.now()-fmQuoteStarted)/1000).toFixed(1);
 quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');setTimeout(()=>{if(!quoteBusy){$('quoteProgress').style.display='none';const home=$('homeQuoteProgress');if(home){home.hidden=true;home.style.display='none'}}},1400);retryStocks.disabled=false;failedSymbols=failed.map(x=>x.symbol);retryStocks.hidden=!failedSymbols.length;retryStocks.style.display=failedSymbols.length?'inline-flex':'none';const latestQuote={time:Date.now(),ok,total:quoteTotal+fmLiveExtra,failed:failed.length,seconds:Number(fmQuoteSeconds),usSeconds:fmUsSeconds,usMode:fmUsMode,usWaitSeconds:fmUsWaitMs/1000,failureDetails:failed.map(f=>({symbol:String(f.symbol).slice(0,32),reason:String(f.reason).slice(0,160)}))};fmLatestQuote=latestQuote;let quoteSaveOK=false;try{localStorage.setItem(FM_LAST_QUOTE_KEY,JSON.stringify(latestQuote));quoteSaveOK=Number(JSON.parse(localStorage.getItem(FM_LAST_QUOTE_KEY)||'null')?.time)===latestQuote.time}catch(e){console.warn('Quote result storage failed',e)}fmSetQuoteAttempt('조회 완료 · 성공 '+ok+'개 · 실패 '+failed.length+'개'+(quoteSaveOK?'':' · 기록 저장 실패'));recordDailyNetWorth();try{render()}catch(renderError){console.warn('시세 반영 후 화면 갱신 오류',renderError);try{renderAssets()}catch(e){console.warn(e)}try{renderHome()}catch(e){console.warn(e)}}priceStatus(ok+'개 갱신 · '+failed.length+'개 실패'+(failed.length?' · 실패: '+failed.map(x=>x.symbol+' ('+x.reason+')').join('; '):''));
@@ -2105,7 +2108,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-179',VERSION='3.5.179';
+ const BUILD='fire-mate-v3-5-180',VERSION='3.5.180';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2319,4 +2322,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.179"></script></body></html>
+</style><script src="./js/features.js?v=3.5.180"></script></body></html>

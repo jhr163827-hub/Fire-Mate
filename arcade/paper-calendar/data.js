@@ -7,8 +7,9 @@ const TYPES=Array.from({length:30},(_,i)=>['grid','archive','schedule','cards','
 const SEALS=[...'모든기록은거짓말을하지않고그마지막이름은언젠가반드시드러난다'];
 function random(seed){let x=seed|0;return()=>{x=(x+0x6D2B79F5)|0;let t=Math.imul(x^(x>>>15),1|x);t^=t+Math.imul(t^(t>>>7),61|t);return ((t^(t>>>14))>>>0)/4294967296}}
 function shuffle(source,seed){const a=[...source],rng=random(seed);for(let i=a.length-1;i>0;i--){let j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const particle=(name,jong,plain)=>{const code=name.codePointAt(name.length-1)-0xAC00;return code>=0&&code<=11171&&code%28?jong:plain};
 const SUITS=['♠','♥','♦','♣'],COLORS=['남색','자주색','황금색','청록색'],ROUTES=['북문','서문','동문','남문'];
-function grid(number,names){const cells=names.slice(0,30),targetIndex=(number*7+8)%30,row=Math.floor(targetIndex/6),col=targetIndex%6,answer=cells[targetIndex];const rowAnchor=cells[row*6+(col+2)%6],colAnchor=cells[((row+3)%5)*6+col];return {answer,cells,targetIndex,clues:[`범인은 ${rowAnchor}와 같은 가로줄에 있다.`,`범인은 ${colAnchor}와 같은 세로줄에 있다.`,`명단은 왼쪽에서 오른쪽, 위에서 아래 순서로 작성됐다.`,`표지에 적힌 이름은 이미 무죄로 확인됐다.`],sheets:[{kind:'memo',title:'조사 메모',lines:[`같은 가로줄에 ${rowAnchor}가 있다.`,`같은 세로줄에 ${colAnchor}가 있다.`,`표지에서 제외된 사람을 다시 확인하라.`]},{kind:'grid',title:'보관된 이름표 · A',names:cells.slice(0,18),cols:6,start:0},{kind:'grid',title:'보관된 이름표 · B',names:cells.slice(18),cols:6,start:18}]}}
+function grid(number,names){const cells=names.slice(0,30),targetIndex=(number*7+8)%30,row=Math.floor(targetIndex/6),col=targetIndex%6,answer=cells[targetIndex];const rowAnchor=cells[row*6+(col+2)%6],colAnchor=cells[((row+3)%5)*6+col];return {answer,cells,targetIndex,clues:[`범인은 ${rowAnchor}${particle(rowAnchor,'과','와')} 같은 가로줄에 있다.`,`범인은 ${colAnchor}${particle(colAnchor,'과','와')} 같은 세로줄에 있다.`,`명단은 왼쪽에서 오른쪽, 위에서 아래 순서로 작성됐다.`,`표지에 적힌 이름은 이미 무죄로 확인됐다.`],sheets:[{kind:'memo',title:'조사 메모',lines:[`같은 가로줄에 ${rowAnchor}${particle(rowAnchor,'이','가')} 있다.`,`같은 세로줄에 ${colAnchor}${particle(colAnchor,'이','가')} 있다.`,`표지에서 제외된 사람을 다시 확인하라.`]},{kind:'grid',title:'보관된 이름표 · A',names:cells.slice(0,18),cols:6,start:0},{kind:'grid',title:'보관된 이름표 · B',names:cells.slice(18),cols:6,start:18}]}}
 function archive(number,names){const pool=names.slice(0,18),targetIndex=(number*5+3)%18,answer=pool[targetIndex],others=pool.filter(n=>n!==answer),groups=[others.slice(0,5),others.slice(5,11),others.slice(11)];const labels=['당직자의 메모','반출 대장','전화 기록'];return {answer,cells:pool,targetIndex,clues:['범인은 아래 18명의 후보 중 한 명이다.','범인의 이름은 세 기록 어디에도 등장하지 않는다.','이름은 성까지 완전히 일치할 때만 같은 인물로 센다.'],sheets:[{kind:'memo',title:'오래된 사건의 조건',lines:['후보 명단에서 세 기록에 등장한 이름을 모두 지워라.','어느 기록에도 없는 이름 하나가 남는다.']},{kind:'grid',title:'조사 대상 · 18명',names:pool,cols:3,start:0},...groups.map((group,i)=>({kind:'document',title:labels[i],paragraphs:[`확인된 방문 기록에는 ${group.slice(0,3).join(', ')}의 서명이 있다.`,`${group.slice(3).join(', ')}도 관련 기록에서 확인됐다.`],names:group}))]}}
 function schedule(number,names){const pool=names.slice(0,20),rng=random(781+number*71),records=pool.map((name,i)=>({name,route:ROUTES[(i+number)%4],color:COLORS[(i*3+Math.floor(i/4)+number)%4],minute:10+i*2+(i%2),ticket:110+i*7}));let targetIndex=(number*7+5)%20,answer=pool[targetIndex],t=records[targetIndex];let candidates=records.filter(r=>r.route===t.route&&r.color===t.color&&Math.abs(r.minute-t.minute)<=12);if(candidates.length!==1){targetIndex=records.findIndex(r=>records.filter(x=>x.route===r.route&&x.color===r.color&&Math.abs(x.minute-r.minute)<=12).length===1);if(targetIndex<0)throw Error('schedule uniqueness');answer=pool[targetIndex]}
  const q=records[targetIndex];return {answer,cells:pool,targetIndex,records,clues:[`범인은 ${q.route}을 통과했다.`,`기록 시간은 ${Math.floor((q.minute-1)/10)*10+1}분부터 ${Math.floor((q.minute-1)/10)*10+10}분 사이다.`,`통행증 색은 ${q.color}이었다.`,`시간은 모두 21시 이후를 뜻한다.`],sheets:[{kind:'memo',title:'경비실의 쪽지',lines:[`지나간 문은 ${q.route}.`,`통행증은 ${q.color}.`,`기록 시각은 21:${String(q.minute).padStart(2,'0')}에서 최대 4분 이내였다.`]},{kind:'schedule',title:'출입 대장 · 전반',records:records.slice(0,10),start:0},{kind:'schedule',title:'출입 대장 · 후반',records:records.slice(10),start:10}]}}
@@ -18,6 +19,36 @@ function anomaly(number,names){const first=names.slice(0,24),targetIndex=(number
 function cipher(number,names){const pool=names.slice(0,24),codes=shuffle(Array.from({length:24},(_,i)=>120+i*17),number*311),targetIndex=(number*7+3)%24,answer=pool[targetIndex],symbols=['○','△','□','◇','☆','▽','⊕','♣','♠','☾'],code=String(codes[targetIndex]),encoded=[...code].map(d=>symbols[+d]).join(' ');return {answer,cells:pool,targetIndex,codes,encoded,symbols,clues:[`봉인된 숫자는 ${encoded}.`,'기호를 숫자로 바꾼 뒤 대장에서 같은 번호의 이름을 찾아라.'],sheets:[{kind:'memo',title:'봉인된 세 기호',lines:[`봉인 카드의 기호: ${encoded}`,'기호표를 해독해 세 자리 숫자를 만들라.']},{kind:'cipher-key',title:'낡은 기호표',symbols},{kind:'code-ledger',title:'번호가 적힌 명단',names:pool,codes}]}}
 function make(number){const names=shuffle(NAMES,20261027+number*97),type=TYPES[number-1],base={number,id:'day'+number,title:TITLES[number-1],place:PLACES[number-1],type,seal:SEALS[number-1],theme:['ochre','plum','teal','navy'][(number-1)%4]};const puzzle=({grid,archive,schedule,cards,anomaly,cipher})[type](number,names);const innocent=names.find(n=>n!==puzzle.answer&&puzzle.cells.includes(n));return {...base,...puzzle,innocent}}
 const CASES=Array.from({length:30},(_,i)=>make(i+1));
-function survivors(p){if(p.type==='grid'){let r=Math.floor(p.targetIndex/6),c=p.targetIndex%6;return p.cells.filter((_,i)=>Math.floor(i/6)===r&&i%6===c)}if(p.type==='archive'){let mentioned=p.sheets.filter(s=>s.kind==='document').flatMap(s=>s.names);return p.cells.filter(n=>!mentioned.includes(n))}if(p.type==='schedule'){let t=p.records[p.targetIndex];return p.records.filter(r=>r.route===t.route&&r.color===t.color&&Math.abs(r.minute-t.minute)<=4).map(r=>r.name)}if(p.type==='anomaly')return p.cells.filter(n=>!p.first.includes(n));if(p.type==='cipher'){const decoded=[...p.encoded.replace(/ /g,'')].map(symbol=>p.symbols.indexOf(symbol)).join('');return p.cells.filter((_,i)=>String(p.codes[i])===decoded)}if(p.type==='cards'){let f=c=>[c.suit,c.size,c.rank>=10?'인물 카드':c.rank===1?'에이스':'숫자 카드',c.name[0]];let target=p.cards[p.targetIndex],tf=f(target),key=p.clues.map(line=>line.includes('무늬')?0:line.includes('묶음')?1:line.includes('카드다')?2:3);return p.cards.filter(c=>key.every(k=>f(c)[k]===tf[k])).map(c=>c.name)}}
+function survivors(p){
+ if(p.type==='grid'){
+  const rowName=p.clues[0].match(/^범인은 ([가-힣]{3})(?:과|와) 같은 가로줄/)[1];
+  const colName=p.clues[1].match(/^범인은 ([가-힣]{3})(?:과|와) 같은 세로줄/)[1];
+  const row=Math.floor(p.cells.indexOf(rowName)/6),col=p.cells.indexOf(colName)%6;
+  return p.cells.filter((_,i)=>Math.floor(i/6)===row&&i%6===col&&p.cells[i]!==p.innocent)
+ }
+ if(p.type==='archive'){
+  const mentioned=p.sheets.filter(s=>s.kind==='document').flatMap(s=>s.names);
+  return p.cells.filter(n=>!mentioned.includes(n))
+ }
+ if(p.type==='schedule'){
+  const memo=p.sheets[0].lines.join(' '),route=memo.match(/문은 ([가-힣]+)\./)[1],color=memo.match(/통행증은 ([가-힣]+)\./)[1],minute=+memo.match(/21:(\d+)/)[1];
+  return p.records.filter(r=>r.route===route&&r.color===color&&Math.abs(r.minute-minute)<=4).map(r=>r.name)
+ }
+ if(p.type==='anomaly')return p.cells.filter(n=>!p.first.includes(n));
+ if(p.type==='cipher'){
+  const decoded=[...p.encoded.replace(/ /g,'')].map(symbol=>p.symbols.indexOf(symbol)).join('');
+  return p.cells.filter((_,i)=>String(p.codes[i])===decoded)
+ }
+ if(p.type==='cards'){
+  return p.cards.filter(card=>p.clues.every(line=>{
+   if(line.includes('무늬다'))return card.suit===line.match(/([♠♥♦♣]) 무늬/)[1];
+   if(line.includes('묶음'))return card.size===+line.match(/(\d+)장/)[1];
+   if(line.includes('성은'))return card.name[0]===line.match(/성은 ([가-힣])씨/)[1];
+   if(line.includes('카드는'))return (card.rank>=10?'인물 카드':card.rank===1?'에이스':'숫자 카드')===line.match(/카드는 (.+)다/)[1];
+   return false
+  })).map(c=>c.name)
+ }
+ return []
+}
 root.PaperCalendar={CASES,SEALS,survivors,make};
 })(typeof window!=='undefined'?window:module.exports);

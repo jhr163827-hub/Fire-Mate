@@ -12,6 +12,6 @@ test('paper investigation, marking, notebook and save recovery',async({page})=>{
 });
 test('every puzzle type can be opened and compact view does not overflow',async({page})=>{
  for(const [width,height] of [[320,700],[390,844],[844,390]]){await page.setViewportSize({width,height});await page.goto('/arcade/paper-calendar/');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
-  for(const n of [1,2,3,4]){await page.locator(`[data-day="${n}"]`).click();const pages=await page.locator('#next-page').evaluate(e=>Number(e.parentElement.querySelector('#page-count').textContent.split('/')[1]));for(let p=1;p<pages;p++)await page.locator('#next-page').click();await expect(page.locator('#page')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();await page.locator('#close-case').click()}
+  for(const n of [1,2,3,4,5,6]){await page.locator(`[data-day="${n}"]`).click();const pages=await page.locator('#next-page').evaluate(e=>Number(e.parentElement.querySelector('#page-count').textContent.split('/')[1]));for(let p=1;p<pages;p++)await page.locator('#next-page').click();await expect(page.locator('#page')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();await page.locator('#close-case').click()}
  }
 });

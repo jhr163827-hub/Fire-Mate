@@ -28,15 +28,15 @@ test('certificates can be added, edited and deleted, and ride along in backups',
  await page.locator('#fmCertForm button.primary').click();
  await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('SQLD');await page.locator('#fmCertDate').fill('2025-03-01');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('🎓 내 자격증 2개');
- await expect(page.locator('.fm-cert')).toHaveText(['💻SQLD2025.03.01','💻정보처리기사한국산업인력공단 · 2024.06.14']);
+ await expect(page.locator('.fm-cert')).toHaveText(['💻SQLD2025.03.01 취득','💻정보처리기사한국산업인력공단2024.06.14 취득']);
  await page.locator('.fm-cert',{hasText:'SQLD'}).click();
  await page.locator('#fmCertOrg').fill('데이터산업진흥원');await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('.fm-cert').first()).toHaveText('💻SQLD데이터산업진흥원 · 2025.03.01');
+ await expect(page.locator('.fm-cert').first()).toHaveText('💻SQLD데이터산업진흥원2025.03.01 취득');
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_certificates_v1')).list.length);expect(saved).toBe(2);
  await page.locator('.fm-cert',{hasText:'SQLD'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
  await expect(page.locator('.fm-cert')).toHaveCount(1);
  await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('일반기계기사');await page.locator('#fmCertGoal').check();await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('.fm-cert-goal')).toHaveText('🎯일반기계기사도전 중');
+ await expect(page.locator('.fm-cert-goal')).toHaveText('🎯일반기계기사시험일 정하기 ›');
  await expect(page.locator('#fmCertSub')).toHaveText('새내기 수집가 · 도전 중 1');
  // A goal with an exam date counts down; the form label follows the goal checkbox.
  await page.locator('.fm-cert-goal').click();await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
@@ -68,7 +68,7 @@ test('위시리스트 adds items, edits price, saving, link and 꼭, checks them
  await page.locator('#fmWishEForm button.primary').click();await expect(page.locator('#fmWishSheet')).toBeHidden();
  const shoe=page.locator('.fm-wish-item',{hasText:'러닝화'});
  await expect(page.locator('.fm-wish-item').first()).toContainText('러닝화');// 꼭 goes to the top
- await expect(shoe).toContainText('₩150,000 · ₩50,000 모음');await expect(shoe).toContainText('🔥 꼭');
+ await expect(shoe).toContainText('₩150,000 · ₩50,000 모음');await expect(shoe).toContainText('🔥 러닝화 🔗');
  await expect(page.locator('#fmWishHero')).toContainText('₩1,300,000');
  await page.locator('[aria-label="러닝화 샀어요"]').click();
  await expect(page.locator('.fm-wish-sec')).toHaveText('산 것 ✓ · ₩150,000');

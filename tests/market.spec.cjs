@@ -5,7 +5,7 @@ const live={updatedAt:new Date().toISOString(),quotes:{'IDX-IXIC':{price:26008.8
 const hist={symbol:'IXIC',points:Array.from({length:400},(_,i)=>({date:day(399-i),close:20000+i*10}))};
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
 test.beforeEach(async({page})=>{
- await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.request().url().endsWith('/chart-data/live-quotes.json')?r.fulfill({json:live}):r.abort());
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.request().url().includes('/chart-data/live-quotes.json')?r.fulfill({json:live}):r.abort());
  await page.route('**/chart-data/IDX-IXIC.json',r=>r.fulfill({json:hist}));
  await page.route('**/chart-data/IDX-GSPC.json',r=>r.fulfill({status:404,body:''}));
  await page.addInitScript(()=>localStorage.setItem('firemate_onboarding_v1','dismissed'));

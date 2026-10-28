@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.180</title><link rel="stylesheet" href="./app.css?v=3.5.180"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-180">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.181</title><link rel="stylesheet" href="./app.css?v=3.5.181"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-181">
 
 
 
@@ -826,7 +826,7 @@ $('export').onclick=()=>{const content=fmBuildBackup();if(content===null)return;
 // How old a holding's price is: quotes older than three days and hand-entered prices are labelled.
 // Backup and pre-market/after-hours prices saved every 30 minutes by the repo's scheduled job (chart-data/live-quotes.json, no API key).
 var fmLive=null;
-async function fmLoadLiveQuotes(){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),10000);try{const r=await fetch('https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/chart-data/live-quotes.json',{signal:c.signal,cache:'no-store'});if(r.ok)fmLive=await r.json()}finally{clearTimeout(t)}}catch{}return fmLive}
+async function fmLoadLiveQuotes(){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),10000);try{const r=await fetch('https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/chart-data/live-quotes.json?_='+Date.now(),{signal:c.signal,cache:'no-store'});if(r.ok)fmLive=await r.json()}finally{clearTimeout(t)}}catch{}return fmLive}
 // 시장: index levels come from the same scheduled live-quotes file (IDX-*), ten-year closes from chart-data/IDX-*.json.
 var FM_IDX=[['IXIC','나스닥'],['GSPC','S&P500'],['KS11','코스피'],['KQ11','코스닥'],['USDKRW','원/달러']],fmIdxCache={},fmIdxSel=null,fmIdxPer=365;
 function fmIdxNow(k){const q=fmLive?.quotes?.['IDX-'+k];return q?.price?{p:q.price,d:q.prevClose?(q.price/q.prevClose-1)*100:null}:null}
@@ -838,7 +838,7 @@ el.innerHTML=`<div class="fm-mk-per">${[[30,'1개월'],[90,'3개월'],[365,'1년
 function fmExtPrice(x){const q=x?.type==='USD'&&fmLive?.quotes?.[x.ticker],at=Date.parse(q?.extAt||'');if(!(Number(q?.ext)>0)||!(Date.now()-at<57600000))return '';const base=Number(q.price)||Number(x.price),d=base>0?(q.ext-base)/base*100:0;return ' <span class="fm-market-ext" style="color:'+(d>0?'var(--up)':d<0?'var(--down)':'var(--sub)')+'">'+(q.extKind==='pre'?'프리장':'애프터')+' $'+Number(q.ext).toLocaleString('ko-KR',{maximumFractionDigits:4})+' ('+(d>0?'+':'')+d.toFixed(2)+'%)</span>'}
 // +₩1,000 / −₩1,000
 function fmSW(n){return (n>0?'+':n<0?'−':'')+won(Math.abs(n))}
-function fmQuoteAge(h){const at=Date.parse(h?.quoteAt||'');if(h?.type==='KRW'&&/^\d{6}$/.test(h.ticker))return Number.isFinite(at)?' · '+safe(new Date(at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))+' 기준':' · 시세 시각 미확인';if(!Number.isFinite(at))return Number(h?.price)>0?' · 직접 입력가':'';const days=Math.floor((Date.now()-at)/86400000);return days>=3?' · <span class="fm-stale">'+days+'일 전 시세</span>':''}
+function fmQuoteAge(h){const at=Date.parse(h?.quoteAt||'');if(h?.type==='KRW'&&/^\d{6}$/.test(h.ticker))return Number.isFinite(at)?' · '+safe(new Date(at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))+' 기준'+(fmKrMarketOpen()&&Date.now()-at>600000?' · <span class="fm-stale">'+Math.floor((Date.now()-at)/60000)+'분 전 시세 · 갱신 지연</span>':''):' · 시세 시각 미확인';if(!Number.isFinite(at))return Number(h?.price)>0?' · 직접 입력가':'';const days=Math.floor((Date.now()-at)/86400000);return days>=3?' · <span class="fm-stale">'+days+'일 전 시세</span>':''}
 function fmFiniteNumber(value){const n=Number(value);return Number.isFinite(n)?n:0}
 function assetValue(h){const fx=(h.type==='USD'||h.type==='CRYPTO_USD')?fmFiniteNumber(data.balance.fx):1;return fmFiniteNumber(fmFiniteNumber(h.qty)*fmFiniteNumber(h.price)*fx)}
 function assetCost(h){const fx=(h.type==='USD'||h.type==='CRYPTO_USD')?fmFiniteNumber(data.balance.fx):1;return fmFiniteNumber(fmFiniteNumber(h.qty)*fmFiniteNumber(h.cost)*fx)}
@@ -1773,6 +1773,19 @@ const raw=q?.at||q?.quoteAt||q?.timestamp;
 const at=raw?new Date(typeof raw==='number'&&raw<1e12?raw*1000:raw):/^\d{8}$/.test(date)?new Date(date.slice(0,4)+'-'+date.slice(4,6)+'-'+date.slice(6,8)+'T15:30:00+09:00'):null;
 return at&&Number.isFinite(at.getTime())&&at.getTime()<=Date.now()+60000?at.toISOString():null;
 }
+// Naver's public JSONP snapshot avoids browser CORS restrictions. Its server time is
+// used only for an OPEN market; closed quotes must retain their actual trading date.
+function fmKrMarketOpen(){const d=new Date(Date.now()+9*3600000),m=d.getUTCHours()*60+d.getUTCMinutes();return d.getUTCDay()>0&&d.getUTCDay()<6&&m>=540&&m<930}
+function fmFetchKrLive(code){return new Promise((resolve,reject)=>{
+const name='fmKr_'+code+'_'+Math.random().toString(36).slice(2),script=document.createElement('script');
+const done=(q,error)=>{clearTimeout(timer);script.remove();delete window[name];error?reject(Error(error)):resolve(q)};
+const timer=setTimeout(()=>done(null,'국내 장중 조회 시간 초과'),7000);
+window[name]=payload=>{const q=payload?.result?.areas?.find(a=>a.name==='SERVICE_ITEM')?.datas?.find(q=>q.cd===code),at=Number(payload?.result?.time);
+if(payload?.resultCode!=='success'||q?.ms!=='OPEN'||!(Number(q.nv)>0)||!Number.isFinite(at)||at>Date.now()+60000||Date.now()-at>120000)return done(null,'유효한 장중 시세 없음');
+done({code,currency:'KRW',price:Number(q.nv),prevClose:Number(q.sv),name:q.nm,at:new Date(at).toISOString()})};
+script.onerror=()=>done(null,'국내 장중 조회 연결 실패');script.charset='euc-kr';
+script.src='https://polling.finance.naver.com/api/realtime?query=SERVICE_ITEM:'+code+'&_callback='+name+'&_='+Date.now();document.head.append(script);
+})}
 function priceDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function priceLog(){try{return JSON.parse(localStorage.getItem(PRICE_LOG)||'[]')}catch{return []}}
 function todayChecks(){return priceLog().filter(x=>x.day===priceDay())}
@@ -1793,7 +1806,7 @@ const v=fmGetLatestQuote();
 if(!v||!Number.isFinite(v.time))return '시세 갱신 기록 없음';
 const d=new Date(v.time),now=new Date(),same=d.toDateString()===now.toDateString();
 const when=(same?'오늘 ':d.toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})+' ')+d.toLocaleTimeString('ko-KR',{hour:'numeric',minute:'2-digit',hour12:true});
-return '◷ '+when+' 시세 · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'');
+return '◷ '+when+' 조회 · '+v.ok+'/'+v.total+'종목 성공'+(v.failed?' · '+v.failed+'종목 실패':'');
 }catch{return '시세 갱신 기록 없음'}
 }
 function fmShowQuoteFailures(){const box=$('fmQuoteFailures'),title=$('fmQuoteFailuresTitle'),list=$('fmQuoteFailuresList');if(!box||!title||!list)return;let info;try{info=fmGetLatestQuote()}catch{}const failures=Array.isArray(info?.failureDetails)?info.failureDetails:[];box.style.display=info?.failed?'block':'none';title.textContent=info?.failed?'실패 '+info.failed+'종목 · 원인 확인':'';list.replaceChildren();if(info?.failed&&!failures.length){list.textContent='이전 조회는 상세 오류가 저장되지 않았어요. 다음 시세 갱신부터 실패 원인이 표시됩니다.';return}failures.forEach(item=>{const row=document.createElement('div');row.style.cssText='padding:7px 0;border-bottom:1px solid var(--line)';const strong=document.createElement('strong');strong.textContent=String(item.symbol||'알 수 없음');row.append(strong,document.createTextNode(' · '+String(item.reason||'원인 미확인')));list.appendChild(row)})}
@@ -1815,18 +1828,18 @@ retryStocks.onclick=()=>{fmSetQuoteAttempt('실패 종목 재시도 요청');ref
 fmRestoreQuoteFailures();
 $('homeRefreshStocks').onclick=()=>$('refreshStocks').click();
 $('refreshStocks').onclick=()=>{const el=$('stockStatus');if(el)el.textContent='↻ 버튼 입력 확인 · 시세 조회 준비 중…';fmSetQuoteAttempt('시세 조회 요청됨');refreshStockPrices(false).catch(e=>{const msg='갱신 오류: '+String(e?.message||e);if(el)el.textContent=msg;fmQuoteNotice(msg);toast(msg);quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disabled=false;document.body.classList.remove('fm-quote-loading');fmShowQuoteTime();retryStocks.disabled=false})};
-async function refreshStockPrices(retryOnly,auto=false){
-if(quoteBusy){fmQuoteNotice('이미 조회 진행 중');priceStatus('이미 조회 진행 중');toast('이미 시세 조회가 진행 중이에요');return}const cooldown=fmQuoteCooldown();if(cooldown>0){const wait=Math.ceil(cooldown/1000);fmQuoteNotice('API 사용량 제한 · '+wait+'초 후 재시도 가능');priceStatus('API 사용량 제한 · '+wait+'초 후 다시 시도');if(!auto)toast('API 사용량 제한 · 약 '+wait+'초 후 다시 시도해 주세요');return}
+async function refreshStockPrices(retryOnly,auto=false,krOnly=false){
+if(quoteBusy){fmQuoteNotice('이미 조회 진행 중');priceStatus('이미 조회 진행 중');toast('이미 시세 조회가 진행 중이에요');return}const cooldown=fmQuoteCooldown();if(cooldown>0&&!krOnly){const wait=Math.ceil(cooldown/1000);fmQuoteNotice('API 사용량 제한 · '+wait+'초 후 재시도 가능');priceStatus('API 사용량 제한 · '+wait+'초 후 다시 시도');if(!auto)toast('API 사용량 제한 · 약 '+wait+'초 후 다시 시도해 주세요');return}
 const key=localStorage.getItem(PRICE_KEY);
 const allKr=[...new Set(data.holdings.filter(h=>h.type==='KRW'&&/^\d{6}$/.test(h.ticker)).map(h=>h.ticker))];
 const krSymbols=retryOnly?allKr.filter(x=>failedSymbols.includes('KR:'+x)):allKr;
-const allSymbols=[...new Set(data.holdings.filter(h=>h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
+const allSymbols=[...new Set(data.holdings.filter(h=>!krOnly&&h.type==='USD'&&/^[A-Z][A-Z0-9.\-]{0,14}$/.test(h.ticker)).map(h=>h.ticker))];
 const symbolsWithKey=retryOnly?allSymbols.filter(x=>failedSymbols.includes(x)):allSymbols;
 const symbols=key?symbolsWithKey:[];
-const cryptoAll=[...new Set(data.holdings.filter(h=>h.type==='CRYPTO_KRW'&&['BTC','ETH'].includes(String(h.ticker||'').toUpperCase())).map(h=>String(h.ticker).toUpperCase()))];
+const cryptoAll=[...new Set(data.holdings.filter(h=>!krOnly&&h.type==='CRYPTO_KRW'&&['BTC','ETH'].includes(String(h.ticker||'').toUpperCase())).map(h=>String(h.ticker).toUpperCase()))];
 const cryptoSymbols=retryOnly?cryptoAll.filter(x=>failedSymbols.includes('COIN:'+x)):cryptoAll;
 if(!symbolsWithKey.length&&!krSymbols.length&&!cryptoSymbols.length){fmQuoteNotice('조회 대상 없음 · 종목 코드 확인');priceStatus('조회 대상 없음');return toast('조회할 종목이 없어요. 국내 종목은 6자리 코드가 필요해요')}
-if(symbolsWithKey.length&&!key){fmQuoteNotice('미국 주식 API 키 미설정 · 자동 저장 시세로 반영');priceStatus('미국 주식은 자동 저장 시세(최대 30분 전)로 반영')}
+if(symbolsWithKey.length&&!key){fmQuoteNotice('미국 주식 API 키 미설정 · 자동 저장 시세로 반영');priceStatus('미국 주식은 자동 저장 시세로 반영 · 종목별 기준시각 확인')}
 const logs=todayChecks();
 if(!navigator.onLine){fmQuoteNotice('인터넷 연결 없음');priceStatus('오프라인 · 조회 중단');return toast('인터넷 연결을 확인해 주세요')}
 fmSetQuoteAttempt('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');priceStatus('조회 확인 대기 · 미국 '+symbols.length+'개 · 국내 '+krSymbols.length+'개 · 코인 '+cryptoSymbols.length+'개');
@@ -1837,7 +1850,7 @@ try{localStorage.setItem(PRICE_LOG,JSON.stringify([...logs,{day:priceDay(),time:
 priceStatus('조회 중…');
 // Query independent markets concurrently. US requests still obey Twelve Data credit limits.
 const fmQuoteStarted=performance.now();
-const krQuoteTimes=new Map();
+const krQuoteTimes=new Map(krSymbols.map(code=>[code,data.holdings.filter(h=>h.type==='KRW'&&h.ticker===code&&Number.isFinite(Date.parse(h.quoteAt))&&Date.parse(h.quoteAt)<=Date.now()+60000).map(h=>h.quoteAt).sort().at(-1)]));
 let fmUsElapsed=null;
 let fmUsMode='대상 없음',fmUsWaitMs=0;
 await Promise.all([
@@ -1845,14 +1858,23 @@ await Promise.all([
 // Codes are fetched together; each commit is synchronous, so updates never interleave.
 let krDone=0;await Promise.all(krSymbols.map(async code=>{
 try{
-let quote;
-const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);let response;
+const results=await Promise.allSettled([
+fmFetchKrLive(code),
+(async()=>{
+const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);let response;
 try{response=await fetch(KRX_URL+'?code='+encodeURIComponent(code),{signal:controller.signal,cache:'no-store'})}
 finally{clearTimeout(timer)}
 const payload=await response.json();
 if(!response.ok)throw Error(payload.error||'KRX HTTP '+response.status);
 if(payload.code!==code||payload.currency!=='KRW'||!Number.isFinite(Number(payload.price))||Number(payload.price)<=0)throw Error('유효하지 않은 KRX 가격');
-quote=payload;
+return payload;
+})()
+]);
+const candidates=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
+if(!candidates.length)throw Error(results.map(r=>r.reason?.message).filter(Boolean).join(' · '));
+let quote=candidates.sort((a,b)=>(Date.parse(fmKrQuoteTime(b))||0)-(Date.parse(fmKrQuoteTime(a))||0))[0];
+const saved=krQuoteTimes.get(code);
+if(saved&&Date.parse(saved)>(Date.parse(fmKrQuoteTime(quote))||0)){ok++}else{
 const at=fmKrQuoteTime(quote);krQuoteTimes.set(code,at);
 // KRX Worker may return only closing price. Use the existing daily chart
 // only when its latest close exactly matches the returned quote.
@@ -1869,6 +1891,7 @@ if(latest&&prior&&Number(latest.close)===Number(quote.price)&&Number(prior.close
 }catch(e){console.warn('국내 ETF 전일 종가 대체 조회 실패:',code,e)}
 }
 fmCommitQuoteUpdate(()=>{data.holdings.forEach(h=>{if(h.type==='KRW'&&h.ticker===code){if(Number(h.price)!==Number(quote.price))changed++;h.price=Number(quote.price);h.quoteAt=at;const prevRaw=quote.previous_close??quote.prevClose??quote.prev_close??quote.previousClose??quote.prev_closing_price??quote.previousClosingPrice;const prev=prevRaw==null?chartPrev:Number(String(prevRaw).replace(/,/g,''));const suppliedPct=quote.change_percent??quote.changePercent??quote.change_pct??quote.change_rate??quote.changeRate??quote.fluctuation_rate??quote.fluctuationRate;const parsedPct=suppliedPct==null?NaN:Number(String(suppliedPct).replace(/[%+,\s]/g,''));const changeRaw=quote.change??quote.change_amount??quote.changeAmount??quote.price_change??quote.priceChange;const change=changeRaw==null?NaN:Number(String(changeRaw).replace(/,/g,''));const derivedPrev=Number.isFinite(change)?Number(quote.price)-change:NaN;const nextPct=Number.isFinite(prev)&&prev>0?(Number(quote.price)-prev)/prev*100:(Number.isFinite(parsedPct)?parsedPct:(Number.isFinite(derivedPrev)&&derivedPrev>0?change/derivedPrev*100:null));h.dayChangePct=Number.isFinite(nextPct)?nextPct:null;h.dayChangeAt=h.dayChangePct===null?null:at;if(typeof quote.name==='string'&&quote.name.trim())h.quoteName=quote.name.trim().slice(0,80)}})});ok++;
+}
 }catch(e){failed.push({symbol:'KR:'+code,reason:String(e.message).slice(0,160)})}
 priceStatus('국내 조회 '+(++krDone)+'/'+krSymbols.length);quoteProgress(++quoteDone,quoteTotal);
 }));
@@ -1980,6 +2003,14 @@ quoteBusy=false;$('refreshStocks').disabled=false;$('homeRefreshStocks').disable
 if(!auto){if(failed.length)toast('조회 실패 '+failed.length+'개 · 기존 가격 유지');else toast(ok+'개 조회 완료 · 가격 변경 '+changed+'개')}priceStatus(ok+'개 조회 성공 · 가격 변경 '+changed+'개 · 실패 '+failed.length+(failed.length?' · '+failed.map(x=>x.symbol+': '+x.reason).join('; '):''));
 }
 priceStatus();
+let fmKrAutoAttempt=0;
+function fmRefreshKrIfStale(){
+if(document.hidden||!navigator.onLine||quoteBusy||!fmKrMarketOpen()||Date.now()-fmKrAutoAttempt<120000)return;
+if(!data.holdings.some(h=>h.type==='KRW'&&/^\d{6}$/.test(h.ticker)&&(!Number.isFinite(Date.parse(h.quoteAt))||Date.now()-Date.parse(h.quoteAt)>120000)))return;
+fmKrAutoAttempt=Date.now();refreshStockPrices(false,true,true).catch(e=>console.warn('국내 자동 갱신:',e));
+}
+document.addEventListener('visibilitychange',fmRefreshKrIfStale);window.addEventListener('online',fmRefreshKrIfStale);setInterval(fmRefreshKrIfStale,60000);
+
 
 fmLoadLiveQuotes().then(l=>{if(l)try{renderHome();if(fmAssetView==='market')fmRenderMarket()}catch{}});recordDailyNetWorth();try{const autoDay=priceDay(),autoKey='fm_auto_quote_day_v1';if(localStorage.getItem(autoKey)!==autoDay&&navigator.onLine&&data.holdings.length){localStorage.setItem(autoKey,autoDay);setTimeout(async()=>{try{await autoRefreshFx();recordDailyNetWorth();await refreshStockPrices(false,true);recordDailyNetWorth()}catch(e){console.warn('Auto quote:',e)}},1200)}}catch(e){console.warn('Auto quote setup:',e)}try{const restored=sessionStorage.getItem(FM_TAB_KEY);if(FM_VALID_TABS.has(restored)&&document.getElementById('view-'+restored)){active=restored;document.querySelectorAll('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+restored));document.querySelectorAll('.tab,.bottom-item[data-view]').forEach(e=>e.classList.toggle('active',(e.dataset.view===restored||e.dataset.view==='fire'&&['firecalc','firelife','retire','firelab'].includes(restored)||e.dataset.view===(restored==='monthly'?'home':restored==='insights'?(fmDetailReturn?.tab==='home'?'home':'calendar'):''))));try{history.replaceState(fmNavState(),' ',location.href)}catch{}}}catch{}render();
 // Pull-to-refresh: the same quiet refresh as the morning auto run, on demand.
@@ -2108,7 +2139,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-180',VERSION='3.5.180';
+ const BUILD='fire-mate-v3-5-181',VERSION='3.5.181';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2322,4 +2353,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.180"></script></body></html>
+</style><script src="./js/features.js?v=3.5.181"></script></body></html>

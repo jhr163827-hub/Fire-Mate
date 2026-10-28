@@ -1,6 +1,6 @@
 const { test, expect } = require("@playwright/test");
 // The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
-test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({status:404,body:''}))});
+test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json*',r=>r.fulfill({status:404,body:''}));await page.route('https://polling.finance.naver.com/**',r=>r.abort())});
 async function seed(page) {
   await page.route("https://api.frankfurter.dev/**", (r) => r.abort());
   await page.goto("/index.html");

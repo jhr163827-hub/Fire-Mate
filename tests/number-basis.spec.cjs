@@ -240,6 +240,20 @@ test('the plan shows the last cycles as a ✓ grid and asks for one more import 
  await expect(page.locator('.fm-plan-nudge')).toHaveCount(0);
 });
 
+test('환율 효과 splits US holdings into 주가 and 환율 using the rate each holding was bought at',async({page})=>{
+ await load(page,seed({holdings:[{id:'q',accountId:'a',ticker:'QLD',type:'USD',qty:100,price:120,cost:80}],balance:{fx:1380,cash:0,other:0,debt:0}}));
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
+ const card=page.locator('#fmFxCard');
+ await expect(card).toContainText('추정');
+ await card.locator('summary').click();
+ await card.locator('[data-buyfx="q"]').fill('1300');await card.locator('[data-buyfx="q"]').blur();
+ await expect(card.locator('.fm-fx-split')).toContainText('📈 주가로+₩5,520,000');
+ await expect(card.locator('.fm-fx-split')).toContainText('💱 환율로+₩640,000');
+ await expect(card.locator('.fm-fx-total')).toContainText('+₩6,160,000');
+ await expect(card).not.toContainText('1년 평균으로 추정');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_buy_fx_v1')))).toEqual({q:1300});
+});
+
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{
  const d=new Date(),pm=new Date(d.getFullYear(),d.getMonth()-1,1),p=pm.getFullYear()+'-'+String(pm.getMonth()+1).padStart(2,'0');
  await page.addInitScript(p=>localStorage.setItem('firemate_pl_history_v1',JSON.stringify({[p+'-10']:[1000000,1000000],[p+'-28']:[1100000,1000000]})),p);

@@ -39,7 +39,7 @@ test('asset analysis shows growth, monthly P&L, then the milestone card with the
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('assets'));
  await page.locator('#fmAssetQuickAnalysis').click();
- const cards=page.locator('#fmAssetAnalysisView > .card');
+ const cards=page.locator('#fmAssetAnalysisView > .card:not([hidden])');// 환율 효과 appears only with US holdings
  await expect(cards).toHaveCount(3);
  await expect(cards.nth(0)).toContainText('내 자산 성장');
  await expect(cards.nth(1)).toContainText('월별 수익');

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.182</title><link rel="stylesheet" href="./app.css?v=3.5.182"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-182">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.183</title><link rel="stylesheet" href="./app.css?v=3.5.183"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-183">
 
 
 
@@ -837,7 +837,8 @@ async function fmLoadLiveQuotes(){try{const c=new AbortController(),t=setTimeout
 var FM_IDX=[['IXIC','나스닥'],['GSPC','S&P500'],['KS11','코스피'],['KQ11','코스닥'],['USDKRW','원/달러']],fmIdxCache={},fmIdxSel=null,fmIdxPer=365;
 function fmIdxNow(k){const q=fmLive?.quotes?.['IDX-'+k];return q?.price?{p:q.price,d:q.prevClose?(q.price/q.prevClose-1)*100:null}:null}
 const fmIdxPct=(d,f=2)=>d==null?'':`<b style="color:${d>0?'var(--up)':d<0?'var(--down)':'var(--sub)'}">${d>0?'+':''}${d.toFixed(f)}%</b>`,fmIdxNum=v=>v.toLocaleString('ko-KR',{maximumFractionDigits:2});
-function fmRenderHomeMarket(){const el=$('fmHomeMarket');if(!el||!fmLive)return;const parts=FM_IDX.map(([k,n])=>{const x=fmIdxNow(k);return x?(k==='USDKRW'?'환율 '+fmIdxNum(Math.round(x.p)):n.replace('500','')+' '+fmIdxPct(x.d,1)):''}).filter(Boolean);el.hidden=!parts.length;el.innerHTML=parts.map(p=>'<span>'+p+'</span>').join('<i> · </i>')}
+function fmRenderHomeMarket(){const el=$('fmHomeMarket');if(!el||!fmLive)return;// One line on home: 코스닥 stays in the 시장 tab only.
+const parts=FM_IDX.filter(([k,n])=>!/코스닥/.test(n)).map(([k,n])=>{const x=fmIdxNow(k);return x?(k==='USDKRW'?'환율 '+fmIdxNum(Math.round(x.p)):n.replace('500','')+' '+fmIdxPct(x.d,1)):''}).filter(Boolean);el.hidden=!parts.length;el.innerHTML=parts.map(p=>'<span>'+p+'</span>').join('<i> · </i>')}
 function fmRenderMarket(){const box=$('fmMarketList');if(!box)return;box.innerHTML=FM_IDX.map(([k,n])=>{const x=fmIdxNow(k);return `<button type="button" class="fm-mk-row" data-idx="${k}" aria-expanded="${fmIdxSel===k}"><span>${n}</span><strong>${x?fmIdxNum(x.p):'—'}</strong>${x?fmIdxPct(x.d):''}</button>`+(fmIdxSel===k?'<div id="fmMarketChart" class="fm-mk-chart"></div>':'')}).join('');box.querySelectorAll('[data-idx]').forEach(b=>b.onclick=()=>{fmIdxSel=fmIdxSel===b.dataset.idx?null:b.dataset.idx;fmRenderMarket()});if(fmIdxSel)fmDrawIdx(fmIdxSel)}
 async function fmDrawIdx(k){const el=$('fmMarketChart');if(!el)return;try{const rows=fmIdxCache[k]||(fmIdxCache[k]=await fetch('./chart-data/IDX-'+k+'.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>j.points));const cut=fmIdxPer?Date.now()-fmIdxPer*864e5:0,c=rows.filter(v=>Date.parse(v.date)>=cut).map(v=>+v.close);if(c.length<2)throw 0;const hi=Math.max(...c),lo=Math.min(...c),sp=hi-lo||1,ch=(c.at(-1)/c[0]-1)*100;
 el.innerHTML=`<div class="fm-mk-per">${[[30,'1개월'],[90,'3개월'],[365,'1년'],[1825,'5년'],[0,'10년']].map(([v,t])=>`<button type="button" data-per="${v}" aria-pressed="${v===fmIdxPer}">${t}</button>`).join('')}</div><svg viewBox="0 0 320 150" role="img" aria-label="${ch.toFixed(1)}%"><path d="${c.map((v,i)=>(i?'L':'M')+(i*320/(c.length-1)).toFixed(1)+' '+(146-(v-lo)/sp*140).toFixed(1)).join('')}" fill="none" style="stroke:${ch>=0?'var(--up)':'var(--down)'};stroke-width:2"/></svg><p class="mini">기간 ${fmIdxPct(ch)} · 최고 ${fmIdxNum(hi)} · 최저 ${fmIdxNum(lo)}</p>`;el.querySelectorAll('[data-per]').forEach(b=>b.onclick=()=>{fmIdxPer=+b.dataset.per;fmDrawIdx(k)})}catch{if(el.isConnected)el.textContent='차트 데이터를 아직 받지 못했어요.'}}
@@ -2145,7 +2146,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-182',VERSION='3.5.182';
+ const BUILD='fire-mate-v3-5-183',VERSION='3.5.183';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2359,4 +2360,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.182"></script></body></html>
+</style><script src="./js/features.js?v=3.5.183"></script></body></html>

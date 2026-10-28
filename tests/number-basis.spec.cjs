@@ -223,6 +223,23 @@ test('rows imported before directions were kept still sort out: unpaired transfe
  await expect(page.locator('#fmHomePlanRows')).toContainText('💰 투자329만 / 300만');
 });
 
+test('the plan shows the last cycles as a ✓ grid and asks for one more import while transfers lack a direction',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,28,9,0));
+ const x=(id,date,memo,amount)=>({id,date,type:'transfer',category:'계좌 이체',amount,memo,bankExcelKey:[date,'10:00','transfer','이체','미분류',memo,amount,'토스뱅크 통장'].join('|')});
+ const tx=[x('a','2026-08-26','삼성증권',3000000),x('b','2026-09-24','업비트 입금',300000),...[1,2,3,4,5].map(i=>x('n'+i,'2026-10-2'+i,'메모'+i,10000))];
+ await load(page,seed({tx}));
+ await page.locator('#fmHomePlanSum').click();
+ const rows=page.locator('#fmHomePlanRows');
+ await expect(rows.locator('.fm-plan-nudge')).toContainText('다시 가져오면');
+ await rows.locator('.fm-plan-hist summary').click();
+ await expect(rows.locator('.fm-plan-hist th',{hasText:'8월'})).toHaveCount(1);
+ await expect(rows.locator('.fm-plan-hist tr').nth(1).locator('td.ok')).toHaveCount(1);// 투자 300만 reached only in the 8/25 cycle
+ // Directions saved (as after a re-import) remove the nudge.
+ await page.evaluate(()=>{const d={};JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.forEach(t=>d[t.bankExcelKey]=-1);localStorage.setItem('firemate_xfer_dir_v1',JSON.stringify(d))});
+ await page.reload();await page.locator('#fmHomePlanSum').click();
+ await expect(page.locator('.fm-plan-nudge')).toHaveCount(0);
+});
+
 test('월별 수익 lists each month\'s closing P&L from the saved history plus this month live',async({page})=>{
  const d=new Date(),pm=new Date(d.getFullYear(),d.getMonth()-1,1),p=pm.getFullYear()+'-'+String(pm.getMonth()+1).padStart(2,'0');
  await page.addInitScript(p=>localStorage.setItem('firemate_pl_history_v1',JSON.stringify({[p+'-10']:[1000000,1000000],[p+'-28']:[1100000,1000000]})),p);

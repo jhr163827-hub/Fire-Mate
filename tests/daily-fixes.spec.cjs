@@ -247,7 +247,7 @@ test('the BankSalad summary sheet syncs cash balances (undoable), flags holdings
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
   ['','1.고객정보'],['','설명'],['','이름'],['','홍길동'],
   ['','3.재무현황'],['','설명'],['','자산','','','','부채'],['','항목','상품명','','금액'],
-  ['','자유입출금 자산','토스뱅크 통장','',1200000],['','','세이프박스','',3000000],['','투자성 자산','슈왑 미국 배당주 ETF','',5000000],['','총자산','','',9200000],
+  ['','자유입출금 자산','토스뱅크 통장','',1200000],['','','세이프박스','',3000000],['','투자성 자산','슈왑 미국 배당주 ETF','',5000000],['','','100세연금저축펀드','',2000000],['','기타 실물 자산','금','',500000],['','총자산','','',11700000],
   ['','4.보험현황'],['','설명'],['','금융사','보험명','','계약상태','총납입금','계약일자','만기일자'],['','QA손해보험','QA건강보험','','정상',1200000,'2020-01-01','2060-01-01'],
   ['','5.투자현황'],['','설명'],['','투자상품종류','금융사','상품명','','투자원금','평가금액'],['','주식','NH투자증권','슈왑 미국 배당주 ETF','',4000000,5000000],['','총계']
  ]),'뱅샐현황');
@@ -264,5 +264,14 @@ test('the BankSalad summary sheet syncs cash balances (undoable), flags holdings
  await page.keyboard.press('Escape');await page.evaluate(()=>{document.querySelectorAll('.modalbg.open,.modalbg.show').forEach(m=>m.classList.remove('open','show'));window.fmGo('assets')});
  await page.locator('#fmAssetQuickAnalysis').click();
  await expect(page.locator('#fmBsList')).toContainText('SCHD');await expect(page.locator('#fmBsList')).toContainText('뱅크샐러드 ₩5,000,000');
- await expect(page.locator('#fmInsSum')).toHaveText('1개 · 총납입 120만원');
+ await expect(page.locator('#fmInsSum')).toHaveText('1개');
+ await expect(page.locator('#fmBsReturn')).toContainText('📈 증권사 기준 원금 ₩4,000,000 → ₩5,000,000 (+25.0%)');
+ // Pension and gold are in the file but not in the app: add them as accounts, then take them back.
+ const miss=page.locator('#fmBsMissing');await expect(miss).toContainText('🧩 앱에 없는 자산 2개 · ₩2,500,000');
+ await page.locator('[data-bs-add]').evaluateAll(l=>l.forEach(i=>i.checked=true));
+ await page.locator('#fmBsAdd').click();await page.locator('#fmAskOk').click();
+ const added=async()=>(await saved(page)).accounts.filter(a=>['100세연금저축펀드','금'].includes(a.name)).map(a=>[a.name,a.kind,a.amount]);
+ await expect.poll(added).toEqual([['100세연금저축펀드','investment',2000000],['금','physical',500000]]);
+ await page.locator('#fmBsAddUndo').click();await page.locator('#fmAskOk').click();
+ await expect.poll(added).toEqual([]);
 });

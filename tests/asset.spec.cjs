@@ -285,3 +285,21 @@ test('dividend gross/net totals aggregate USD across accounts and KRW with corre
  await expect(krw).toContainText('₩254');
  expect(JSON.parse(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).holdings).toEqual(fixture.holdings);
 });
+
+test('a monthly dividend goal shows progress, when the plan reaches it, what to buy to fill it and dividend growth',async({page,context})=>{
+ const iso=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
+ await context.route(/\/dividends\.json(?:\?|$)/,route=>route.fulfill({json:{updatedAt:iso(0),symbols:{SCHD:{currency:'USD',events:[-700,-610,-520,-430,-300,-210,-120,-30].map((n,i)=>({date:iso(n),amount:i<4?0.4:0.5}))}}}}));
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.request().url().includes('dividends.json')?r.fallback():r.abort());
+ await page.addInitScript(()=>{if(sessionStorage.getItem('dg'))return;sessionStorage.setItem('dg','1');localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],rec:[],budgets:{},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'SCHD',name:'SCHD',type:'USD',qty:1000,price:28,cost:25}]}))});
+ await page.goto('/index.html');
+ await page.locator('button.bottom-item[data-view="assets"]').click();
+ await page.locator('#fmAssetQuickDividend').click();
+ await page.locator('#fmDivGoalIn').fill('50');await page.locator('#fmDivGoalForm button').click();
+ // 1,000주 × $2 × 1,400 × 85% = 연 238만 → 월 약 19.8만 of 50만.
+ const goal=page.locator('#fmDivGoal');
+ await expect(goal).toContainText('🎯 배당 월급 ₩198,000 / ₩500,000');
+ await expect(goal).toContainText(/40% · 지금 계획대로면 \d{4}년쯤/);
+ await expect(goal).toContainText('SCHD1,522주');
+ await expect(goal).toContainText('📈 1년 배당 성장 SCHD +25%');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_div_goal_v1'))).toBe('500000');
+});

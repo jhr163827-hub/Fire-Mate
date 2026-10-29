@@ -2429,8 +2429,8 @@ html body #view-home #fmHomePlanRows>details>summary{display:flex;justify-conten
 html body #view-home #fmHomePlanRows>details>summary.ok span:last-child{color:var(--green);font-weight:700}
 html body #view-home #fmHomePlanRows>details>summary.ok span:last-child::after{content:' ✓'}
 html body #view-home #fmHomePlanRows>details>p{display:flex;justify-content:space-between;gap:8px;margin:0 0 4px 26px;font-size:12px;font-weight:500;color:var(--sub)}
-html body #settingsOverlay .fm-set-plan{border-radius:20px;background:var(--panel);padding:0 18px}
-html body #settingsOverlay .fm-set-plan>summary{padding:16px 0;font-size:16px;font-weight:700;list-style:none;cursor:pointer}
+html body #settingsOverlay .fm-set-plan,html body #settingsOverlay .fm-set-home{border-radius:20px;background:var(--panel);padding:0 18px}
+html body #settingsOverlay .fm-set-plan>summary,html body #settingsOverlay .fm-set-home>summary{padding:16px 0;font-size:16px;font-weight:700;list-style:none;cursor:pointer}
 html body #fmPlanForm{display:grid;gap:8px;padding-bottom:14px}
 html body #fmPlanForm label{display:flex;align-items:center;gap:8px;margin:0;font-size:14px}
 html body #fmPlanForm label span{flex:1}
@@ -2516,3 +2516,8 @@ html body .fm-fx-each{margin-top:6px}html body .fm-fx-row{display:grid;grid-temp
 .fm-addbuy input{width:100%;min-height:40px}.fm-addbuy-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-top:8px}.fm-addbuy-row label{font-size:12px;color:var(--sub);display:grid;gap:4px}.fm-addbuy-actions{display:flex;gap:8px}.fm-addbuy-actions button{min-height:42px;flex:1}
 .fm-brief-pop{position:fixed;inset:0;z-index:9998;display:flex;align-items:flex-end;justify-content:center;padding:16px;background:rgba(0,0,0,.5)}.fm-brief-card{width:100%;max-width:440px;margin-bottom:calc(8px + env(safe-area-inset-bottom));padding:20px;border-radius:22px;background:var(--card,#1c1f26);color:var(--text)}.fm-brief-card b{font-size:18px}.fm-brief-card ul{list-style:none;margin:14px 0 18px;padding:0;display:grid;gap:10px}.fm-brief-card li{font-size:15px;line-height:1.45}.fm-brief-card button{width:100%;min-height:48px}
 #view-fire .fm-fire-hero p:empty,#view-fire .fm-fire-hero .mini:empty{display:none}#view-fire .fm-fire-div{margin:6px 0 0}
+.fm-bs-note{margin:8px 0 0}.fm-bs-note button{min-height:32px;padding:0 10px;margin-left:6px;font-size:12px}
+.fm-bscmp p,#fmInsList p{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:0;padding:10px 0;border-bottom:1px solid var(--line);cursor:default}.fm-bscmp p[data-bs-hold]{cursor:pointer}.fm-bscmp span,#fmInsList span{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fm-bscmp small,#fmInsList small{grid-column:1/-1;color:var(--sub);font-size:12px}#fmBsAt{font-size:12px;color:var(--sub);font-weight:600}
+.fm-home-lines{display:grid;gap:4px;padding:6px 0}.fm-home-lines label{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:600}.fm-home-lines input{width:20px;height:20px}
+html body[data-home-hide~="market"] #view-home #fmHomeMarket,html body[data-home-hide~="div"] #view-home #fmHomeDiv,html body[data-home-hide~="alert"] #view-home #fmHomeAlert,html body[data-home-hide~="alert"] #view-home #fmHomeFx,html body[data-home-hide~="plan"] #view-home #fmHomePlan,html body[data-home-hide~="pace"] #view-home #fmPaceLine,html body[data-home-hide~="fire"] #view-home .fm-home-fire,html body[data-home-hide~="short"] #view-home .home-shortcuts,html body[data-home-hide~="backup"] #view-home .fm-backup-nudge{display:none}
+#fmCatBudgetEdit #fmCatBudgetAuto{width:100%;margin:8px 0}

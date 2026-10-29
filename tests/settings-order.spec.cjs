@@ -7,7 +7,7 @@ test('settings list 게임 아케이드 → 자격증 → 위시리스트 → �
  await page.locator('#settingsBottom').click();
  const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
   e.id==='fmArcadeOpen'?'arcade':e.id==='fmWishOpen'?'wish':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
- expect(order).toEqual(['arcade','certs','wish','📋 월급 주기 계획','data','⚠️ 데이터 초기화']);
+ expect(order).toEqual(['arcade','certs','wish','📋 월급 주기 계획','🏠 홈에 보일 것','data','⚠️ 데이터 초기화']);
  // 내 데이터 보관 is folded to one line; opening it shows the backup tools.
  await expect(page.locator('#fmStorageSum')).toHaveText('☁️ 백업 꺼짐');
  await expect(page.locator('#export')).toBeHidden();await page.locator('#fmStorage>summary').click();

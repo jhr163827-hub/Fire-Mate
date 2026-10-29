@@ -266,7 +266,7 @@ try{
   // Quote refresh only matters once holdings exist.
   const syncQuote=d=>{
    const idle=!(Array.isArray(d.holdings)&&d.holdings.length);
-   for(const id of ['homeRefreshStocks','refreshStocks']){const b=$(id);if(!b)continue;b.classList.toggle('fm-quote-idle',idle);b.title=idle?'등록된 종목이 없어요 · 자산에서 종목을 추가하면 시세를 불러와요':'보유 종목 시세 업데이트'}
+   for(const id of ['homeRefreshStocks','refreshStocks']){const b=$(id);if(!b)continue;b.classList.toggle('fm-quote-idle',idle);b.title=idle?'등록된 종목이 없어요 · 자산에서 종목을 추가하면 시세를 불러와요':'보유 종목 시세 새로고침'}
   };
   // Backup nudge: only once there is data worth losing, and never for brand-new profiles.
   const nudge=document.createElement('section');nudge.className='card fm-backup-nudge';nudge.hidden=true;nudge.setAttribute('aria-labelledby','fmBackupNudgeTitle');

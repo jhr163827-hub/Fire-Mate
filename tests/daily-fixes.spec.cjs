@@ -208,3 +208,19 @@ test('a cancelled card payment removes its charge instead of counting as spendin
  await expect.poll(tmoney).toBe(3);
  expect((await saved(page)).tx.filter(t=>t.memo==='GS25').length).toBe(0);
 });
+
+test('a card bill paid from the bank is a transfer, not spending on top of the card purchases, and old ones move once with a backup',async({page})=>{
+ const d=ago(2),key=(memo,payment,sub='카드')=>[d,'09:00','expense','금융',sub,memo,300000,payment].join('|');
+ // An earlier import stored the 삼성카드 bill (paid from the bank) as spending, next to a purchase made with that card.
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'bill',date:d,type:'expense',category:'기타',amount:300000,memo:'삼성카드',bankExcelKey:key('삼성카드','WON 통장')},{id:'buy',date:d,type:'expense',category:'쇼핑',amount:300000,memo:'가전',bankExcelKey:[d,'08:00','expense','쇼핑','','가전',300000,'삼성카드'].join('|')}]});
+ await page.goto('/index.html');
+ await expect.poll(async()=>(await saved(page)).tx.find(t=>t.id==='bill').type).toBe('transfer');
+ expect((await saved(page)).tx.find(t=>t.id==='buy').type).toBe('expense');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_cardbill_backup_v1')))).toEqual([{id:'bill',category:'기타'}]);
+ // A new bill row in a file comes in as a transfer; a cashback line is left alone.
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([[ago(1),'10:00','지출','금융','카드','현대카드',-120000,'KRW','토스뱅크 통장'],[ago(1),'11:00','지출','금융','카드','카드 캐시백 취소',-3000,'KRW','토스뱅크 통장']])});
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.find(t=>t.memo==='현대카드')?.type).toBe('transfer');
+ expect((await saved(page)).tx.find(t=>t.memo==='카드 캐시백 취소').type).toBe('expense');
+});

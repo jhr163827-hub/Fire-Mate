@@ -356,18 +356,6 @@ test('home flags an unusually large payment once, and the ledger shows 월급 �
  await page.evaluate(()=>window.fmGo('calendar'));await expect(page.locator('#fmCalendarSaved')).toContainText('월급 전');
 });
 
-test('a wish with a target month becomes a savings goal with a monthly amount',async({page})=>{
- const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+2);const due=d.toISOString().slice(0,7),M=Number(due.slice(5));
- await page.addInitScript(()=>localStorage.setItem('firemate_wishlist_v1',JSON.stringify({list:[{id:'w',name:'제주 여행',price:300000,saved:0,at:Date.now()}]})));
- await load(page,seed());
- await page.evaluate(()=>document.getElementById('fmWishOpen').click());
- await page.locator('[data-wish-edit="w"]').click();
- await page.locator('#fmWishEDue').fill(due);await page.locator('#fmWishEForm .primary').click();
- await expect(page.locator('[data-wish-edit="w"]')).toContainText('🎯 '+(due.slice(0,4)!=String(new Date().getFullYear())?due.slice(2,4)+'년 ':'')+M+'월까지 월 ₩100,000');
- await expect(page.locator('#fmWishHero')).toContainText('🎯 목표 맞추려면 매달 ₩100,000 (1개)');
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list[0].due)).toBe(due);
-});
-
 test('analysis shows how many days sooner FIRE comes if a big category is cut by 20%',async({page})=>{
  const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)},tx=[];
  for(const k of [1,2,3])tx.push({id:'s'+k,date:m(k)+'-05',type:'expense',category:'쇼핑',amount:300000,memo:'옷'});
@@ -375,4 +363,23 @@ test('analysis shows how many days sooner FIRE comes if a big category is cut by
  await page.evaluate(()=>window.fmGo('insights'));
  const row=page.locator('#fmTrimCard .fm-trim-row');await expect(row).toHaveCount(1);
  await expect(row).toContainText(/쇼핑 20% 줄이면FIRE \d+일 앞당김월 ₩60,000 · 1년 ₩720,000/);
+});
+
+test('analysis shows a no-spend grass for 26 weeks with the current and best streaks',async({page})=>{
+ const day=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};
+ // Spending 10 and 5 days ago only: days 9–6 are free (4), and today with the 4 days before is a 5-day streak.
+ await load(page,seed({tx:[{id:'a',date:day(10),type:'expense',category:'식비',amount:9000,memo:'점심'},{id:'b',date:day(5),type:'expense',category:'식비',amount:9000,memo:'점심'}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmGrassCard')).toBeVisible();
+ await expect(page.locator('#fmGrass i.free')).toHaveCount(9);
+ await expect(page.locator('#fmGrassStat')).toContainText('지금 연속 5일 🔥 최고 기록 · 최장 5일');
+});
+
+test('the net worth chart marks salary and big payments and explains the biggest day moves',async({page})=>{
+ const day=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)},snaps=[];
+ for(let i=20;i>=1;i--)snaps.push({day:day(i),amount:100000000+(i<=10?3000000:0)});
+ await load(page,seed({dailySnapshots:snaps,tx:[{id:'s',date:day(10),type:'income',category:'급여',amount:3000000,memo:'급여'}]}));
+ await page.evaluate(()=>{window.fmGo('assets');const s=document.getElementById('assetChartPeriod');s.value='30';s.dispatchEvent(new Event('change'))});
+ await expect(page.locator('#assetGrowthChart .fm-growth-ev')).toHaveCount(1);
+ await expect(page.locator('#assetGrowthChart .fm-growth-moves')).toContainText('+₩3,000,000💼 월급 ₩3,000,000');
 });

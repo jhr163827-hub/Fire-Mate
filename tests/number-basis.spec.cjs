@@ -383,3 +383,32 @@ test('the net worth chart marks salary and big payments and explains the biggest
  await expect(page.locator('#assetGrowthChart .fm-growth-ev')).toHaveCount(1);
  await expect(page.locator('#assetGrowthChart .fm-growth-moves')).toContainText('+₩3,000,000💼 월급 ₩3,000,000');
 });
+
+const payOf=(y,m)=>{const d=new Date(y,m,Math.min(25,new Date(y,m+1,0).getDate())),w=d.getDay();if(w===6)d.setDate(d.getDate()-1);if(w===0)d.setDate(d.getDate()-2);return d};
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+test('analysis shows where the last payday\'s money went',async({page})=>{
+ const n=new Date();n.setHours(0,0,0,0);let s=payOf(n.getFullYear(),n.getMonth());if(s>n)s=payOf(n.getFullYear(),n.getMonth()-1);const ps=payOf(s.getFullYear(),s.getMonth()-1),d=k=>{const x=new Date(ps);x.setDate(x.getDate()+k);return ymd(x)};
+ await load(page,seed({tx:[{id:'i',date:d(0),type:'income',category:'급여',amount:3000000,memo:'급여'},{id:'v',date:d(1),type:'transfer',category:'투자',amount:1000000,memo:'NH투자증권'},{id:'e',date:d(2),type:'expense',category:'식비',amount:500000,memo:'장보기'}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const list=page.locator('#fmFlowList');
+ await expect(list).toContainText('💰 투자₩1,000,000');await expect(list).toContainText('🛒 생활비₩500,000');await expect(list).toContainText('✨ 남은 돈₩1,500,000');
+ await expect(page.locator('#fmFlowHead')).toContainText('들어온 돈 ₩3,000,000');
+});
+
+test('a card\'s 실적 기준 shows how much is left this month',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await load(page,seed({tx:[{id:'c',date:m+'-01',type:'expense',category:'식비',amount:120000,memo:'마트',bankExcelKey:[m+'-01','10:00','expense','식비','','마트',120000,'KB국민카드'].join('|')}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const row=page.locator('#fmCardCard .fm-cardp').first();await expect(row).toContainText('KB국민카드₩120,000');
+ await row.locator('button').first().click();await row.locator('input').fill('30');await row.locator('form button').click();
+ await expect(page.locator('#fmCardCard .fm-cardp').first()).toContainText('실적까지 ₩180,000 남음');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_card_goal_v1')))).toEqual({'KB국민카드':300000});
+});
+
+test('FIRE estimates the actual yearly return from net worth records minus savings',async({page})=>{
+ const day=k=>{const d=new Date();d.setDate(d.getDate()-k);return d.toISOString().slice(0,10)};
+ // Today's record is the live net worth: 1억 investing + 1,000만 cash.
+ await load(page,seed({accounts:[{id:'a',name:'투자',kind:'investment',amount:100000000,fire:true}],dailySnapshots:[{day:day(100),amount:100000000},{day:day(0),amount:110000000}],tx:[{id:'i',date:day(50),type:'income',category:'급여',amount:5000000,memo:'급여'}]}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireReal')).toHaveText(/^📊 실제 수익률 연 19\.\d% \(순자산 기준 추정, 최근 100일\) · 계획 7% → 이대로면 FIRE \d+년 \d+개월 빨라요$/);
+});

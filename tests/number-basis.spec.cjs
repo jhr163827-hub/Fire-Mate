@@ -373,6 +373,7 @@ test('analysis shows a no-spend grass for 26 weeks with the current and best str
  await expect(page.locator('#fmGrassCard')).toBeVisible();
  await expect(page.locator('#fmGrass i.free')).toHaveCount(9);
  await expect(page.locator('#fmGrassStat')).toContainText('지금 연속 5일 🔥 최고 기록 · 최장 5일');
+ await expect(page.locator('#fmGrassSum')).toContainText('지금 연속 5일');
 });
 
 test('the net worth chart marks salary and big payments and explains the biggest day moves',async({page})=>{
@@ -443,4 +444,35 @@ test('the home morning line names a bill that comes out tomorrow',async({page})=
  const day=String(t.getDate()).padStart(2,'0'),m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
  await load(page,seed({tx:[1,2,3,4].map(k=>({id:'b'+k,date:m(k)+'-'+day,type:'expense',category:'통신',amount:95770,memo:'KT통신요금자동납부'}))}));
  await expect(page.locator('#fmHomeBrief')).toContainText('☀️ 오늘 · KT통신요금자동납부 내일 출금');
+});
+
+test('money a friend sends back for a shared meal lowers that payment to my share, and 되돌리기 restores it',async({page})=>{
+ const n=new Date();n.setHours(0,0,0,0);let s=payOf(n.getFullYear(),n.getMonth());if(s>n)s=payOf(n.getFullYear(),n.getMonth()-1);const ps=payOf(s.getFullYear(),s.getMonth()-1),d=k=>{const x=new Date(ps);x.setDate(x.getDate()+k);return ymd(x)};
+ const key=[d(3),'12:00','transfer','이체','','홍길동',10000,'카카오페이 머니'].join('|');
+ await page.addInitScript(k=>localStorage.setItem('firemate_xfer_dir_v1',JSON.stringify({[k]:1})),key);
+ await load(page,seed({tx:[{id:'i',date:d(0),type:'income',category:'급여',amount:3000000,memo:'급여'},{id:'e',date:d(2),type:'expense',category:'식비',amount:40000,memo:'고깃집'},{id:'x',date:d(3),type:'transfer',category:'계좌 이체',amount:10000,memo:'홍길동',bankExcelKey:key}]}));
+ await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx.find(t=>t.id==='e').amount).toBe(30000);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
+ expect(saved.tx.find(t=>t.id==='e').splitFrom).toBe(40000);expect(saved.tx.find(t=>t.id==='x').category).toBe('정산');
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmSplitNote')).toContainText('🤝 더치페이로 돌려받은 1건(₩10,000)은 내 몫만 지출로 셌어요');
+ await page.locator('#fmSplitUndo').click();
+ await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx.find(t=>t.id==='e').amount).toBe(40000);
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_split_off_v1'))).toBe('1');
+});
+
+test('the edit sheet shows how often and how much I spent at that shop this year',async({page})=>{
+ const day=new Date().toISOString().slice(0,10);
+ await load(page,seed({tx:[{id:'a',date:day,type:'expense',category:'카페·간식',amount:5000,memo:'스타벅스강남점'},{id:'b',date:day,type:'expense',category:'카페·간식',amount:6000,memo:'스타벅스 역삼점'},{id:'c',date:day,type:'expense',category:'식비',amount:9000,memo:'김밥천국'}]}));
+ await page.evaluate(()=>window.fmOpenEntry(window.fmLiveData().tx.find(t=>t.id==='a')));
+ await expect(page.locator('#entryShop')).toContainText('🏪 이 가게 올해 2번 · ₩11,000');
+ await page.evaluate(()=>window.fmOpenEntry(window.fmLiveData().tx.find(t=>t.id==='c')));
+ await expect(page.locator('#entryShop')).toBeHidden();
+});
+
+test('FIRE points out a raise and what saving half of it does',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
+ await load(page,seed({tx:[3,2,1,0].map(k=>({id:'s'+k,date:m(k)+'-01',type:'income',category:'급여',amount:k?3000000:3300000,memo:'급여'}))}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireRaise')).toHaveText(/^💼 월급이 \+10% \(₩300,000\) 늘었어요 · 절반인 월 15만 원을 더 모으면 FIRE \d+개월 빨라져요 ›$/);
 });

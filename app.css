@@ -2507,3 +2507,7 @@ html body .fm-fx-each{margin-top:6px}html body .fm-fx-row{display:grid;grid-temp
 .fm-buy-out{margin:8px 0 4px;padding:12px 14px;border-radius:14px;background:var(--line)}.fm-buy-out b{display:block;margin-bottom:6px}.fm-buy-out p{display:flex;justify-content:space-between;gap:10px;margin:6px 0 0;font-size:14px}.fm-buy-out p span{color:var(--sub)}.fm-buy-out p strong{text-align:right}
 .fm-health-row{display:grid;grid-template-columns:24px 1fr auto;gap:2px 8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.fm-health-row i{font-style:normal}.fm-health-row span{font-weight:700}.fm-health-row small{grid-column:2/-1;color:var(--sub);font-size:12px;line-height:1.5}
 .fm-buy-out small{display:block;margin-top:8px;color:var(--sub);font-size:12px}
+.fm-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none;cursor:pointer;position:relative;padding-right:24px}.fm-fold>summary::-webkit-details-marker{display:none}.fm-fold>summary h3{margin:0}.fm-fold>summary small{color:var(--sub);font-size:13px;font-weight:700;text-align:right}.fm-fold[open]>summary{margin-bottom:10px}
+.fm-split-note{margin-top:10px}.fm-split-note button{min-height:32px;padding:0 10px;margin-left:6px;font-size:12px}
+.fm-entry-shop{margin:0 0 4px;padding:9px 12px;border-radius:12px;background:var(--line);font-size:13px;color:var(--sub)}
+.fm-fire-raise{margin:8px 0 0;padding:10px 12px;border-radius:12px;background:var(--line);font-size:13px;font-weight:700;color:var(--green);cursor:pointer}

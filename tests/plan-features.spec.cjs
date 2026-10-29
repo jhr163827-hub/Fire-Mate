@@ -35,15 +35,16 @@ test('소비 분석 saves category budgets in their own key and no longer lists 
  expect(await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).toBe(before);
 });
 
-test('asset analysis shows growth, monthly P&L, then the milestone card with the next goal',async({page})=>{
+test('asset analysis shows growth, monthly P&L, the money health check, then the milestone card with the next goal',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmGo('assets'));
  await page.locator('#fmAssetQuickAnalysis').click();
  const cards=page.locator('#fmAssetAnalysisView > .card:not([hidden])');// 환율 효과 appears only with US holdings
- await expect(cards).toHaveCount(3);
+ await expect(cards).toHaveCount(4);
  await expect(cards.nth(0)).toContainText('내 자산 성장');
  await expect(cards.nth(1)).toContainText('월별 수익');
- await expect(cards.nth(2)).toContainText('자산 마일스톤');
+ await expect(cards.nth(2)).toContainText('내 돈 건강검진');
+ await expect(cards.nth(3)).toContainText('자산 마일스톤');
  await expect(page.locator('#assetBadges .fm-ms-steps .now')).toHaveCount(1);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });

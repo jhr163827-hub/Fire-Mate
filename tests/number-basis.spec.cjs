@@ -320,3 +320,38 @@ test('spending over the budget is also shown as how many days later FIRE comes',
  await load(page,seed({budgets:{[day.slice(0,7)]:100000},tx:[{id:'x',date:day,type:'expense',category:'쇼핑',amount:200000,memo:'옷'}]}));
  await expect(page.locator('#fmPaceLine')).toContainText(/예산 넘은 ₩100,000은 FIRE \+\d+일/);
 });
+
+test('a different purchase at a bill\'s shop is not counted as the bill, and last year\'s trips are not expected again',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [-1,-2,-3,-4])tx.push({id:'k'+k,date:m(k)+'-01',type:'expense',category:'쇼핑',amount:3900,memo:'주식회사 카카오'},{id:'s'+k,date:m(k)+'-25',type:'income',category:'급여',amount:3000000,memo:'급여'});
+ tx.push({id:'big',date:m(0)+'-20',type:'expense',category:'쇼핑',amount:25000,memo:'주식회사 카카오'},{id:'air',date:m(-11)+'-05',type:'expense',category:'여행',amount:400000,memo:'대한항공'},{id:'car',date:m(-11)+'-06',type:'expense',category:'보험',amount:600000,memo:'DB손해보험 자동차'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const row=page.locator('#fmBillsCard .fm-bills-row').first();
+ await expect(row).toContainText('₩3,900');await expect(row).toContainText('아직 안 나감');
+ // A bill whose amount changed this month (one payment on its usual day) still counts as paid.
+ await page.evaluate(()=>{const d=window.fmLiveData(),m=new Date().toISOString().slice(0,7);d.tx=d.tx.filter(t=>t.id!=='big');d.tx.push({id:'up',date:m+'-02',type:'expense',category:'쇼핑',amount:9900,memo:'주식회사 카카오'});window.fmGo('home');window.fmGo('insights')});
+ await expect(row).toContainText('₩9,900');await expect(row).toContainText('✓ 2일 나감');
+ const out=page.locator('#fmOutlookCard .fm-outlook-row').first();
+ await expect(out).toContainText('DB손해보험');await expect(out).not.toContainText('대한항공');
+});
+
+test('FIRE shows the savings rate of recent payday cycles',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [-1,-2,-3])tx.push({id:'s'+k,date:m(k)+'-25',type:'income',category:'급여',amount:4000000,memo:'급여'},{id:'e'+k,date:m(k)+'-27',type:'expense',category:'식비',amount:1000000,memo:'생활'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireSave')).toHaveText(/^💪 저축률 지난 월급 주기 75%( · \d번 평균 \d+%)?$/);
+});
+
+test('home flags an unusually large payment once, and the ledger shows 월급 전 instead of a loss before payday',async({page})=>{
+ const day=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10),tx=[];
+ for(let i=10;i<40;i+=5)tx.push({id:'f'+i,date:day(i),type:'expense',category:'식비',amount:20000,memo:'점심'});
+ tx.push({id:'big',date:day(1),type:'expense',category:'식비',amount:180000,memo:'오마카세'});tx.push({id:'t0',date:day(0),type:'expense',category:'카페·간식',amount:4500,memo:'커피'});
+ await load(page,seed({tx}));
+ const line=page.locator('#fmHomeAlert');await expect(line).toBeVisible();
+ await expect(line).toContainText('오마카세 ₩180,000 · 식비 평소의 9배');
+ await line.click();await expect(page.locator('#entryOverlay')).toBeVisible();
+ await page.reload();await expect(page.locator('#fmHomeAlert')).toBeHidden();
+ await page.evaluate(()=>window.fmGo('calendar'));await expect(page.locator('#fmCalendarSaved')).toContainText('월급 전');
+});

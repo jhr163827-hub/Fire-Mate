@@ -15,7 +15,7 @@ test('shared header and quote controls stay aligned through mobile tab and theme
    if(header)expect(box).toEqual(header);else header=box;
    if(tab!=='fire'){
     const b=page.locator(tab==='home'?'#homeRefreshStocks':'#refreshStocks');
-    await expect(b).toHaveText('업데이트');
+    await expect(b).toHaveText('시세 ↻');
     const rect=await b.boundingBox();
     expect(rect.height).toBeGreaterThanOrEqual(44);
     const layout={x:rect.x,width:rect.width,height:rect.height};

@@ -1828,6 +1828,7 @@ html,body{overscroll-behavior-y:contain}
 .fm-pace{margin-top:8px;font-size:13px;line-height:1.5;color:var(--sub)}
 .fm-pace strong{color:var(--text)}
 .fm-pace .over{color:var(--red);font-weight:800}
+.fm-pace-more summary{list-style:none;cursor:pointer;color:var(--sub);font-size:12px;font-weight:700;display:inline-block;position:relative;}html body .fm-pace-more>summary::after{display:none}.fm-pace-more summary i{font-style:normal;display:inline-block;font-size:12px;transition:transform .15s}.fm-pace-more[open] summary i{transform:rotate(180deg)}.fm-pace-more summary::-webkit-details-marker{display:none}.fm-pace .over+.fm-pace-more:not([open]){margin-left:8px;display:inline}
 .fm-card-x{margin-top:12px}
 .fm-card-x h3{margin:0 0 4px;font-size:16px}
 .fm-card-x .mini{margin:0 0 10px}

@@ -412,3 +412,35 @@ test('FIRE estimates the actual yearly return from net worth records minus savin
  await page.evaluate(()=>window.fmGo('fire'));
  await expect(page.locator('#fmFireReal')).toHaveText(/^📊 실제 수익률 연 19\.\d% \(순자산 기준 추정, 최근 100일\) · 계획 7% → 이대로면 FIRE \d+년 \d+개월 빨라요$/);
 });
+
+test('살까 말까 shows a price against FIRE days, this month\'s budget and ten years invested',async({page})=>{
+ const m=new Date().toISOString().slice(0,7);
+ await page.addInitScript(()=>localStorage.setItem('firemate_wishlist_v1',JSON.stringify({list:[]})));
+ await load(page,seed({budgets:{[m]:1000000}}));
+ await page.evaluate(()=>document.getElementById('fmWishOpen').click());
+ await page.locator('#fmBuyIn').fill('300000');await page.locator('#fmBuyForm button').click();
+ const out=page.locator('#fmBuyOut');
+ await expect(out).toContainText('₩300,000을 쓰면');
+ await expect(out).toContainText(/⏳ FIRE\+\d+일 늦어져요/);
+ await expect(out).toContainText('🧾 이번 달 예산사도 ₩700,000 남아요');
+ await expect(out).toContainText(/📈 (S&P500|투자)에 10년 두면약 ₩[\d,]+/);
+});
+
+test('the money health check grades 비상금, leverage, dollar share, the biggest holding and debt',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
+ await load(page,seed({balance:{fx:1000,cash:3000000,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'q',accountId:'a',ticker:'QLD',name:'QLD',type:'USD',qty:10,price:100,cost:90},{id:'s',accountId:'a',ticker:'SCHD',name:'SCHD',type:'USD',qty:30,price:100,cost:90}],tx:[1,2,3].map(k=>({id:'e'+k,date:m(k)+'-10',type:'expense',category:'식비',amount:1000000,memo:'생활'}))}));
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
+ const list=page.locator('#fmHealthList');
+ await expect(list).toContainText('🟡비상금3.0개월치');
+ await expect(list).toContainText('🟡레버리지 비중25%');
+ await expect(list).toContainText('🟡달러 자산100%');
+ await expect(list).toContainText('🔴가장 큰 종목SCHD 75%');
+ await expect(list).toContainText('🟢부채없음');
+});
+
+test('the home morning line names a bill that comes out tomorrow',async({page})=>{
+ const t=new Date();t.setDate(t.getDate()+1);test.skip(t.getDate()===1,'tomorrow is in the next month');
+ const day=String(t.getDate()).padStart(2,'0'),m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
+ await load(page,seed({tx:[1,2,3,4].map(k=>({id:'b'+k,date:m(k)+'-'+day,type:'expense',category:'통신',amount:95770,memo:'KT통신요금자동납부'}))}));
+ await expect(page.locator('#fmHomeBrief')).toContainText('☀️ 오늘 · KT통신요금자동납부 내일 출금');
+});

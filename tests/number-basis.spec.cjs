@@ -355,3 +355,24 @@ test('home flags an unusually large payment once, and the ledger shows 월급 �
  await page.reload();await expect(page.locator('#fmHomeAlert')).toBeHidden();
  await page.evaluate(()=>window.fmGo('calendar'));await expect(page.locator('#fmCalendarSaved')).toContainText('월급 전');
 });
+
+test('a wish with a target month becomes a savings goal with a monthly amount',async({page})=>{
+ const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+2);const due=d.toISOString().slice(0,7),M=Number(due.slice(5));
+ await page.addInitScript(()=>localStorage.setItem('firemate_wishlist_v1',JSON.stringify({list:[{id:'w',name:'제주 여행',price:300000,saved:0,at:Date.now()}]})));
+ await load(page,seed());
+ await page.evaluate(()=>document.getElementById('fmWishOpen').click());
+ await page.locator('[data-wish-edit="w"]').click();
+ await page.locator('#fmWishEDue').fill(due);await page.locator('#fmWishEForm .primary').click();
+ await expect(page.locator('[data-wish-edit="w"]')).toContainText('🎯 '+(due.slice(0,4)!=String(new Date().getFullYear())?due.slice(2,4)+'년 ':'')+M+'월까지 월 ₩100,000');
+ await expect(page.locator('#fmWishHero')).toContainText('🎯 목표 맞추려면 매달 ₩100,000 (1개)');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list[0].due)).toBe(due);
+});
+
+test('analysis shows how many days sooner FIRE comes if a big category is cut by 20%',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [1,2,3])tx.push({id:'s'+k,date:m(k)+'-05',type:'expense',category:'쇼핑',amount:300000,memo:'옷'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const row=page.locator('#fmTrimCard .fm-trim-row');await expect(row).toHaveCount(1);
+ await expect(row).toContainText(/쇼핑 20% 줄이면FIRE \d+일 앞당김월 ₩60,000 · 1년 ₩720,000/);
+});

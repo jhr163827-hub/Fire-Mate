@@ -298,7 +298,7 @@ test('small monthly bills are summed as subscriptions for the year, and the pace
  tx.push({id:'f1',date:m(1)+'-01',type:'expense',category:'식비',amount:10000,memo:'점심'},{id:'f2',date:m(0)+'-01',type:'expense',category:'식비',amount:90000,memo:'회식'});
  await load(page,seed({tx}));
  await page.evaluate(()=>window.fmGo('insights'));
- await expect(page.locator('#fmBillsSubs')).toHaveText(/^📺 구독 2건 · 1년이면 ₩153,480 \(FIRE \+\d+일\) · 쿠팡\(와우멤버십\), 네이버플러스멤버십$/);
+ await expect(page.locator('#fmBillsSubs')).toHaveText(/^📺 구독 2건 · 1년 ₩153,480 · FIRE \+\d+일$/);
  await page.evaluate(()=>window.fmGo('home'));
  await expect(page.locator('#fmPaceLine')).toContainText('가장 늘어난 곳 식비 +₩80,000');
 });
@@ -502,4 +502,14 @@ test('a trip sums the spending between two days without bills',async({page})=>{
  const row=page.locator('#fmTripList .fm-trip');await expect(row).toHaveCount(1);
  await expect(row).toContainText('제주 여행');await expect(row).toContainText('3일');await expect(row).toContainText('₩380,000');await expect(row).toContainText('여행 30만 · 식비 8만 · 하루');
  await expect(page.locator('#fmTripSum')).toHaveText('제주 여행 38만원');
+});
+
+test('dutch-pay pairs saved under the old loose rule go back to the full amount',async({page})=>{
+ const d=new Date().toISOString().slice(0,10);
+ await page.addInitScript(()=>localStorage.setItem('firemate_split_v1',JSON.stringify([{e:'taxi',x:'in',a:9350,cat:'계좌 이체'}])));
+ await load(page,seed({tx:[{id:'taxi',date:d,type:'expense',category:'교통',amount:1250,splitFrom:10600,memo:'택시'},{id:'in',date:d,type:'transfer',category:'정산',amount:9350,memo:'친구'}]}));
+ await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx.find(t=>t.id==='taxi').amount).toBe(10600);
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
+ expect(saved.tx.find(t=>t.id==='taxi').splitFrom).toBeUndefined();expect(saved.tx.find(t=>t.id==='in').category).toBe('계좌 이체');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_split_v1'))).toBe('[]');
 });

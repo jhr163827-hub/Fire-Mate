@@ -534,13 +534,14 @@ try{
    let d=fmLiveData();
    const groups=new Map();
    // Income under 기타 수입 (refunds, cashback, 1원 checks) is already a real category, so only spending is asked about.
-   for(const t of d.tx||[]){if(!t||t.type!=='expense')continue;const memo=String(t.memo||'').trim();if(!memo||t.category!=='기타'||Number(t.amount)<100)continue;const k=t.type+'|'+memo,g=groups.get(k)||{type:t.type,memo,n:0,sum:0};g.n++;g.sum+=Number(t.amount)||0;groups.set(k,g)}
+   for(const t of d.tx||[]){if(!t||t.type!=='expense')continue;const memo=String(t.memo||'').trim();if(!memo||t.category!=='기타'||Number(t.amount)<100)continue;// Branches of one shop are one row (same first four letters without company words), matching the main script's fmBrandKey.
+const b=memo.replace(/주식회사|㈜|\(주\)|유한회사/g,'').replace(/[\s()_\-.,·]+/g,''),k=t.type+'|'+(b.length>=6?b.slice(0,4):memo),g=groups.get(k)||{type:t.type,memo,n:0,sum:0,names:new Set};g.names.add(memo);g.n++;g.sum+=Number(t.amount)||0;groups.set(k,g)}
    const rows=[...groups.values()].sort((a,b)=>b.sum-a.sum).slice(0,8),host=$('fmUncatList');if(!host)return;
    const auto=Number(window.fmAutoCategorized)||0,note=$('fmAutoCatNote');if(note){note.hidden=!auto;if(auto&&!note.dataset.ready){note.dataset.ready='1';note.innerHTML='가게 이름으로 <strong>'+auto+'건</strong>을 자동 분류했어요. <button type="button" class="secondary" id="fmAutoCatUndo">되돌리기</button>';note.querySelector('button').onclick=()=>{const n=window.fmUndoAutoCategorize?.();window.fmAutoCategorized=0;note.hidden=true;window.fmToast?.(n?n+'건을 기타로 되돌렸어요':'되돌릴 기록이 없어요');render()}}}
    card.hidden=!rows.length&&!auto;const title=$('fmUncatTitle');if(title)title.textContent='분류가 필요한 가게 '+rows.length+'곳';const fold=$('fmUncatFold');if(fold)fold.hidden=!rows.length;
    host.replaceChildren(...rows.map(g=>{const row=document.createElement('div');row.className='fm-uncat-row';
     row.innerHTML='<div><strong></strong><span></span></div><select aria-label="분류 선택"><option value="">분류 선택</option>'+LISTS[g.type].map(c=>'<option>'+c+'</option>').join('')+'</select><button type="button" class="secondary">적용</button>';
-    row.querySelector('strong').textContent=g.memo;row.querySelector('span').textContent=(g.type==='income'?'수입 ':'')+g.n+'건 · '+won(g.sum);
+    row.querySelector('strong').textContent=g.memo+(g.names.size>1?' 외 '+(g.names.size-1)+'곳':'');row.querySelector('span').textContent=(g.type==='income'?'수입 ':'')+g.n+'건 · '+won(g.sum);
     row.querySelector('button').onclick=()=>{const c=row.querySelector('select').value;if(!c){window.fmToast?.('분류를 먼저 골라 주세요');return}const n=window.fmRecategorizeMerchant?.(g.type,g.memo,c);window.fmToast?.(n>0?g.memo+' '+n+'건을 '+c+'(으)로 바꿨어요':'바꾸지 못했어요');render()};
     return row}));
   };

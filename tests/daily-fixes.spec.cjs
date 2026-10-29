@@ -224,3 +224,19 @@ test('a card bill paid from the bank is a transfer, not spending on top of the c
  await expect.poll(async()=>(await saved(page)).tx.find(t=>t.memo==='현대카드')?.type).toBe('transfer');
  expect((await saved(page)).tx.find(t=>t.memo==='카드 캐시백 취소').type).toBe('expense');
 });
+
+test('fixing one branch of a shop also fixes its other branches and teaches the importer',async({page})=>{
+ const d=ago(3);
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'a',date:d,type:'expense',category:'기타',amount:5000,memo:'라온상회강남점'},{id:'b',date:d,type:'expense',category:'기타',amount:6000,memo:'라온상회 역삼점'}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmGo('insights'));
+ await page.locator('#fmUncatFold > summary').click();
+ const row=page.locator('#fmUncatList .fm-uncat-row');await expect(row).toHaveCount(1);await expect(row).toContainText('외 1곳');
+ await row.locator('select').selectOption('쇼핑');await row.locator('button').click();
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.category)).toEqual(['쇼핑','쇼핑']);
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([[ago(1),'10:00','지출','','','라온상회 선릉점',-5500,'KRW','카드'],[ago(1),'11:00','수입','','','',0,'KRW','통장']])});
+ await expect(page.locator('#bankExcelPreview')).toContainText('0원 1건 제외');
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.find(t=>t.memo==='라온상회 선릉점')?.category).toBe('쇼핑');
+});

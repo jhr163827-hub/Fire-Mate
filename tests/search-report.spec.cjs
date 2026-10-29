@@ -58,3 +58,13 @@ test('last month opens as swipeable story cards that close at the end',async({pa
  for(let i=0;i<4;i++){await story.locator('.fm-story-track').click({position:{x:350,y:400}});await page.waitForTimeout(450)}
  await expect(story).toHaveCount(0);
 });
+
+test('the year report opens as story cards too',async({page})=>{
+ await page.addInitScript(()=>{window.__fmYearAnyDay=true});
+ await page.goto('/index.html');
+ await page.locator('#fmHomeYear').click();
+ await page.locator('#fmYearStory').click();
+ const cards=page.locator('.fm-story .fm-story-card');
+ await expect(cards.first()).toContainText('년 모은 돈');
+ await expect(page.locator('.fm-story')).toContainText('무지출 날');
+});

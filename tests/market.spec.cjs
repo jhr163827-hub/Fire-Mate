@@ -46,3 +46,11 @@ test('during Korean market hours 코스피 comes live from Naver instead of the 
  await expect(p.locator('#fmMarketList .fm-mk-row').nth(2)).toContainText('코스피2,618+1.08%');
  await expect(p.locator('#fmMarketList .fm-mk-row').nth(3)).toContainText('코스닥750.12-0.42%');
 });
+test('a dollar target shows a home line while the rate is at or below it',async({page})=>{
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickMarket').click();
+ await page.locator('#fmFxGoalIn').fill('1330');await page.locator('#fmFxGoalForm button').click();
+ await page.evaluate(()=>window.fmGo('home'));
+ await expect(page.locator('#fmHomeFx')).toHaveText('💱 환율 1,326원 · 목표 1,330원 아래예요 · 달러 살 때 ›');
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmFxGoalIn').fill('1300');await page.locator('#fmFxGoalForm button').click();
+ await expect(page.locator('#fmHomeFx')).toBeHidden();
+});

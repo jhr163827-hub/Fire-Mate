@@ -513,3 +513,15 @@ test('dutch-pay pairs saved under the old loose rule go back to the full amount'
  expect(saved.tx.find(t=>t.id==='taxi').splitFrom).toBeUndefined();expect(saved.tx.find(t=>t.id==='in').category).toBe('계좌 이체');
  expect(await page.evaluate(()=>localStorage.getItem('firemate_split_v1'))).toBe('[]');
 });
+
+test('home lines can be hidden from settings and the category budget fills from the 3-month average',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
+ await load(page,seed({tx:[1,2,3].map(k=>({id:'f'+k,date:m(k)+'-10',type:'expense',category:'식비',amount:[0,300000,350000,400000][k],memo:'밥'}))}));
+ await expect(page.locator('#view-home .fm-home-fire')).toBeVisible();
+ await page.evaluate(()=>{const c=document.querySelector('[data-home-line="fire"]');c.checked=false;c.dispatchEvent(new Event('change'))});
+ await expect(page.locator('#view-home .fm-home-fire')).toBeHidden();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_home_hide_v1')))).toEqual(['fire']);
+ await page.evaluate(()=>window.fmGo('insights'));
+ await page.locator('#fmCatBudgetEdit > summary').click();await page.locator('#fmCatBudgetAuto').click();
+ await expect(page.locator('#fmCatB-식비')).toHaveValue('350,000');
+});

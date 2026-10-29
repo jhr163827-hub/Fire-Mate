@@ -240,3 +240,29 @@ test('fixing one branch of a shop also fixes its other branches and teaches the 
  await page.locator('#bankExcelConfirm').click();
  await expect.poll(async()=>(await saved(page)).tx.find(t=>t.memo==='라온상회 선릉점')?.category).toBe('쇼핑');
 });
+
+test('the BankSalad summary sheet syncs cash balances (undoable), flags holdings that differ and lists insurance',async({page})=>{
+ const wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단'],[ago(1),'10:00','지출','식비','','점심',-9000,'KRW','카드']]),'가계부 내역');
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+  ['','1.고객정보'],['','설명'],['','이름'],['','홍길동'],
+  ['','3.재무현황'],['','설명'],['','자산','','','','부채'],['','항목','상품명','','금액'],
+  ['','자유입출금 자산','토스뱅크 통장','',1200000],['','','세이프박스','',3000000],['','투자성 자산','슈왑 미국 배당주 ETF','',5000000],['','총자산','','',9200000],
+  ['','4.보험현황'],['','설명'],['','금융사','보험명','','계약상태','총납입금','계약일자','만기일자'],['','QA손해보험','QA건강보험','','정상',1200000,'2020-01-01','2060-01-01'],
+  ['','5.투자현황'],['','설명'],['','투자상품종류','금융사','상품명','','투자원금','평가금액'],['','주식','NH투자증권','슈왑 미국 배당주 ETF','',4000000,5000000],['','총계']
+ ]),'뱅샐현황');
+ const buffer=XLSX.write(wb,{type:'buffer',bookType:'xlsx'});
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},balance:{fx:1400,cash:100,other:0,debt:0},accounts:[{id:'s',name:'세이프박스',kind:'safe',amount:0,fire:true},{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'SCHD',name:'SCHD',type:'USD',qty:10,price:30,cost:25}],tx:[]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer});
+ await expect(page.locator('#fmBsNote')).toContainText('💰 뱅크샐러드 잔고로 맞췄어요 · 현금·예금 ₩100 → ₩1,200,000 · 계좌 1개');
+ let d=await saved(page);expect(d.balance.cash).toBe(1200000);expect(d.accounts.find(a=>a.id==='s').amount).toBe(3000000);
+ const snap=await page.evaluate(()=>localStorage.getItem('firemate_bs_snapshot_v1'));expect(snap).not.toContain('홍길동');
+ await page.locator('#fmBsUndo').click();
+ await expect.poll(async()=>(await saved(page)).balance.cash).toBe(100);expect((await saved(page)).accounts.find(a=>a.id==='s').amount).toBe(0);
+ await page.keyboard.press('Escape');await page.evaluate(()=>{document.querySelectorAll('.modalbg.open,.modalbg.show').forEach(m=>m.classList.remove('open','show'));window.fmGo('assets')});
+ await page.locator('#fmAssetQuickAnalysis').click();
+ await expect(page.locator('#fmBsList')).toContainText('SCHD');await expect(page.locator('#fmBsList')).toContainText('뱅크샐러드 ₩5,000,000');
+ await expect(page.locator('#fmInsSum')).toHaveText('1개 · 총납입 120만원');
+});

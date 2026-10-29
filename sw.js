@@ -1,5 +1,5 @@
-const CACHE='fire-mate-v3-5-196';
-const ASSETS=['./index.html','./app.css?v=3.5.196','./js/features.js?v=3.5.196','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='fire-mate-v3-5-197';
+const ASSETS=['./index.html','./app.css?v=3.5.197','./js/features.js?v=3.5.197','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const validPage=text=>text.includes("const BUILD='"+CACHE+"'")&&text.includes('id="view-home"')&&text.includes('id="view-assets"')&&text.includes('id="view-fire"')&&text.length>100000;
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})));const page=await cache.match('./index.html');if(!page||!validPage(await page.text())){await caches.delete(CACHE);throw Error('App and worker build mismatch')}})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('fire-mate-v')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})())});

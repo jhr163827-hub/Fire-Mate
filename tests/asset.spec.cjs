@@ -303,3 +303,23 @@ test('a monthly dividend goal shows progress, when the plan reaches it, what to 
  await expect(goal).toContainText('📈 주당 배당 1년 변화SCHD+25%');
  expect(await page.evaluate(()=>localStorage.getItem('firemate_div_goal_v1'))).toBe('500000');
 });
+
+test('an extra buy from a pasted fill notice updates quantity, average cost and 산 환율, and can be undone',async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ await page.addInitScript(()=>{if(sessionStorage.getItem('ab'))return;sessionStorage.setItem('ab','1');localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_buy_fx_v1',JSON.stringify({h:1300}));localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],rec:[],budgets:{},fire:{goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'SCHD',name:'SCHD',type:'USD',qty:10,price:30,cost:25}]}))});
+ await page.goto('/index.html');
+ await page.locator('button.bottom-item[data-view="assets"]').click();
+ await page.locator('#fmAssetQuickHoldings').click();
+ await page.locator('[data-holding-row="h"] .fm-holding-row-main').click();
+ await page.locator('#fmBuyPaste').fill('[삼성증권] SCHD 10주 매수 체결 단가 $35.00');
+ await expect(page.locator('#fmBuyQty')).toHaveValue('10');await expect(page.locator('#fmBuyPrice')).toHaveValue('35.00');
+ await expect(page.locator('#fmBuyPreview')).toContainText('→ 20주 · 평균 $30.00');
+ await page.locator('#fmBuyAdd').click();await page.locator('#fmAskOk').click();
+ await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).holdings[0].qty).toBe(20);
+ const h=(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).holdings[0];expect(h.cost).toBe(30);
+ // 10×$25 at 1,300 and 10×$35 at 1,400 → (250×1300+350×1400)/600
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_buy_fx_v1')).h)).toBe(1358.33);
+ await page.locator('#fmBuyUndo').click();await page.locator('#fmAskOk').click();
+ await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).holdings[0].qty).toBe(10);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_buy_fx_v1')).h)).toBe(1300);
+});

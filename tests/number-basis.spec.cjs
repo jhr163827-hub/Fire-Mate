@@ -286,4 +286,19 @@ test('the analysis screen finds monthly bills by itself and shows which are stil
  await expect(card.locator('.fm-bills-row').first()).toContainText('KT통신요금자동납부₩95,770✓ 1일 나감');
  await expect(card.locator('.fm-bills-row').nth(1)).toContainText('DB손₩69,810');
  await expect(card).not.toContainText('가전');
+ await expect(page.locator('#fmBillsSubs')).toBeHidden();
+ // The same unpaid bill shows inside the payday plan on home.
+ await page.evaluate(()=>window.fmGo('home'));
+ await expect(page.locator('#fmHomePlanRows')).toContainText('이번 달 아직 안 나간 고정비 ₩69,810 · DB손 28일');
+});
+
+test('small monthly bills are summed as subscriptions for the year, and the pace line names where the extra went',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [1,2,3])tx.push({id:'c'+k,date:m(k)+'-01',type:'expense',category:'쇼핑',amount:7890,memo:'쿠팡(와우멤버십)'},{id:'n'+k,date:m(k)+'-01',type:'expense',category:'쇼핑',amount:4900,memo:'네이버플러스멤버십'});
+ tx.push({id:'f1',date:m(1)+'-01',type:'expense',category:'식비',amount:10000,memo:'점심'},{id:'f2',date:m(0)+'-01',type:'expense',category:'식비',amount:90000,memo:'회식'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmBillsSubs')).toHaveText('📺 구독 2건 · 1년이면 ₩153,480 · 쿠팡(와우멤버십), 네이버플러스멤버십');
+ await page.evaluate(()=>window.fmGo('home'));
+ await expect(page.locator('#fmPaceLine')).toContainText('가장 늘어난 곳 식비 +₩80,000');
 });

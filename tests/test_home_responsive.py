@@ -1611,7 +1611,7 @@ class HomeResponsiveTest(unittest.TestCase):
                             page.locator('#fmLedgerSearchArea [data-go="history"]').click()
                             self.assertTrue(page.locator('#historyList [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'history')
-                            self.assertGreaterEqual(page.locator('#historyList [data-edit="long-mobile-tx"]').bounding_box()['height'],44)
+                            self.assertGreaterEqual(page.locator('#historyList [data-edit="long-mobile-tx"]').evaluate('e=>e.getBoundingClientRect().height'),44)
                             page.locator('.bottomnav [data-view="calendar"]').click()
                             self.assertTrue(page.locator('#dayTx [data-edit="long-mobile-tx"]').is_visible())
                             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2,'calendar')

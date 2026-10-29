@@ -45,3 +45,16 @@ test('home shows last month in one card and closing it keeps it closed',async({p
  await expect(page.locator('#view-home .fm-home-fire')).toBeVisible();
  await expect(page.locator('#fmMonthReport')).toHaveCount(0);
 });
+
+test('last month opens as swipeable story cards that close at the end',async({page})=>{
+ await page.goto('/index.html');
+ await page.locator('#fmMonthStory').click();
+ const story=page.locator('.fm-story');await expect(story).toBeVisible();
+ const cards=story.locator('.fm-story-card');await expect(cards).toHaveCount(4);
+ await expect(cards.nth(0)).toContainText('₩150,000');
+ await expect(cards.nth(1)).toContainText('쇼핑');
+ await expect(cards.nth(2)).toContainText('+₩2,500,000');
+ await expect(cards.nth(3)).toContainText('돈 안 쓴 날');
+ for(let i=0;i<4;i++){await story.locator('.fm-story-track').click({position:{x:350,y:400}});await page.waitForTimeout(450)}
+ await expect(story).toHaveCount(0);
+});

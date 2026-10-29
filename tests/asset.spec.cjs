@@ -297,9 +297,9 @@ test('a monthly dividend goal shows progress, when the plan reaches it, what to 
  await page.locator('#fmDivGoalIn').fill('50');await page.locator('#fmDivGoalForm button').click();
  // 1,000주 × $2 × 1,400 × 85% = 연 238만 → 월 약 19.8만 of 50만.
  const goal=page.locator('#fmDivGoal');
- await expect(goal).toContainText('🎯 배당 월급 ₩198,000 / ₩500,000');
+ await expect(goal).toContainText('₩198,000 / ₩500,000');
  await expect(goal).toContainText(/40% · 지금 계획대로면 \d{4}년쯤/);
  await expect(goal).toContainText('SCHD1,522주');
- await expect(goal).toContainText('📈 1년 배당 성장 SCHD +25%');
+ await expect(goal).toContainText('📈 주당 배당 1년 변화SCHD+25%');
  expect(await page.evaluate(()=>localStorage.getItem('firemate_div_goal_v1'))).toBe('500000');
 });

@@ -273,3 +273,17 @@ test('FIRE shows how much of the planned living cost the last year of dividends 
  await page.evaluate(()=>window.fmGo('fire'));
  await expect(page.locator('#fmFireDiv')).toHaveText(/^💰 배당으로 생활비 10% 커버 · 월 ₩198,000 · 배당만으로 다 내는 건 \d{4}년쯤$/);
 });
+
+test('the analysis screen finds monthly bills by itself and shows which are still to come',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [0,1,2,3,4])tx.push({id:'kt'+k,date:m(k)+'-01',type:'expense',category:'통신',amount:95770,memo:'KT통신요금자동납부'});
+ for(const k of [1,2,3])tx.push({id:'db'+k,date:m(k)+'-28',type:'expense',category:'보험',amount:69810,memo:'DB손'+(17000+k*101)});
+ tx.push({id:'one',date:m(1)+'-15',type:'expense',category:'쇼핑',amount:300000,memo:'가전'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const card=page.locator('#fmBillsCard');await expect(card).toBeVisible();
+ await expect(page.locator('#fmBillsSum')).toHaveText('월 ₩165,580 · 2건 · 남은 ₩69,810');
+ await expect(card.locator('.fm-bills-row').first()).toContainText('KT통신요금자동납부₩95,770✓ 1일 나감');
+ await expect(card.locator('.fm-bills-row').nth(1)).toContainText('DB손₩69,810');
+ await expect(card).not.toContainText('가전');
+});

@@ -36,3 +36,13 @@ test('a market row opens a long chart with period buttons',async({page})=>{
  await expect(page.locator('#fmMarketChart')).toContainText('차트 데이터를 아직 받지 못했어요');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
+test('during Korean market hours 코스피 comes live from Naver instead of the half-hourly file',async({page,context})=>{
+ const p=await context.newPage();await p.clock.install({time:Date.parse('2026-10-28T10:42:00+09:00')});
+ await p.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>{const u=r.request().url();if(u.includes('/chart-data/live-quotes.json'))return r.fulfill({json:live});
+  if(u.includes('SERVICE_INDEX')){const name=new URL(u).searchParams.get('_callback');return r.fulfill({contentType:'text/javascript; charset=utf-8',body:name+'('+JSON.stringify({resultCode:'success',result:{areas:[{name:'SERVICE_INDEX',datas:[{cd:'KOSPI',nv:261800,cr:1.08,rf:'2',ms:'OPEN'},{cd:'KOSDAQ',nv:75012,cr:0.42,rf:'5',ms:'OPEN'}]}]}})+')'})}return r.abort()});
+ await p.addInitScript(()=>localStorage.setItem('firemate_onboarding_v1','dismissed'));await p.goto('/index.html');
+ await expect(p.locator('#fmHomeMarket')).toHaveText('나스닥 -2.6% · S&P -1.2% · 코스피 +1.1% · 환율 1,326');
+ await p.evaluate(()=>window.fmGo('assets'));await p.locator('#fmAssetQuickMarket').click();
+ await expect(p.locator('#fmMarketList .fm-mk-row').nth(2)).toContainText('코스피2,618+1.08%');
+ await expect(p.locator('#fmMarketList .fm-mk-row').nth(3)).toContainText('코스닥750.12-0.42%');
+});

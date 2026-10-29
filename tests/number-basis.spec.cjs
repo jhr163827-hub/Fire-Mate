@@ -525,3 +525,13 @@ test('home lines can be hidden from settings and the category budget fills from 
  await page.locator('#fmCatBudgetEdit > summary').click();await page.locator('#fmCatBudgetAuto').click();
  await expect(page.locator('#fmCatB-식비')).toHaveValue('350,000');
 });
+
+test('insurance shows the monthly premium from the ledger against salary',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [1,2,3])tx.push({id:'i'+k,date:m(k)+'-05',type:'expense',category:'보험',amount:100000,memo:'DB손17101'},{id:'s'+k,date:m(k)+'-25',type:'income',category:'급여',amount:4000000,memo:'급여'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
+ await expect(page.locator('#fmInsSum')).toHaveText('월 10만원 · 월급의 2.5%');
+ await page.locator('#fmInsCard>summary').click();
+ await expect(page.locator('#fmInsList')).toContainText('💸 보험료월 ₩100,0001년 ₩1,200,000 · 월급의 2.5% · 최근 3달 평균');
+});

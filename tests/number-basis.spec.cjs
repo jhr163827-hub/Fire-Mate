@@ -298,7 +298,25 @@ test('small monthly bills are summed as subscriptions for the year, and the pace
  tx.push({id:'f1',date:m(1)+'-01',type:'expense',category:'식비',amount:10000,memo:'점심'},{id:'f2',date:m(0)+'-01',type:'expense',category:'식비',amount:90000,memo:'회식'});
  await load(page,seed({tx}));
  await page.evaluate(()=>window.fmGo('insights'));
- await expect(page.locator('#fmBillsSubs')).toHaveText('📺 구독 2건 · 1년이면 ₩153,480 · 쿠팡(와우멤버십), 네이버플러스멤버십');
+ await expect(page.locator('#fmBillsSubs')).toHaveText(/^📺 구독 2건 · 1년이면 ₩153,480 \(FIRE \+\d+일\) · 쿠팡\(와우멤버십\), 네이버플러스멤버십$/);
  await page.evaluate(()=>window.fmGo('home'));
  await expect(page.locator('#fmPaceLine')).toContainText('가장 늘어난 곳 식비 +₩80,000');
+});
+
+test('analysis shows the next three months from recent income, spending, the payday plan and last year\'s one-off bills',async({page})=>{
+ const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+k);return d.toISOString().slice(0,7)},tx=[];
+ for(const k of [-1,-2,-3])tx.push({id:'s'+k,date:m(k)+'-25',type:'income',category:'급여',amount:3000000,memo:'급여'},{id:'e'+k,date:m(k)+'-10',type:'expense',category:'식비',amount:1000000,memo:'생활'});
+ tx.push({id:'car',date:m(-11)+'-05',type:'expense',category:'보험',amount:800000,memo:'자동차보험'});
+ await load(page,seed({tx}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const rows=page.locator('#fmOutlookCard .fm-outlook-row');await expect(rows).toHaveCount(3);
+ await expect(rows.first()).toContainText('부족 233만원');
+ await expect(rows.first()).toContainText('작년 이맘때 자동차보험 80만');
+ await expect(rows.nth(1)).toContainText('부족 153만원');
+});
+
+test('spending over the budget is also shown as how many days later FIRE comes',async({page})=>{
+ const day=new Date().toISOString().slice(0,10);
+ await load(page,seed({budgets:{[day.slice(0,7)]:100000},tx:[{id:'x',date:day,type:'expense',category:'쇼핑',amount:200000,memo:'옷'}]}));
+ await expect(page.locator('#fmPaceLine')).toContainText(/예산 넘은 ₩100,000은 FIRE \+\d+일/);
 });

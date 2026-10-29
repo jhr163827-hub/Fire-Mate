@@ -401,7 +401,7 @@ test('a card\'s 실적 기준 shows how much is left this month',async({page})=>
  await load(page,seed({tx:[{id:'c',date:m+'-01',type:'expense',category:'식비',amount:120000,memo:'마트',bankExcelKey:[m+'-01','10:00','expense','식비','','마트',120000,'KB국민카드'].join('|')}]}));
  await page.evaluate(()=>window.fmGo('insights'));
  const row=page.locator('#fmCardCard .fm-cardp').first();await expect(row).toContainText('KB국민카드₩120,000');
- await row.locator('button').first().click();await row.locator('input').fill('30');await row.locator('form button').click();
+ await row.locator('button').first().click();await row.locator('input').first().fill('30');await row.locator('form button').click();
  await expect(page.locator('#fmCardCard .fm-cardp').first()).toContainText('실적까지 ₩180,000 남음');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_card_goal_v1')))).toEqual({'KB국민카드':300000});
 });
@@ -439,11 +439,15 @@ test('the money health check grades 비상금, leverage, dollar share, the bigge
  await expect(list).toContainText('🟢부채없음');
 });
 
-test('the home morning line names a bill that comes out tomorrow',async({page})=>{
+test('today\'s notice pops up once a day on the first open and names a bill that comes out tomorrow',async({page})=>{
+ await page.addInitScript(()=>{window.__fmBriefTest=true});
  const t=new Date();t.setDate(t.getDate()+1);test.skip(t.getDate()===1,'tomorrow is in the next month');
  const day=String(t.getDate()).padStart(2,'0'),m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
  await load(page,seed({tx:[1,2,3,4].map(k=>({id:'b'+k,date:m(k)+'-'+day,type:'expense',category:'통신',amount:95770,memo:'KT통신요금자동납부'}))}));
- await expect(page.locator('#fmHomeBrief')).toContainText('☀️ 오늘 · KT통신요금자동납부 내일 출금');
+ const pop=page.locator('.fm-brief-pop');await expect(pop).toContainText('☀️ 오늘 알아 둘 것');await expect(pop).toContainText('🔁 KT통신요금자동납부 ₩95,770 내일 출금');
+ await pop.locator('button').click();await expect(pop).toHaveCount(0);
+ await page.evaluate(()=>window.fmGo('assets'));await page.evaluate(()=>window.fmGo('home'));await expect(page.locator('.fm-brief-pop')).toHaveCount(0);
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_brief_seen_v1'))).toBe(await page.evaluate(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}));
 });
 
 test('money a friend sends back for a shared meal lowers that payment to my share, and 되돌리기 restores it',async({page})=>{
@@ -475,4 +479,27 @@ test('FIRE points out a raise and what saving half of it does',async({page})=>{
  await load(page,seed({tx:[3,2,1,0].map(k=>({id:'s'+k,date:m(k)+'-01',type:'income',category:'급여',amount:k?3000000:3300000,memo:'급여'}))}));
  await page.evaluate(()=>window.fmGo('fire'));
  await expect(page.locator('#fmFireRaise')).toHaveText(/^💼 월급이 \+10% \(₩300,000\) 늘었어요 · 절반인 월 15만 원을 더 모으면 FIRE \d+개월 빨라져요 ›$/);
+});
+
+test('a card\'s 결제일 shows the next card bill from last month\'s use',async({page})=>{
+ const n=new Date(),pm=new Date(n.getFullYear(),n.getMonth()-1,5),cm=new Date(n.getFullYear(),n.getMonth(),1),ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+ const tx=(id,d,a)=>({id,date:d,type:'expense',category:'식비',amount:a,memo:'마트',bankExcelKey:[d,'10:00','expense','식비','','마트',a,'KB국민카드'].join('|')});
+ // Pay day 28 (or later in the month) keeps the bill in this month: last month's use is due.
+ await page.addInitScript(()=>localStorage.setItem('firemate_card_day_v1',JSON.stringify({'KB국민카드':28})));
+ await load(page,seed({tx:[tx('p',ym(pm)+'-05',200000),tx('c',ym(cm)+'-01',50000)]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ const due=n.getDate()<=28?new Date(n.getFullYear(),n.getMonth(),28):new Date(n.getFullYear(),n.getMonth()+1,28),amount=n.getDate()<=28?'₩200,000':'₩50,000';
+ await expect(page.locator('#fmCardCard .fm-cardbill')).toContainText('🗓️ 다음 카드값 '+amount);
+ await expect(page.locator('#fmCardCard .fm-cardbill')).toContainText((due.getMonth()+1)+'/28 출금');
+});
+
+test('a trip sums the spending between two days without bills',async({page})=>{
+ const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+ await load(page,seed({tx:[{id:'a',date:d(5),type:'expense',category:'여행',amount:300000,memo:'호텔'},{id:'b',date:d(4),type:'expense',category:'식비',amount:80000,memo:'흑돼지'},{id:'c',date:d(9),type:'expense',category:'식비',amount:9000,memo:'점심'}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await page.locator('#fmTripCard > summary').click();
+ await page.locator('#fmTripName').fill('제주 여행');await page.locator('#fmTripFrom').fill(d(5));await page.locator('#fmTripTo').fill(d(3));await page.locator('#fmTripForm button').click();
+ const row=page.locator('#fmTripList .fm-trip');await expect(row).toHaveCount(1);
+ await expect(row).toContainText('제주 여행');await expect(row).toContainText('3일');await expect(row).toContainText('₩380,000');await expect(row).toContainText('여행 30만 · 식비 8만 · 하루');
+ await expect(page.locator('#fmTripSum')).toHaveText('제주 여행 38만원');
 });

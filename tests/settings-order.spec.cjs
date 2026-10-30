@@ -37,7 +37,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('🎓 내 자격증 2개');
  await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · NCEES \(미국\) · 2024\.10 취득/:'',/일반기계기사기사 · 한국산업인력공단 \(Q-net\) · 2021\.06 취득/]);
- await expect(page.locator('.fm-cert-grades i')).toHaveText(['PE 1','기사 1']);
+ await expect(page.locator('.fm-cert-grades i')).toHaveText(['보유 2','PE 1','기사 1']);
  // Edit, then delete.
  await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('.fm-cert-row',{hasText:'일반기계기사'})).toContainText('기사 · Q-net');
@@ -46,12 +46,17 @@ test('certificates are found by search, show their facts, and are added, edited,
  await expect(page.locator('[data-cert-mode="goal"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
  await page.locator('#fmCertDate').fill(await page.evaluate(()=>{const d=new Date();d.setDate(d.getDate()+23);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}));
  await page.locator('#fmCertForm button.primary').click();
- const g=page.locator('.fm-cert-goalcard');
- await expect(g.locator('.fm-cert-ghead b')).toHaveText('D-23');await expect(g.locator('.fm-cert-stages button')).toHaveText(['1 필기','2 면접']);
- await g.locator('[data-cert-study]').click();await g.locator('[data-cert-study]').click();
- await expect(g.locator('.fm-cert-gfoot span')).toHaveText('📚 1시간 0분 · 1일 연속 · 오늘 60분');
- await g.locator('[data-cert-stage]').first().click();await expect(g.locator('.fm-cert-stages button')).toHaveText(['✓ 필기','2 면접']);
- await expect(page.locator('#fmCertSub')).toHaveText('준비 중 1 · D-23');await expect(page.locator('.fm-cert-next b')).toHaveText('D-23');
+ // The main goal takes the top: D-day, this week against 10 hours, today's minutes, 12-week grass and stages.
+ const g=page.locator('.fm-cert-today');
+ await expect(g.locator('.fm-cert-thead b')).toHaveText('D-23');await expect(g.locator('.fm-cert-stages button')).toHaveText(['1 필기','2 면접']);
+ await expect(g.locator('.fm-cert-grass i')).toHaveCount(84);
+ await g.locator('[data-cert-add="30"]').click();await g.locator('[data-cert-add="30"]').click();
+ await expect(g.locator('.fm-cert-add span')).toHaveText('오늘 1시간');await expect(g.locator('.fm-cert-week span')).toHaveText('이번 주 1시간 / 10시간');
+ await expect(g.locator('.fm-cert-tip')).toContainText('🔥 1일 연속');
+ await g.locator('[data-cert-weekedit]').click();await g.locator('[data-cert-weekform] input').fill('5');await g.locator('[data-cert-weekform] button').click();
+ await expect(page.locator('.fm-cert-today .fm-cert-week span')).toHaveText('이번 주 1시간 / 5시간');
+ await page.locator('.fm-cert-today [data-cert-stage]').first().click();await expect(page.locator('.fm-cert-today .fm-cert-stages button')).toHaveText(['✓ 필기','2 면접']);
+ await expect(page.locator('#fmCertSub')).toHaveText('준비 중 1 · D-23');
  // Typing a name that is not in the catalog adds it as typed.
  await page.locator('#fmCertQ').fill('사내 품질 인증');await page.locator('.fm-cert-hits .own').click();await page.locator('#fmCertForm button.primary').click();
  await page.locator('.fm-cert-row',{hasText:'사내 품질 인증'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
@@ -166,4 +171,23 @@ test('a certificate keeps a photo or PDF of itself on this phone',async({page})=
  await page.locator('#fmCertFileIn').setInputFiles({name:'license.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\n%qa\n')});
  await expect(page.locator('#fmCertFileOpen')).toContainText('license.pdf');
  expect(await page.evaluate(()=>JSON.stringify(localStorage).includes('PDF-1.4'))).toBe(false);
+});
+
+test('the main goal sits on home with one-tap study, today\'s notice nudges, and passing is celebrated',async({page})=>{
+ await page.addInitScript(()=>{window.__fmBriefTest=true;localStorage.setItem('firemate_last_backup_v1',new Date().toISOString());if(sessionStorage.getItem('cg'))return;sessionStorage.setItem('cg','1');const k=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+  localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'g',name:'건설기계기술사',goal:true,date:k(7),apply:k(2),study:{[k(-4)]:60}}]}))});
+ await page.goto('/index.html');
+ const pop=page.locator('.fm-brief-pop');
+ await expect(pop).toContainText('🎯 건설기계기술사 시험 D-7');await expect(pop).toContainText('📝 건설기계기술사 접수 마감 D-2');await expect(pop).toContainText('📚 4일째 공부 기록이 없어요 · 건설기계기술사');
+ await pop.locator('button').click();
+ const line=page.locator('#fmHomeCert');
+ await expect(line.locator('.go')).toHaveText('🎯 건설기계기술사 D-7 · 오늘 0분');
+ await line.locator('.add').click();await expect(line.locator('.go')).toHaveText('🎯 건설기계기술사 D-7 · 오늘 30분');
+ // Hidden from settings like the other home lines.
+ await page.locator('#settingsBottom').click();await page.locator('#fmHomeLines>summary').click();await page.locator('[data-home-line="cert"]').uncheck();
+ await expect(line).toBeHidden();
+ await page.locator('#fmCertOpen').click();
+ await page.locator('.fm-cert-thead').click();await page.locator('[data-cert-mode="have"]').click();await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('.fm-cert-cele')).toContainText('합격 축하해요!');
+ await expect(page.locator('.fm-cert-none')).toContainText('🎯 다음 목표 하나 정하기');
 });

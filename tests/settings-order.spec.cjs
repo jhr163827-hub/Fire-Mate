@@ -6,8 +6,8 @@ test('settings list 게임 아케이드 → 자격증 → 위시리스트 → �
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
-  e.id==='fmArcadeOpen'?'arcade':e.id==='fmWishOpen'?'wish':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
- expect(order).toEqual(['arcade','certs','wish','📋 월급 주기 계획','🏠 홈에 보일 것','data','⚠️ 데이터 초기화']);
+  e.id==='fmArcadeOpen'?'arcade':e.id==='fmLockRow'?'lock':e.id==='fmWishOpen'?'wish':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
+ expect(order).toEqual(['arcade','certs','wish','📋 월급 주기 계획','lock','🏠 홈에 보일 것','data','⚠️ 데이터 초기화']);
  // 내 데이터 보관 is folded to one line; opening it shows the backup tools.
  await expect(page.locator('#fmStorageSum')).toHaveText('☁️ 백업 꺼짐');
  await expect(page.locator('#export')).toBeHidden();await page.locator('#fmStorage>summary').click();
@@ -79,20 +79,35 @@ test('위시리스트 adds items, edits price, saving, link and 꼭, checks them
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list.map(w=>[w.name,w.price,w.saved,w.link,w.pri,w.done]))).toEqual([['러닝화',150000,50000,'https://shop.example.com/shoe',true,true]]);
 });
 
-test('앱 잠금 uses the phone\'s Face ID·지문: turning it on locks the next open until it is confirmed',async({page})=>{
- await page.addInitScript(()=>{window.__asks=0;PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable=async()=>true;
-  CredentialsContainer.prototype.create=async()=>({rawId:new Uint8Array([7,7,7]).buffer});
-  CredentialsContainer.prototype.get=async o=>{window.__asks++;if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
+test('앱 잠금 is a 6-digit PIN on the app\'s own keypad (no browser sheet showing the site address)',async({page})=>{
+ const dialogs=[];page.on('dialog',d=>{dialogs.push(d.message());d.dismiss()});
  await page.goto('/index.html');
+ const type=async pin=>{for(const k of pin)await page.locator('#fmPinPad [data-k="'+k+'"]').click()};
  await page.locator('#settingsBottom').click();
  await page.locator('#fmLockOn').check();
- await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
+ await expect(page.locator('#fmLockTitle')).toHaveText('새 비밀번호 6자리');await type('135790');
+ await expect(page.locator('#fmLockTitle')).toHaveText('한 번 더 입력해 주세요');await type('135790');
+ await expect(page.locator('#fmLock')).toBeHidden();
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_pin_v1')));
+ expect(saved.hash).toMatch(/^[A-Za-z0-9+/=]{40,}$/);expect(JSON.stringify(saved)).not.toContain('135790');
  await page.reload();
  await expect(page.locator('#fmLock')).toBeVisible();await expect(page.locator('.app')).toBeHidden();
- expect(await page.evaluate(()=>window.__asks)).toBe(1);
- await page.evaluate(()=>{window.__pass=true});await page.locator('#fmLockGo').click();
- await expect(page.locator('#fmLock')).toBeHidden();await expect(page.locator('.app')).toBeVisible();
- // Turning it off asks once more.
- await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();
- await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
+ await type('111111');await expect(page.locator('#fmLockTitle')).toHaveText('비밀번호가 달라요');
+ await type('135790');await expect(page.locator('#fmLock')).toBeHidden();await expect(page.locator('.app')).toBeVisible();
+ // Turning it off asks for the PIN once.
+ await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();await type('135790');
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_pin_v1'))).toBeNull();
+ await expect(page.locator('#fmLockOn')).not.toBeChecked();
+ expect(dialogs).toEqual([]);
+});
+
+test('an older Face ID lock opens once and then asks for a new PIN',async({page})=>{
+ await page.addInitScript(()=>{if(!sessionStorage.getItem('fl')){sessionStorage.setItem('fl','1');localStorage.setItem('firemate_lock_v1','BwcH')}CredentialsContainer.prototype.get=async o=>({rawId:o.publicKey.allowCredentials[0].id})});
+ await page.goto('/index.html');
+ const type=async pin=>{for(const k of pin)await page.locator('#fmPinPad [data-k="'+k+'"]').click()};
+ await expect(page.locator('#fmLockTitle')).toHaveText('새 비밀번호 6자리');await type('246802');
+ await expect(page.locator('#fmLockTitle')).toHaveText('한 번 더 입력해 주세요');await type('246802');
+ await expect(page.locator('#fmLock')).toBeHidden();
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
+ expect(await page.evaluate(()=>!!localStorage.getItem('firemate_pin_v1'))).toBe(true);
 });

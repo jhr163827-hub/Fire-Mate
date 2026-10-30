@@ -18,56 +18,57 @@ test('settings list 게임 아케이드 → 자격증 → 위시리스트 → �
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 
-test('certificates can be added, edited and deleted, and ride along in backups',async({page})=>{
+test('certificates are found by search, show their facts, and are added, edited, deleted and backed up',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  await page.locator('#fmCertOpen').click();
  await expect(page.locator('#fmCertOverlay')).toBeVisible();
- await page.locator('#fmCertAdd').click();
- await page.locator('#fmCertName').fill('정보처리기사');await page.locator('#fmCertOrg').fill('한국산업인력공단');await page.locator('#fmCertDate').fill('2024-06-14');
- await page.locator('#fmCertForm button.primary').click();
- await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('SQLD');await page.locator('#fmCertDate').fill('2025-03-01');await page.locator('#fmCertForm button.primary').click();
+ // Typing part of a name finds it in the catalog.
+ await page.locator('#fmCertQ').fill('기계기사');
+ await expect(page.locator('.fm-cert-hits button').first()).toContainText('일반기계기사');
+ await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
+ const info=page.locator('#fmCertInfo');
+ await expect(info).toContainText('일반기계기사');await expect(info).toContainText('한국산업인력공단 (Q-net) ↗');await expect(info).toContainText('필기(객관식) → 실기');
+ await expect(info.locator('a')).toHaveAttribute('href','https://www.q-net.or.kr');
+ await page.locator('#fmCertDate').fill('2021-06-01');await page.locator('#fmCertForm button.primary').click();
+ // A US licence by its Korean nickname.
+ await page.locator('#fmCertQ').fill('미국기술사');await page.locator('.fm-cert-hits button',{hasText:'Thermal and Fluid Systems'}).click();
+ await expect(info).toContainText('NCEES (미국)');await expect(info).toContainText('주별 갱신');
+ await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('🎓 내 자격증 2개');
- // Higher tier first; the issuer is filled in when left empty.
- await expect(page.locator('.fm-cert')).toHaveText(['RARE · 40점⚙️정보처리기사한국산업인력공단2024.06.14 취득','COMMON · 8점💻SQLD한국데이터산업진흥원2025.03.01 취득']);
- await page.locator('.fm-cert',{hasText:'SQLD'}).click();
- await page.locator('#fmCertOrg').fill('데이터산업진흥원');await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('.fm-cert').nth(1)).toContainText('데이터산업진흥원');
- const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_certificates_v1')).list.length);expect(saved).toBe(2);
- await page.locator('.fm-cert',{hasText:'SQLD'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
- await expect(page.locator('.fm-cert')).toHaveCount(1);
- await page.locator('#fmCertAdd').click();await page.locator('#fmCertName').fill('건설기계설비기술사');await page.locator('#fmCertGoal').check();await page.locator('#fmCertForm button.primary').click();
- const q=page.locator('.fm-cert-quest');
- await expect(q.locator('.fm-cert-qhead')).toHaveText('LEGEND · +100점🎯 건설기계설비기술사시험일 정하기 ›');
- await expect(q.locator('.fm-cert-stages button')).toHaveText(['⏳ 필기','⬜ 면접']);
- await expect(q.locator('.fm-cert-reward')).toHaveText('합격하면 40→140점 · ⚙️ 엔지니어 승급!');
- await expect(page.locator('#fmCertSub')).toHaveText('기술자 · 도전 중 1');
- // Studying and passing the written exam are one tap each.
- await q.locator('[data-cert-study]').click();await q.locator('[data-cert-study]').click();
- await expect(q.locator('.fm-cert-study p')).toHaveText('📚 1시간 0분 · 🔥 1일 연속 · 오늘 60분');
- await q.locator('[data-cert-stage]').first().click();await expect(q.locator('.fm-cert-stages button')).toHaveText(['✅ 필기','⏳ 면접']);
- // A goal with an exam date counts down; the form label follows the goal checkbox; study and stage survive the edit.
- await q.locator('.fm-cert-qhead').click();await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
+ await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · NCEES \(미국\) · 2024\.10 취득/:'',/일반기계기사기사 · 한국산업인력공단 \(Q-net\) · 2021\.06 취득/]);
+ await expect(page.locator('.fm-cert-grades i')).toHaveText(['PE 1','기사 1']);
+ // Edit, then delete.
+ await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('.fm-cert-row',{hasText:'일반기계기사'})).toContainText('기사 · Q-net');
+ // 기사 suggests the same field's 기술사; picking one starts a goal.
+ await page.locator('[data-cert-sug="건설기계기술사"]').click();
+ await expect(page.locator('[data-cert-mode="goal"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
  await page.locator('#fmCertDate').fill(await page.evaluate(()=>{const d=new Date();d.setDate(d.getDate()+23);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}));
  await page.locator('#fmCertForm button.primary').click();
- await expect(q.locator('.fm-cert-dday')).toHaveText('D-23');await expect(q.locator('.fm-cert-stages button').first()).toHaveText('✅ 필기');
- await expect(page.locator('#fmCertSub')).toHaveText('기술자 · 도전 중 1 · D-23');
- await expect(page.locator('.fm-cert-road li')).toHaveCount(2);
+ const g=page.locator('.fm-cert-goalcard');
+ await expect(g.locator('.fm-cert-ghead b')).toHaveText('D-23');await expect(g.locator('.fm-cert-stages button')).toHaveText(['1 필기','2 면접']);
+ await g.locator('[data-cert-study]').click();await g.locator('[data-cert-study]').click();
+ await expect(g.locator('.fm-cert-gfoot span')).toHaveText('📚 1시간 0분 · 1일 연속 · 오늘 60분');
+ await g.locator('[data-cert-stage]').first().click();await expect(g.locator('.fm-cert-stages button')).toHaveText(['✓ 필기','2 면접']);
+ await expect(page.locator('#fmCertSub')).toHaveText('준비 중 1 · D-23');await expect(page.locator('.fm-cert-next b')).toHaveText('D-23');
+ // Typing a name that is not in the catalog adds it as typed.
+ await page.locator('#fmCertQ').fill('사내 품질 인증');await page.locator('.fm-cert-hits .own').click();await page.locator('#fmCertForm button.primary').click();
+ await page.locator('.fm-cert-row',{hasText:'사내 품질 인증'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
+ await expect(page.locator('.fm-cert-row')).toHaveCount(2);
  await page.locator('[data-close="fmCertOverlay"]').click();await expect(page.locator('#fmCertOverlay')).toBeHidden();
  await page.locator('#fmStorage>summary').click();
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const backup=JSON.parse(require('fs').readFileSync(await download.path(),'utf8'));
- expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name)).toEqual(['정보처리기사','건설기계설비기술사']);
+ expect(backup.extras.firemate_certificates_v1.list.map(c=>c.name).sort()).toEqual(['PE Mechanical: Thermal and Fluid Systems','건설기계기술사','일반기계기사']);
 });
 
-test('a mix of Korean and US licences earns its titles and an engineer rank',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'한국사능력검정 1급',date:'2019-08-10'},{id:'b',name:'일반기계기사',date:'2021-06-01'},{id:'c',name:'FE Mechanical',date:'2022-03-01'},{id:'d',name:'PE Mechanical (TFS)',date:'2024-10-20'},{id:'e',name:'컴퓨터활용능력 1급',date:'2020-02-01'}]})));
+test('names typed before the catalog still get their grade and issuer, and language scores show when they expire',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-01'},{id:'b',name:'미국 기술사',date:'2024-10-20'},{id:'c',name:'TOEIC',date:'2020-01-05'}]})));
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
- await expect(page.locator('.fm-cert-hero')).toContainText('🚀시니어 엔지니어204점');
- await expect(page.locator('.fm-cert-titles i')).toHaveText(['🇺🇸 Licensed PE','🌏 한·미 엔지니어','⚙️ 기계 엔지니어','📜 역사 지킴이','📊 오피스 마스터']);
- await expect(page.locator('.fm-cert').first()).toHaveClass(/fm-cert-legend/);await expect(page.locator('.fm-cert').first()).toContainText('PE Mechanical (TFS)');
+ await expect(page.locator('.fm-cert-row',{hasText:'미국 기술사'})).toContainText('PE · NCEES (미국)');
+ await expect(page.locator('.fm-cert-row',{hasText:'TOEIC'}).locator('em')).toHaveText('만료');
 });
-
 
 test('위시리스트 adds items, edits price, saving, link and 꼭, checks them off, deletes after asking, and survives reload',async({page})=>{
  await page.goto('/index.html');

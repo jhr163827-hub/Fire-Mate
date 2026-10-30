@@ -37,7 +37,7 @@
 - 순자산 그래프·실제 수익률: 기록 없는 날은 지금 보유 종목 × 그날 종가(`chart-data`, 원/달러는 `IDX-USDKRW`) + 그날까지 수입−지출로 추정하고 양쪽 실제 기록에 맞게 휘어 점선으로 그린다(`fmNwEstimate`, 저장 안 함). 실제 기록이 90일 미만이면 실제 수익률도 추정 1년으로(`보유 종목 시세로 추정`).
 - 드라이브 백업은 올린 뒤 다시 읽어 같을 때만 성공으로 친다. 오늘 알림에 마지막 백업 7일 이상이면 `💾` 한 줄.
 - 카드 실적 카드 아래 `🧾 연말정산 카드 공제`: 올해 급여·상여금 월평균×12÷0.85를 총급여로 보고 25% 문턱, 올해 카드 사용·연말 예상과 비교(`fmCardTax`).
-- 설정 `🔒 앱 잠금`(기기가 지원할 때만 보임): WebAuthn 플랫폼 인증(Face ID·지문), 자격 id만 `firemate_lock_v1`(백업 제외). 첫 스크립트가 `html[data-locked]`를 걸어 화면을 가리고, 5분 넘게 나갔다 오면 다시 잠근다.
+- 설정 `🔒 앱 잠금`(비밀번호 6자리): 앱 안 숫자판(`#fmPinPad`). Face ID 창은 사이트 주소(GitHub 아이디)를 보여 줘서 새 잠금에는 안 쓴다. `firemate_pin_v1`에 PBKDF2(10만 번) 해시와 salt만(백업 제외). 예전 Face ID 잠금(`firemate_lock_v1`)은 한 번 열고 바로 새 비밀번호를 정하게 한 뒤 지운다. 첫 스크립트가 `html[data-locked]`를 걸어 화면을 가리고, 5분 넘게 나갔다 오면 다시 잠그며, 5번 틀리면 30초 기다림.
 - 홈 화면 바로 가기: `?action=import|record|assets`.
 - 🐞 오류 기록: 첫 스크립트의 `fmLogError`가 `error`·`unhandledrejection`과 features.js 블록 오류를 `firemate_errlog_v1`({list:[{msg,src,first,last,n}]}, 최근 30가지)에 남기고 백업 extras에 포함. `내 데이터 보관`에 `🐞 최근 오류 N가지`.
 - 달력 `fmCalPlan(ym)`: 이번 달·다음 달의 오늘 이후 날에 아직 안 나간 고정비·카드값(`fmCardDue`)을 `-금액`(흐리게), 배당락(`fmDivAhead`)은 🌱, 그날을 누르면 `예정` 목록. 저장 안 함.

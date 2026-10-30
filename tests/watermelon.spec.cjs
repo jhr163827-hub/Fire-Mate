@@ -473,7 +473,7 @@ test("installed PWA caches every game dependency for offline resume", async ({
       page.evaluate(
         async () =>
           !!(await caches.match(
-            location.origin + "/arcade/watermelon-game.js?v=2.0.1",
+            location.origin + "/arcade/watermelon-game.js?v=2.0.2",
           )),
       ),
     )

@@ -665,3 +665,19 @@ test('today\'s notice names a fixed bill that just came out higher than before',
  await load(page,seed({tx:[...['06','07','08','09'].map(k=>({id:'n'+k,date:'2026-'+k+'-12',type:'expense',category:'통신·구독',amount:13500,memo:'넷플릭스'})),{id:'now',date:'2026-10-12',type:'expense',category:'통신·구독',amount:17000,memo:'넷플릭스'}]}));
  await expect(page.locator('.fm-brief-pop')).toContainText('📈 넷플릭스 13,500 → 17,000원으로 올랐어요');
 });
+
+test('the asset hero names its bases: today\'s % is of the shown total, 투자 수익률 is of the money put in',async({page})=>{
+ const at=new Date().toISOString();
+ await load(page,seed({balance:{fx:1000,cash:8000000,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'111111',name:'종목',type:'KRW',qty:10,price:200000,cost:100000,dayChangePct:-50,dayChangeAt:at,quoteAt:at}]}));
+ await page.evaluate(()=>window.fmGo('assets'));
+ // Total ₩10,000,000 after a −₩2,000,000 day: −16.67% of yesterday's ₩12,000,000 (not −50% of the stock).
+ await expect(page.locator('#fmTodayPL')).toHaveText('오늘 시세 변동−₩2,000,000 (-16.67%)');
+ await expect(page.locator('#investReturnPct')).toHaveText('+100.00%');
+ await expect(page.locator('.fm-unified-hero')).toContainText('투자 수익률');
+});
+
+test('two accounts with nearly the same money are flagged as possibly entered twice',async({page})=>{
+ await load(page,seed({balance:{fx:1400,cash:0,other:0,debt:0},accounts:[{id:'a',name:'ISA',kind:'investment',amount:9937188,fire:true},{id:'b',name:'기타 자산',kind:'physical',amount:9940000,fire:true},{id:'c',name:'예금',kind:'safe',amount:3000000,fire:true}]}));
+ await page.evaluate(()=>window.fmGo('assets'));
+ await expect(page.locator('#fmDupWarn')).toHaveText('⚠️ ISA · 기타 자산 금액이 거의 같아요(994만원). 같은 돈이면 한쪽을 지워야 순자산이 맞아요');
+});

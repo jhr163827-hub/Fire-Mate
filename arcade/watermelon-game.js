@@ -213,19 +213,19 @@
   function create() {
     return new P.Game({ onMerge, onEnd });
   }
-  function newGame() {
+  async function newGame() {
     if (
       game &&
       !game.over &&
       game.bodies.length &&
-      !confirm("지금의 과일 정원을 마치고 새로 시작할까요?")
+      !(await arcadeAsk("지금의 과일 정원을 마치고 새로 시작할까요?", { ok: "새로 시작" }))
     )
       return false;
     if (
       game &&
       game.score > 0 &&
       !recordScore() &&
-      !confirm("현재 점수를 저장하지 못했어요. 그래도 새로 시작할까요?")
+      !(await arcadeAsk("현재 점수를 저장하지 못했어요. 그래도 새로 시작할까요?", { ok: "새로 시작" }))
     )
       return false;
     if (saveBlocked) {

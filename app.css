@@ -2538,3 +2538,4 @@ html body[data-home-hide~="market"] #view-home #fmHomeMarket,html body[data-home
 .fm-div-reinvest{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--sub)}.fm-div-reinvest b{color:var(--txt)}
 .fm-debt{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}.fm-debt p{margin:0 0 8px;line-height:1.5}.fm-debt b{color:var(--txt)}.fm-debt span{display:flex;align-items:center;gap:6px}.fm-debt input{width:80px;padding:8px 10px}.fm-debt button{padding:8px 12px;min-height:40px}
 .fm-pin-pad[hidden]{display:none}
+.fm-dup-warn{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--panel2);color:var(--yellow);font-size:13px;line-height:1.5}

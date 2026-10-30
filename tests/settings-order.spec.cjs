@@ -2,12 +2,14 @@ const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
-test('settings list 게임 아케이드 → 자격증 → 위시리스트 → 월급 주기 계획 → 내 데이터 → 초기화, without mail, quote or export sections',async({page})=>{
+test('settings is one page of grouped rows: 나의 목표 · 돈 관리 · 보안·데이터 · 재미, without mail, quote or export sections',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- const order=await page.evaluate(()=>[...document.querySelector('#settingsOverlay .stack').children].filter(e=>!e.hidden).map(e=>
-  e.id==='fmArcadeOpen'?'arcade':e.id==='fmLockRow'?'lock':e.id==='fmWishOpen'?'wish':e.matches('.fm-certs')?'certs':e.matches('.fm-device-storage')?'data':e.querySelector(':scope>summary')?.textContent.trim()));
- expect(order).toEqual(['arcade','certs','wish','📋 월급 주기 계획','lock','🏠 홈에 보일 것','data','⚠️ 데이터 초기화']);
+ const groups=await page.evaluate(()=>[...document.querySelectorAll('#settingsOverlay .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
+ expect(groups).toEqual([['나의 목표',['fmCertOpen','fmBucketOpen','fmWishOpen']],['돈 관리',['📋월급 주기 계획','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']],['재미',['fmArcadeOpen']]]);
+ // A full page, not a sheet; the lock is a switch.
+ const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
+ await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);
  // 내 데이터 보관 is folded to one line; opening it shows the backup tools.
  await expect(page.locator('#fmStorageSum')).toHaveText('☁️ 백업 꺼짐');
  await expect(page.locator('#export')).toBeHidden();await page.locator('#fmStorage>summary').click();
@@ -35,7 +37,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await page.locator('#fmCertQ').fill('미국기술사');await page.locator('.fm-cert-hits button',{hasText:'Thermal and Fluid Systems'}).click();
  await expect(info).toContainText('NCEES (미국)');await expect(info).toContainText('주별 갱신');
  await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('#fmCertTitle')).toHaveText('🎓 내 자격증 2개');
+ await expect(page.locator('#fmCertTitle')).toHaveText('내 자격증 2개');
  await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · NCEES \(미국\) · 2024\.10 취득/:'',/일반기계기사기사 · 한국산업인력공단 \(Q-net\) · 2021\.06 취득/]);
  await expect(page.locator('.fm-cert-grades i')).toHaveText(['보유 2','PE 1','기사 1']);
  // Edit, then delete.
@@ -131,7 +133,7 @@ test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({p
   CredentialsContainer.prototype.get=async o=>{if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmLockRow')).toContainText('🔒 앱 잠금 (지문·Face ID)');
+ await expect(page.locator('#fmLockSub')).toHaveText('지문·Face ID');
  await page.locator('#fmLockOn').check();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
  await page.reload();
@@ -188,7 +190,7 @@ test('the main goal sits on home with one-tap study, today\'s notice nudges, and
  await expect(line).toBeHidden();
  await page.locator('#fmCertOpen').click();
  await page.locator('.fm-cert-thead').click();await page.locator('[data-cert-mode="have"]').click();await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('.fm-cert-cele')).toContainText('합격 축하해요!');
+ await expect(page.locator('.fm-cele')).toContainText('합격 축하해요!');
  await expect(page.locator('.fm-cert-none')).toContainText('🎯 다음 목표 하나 정하기');
 });
 
@@ -209,4 +211,25 @@ test('the phone\'s back closes only the certificate sheet or photo, then the cer
  await page.goBack();await expect(page.locator('#fmCertView')).toBeHidden();await expect(page.locator('#fmCertSheet')).toBeVisible();
  await page.goBack();await expect(page.locator('#fmCertSheet')).toBeHidden();await expect(page.locator('#fmCertOverlay')).toBeVisible();
  await page.goBack();await expect(page.locator('#fmCertOverlay')).toBeHidden();await expect(page.locator('#settingsOverlay')).toBeVisible();
+});
+
+test('버킷리스트: add by typing or an idea, sorted by the words, edited with year and cost, and checked off with a moment',async({page})=>{
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmBucketSub')).toHaveText('해 보고 싶은 걸 적어 두세요');
+ await page.locator('#fmBucketOpen').click();await expect(page.locator('#fmBucketOverlay')).toBeVisible();
+ await page.locator('#fmBucketName').fill('아이슬란드 오로라 여행');await page.locator('#fmBucketForm button').click();
+ await page.locator('[data-bk-idea="풀코스 마라톤 완주"]').click();
+ await expect(page.locator('.fm-bk-row .fm-bk-ico')).toHaveText(['✈️','💪']);
+ // Edit: target year and cost; the hero counts this year and the money.
+ await page.locator('.fm-bk-open',{hasText:'오로라'}).click();
+ const y=new Date().getFullYear();await page.locator('#fmBkYear').fill(String(y));await page.locator('#fmBkCost').fill('6000000');await page.locator('#fmBucketEForm button.primary').click();
+ await expect(page.locator('#fmBucketSheet')).toBeHidden();
+ await expect(page.locator('.fm-bk-hero p')).toContainText('올해 목표 1개 · 남은 것에 필요한 돈 600만원');
+ await expect(page.locator('#fmBucketList h3').first()).toHaveText(y+'년 · 올해');
+ // Back closes only the sheet.
+ await page.locator('.fm-bk-open',{hasText:'마라톤'}).click();await page.goBack();await expect(page.locator('#fmBucketSheet')).toBeHidden();await expect(page.locator('#fmBucketOverlay')).toBeVisible();
+ await page.locator('[data-bk-check]').first().click();
+ await expect(page.locator('.fm-cele')).toContainText('이뤘어요!');
+ await expect(page.locator('.fm-bk-hero strong')).toHaveText('1 / 2');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_bucket_v1')).list);expect(saved.map(b=>b.cat)).toEqual(['travel','health']);expect(saved.find(b=>b.done).doneAt).toMatch(/^\d{4}-\d\d-\d\d$/);
 });

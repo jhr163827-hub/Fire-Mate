@@ -541,7 +541,7 @@ const b=memo.replace(/주식회사|㈜|\(주\)|유한회사/g,'').replace(/[\s()
    card.hidden=!rows.length&&!auto;const title=$('fmUncatTitle');if(title)title.textContent='분류가 필요한 가게 '+rows.length+'곳';const fold=$('fmUncatFold');if(fold)fold.hidden=!rows.length;
    host.replaceChildren(...rows.map(g=>{const row=document.createElement('div');row.className='fm-uncat-row';
     row.innerHTML='<div><strong></strong><span></span></div><select aria-label="분류 선택"><option value="">분류 선택</option>'+LISTS[g.type].map(c=>'<option>'+c+'</option>').join('')+'</select><button type="button" class="secondary">적용</button>';
-    row.querySelector('strong').textContent=g.memo+(g.names.size>1?' 외 '+(g.names.size-1)+'곳':'');row.querySelector('span').textContent=(g.type==='income'?'수입 ':'')+g.n+'건 · '+won(g.sum);
+    row.querySelector('strong').textContent=g.memo+(g.names.size>1?' 외 '+(g.names.size-1)+'곳':'');row.querySelector('span').textContent+=g.names.size>1?' · '+[...g.names].filter(n=>n!==g.memo).slice(0,3).join(', '):'';row.querySelector('span').textContent=(g.type==='income'?'수입 ':'')+g.n+'건 · '+won(g.sum);
     row.querySelector('button').onclick=()=>{const c=row.querySelector('select').value;if(!c){window.fmToast?.('분류를 먼저 골라 주세요');return}const n=window.fmRecategorizeMerchant?.(g.type,g.memo,c);window.fmToast?.(n>0?g.memo+' '+n+'건을 '+c+'(으)로 바꿨어요':'바꾸지 못했어요');render()};
     return row}));
   };

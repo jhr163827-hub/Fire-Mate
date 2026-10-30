@@ -310,9 +310,9 @@ test('analysis shows the next three months from recent income, spending, the pay
  await load(page,seed({tx}));
  await page.evaluate(()=>window.fmGo('insights'));
  const rows=page.locator('#fmOutlookCard .fm-outlook-row');await expect(rows).toHaveCount(3);
- await expect(rows.first()).toContainText('부족 233만원');
+ await expect(rows.first()).toContainText('남는 돈 +120만원');
  await expect(rows.first()).toContainText('작년 이맘때 자동차보험 80만');
- await expect(rows.nth(1)).toContainText('부족 153만원');
+ await expect(rows.nth(1)).toContainText('남는 돈 +200만원');
 });
 
 test('spending over the budget is also shown as how many days later FIRE comes',async({page})=>{
@@ -554,4 +554,27 @@ test('with a fresh Gmail sign-in the BankSalad mail is fetched once a day on ope
  const day=await page.evaluate(()=>localStorage.getItem('firemate_auto_gmail_day_v1'));expect(day).toMatch(/^\d{4}-\d\d-\d\d$/);
  await page.reload();await page.evaluate(()=>{window.fmImportFromHome=()=>{window.__fetched=(window.__fetched||0)+1}});await page.waitForTimeout(3500);
  expect(await page.evaluate(()=>window.__fetched||0)).toBe(0);
+});
+
+test('data storage shows how full it is and one place to undo what the app changed by itself',async({page})=>{
+ const d=new Date().toISOString().slice(0,10);
+ await page.addInitScript(d=>localStorage.setItem('firemate_dup_backup_v1',JSON.stringify([{id:'dup1',date:d,type:'expense',category:'식비',amount:7000,memo:'김밥'}])),d);
+ await load(page,seed({tx:[{id:'a',date:d,type:'expense',category:'식비',amount:7000,memo:'김밥'}]}));
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await expect(page.locator('#fmStorageUse')).toContainText(/저장 공간 \d+% 사용/);
+ await page.locator('#fmAutoLog>summary').click();
+ await expect(page.locator('#fmAutoLogList')).toContainText('🧹 두 번 찍힌 같은 결제 정리1건');
+ await page.locator('[data-autolog="dup"]').click();await page.locator('#fmAskOk').click();
+ await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx.map(t=>t.id).sort()).toEqual(['a','dup1']);
+ await expect(page.locator('#fmAutoLogList')).toContainText('아직 자동으로 바꾼 게 없어요');
+});
+
+test('the analysis screen splits into 요약 · 돈 흐름 · 더 보기',async({page})=>{
+ await load(page,seed());
+ await page.evaluate(()=>window.fmGo('insights'));
+ const month=page.locator('#view-insights [data-part="sum"]').first(),trip=page.locator('#fmTripCard');
+ await expect(month).toBeVisible();await expect(trip).toBeVisible();
+ await page.locator('button[data-ins-part="more"]').click();
+ await expect(month).toBeHidden();await expect(trip).toBeVisible();await expect(page.locator('button[data-ins-part="more"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('button[data-ins-part="sum"]').click();await expect(month).toBeVisible();await expect(trip).toBeHidden();
 });

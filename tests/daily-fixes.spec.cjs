@@ -268,7 +268,7 @@ test('the BankSalad summary sheet syncs cash balances (undoable), flags holdings
  await expect(page.locator('#fmBsReturn')).toContainText('📈 증권사 기준 원금 ₩4,000,000 → ₩5,000,000 (+25.0%)');
  // Pension and gold are in the file but not in the app: add them as accounts, then take them back.
  const miss=page.locator('#fmBsMissing');await expect(miss).toContainText('🧩 앱에 없는 자산 2개 · ₩2,500,000');
- await page.locator('[data-bs-add]').evaluateAll(l=>l.forEach(i=>i.checked=true));
+ for(const box of await page.locator('[data-bs-add]').all())await box.check();
  await page.locator('#fmBsAdd').click();await page.locator('#fmAskOk').click();
  const added=async()=>(await saved(page)).accounts.filter(a=>['100세연금저축펀드','금'].includes(a.name)).map(a=>[a.name,a.kind,a.amount]);
  await expect.poll(added).toEqual([['100세연금저축펀드','investment',2000000],['금','physical',500000]]);

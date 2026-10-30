@@ -130,10 +130,13 @@ test('restaurant v2 batch stock splits but in-flight legacy payments and prior u
 
 // Long ledger tests above use reduced motion. These explicitly exercise normal frame interpolation.
 test('restaurant normal-motion service preserves actors across refill, walks only free cells and hands off distinct food',async({browser})=>{
- test.setTimeout(60000);const context=await browser.newContext({viewport:{width:932,height:430},isMobile:true,hasTouch:true,reducedMotion:'no-preference'}),page=await context.newPage();await page.clock.install();await load(page,{...seed,stoves:[{recipe:0,ends:0},{recipe:1,ends:0},{recipe:0,ends:0}]});await page.locator('[data-room-stove="0"]').tap();await page.locator('[data-room-stove="1"]').tap();await page.evaluate(()=>window.originalWaiter=document.querySelector('[data-actor="waiter-service"]'));
+ test.setTimeout(60000);const context=await browser.newContext({viewport:{width:932,height:430},isMobile:true,hasTouch:true,reducedMotion:'no-preference'}),page=await context.newPage();await page.clock.install();await load(page,{...seed,stoves:[{recipe:0,ends:0},{recipe:1,ends:0},{recipe:0,ends:0}]});
+ // install() keeps real time flowing, so a busy machine moved the waiter further between samples; pause it and step only by runFor
+ // (frames then only run inside runFor, so taps skip the wait-until-still check).
+ await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1500));await page.locator('[data-room-stove="0"]').tap({force:true});await page.locator('[data-room-stove="1"]').tap({force:true});await page.evaluate(()=>window.originalWaiter=document.querySelector('[data-actor="waiter-service"]'));
  let previous=null,refilled=false,sawCarry=false,sawMeal=false,sawBack=false,sawReturn=false;const occupied=new Set(['1,1','3,1','5,1','2,3','3,3','2,5','1,5','2,6','5,5','4,5','5,6','0,6','7,6','1,2']);
  for(let i=0;i<320;i++){
-  await page.clock.runFor(50);if(i===80){await page.locator('[data-room-stove="2"]').tap();refilled=true;expect(await page.evaluate(()=>document.querySelector('[data-actor="waiter-service"]')===window.originalWaiter)).toBe(true)}
+  await page.clock.runFor(50);if(i===80){await page.locator('[data-room-stove="2"]').tap({force:true});refilled=true;expect(await page.evaluate(()=>document.querySelector('[data-actor="waiter-service"]')===window.originalWaiter)).toBe(true)}
   const sample=await page.evaluate(()=>{const w=document.querySelector('[data-actor="waiter-service"]');return {x:+w.dataset.x,y:+w.dataset.y,pose:w.dataset.pose,back:w.dataset.view==='back',carry:!!document.querySelector('[data-actor^="carry-"] .room-food'),meal:!!document.querySelector('[data-actor^="meal-"] .room-food'),s:restaurantRoomBridge.snapshot(),stock:restaurantRoomBridge.inventory()}});
   expect(occupied.has(Math.floor(sample.x)+','+Math.floor(sample.y))).toBe(false);
   if(previous)expect(Math.hypot(sample.x-previous.x,sample.y-previous.y)).toBeLessThan(.8);

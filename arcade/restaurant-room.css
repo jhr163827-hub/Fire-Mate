@@ -166,3 +166,23 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
 .room-actor[data-pose="seated"] .room-face,.room-actor[data-pose="eating"] .room-face{transform:translateX(3.5px)}
 .room-actor[data-pose="seated"] .room-head,.room-actor[data-pose="eating"] .room-head{transform:rotate(5deg);transform-origin:0 -16px}
 .room-actor[data-pose="seated"] .room-serving-hand{transform:rotate(-62deg);transform-origin:9px -12px}
+/* v1.18 화면 다듬기: 식당이 주인공이 되게 안내 문구를 줄이고, 조명·벽 장식·김·눈 깜빡임을 더한다. */
+#restaurantWorld figcaption span{display:none}
+@media (orientation:portrait){.orientation-hint{background:none;border:0;padding:0 4px;font-size:11px;color:#9a7a52;text-align:center}}
+@media (orientation:portrait){
+ .restaurant-hud{gap:6px}.restaurant-hud>div{padding:7px 11px;border-radius:14px}.restaurant-hud small{font-size:10px}.restaurant-hud strong{font-size:17px;margin-top:1px}
+ .chef-card{padding:8px 12px}
+ .restaurant-world{margin:2px -4px;border-radius:22px;border:0;background:radial-gradient(ellipse at 50% 28%,#fff6dc 0,#f5dcac 52%,#e2b276 100%);box-shadow:0 12px 28px #6d4a2233,inset 0 0 0 1px #ffffff80}
+}
+.room-bulb{animation:roomTwinkle 2.6s ease-in-out infinite;filter:drop-shadow(0 0 3px #ffd36b);pointer-events:none}
+@keyframes roomTwinkle{50%{opacity:.45}}
+.room-contact{fill:#3a2410;opacity:.2;pointer-events:none}
+.room-beam{mix-blend-mode:screen}
+.room-steam{pointer-events:none}.room-steam path{fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;opacity:0;animation:roomSteam 2.2s ease-out infinite}
+.room-steam path:nth-child(2){animation-delay:.7s}.room-steam path:nth-child(3){animation-delay:1.4s}
+@keyframes roomSteam{0%{opacity:0;transform:translateY(6px)}30%{opacity:.75}100%{opacity:0;transform:translateY(-14px)}}
+.room-eyes{transform-box:fill-box;transform-origin:center;animation:roomBlink 4.6s infinite}
+@keyframes roomBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+@media (prefers-reduced-motion:reduce){.room-bulb,.room-steam path,.room-eyes{animation:none}}
+@media (orientation:portrait){body{background:linear-gradient(180deg,#fdf1d8 0,#f6e2bb 60%,#efd3a1 100%) fixed}.restaurant-header small{opacity:.6}.restaurant-hud>div,.chef-card,.restaurant-coach,.restaurant-dock button{box-shadow:0 4px 12px #8a5a2414}}
+@media (orientation:landscape){body,.restaurant-app{background:radial-gradient(ellipse at 50% 40%,#fff3d6 0,#f3d7a5 60%,#e2b276 100%)}.restaurant-world{background:transparent;border:0;box-shadow:none}}

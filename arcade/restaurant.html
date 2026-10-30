@@ -1,7 +1,7 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#b9d99b"><title>아케이드 · 추억의 레스토랑</title><link rel="stylesheet" href="./restaurant-room.css?v=1.17.0"></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#b9d99b"><title>아케이드 · 추억의 레스토랑</title><link rel="stylesheet" href="./restaurant-room.css?v=1.18.0"></head>
 <body><main class="restaurant-app">
-<header class="restaurant-header"><a href="./index.html">← 아케이드</a><div><h1>추억의 레스토랑</h1><small>조리 → 서빙대 → 손님 · v1.17.0</small></div><button id="restaurantSound" type="button" aria-label="효과음 끄기" aria-pressed="true">🔊</button><button id="restaurantFullscreen" type="button" aria-label="게임 전체화면">⛶ 전체화면</button></header>
+<header class="restaurant-header"><a href="./index.html">← 아케이드</a><div><h1>추억의 레스토랑</h1><small>v1.18.0</small></div><button id="restaurantSound" type="button" aria-label="효과음 끄기" aria-pressed="true">🔊</button><button id="restaurantFullscreen" type="button" aria-label="게임 전체화면">⛶ 전체화면</button></header>
 <p id="orientationHint" class="orientation-hint">휴대폰을 가로로 돌리면 식당이 넓게 보여요.</p>
 <section class="restaurant-hud" aria-label="식당 현황"><div><small>코인</small><strong id="coins">0</strong></div><div><small>판매 완료</small><strong id="served">0</strong></div><div><small>시설 단계</small><strong id="level">1</strong></div></section>
 <section class="chef-card" aria-label="셰프 경험치"><div><strong id="chefLevel">셰프 Lv1</strong><span id="chefXp">0 / 4 XP</span></div><progress id="chefProgress" max="4" value="0" aria-label="다음 셰프 단계까지 경험치"></progress><small id="chefNext">다음 셰프 Lv2 · 카레 해금</small></section>
@@ -19,4 +19,4 @@
 <dialog id="recipeDialog" aria-label="요리 선택"></dialog>
 <dialog id="goalsDialog" aria-label="목표"><div class="dialog-head"><h2>목표</h2><button type="button" data-dialog-close>닫기</button></div><div id="goalsBody" class="goals-body"></div></dialog><dialog id="expansionDialog"><div class="dialog-head"><h2>식당 확장 · 직원</h2><button type="button" data-dialog-close>닫기</button></div><div><button id="upgrade" type="button">식당 확장</button><p class="note"></p></div><section class="staff-panel" aria-label="직원 고용"><h3>함께 일하는 직원</h3><p id="staffSummary"></p><button id="hireServer" type="button">서빙 직원 고용</button><p id="staffHint" class="note"></p><small>자체 밸런스: 추가 직원 180코인 · 셰프 Lv2 또는 시설 2단계. 원작 고용 수치가 아닙니다.</small></section></dialog>
 <div hidden aria-hidden="true"><span id="guest"></span><span id="order"></span><span id="plate"></span><span id="time"></span><span id="patience"></span><button id="serve"></button><button id="discard"></button></div>
-<script src="./restaurant-screen.js?v=1.17.0"></script><script src="./restaurant-engine.js?v=1.17.0"></script><script src="./restaurant-room.js?v=1.17.0"></script></main></body></html>
+<script src="./restaurant-screen.js?v=1.18.0"></script><script src="./restaurant-engine.js?v=1.18.0"></script><script src="./restaurant-room.js?v=1.18.0"></script></main></body></html>

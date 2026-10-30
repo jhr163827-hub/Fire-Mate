@@ -2537,3 +2537,4 @@ html body[data-home-hide~="market"] #view-home #fmHomeMarket,html body[data-home
 #view-calendar .day .fm-cal-plan{font-size:clamp(9px,2.3vw,11px);letter-spacing:-.045em;white-space:nowrap;margin-top:2px;color:var(--sub);opacity:.8}.fm-day-plan{margin:0 0 10px;padding:10px 12px;border:1px dashed var(--line);border-radius:12px;font-size:13px;color:var(--sub)}.fm-day-plan b{display:block;margin-bottom:4px;color:var(--txt);font-size:12px}.fm-day-plan p{margin:2px 0}
 .fm-div-reinvest{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--sub)}.fm-div-reinvest b{color:var(--txt)}
 .fm-debt{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}.fm-debt p{margin:0 0 8px;line-height:1.5}.fm-debt b{color:var(--txt)}.fm-debt span{display:flex;align-items:center;gap:6px}.fm-debt input{width:80px;padding:8px 10px}.fm-debt button{padding:8px 12px;min-height:40px}
+.fm-pin-pad[hidden]{display:none}

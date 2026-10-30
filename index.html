@@ -1,8 +1,8 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.205</title><link rel="stylesheet" href="./app.css?v=3.5.205"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-205">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.206</title><link rel="stylesheet" href="./app.css?v=3.5.206"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-206">
 
 
 
-</head><body><div id="fmLock" role="dialog" aria-modal="true" aria-label="앱 잠금"><span>🔒</span><b id="fmLockTitle">비밀번호를 입력하세요</b><div class="fm-pin-dots" id="fmPinDots"></div><button type="button" class="primary" id="fmLockGo" hidden>Face ID로 열기</button><div class="fm-pin-pad" id="fmPinPad"></div><button type="button" class="fm-pin-cancel" id="fmPinCancel" hidden>취소</button></div><main class="app"><header class="top"><div><div class="eyebrow" id="fmCurrentSection" aria-live="polite">홈</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="fmHeaderImport" type="button" aria-label="뱅크샐러드 가져오기" title="뱅크샐러드 가져오기">📥</button><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
+</head><body><div id="fmLock" role="dialog" aria-modal="true" aria-label="앱 잠금"><span>🔒</span><b id="fmLockTitle">비밀번호를 입력하세요</b><div class="fm-pin-dots" id="fmPinDots"></div><button type="button" class="primary" id="fmLockGo" hidden>지문으로 열기</button><div class="fm-pin-pad" id="fmPinPad"></div><button type="button" class="fm-pin-cancel" id="fmPinCancel" hidden>취소</button></div><main class="app"><header class="top"><div><div class="eyebrow" id="fmCurrentSection" aria-live="polite">홈</div><div class="logo">FIRE <b>MATE</b> <span class="mini">PERSONAL</span></div></div><div class="right"><button class="iconbtn" id="fmHeaderImport" type="button" aria-label="뱅크샐러드 가져오기" title="뱅크샐러드 가져오기">📥</button><button class="iconbtn" id="theme" title="테마 전환">☀️</button></div></header><nav class="tabs" id="tabs"><button class="tab active" data-view="home">홈</button><button class="tab" data-view="calendar">달력</button><button class="tab" data-view="history">내역</button><button class="tab" data-view="insights">분석</button><button class="tab" data-view="assets">자산</button><button class="tab" data-view="fire">FIRE</button><button class="tab" data-view="retire">은퇴 설계</button></nav>
 <section class="view active" id="view-home">
 <div class="hero fm-home-wealth" id="homeAssetHero">
   <div class="fm-home-section-title">전체 순자산</div>
@@ -141,8 +141,8 @@ form.querySelectorAll('input').forEach(i=>{if(document.activeElement!==i)i.value
 }
 // One tap fills each category with its last-3-month average (rounded up to ₩10,000); 저장 still decides.
 $('fmCatBudgetAuto')?.addEventListener('click',()=>{const now=new Date(),ms=fmMonthsBack(3);let n=0;for(const i of $('fmCatBudgetForm').querySelectorAll('input')){const avg=ms.reduce((x,m)=>x+fmSum(fmMonthExpenses(data,m).filter(t=>t.category===i.dataset.cat)),0)/3;if(avg>0){i.value=(Math.ceil(avg/1e4)*1e4).toLocaleString('ko-KR');n++}}window.fmToast?.(n?n+'개 항목을 평균으로 채웠어요 · 저장을 눌러 주세요':'최근 3달 지출이 없어요')});
-// 🔒 앱 잠금: a 6-digit PIN typed on the app's own keypad (the phone's Face ID sheet shows the site address, so it is not used for new locks).
-// Only a PBKDF2 hash with its salt is kept (firemate_pin_v1, not in backups). An older Face ID lock (firemate_lock_v1) still opens once and then asks for a PIN.
+// 🔒 앱 잠금: the phone's 지문·Face ID (WebAuthn platform authenticator, firemate_lock_v1 keeps only the credential id) where the phone has it,
+// otherwise a 6-digit PIN on the app's own keypad (firemate_pin_v1 keeps a PBKDF2 hash and salt). Neither is in backups.
 // It locks again after 5 minutes away; five wrong PINs wait 30 seconds.
 const FM_LOCK='firemate_lock_v1',FM_PIN='firemate_pin_v1',fmUnB64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),fmB64=b=>btoa(String.fromCharCode(...new Uint8Array(b))),fmLockKey=()=>{try{return localStorage.getItem(FM_LOCK)||''}catch{return ''}},fmPin=()=>read(FM_PIN,null);
 function fmLockAsk(id){return navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:fmUnB64(id)}],userVerification:'required',timeout:60000}})}
@@ -150,19 +150,20 @@ async function fmPinHash(pin,salt){const k=await crypto.subtle.importKey('raw',n
 $('fmPinPad').innerHTML=[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<i></i>':'<button type="button" data-k="'+(k==='⌫'?'b':k)+'" aria-label="'+(k==='⌫'?'지우기':k)+'">'+k+'</button>').join('');
 let fmPinKey=null;$('fmPinPad').onclick=e=>{const k=e.target.closest('[data-k]')?.dataset.k;if(k&&fmPinKey)fmPinKey(k)};$('fmPinCancel').onclick=()=>fmPinKey?.('x');
 document.addEventListener('keydown',e=>{if(!fmPinKey)return;if(/^\d$/.test(e.key))fmPinKey(e.key);else if(e.key==='Backspace')fmPinKey('b');else if(e.key==='Escape'&&!$('fmPinCancel').hidden)fmPinKey('x')});
-function fmPinAsk(title,cancel){const box=$('fmLock');let v='';$('fmLockTitle').textContent=title;$('fmPinCancel').hidden=!cancel;$('fmLockGo').hidden=true;box.classList.add('show');
+function fmPinAsk(title,cancel){const box=$('fmLock');let v='';$('fmLockTitle').textContent=title;$('fmPinCancel').hidden=!cancel;$('fmLockGo').hidden=true;$('fmPinPad').hidden=false;box.classList.add('show');
  const dots=()=>{$('fmPinDots').innerHTML=[0,1,2,3,4,5].map(i=>'<i'+(i<v.length?' class="on"':'')+'></i>').join('')};dots();
  return new Promise(res=>{fmPinKey=k=>{if(k==='x'){fmPinKey=null;box.classList.remove('show');return res(null)}v=k==='b'?v.slice(0,-1):v.length<6?v+k:v;dots();if(v.length===6){fmPinKey=null;setTimeout(()=>res(v),120)}}})}
 function fmLockDone(){delete document.documentElement.dataset.locked;$('fmLock').classList.remove('show');fmPinKey=null}
 async function fmPinSet(){const a=await fmPinAsk('새 비밀번호 6자리',true);if(a===null)return false;const b=await fmPinAsk('한 번 더 입력해 주세요',true);if(b===null)return false;if(a!==b){fmLockDone();toast('두 번 입력한 비밀번호가 달라요');return false}
  const salt=fmB64(crypto.getRandomValues(new Uint8Array(16)));try{localStorage.setItem(FM_PIN,JSON.stringify({salt,hash:await fmPinHash(a,salt)}));localStorage.removeItem(FM_LOCK)}catch{fmLockDone();toast('비밀번호를 저장하지 못했어요');return false}fmLockDone();return true}
 async function fmPinCheck(title,cancel){const p=fmPin();let tries=0;for(;;){const v=await fmPinAsk(tries?'비밀번호가 달라요':title,cancel);if(v===null)return false;if(await fmPinHash(v,p.salt)===p.hash)return true;if(++tries>=5){$('fmLockTitle').textContent='30초 뒤에 다시 입력해 주세요';await new Promise(r=>setTimeout(r,3e4));tries=0}}}
-let fmUnlocking=false;async function fmUnlock(){if(fmUnlocking)return;fmUnlocking=true;try{if(fmPin()?.hash){await fmPinCheck('비밀번호를 입력하세요');fmLockDone();return}const id=fmLockKey();if(!id)return fmLockDone();
- $('fmLockTitle').textContent='FIRE MATE';$('fmPinDots').innerHTML='';$('fmLockGo').hidden=false;try{await fmLockAsk(id)}catch{return}fmLockDone();if(await fmPinSet())toast('이제 비밀번호로 잠가요')}finally{fmUnlocking=false}}
+let fmUnlocking=false;async function fmUnlock(){if(fmUnlocking)return;fmUnlocking=true;try{const id=fmLockKey();if(id){$('fmLockTitle').textContent='FIRE MATE';$('fmPinDots').innerHTML='';$('fmPinPad').hidden=true;$('fmPinCancel').hidden=true;$('fmLockGo').hidden=false;try{await fmLockAsk(id)}catch{return}return fmLockDone()}
+ if(fmPin()?.hash)await fmPinCheck('비밀번호를 입력하세요');fmLockDone()}finally{fmUnlocking=false}}
 $('fmLockGo').onclick=fmUnlock;if(document.documentElement.dataset.locked)fmUnlock();
 {let away=0;document.addEventListener('visibilitychange',()=>{if(document.hidden)away=Date.now();else if(away&&Date.now()-away>3e5&&(fmPin()||fmLockKey())){document.documentElement.dataset.locked='1';fmUnlock()}})}
-{const box=$('fmLockOn');box.checked=!!(fmPin()||fmLockKey());box.onchange=async()=>{if(box.checked){box.checked=await fmPinSet();if(box.checked)toast('앱 잠금을 켰어요');return}
- let ok=false;try{ok=fmPin()?.hash?await fmPinCheck('지금 비밀번호를 입력하세요',true):(await fmLockAsk(fmLockKey()),true)}catch{}fmLockDone();if(ok){try{localStorage.removeItem(FM_PIN);localStorage.removeItem(FM_LOCK)}catch{}toast('앱 잠금을 껐어요')}box.checked=!ok}}
+(async()=>{const box=$('fmLockOn');let bio=false;try{bio=!!await window.PublicKeyCredential?.isUserVerifyingPlatformAuthenticatorAvailable()}catch{}$('fmLockRow').firstElementChild.textContent='🔒 앱 잠금 ('+(bio?'지문·Face ID':'비밀번호 6자리')+')';box.checked=!!(fmPin()||fmLockKey());
+box.onchange=async()=>{if(box.checked){if(bio){try{const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'FIRE MATE'},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'FIRE MATE',displayName:'FIRE MATE'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},timeout:60000}});localStorage.setItem(FM_LOCK,fmB64(c.rawId));localStorage.removeItem(FM_PIN)}catch{box.checked=false;return toast('지문 확인을 못 했어요')}}else box.checked=await fmPinSet();if(box.checked)toast('앱 잠금을 켰어요');return}
+ let ok=false;try{ok=fmLockKey()?(await fmLockAsk(fmLockKey()),true):await fmPinCheck('지금 비밀번호를 입력하세요',true)}catch{}fmLockDone();if(ok){try{localStorage.removeItem(FM_PIN);localStorage.removeItem(FM_LOCK)}catch{}toast('앱 잠금을 껐어요')}box.checked=!ok}})();
 // 🏠 홈에 보일 것 (settings): each home line can be hidden; the choice is firemate_home_hide_v1 and lives on <body data-home-hide>.
 const FM_HOME_LINES=[['market','📈 시장 지수'],['div','💰 7일 안 배당'],['alert','🔔 이상 지출·환율 알림'],['plan','📋 월급 주기 계획'],['pace','📊 이번 달 흐름'],['fire','🔥 FIRE 진행 상황'],['short','🧾 월간 결산·소비 분석 버튼'],['backup','💾 백업 안내']];
 function fmHomeHidden(){try{const v=JSON.parse(localStorage.getItem('firemate_home_hide_v1')||'[]');return Array.isArray(v)?v:[]}catch{return []}}
@@ -2525,7 +2526,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-205',VERSION='3.5.205';
+ const BUILD='fire-mate-v3-5-206',VERSION='3.5.206';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2739,4 +2740,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.205"></script></body></html>
+</style><script src="./js/features.js?v=3.5.206"></script></body></html>

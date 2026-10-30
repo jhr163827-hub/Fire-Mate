@@ -241,7 +241,7 @@ test('fixing one branch of a shop also fixes its other branches and teaches the 
  await expect.poll(async()=>(await saved(page)).tx.find(t=>t.memo==='라온상회 선릉점')?.category).toBe('쇼핑');
 });
 
-test('the BankSalad summary sheet syncs cash balances (undoable), flags holdings that differ and lists insurance',async({page})=>{
+test('the BankSalad summary sheet never changes balances or adds accounts; it only compares holdings and lists insurance',async({page})=>{
  const wb=XLSX.utils.book_new();
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단'],[ago(1),'10:00','지출','식비','','점심',-9000,'KRW','카드']]),'가계부 내역');
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
@@ -256,22 +256,29 @@ test('the BankSalad summary sheet syncs cash balances (undoable), flags holdings
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer});
- await expect(page.locator('#fmBsNote')).toContainText('💰 뱅크샐러드 잔고로 맞췄어요 · 현금·예금 ₩100 → ₩1,200,000 · 계좌 1개');
- let d=await saved(page);expect(d.balance.cash).toBe(1200000);expect(d.accounts.find(a=>a.id==='s').amount).toBe(3000000);
+ // The owner found totals off after balances were overwritten: the sheet is read for comparison only.
+ await expect.poll(async()=>!!(await page.evaluate(()=>localStorage.getItem('firemate_bs_snapshot_v1')))).toBe(true);
+ let d=await saved(page);expect(d.balance.cash).toBe(100);expect(d.accounts.find(a=>a.id==='s').amount).toBe(0);expect(d.accounts.filter(a=>!a.id.startsWith('legacy-'))).toHaveLength(2);
  const snap=await page.evaluate(()=>localStorage.getItem('firemate_bs_snapshot_v1'));expect(snap).not.toContain('홍길동');
- await page.locator('#fmBsUndo').click();
- await expect.poll(async()=>(await saved(page)).balance.cash).toBe(100);expect((await saved(page)).accounts.find(a=>a.id==='s').amount).toBe(0);
  await page.keyboard.press('Escape');await page.evaluate(()=>{document.querySelectorAll('.modalbg.open,.modalbg.show').forEach(m=>m.classList.remove('open','show'));window.fmGo('assets')});
  await page.locator('#fmAssetQuickAnalysis').click();
  await expect(page.locator('#fmBsList')).toContainText('SCHD');await expect(page.locator('#fmBsList')).toContainText('뱅크샐러드 ₩5,000,000');
  await expect(page.locator('#fmInsSum')).toHaveText('1개');
  await expect(page.locator('#fmBsReturn')).toContainText('📈 증권사 기준 원금 ₩4,000,000 → ₩5,000,000 (+25.0%)');
- // Pension and gold are in the file but not in the app: add them as accounts, then take them back.
- const miss=page.locator('#fmBsMissing');await expect(miss).toContainText('🧩 앱에 없는 자산 2개 · ₩2,500,000');
- for(const box of await page.locator('[data-bs-add]').all())await box.check();
- await page.locator('#fmBsAdd').click();await page.locator('#fmAskOk').click();
- const added=async()=>(await saved(page)).accounts.filter(a=>['100세연금저축펀드','금'].includes(a.name)).map(a=>[a.name,a.kind,a.amount]);
- await expect.poll(added).toEqual([['100세연금저축펀드','investment',2000000],['금','physical',500000]]);
- await page.locator('#fmBsAddUndo').click();await page.locator('#fmAskOk').click();
- await expect.poll(added).toEqual([]);
+ await expect(page.locator('#fmBsMissing')).toBeHidden();
+});
+
+test('balances and accounts changed by the BankSalad sheet before are put back once, and can be applied again',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('bs'))return;sessionStorage.setItem('bs','1');localStorage.setItem('firemate_bs_backup_v1',JSON.stringify({cash:500000,accounts:{s:1000000}}));localStorage.setItem('firemate_bs_added_v1',JSON.stringify(['g']))});
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},balance:{fx:1400,cash:3879561,other:0,debt:0},accounts:[{id:'s',name:'세이프박스',kind:'safe',amount:3000000,fire:true},{id:'g',name:'기타 자산',kind:'physical',amount:9937188,fire:true}],holdings:[],tx:[]});
+ await page.goto('/index.html');
+ await expect.poll(async()=>(await saved(page)).balance.cash).toBe(500000);
+ let d=await saved(page);expect(d.accounts.filter(a=>!a.id.startsWith('legacy-')).map(a=>[a.id,a.amount])).toEqual([['s',1000000]]);
+ expect(await page.evaluate(()=>[localStorage.getItem('firemate_bs_backup_v1'),localStorage.getItem('firemate_bs_added_v1')])).toEqual([null,null]);
+ await page.reload();expect((await saved(page)).balance.cash).toBe(500000);
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();await page.locator('#fmAutoLog>summary').click();
+ await expect(page.locator('#fmAutoLogList')).toContainText('↩️ 뱅크샐러드가 바꾼 잔고·계좌 원래대로');
+ await page.locator('[data-autolog="bsrev"]').click();await page.locator('#fmAskOk').click();
+ await expect.poll(async()=>(await saved(page)).balance.cash).toBe(3879561);
+ d=await saved(page);expect(d.accounts.filter(a=>!a.id.startsWith('legacy-')).map(a=>[a.id,a.amount])).toEqual([['s',3000000],['g',9937188]]);
 });

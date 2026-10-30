@@ -6,7 +6,9 @@
 const KEY='firemate_arcade_restaurant_v2',OLD='firemate_arcade_restaurant_v1',$=id=>document.getElementById(id);
 const recipes=[{name:'주먹밥',emoji:'🍙',ms:60000,cost:3,sell:12,lv:1,plates:4},{name:'라면',emoji:'🍜',ms:300000,cost:10,sell:35,lv:1,plates:5},{name:'카레',emoji:'🍛',ms:1800000,cost:40,sell:110,lv:2,plates:10},{name:'햄버거',emoji:'🍔',ms:3600000,cost:90,sell:250,lv:3,plates:10},{name:'스테이크',emoji:'🥩',ms:14400000,cost:250,sell:780,lv:4,plates:12},
  // v1.12 menu: appended so saved recipe indices keep their meaning.
- {name:'김밥',emoji:'🍣',ms:180000,cost:6,sell:24,lv:1,plates:4},{name:'만두',emoji:'🥟',ms:900000,cost:25,sell:80,lv:2,plates:8},{name:'짜장면',emoji:'🍝',ms:2700000,cost:55,sell:160,lv:2,plates:8},{name:'피자',emoji:'🍕',ms:7200000,cost:140,sell:420,lv:3,plates:12},{name:'초밥',emoji:'🍱',ms:21600000,cost:300,sell:980,lv:4,plates:14},{name:'케이크',emoji:'🎂',ms:28800000,cost:420,sell:1440,lv:5,plates:16}];
+ {name:'김밥',emoji:'🍣',ms:180000,cost:6,sell:24,lv:1,plates:4},{name:'만두',emoji:'🥟',ms:900000,cost:25,sell:80,lv:2,plates:8},{name:'짜장면',emoji:'🍝',ms:2700000,cost:55,sell:160,lv:2,plates:8},{name:'피자',emoji:'🍕',ms:7200000,cost:140,sell:420,lv:3,plates:12},{name:'초밥',emoji:'🍱',ms:21600000,cost:300,sell:980,lv:4,plates:14},{name:'케이크',emoji:'🎂',ms:28800000,cost:420,sell:1440,lv:5,plates:16},
+ // v1.19 menu
+ {name:'떡볶이',emoji:'🌶️',ms:1200000,cost:30,sell:95,lv:2,plates:8},{name:'팥빙수',emoji:'🍧',ms:36000000,cost:520,sell:1820,lv:6,plates:18}];
 let lastStored=null;
 try{lastStored=localStorage.getItem(KEY)}catch{}
 let readable=lastStored===null;
@@ -85,17 +87,20 @@ function inventory(){return [0,1].map(i=>{if(!supported(data.service))return nul
 const durations={entering:2500,waiting:0,serving:3000,eating:4500,leaving:2500};
 // v1.10 guests: a type sets patience and tips. A guest who waits too long for a server leaves
 // without taking a plate (plates leave the counter only when serving starts), so stock is safe.
-const GUEST_TYPES={regular:{label:'단골',patience:30000,tip:1},hungry:{label:'배고픈 손님',patience:18000,tip:1},vip:{label:'VIP',patience:15000,tip:2}};
+const GUEST_TYPES={regular:{label:'단골',patience:30000,tip:1},hungry:{label:'배고픈 손님',patience:18000,tip:1},vip:{label:'VIP',patience:15000,tip:2},gourmet:{label:'미식가',patience:20000,tip:3}};
+// 오늘의 이벤트 (v1.19): one per day on a five-day cycle with two plain days. Browser tests get none unless they name one (__restaurantEvent).
+const EVENTS={rain:'☔ 비 오는 날 · 손님이 더 오래 기다려요',festival:'🎉 축제 날 · 팁 1.5배',gourmet:'🎩 미식가의 날 · 미식가 손님이 자주 와요'};
+const todayEvent=()=>{if(navigator.webdriver)return EVENTS[window.__restaurantEvent]?window.__restaurantEvent:null;const d=new Date();return [null,'rain',null,'festival','gourmet'][Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)%5]};
 // Older regression tests pin exact v1.9 ledgers; under navigator.webdriver they can ask for the classic guest rules.
 const classicGuests=()=>navigator.webdriver&&window.__restaurantClassicGuests===true;
 const guestType=g=>GUEST_TYPES[g?.type]?g.type:'regular';
 // Browser tests may shorten patience (navigator.webdriver only); play always uses the table above.
-const patienceFor=g=>classicGuests()?Infinity:GUEST_TYPES[guestType(g)].patience*(navigator.webdriver&&Number(window.__restaurantPatienceScale)>0?Number(window.__restaurantPatienceScale):1);
+const patienceFor=g=>classicGuests()?Infinity:GUEST_TYPES[guestType(g)].patience*(todayEvent()==='rain'?1.3:1)*(navigator.webdriver&&Number(window.__restaurantPatienceScale)>0?Number(window.__restaurantPatienceScale):1);
 const levelBonus=batch=>classicGuests()||!validPlate(batch)?0:Math.round(batch.value*Math.min(.12,Math.max(0,progress().level-4)*.02));
 const masteryBonus=batch=>{if(classicGuests()||!validPlate(batch))return 0;const st=mastery(batch.recipe).stage;return Math.round(batch.value*(st===2?.2:st===1?.1:0))};
-const tipFor=g=>{if(classicGuests())return 0;const w=Number(g?.wait),rate=!Number.isFinite(w)?0:w<5000?.25:w<12000?.1:0;return Math.round((Number(g?.batch?.value)||0)*rate*GUEST_TYPES[guestType(g)].tip)};
+const tipFor=g=>{if(classicGuests())return 0;const w=Number(g?.wait),rate=!Number.isFinite(w)?0:w<5000?.25:w<12000?.1:0;return Math.round((Number(g?.batch?.value)||0)*rate*GUEST_TYPES[guestType(g)].tip*(todayEvent()==='festival'?1.5:1))};
 // The room's shop score (themes and placed decor) adds up to 10% more VIP guests.
-const pickType=()=>{const r=Math.random(),vip=.12+Math.min(.1,Math.max(0,Number(window.restaurantVipBonus)||0));return r<vip?'vip':r<vip+.23?'hungry':'regular'};
+const pickType=()=>{const r=Math.random(),vip=.12+Math.min(.1,Math.max(0,Number(window.restaurantVipBonus)||0));const gm=todayEvent()==='gourmet'?.15:progress().level>=5?.05:0;return r>=1-gm?'gourmet':r<vip?'vip':r<vip+.23?'hungry':'regular'};
 const stats=()=>{const v=data.guestStats;return v&&v.version===1?v:{version:1,happy:0,angry:0,tips:0}};
 let phaseElapsed=new Map(),lastTick=performance.now(),timer=null,suspended=false;
 function transfer(i){const job=data.stoves[i];if(!known(job)||Date.now()<job.ends)return;
@@ -143,7 +148,7 @@ function tick(){const now=performance.now(),dt=Math.max(0,Math.min(1000,now-last
 }
 function setActive(){clearInterval(timer);timer=null;lastTick=performance.now();if(!document.hidden)timer=setInterval(()=>{tick();paint()},250)}
 document.addEventListener('visibilitychange',()=>{setActive();if(!document.hidden)paint()});window.addEventListener('pagehide',()=>{clearInterval(timer);timer=null});window.addEventListener('pageshow',setActive);
-window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),useStove:i=>{if(Number.isInteger(i)&&i>=0&&i<data.stoves.length)document.querySelector('#kitchen [data-slot="'+i+'"]')?.click()},
+window.restaurantRoomBridge=Object.freeze({snapshot:()=>copy(data),event:()=>{const k=todayEvent();return k?{key:k,text:EVENTS[k]}:null},useStove:i=>{if(Number.isInteger(i)&&i>=0&&i<data.stoves.length)document.querySelector('#kitchen [data-slot="'+i+'"]')?.click()},
  saveLayout:(layout,placement)=>{if(placement&&!data.furniture?.items.some(o=>o.id===placement&&o.location!=='sold'))return false;if(!window.restaurantRoomUI?.validFurnitureLayout?.(layout,placement)){notify('가구 배치나 영업 경로를 다시 확인해 주세요.');return false};return transaction(d=>{d.roomLayout=layout;if(d.furniture)for(const o of d.furniture.items){if(o.location==='placed'||o.id===placement){const p=layout.positions[o.id];if(p){o.location='placed';o.position={...o.position,...p}}}}})},
  furniture:()=>({supported:furnitureSupported(),catalogue:copy(catalogue)}),
  furnitureAction,

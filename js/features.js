@@ -605,7 +605,7 @@ try{
   // Anything the person entered counts: records, assets, debt, budgets, recurring items, a changed plan, net-worth history.
   const filled=v=>Array.isArray(v)?v.length>0:!!v&&typeof v==='object'&&Object.keys(v).length>0;
   const fireDefaults={asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4};
-  const empty=!!d&&!filled(d.tx)&&!filled(d.holdings)&&!filled(d.rec)&&![...(d.dailySnapshots||[]),...(d.snapshots||[])].some(s=>Number(s?.amount)>0)
+  const empty=!!d&&!localStorage.getItem('firemate_tx_archive_v1')&&!filled(d.tx)&&!filled(d.holdings)&&!filled(d.rec)&&![...(d.dailySnapshots||[]),...(d.snapshots||[])].some(s=>Number(s?.amount)>0)
    &&!(d.accounts||[]).some(a=>Number(a?.amount)>0||filled(a?.items))&&!['cash','other','debt'].some(k=>Number(d.balance?.[k])>0)
    &&!Object.values(d.budgets||{}).some(v=>Number(v)>0)&&!Object.entries(d.fire||{}).some(([k,v])=>k in fireDefaults&&Number(v)!==fireDefaults[k]);
   let chosen=null;try{chosen=localStorage.getItem(CHOICE)}catch{}

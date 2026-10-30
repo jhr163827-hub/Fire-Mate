@@ -78,3 +78,21 @@ test('위시리스트 adds items, edits price, saving, link and 꼭, checks them
  await page.reload();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_wishlist_v1')).list.map(w=>[w.name,w.price,w.saved,w.link,w.pri,w.done]))).toEqual([['러닝화',150000,50000,'https://shop.example.com/shoe',true,true]]);
 });
+
+test('앱 잠금 uses the phone\'s Face ID·지문: turning it on locks the next open until it is confirmed',async({page})=>{
+ await page.addInitScript(()=>{window.__asks=0;PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable=async()=>true;
+  CredentialsContainer.prototype.create=async()=>({rawId:new Uint8Array([7,7,7]).buffer});
+  CredentialsContainer.prototype.get=async o=>{window.__asks++;if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
+ await page.goto('/index.html');
+ await page.locator('#settingsBottom').click();
+ await page.locator('#fmLockOn').check();
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
+ await page.reload();
+ await expect(page.locator('#fmLock')).toBeVisible();await expect(page.locator('.app')).toBeHidden();
+ expect(await page.evaluate(()=>window.__asks)).toBe(1);
+ await page.evaluate(()=>{window.__pass=true});await page.locator('#fmLockGo').click();
+ await expect(page.locator('#fmLock')).toBeHidden();await expect(page.locator('.app')).toBeVisible();
+ // Turning it off asks once more.
+ await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
+});

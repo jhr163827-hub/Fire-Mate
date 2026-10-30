@@ -191,3 +191,22 @@ test('the main goal sits on home with one-tap study, today\'s notice nudges, and
  await expect(page.locator('.fm-cert-cele')).toContainText('합격 축하해요!');
  await expect(page.locator('.fm-cert-none')).toContainText('🎯 다음 목표 하나 정하기');
 });
+
+test('the phone\'s back closes only the certificate sheet or photo, then the certificate screen',async({page})=>{
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR42mP8z8DwnxEJMDKgAhwmAQBSRgP7PwEQXgAAAABJRU5ErkJggg==','base64');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.locator('#fmCertQ').fill('일반기계기사');await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
+ await expect(page.locator('#fmCertSheet')).toBeVisible();
+ // 취득 has no 접수 마감; 준비 has.
+ await expect(page.locator('#fmCertApplyRow')).toBeHidden();await page.locator('[data-cert-mode="goal"]').click();await expect(page.locator('#fmCertApplyRow')).toBeVisible();await page.locator('[data-cert-mode="have"]').click();
+ await page.goBack();
+ await expect(page.locator('#fmCertSheet')).toBeHidden();await expect(page.locator('#fmCertOverlay')).toBeVisible();
+ // Saving closes the sheet without leaving a step behind; a photo opens over the sheet and back closes just the photo.
+ await page.locator('#fmCertQ').fill('일반기계기사');await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
+ await page.locator('#fmCertFileIn').setInputFiles({name:'l.png',mimeType:'image/png',buffer:png});await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('#fmCertSheet')).toBeHidden();
+ await page.locator('.fm-cert-row').click();await page.locator('#fmCertFileOpen').click();await expect(page.locator('#fmCertView')).toBeVisible();
+ await page.goBack();await expect(page.locator('#fmCertView')).toBeHidden();await expect(page.locator('#fmCertSheet')).toBeVisible();
+ await page.goBack();await expect(page.locator('#fmCertSheet')).toBeHidden();await expect(page.locator('#fmCertOverlay')).toBeVisible();
+ await page.goBack();await expect(page.locator('#fmCertOverlay')).toBeHidden();await expect(page.locator('#settingsOverlay')).toBeVisible();
+});

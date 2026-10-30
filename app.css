@@ -2601,3 +2601,4 @@ html body[data-home-hide~="market"] #view-home #fmHomeMarket,html body[data-home
 #fmCertOverlay .fm-cert-cele{position:fixed;inset:0;z-index:12;display:grid;place-content:center;justify-items:center;gap:8px;background:#000c;text-align:center;animation:fmCele .4s ease}
 #fmCertOverlay .fm-cert-cele b{font-size:72px}#fmCertOverlay .fm-cert-cele strong{font-size:26px}#fmCertOverlay .fm-cert-cele span{font-size:16px;color:var(--sub)}
 @keyframes fmCele{from{opacity:0;transform:scale(.9)}}@media(prefers-reduced-motion:reduce){#fmCertOverlay .fm-cert-cele{animation:none}}
+#fmCertOverlay .fm-cert-datelbl[hidden]{display:none}

@@ -623,3 +623,45 @@ test('the card card shows the 연말정산 25% threshold and when 체크카드 s
  await page.evaluate(()=>window.fmGo('insights'));
  await expect(page.locator('#fmCardCard .fm-cardtax')).toHaveText(/^🧾 연말정산 카드 공제 문턱 1,200만.* \(총급여 25% 추정\) · 넘었어요 → 남은 결제는 체크카드·현금이 공제 2배$/);
 });
+
+test('errors on the phone are kept, shown in 내 데이터 보관 and carried in the backup',async({page})=>{
+ await load(page,seed());
+ await page.evaluate(()=>{setTimeout(()=>{throw new Error('qa boom')});setTimeout(()=>{throw new Error('qa boom')},10)});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_errlog_v1')||'null')?.list?.[0]?.n)).toBe(2);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_errlog_v1')).list[0].msg)).toContain('qa boom');
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await expect(page.locator('#fmStorageUse')).toContainText('🐞 최근 오류 1가지');
+ const [dl]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
+ const backup=JSON.parse(require('fs').readFileSync(await dl.path(),'utf8'));
+ expect(backup.extras.firemate_errlog_v1.list[0].msg).toContain('qa boom');
+});
+
+test('the calendar shows money expected on coming days: bills not yet out',async({page})=>{
+ await page.clock.install({time:new Date('2026-10-10T09:00:00')});
+ await load(page,seed({tx:['06','07','08','09'].map(k=>({id:'b'+k,date:'2026-'+k+'-12',type:'expense',category:'통신·구독',amount:17000,memo:'넷플릭스'}))}));
+ await page.evaluate(()=>window.fmGo('calendar'));
+ const cell=page.locator('#cal [data-date="2026-10-12"]');
+ await expect(cell.locator('.fm-cal-plan')).toHaveText('-1.7만');
+ await expect(page.locator('#cal [data-date="2026-10-09"] .fm-cal-plan')).toHaveCount(0);
+ await cell.click();
+ await expect(page.locator('#dayTx .fm-day-plan')).toContainText('🔁 넷플릭스 ₩17,000');
+});
+
+test('with debt the health check asks its interest rate and says whether to repay or invest first',async({page})=>{
+ await load(page,seed({balance:{fx:1400,cash:10000000,other:0,debt:20000000}}));
+ await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
+ const box=page.locator('#fmDebtForm');
+ await expect(box).toContainText('대출 이자율을 넣으면');
+ await page.locator('#fmDebtRate').fill('6.5');await box.locator('button').click();
+ await expect(page.locator('#fmDebtForm p')).toHaveText('💳 대출 이자 6.5% (연 130만원) vs 계획 수익률 7% → 남는 돈은 갚기 먼저');
+ await page.locator('#fmDebtRate').fill('3');await page.locator('#fmDebtForm button').click();
+ await expect(page.locator('#fmDebtForm p')).toContainText('남는 돈은 투자가 유리');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_debt_rate_v1')))).toEqual({rate:3});
+});
+
+test('today\'s notice names a fixed bill that just came out higher than before',async({page})=>{
+ await page.clock.install({time:new Date('2026-10-13T09:00:00')});
+ await page.addInitScript(()=>{window.__fmBriefTest=true;localStorage.setItem('firemate_last_backup_v1',new Date().toISOString())});
+ await load(page,seed({tx:[...['06','07','08','09'].map(k=>({id:'n'+k,date:'2026-'+k+'-12',type:'expense',category:'통신·구독',amount:13500,memo:'넷플릭스'})),{id:'now',date:'2026-10-12',type:'expense',category:'통신·구독',amount:17000,memo:'넷플릭스'}]}));
+ await expect(page.locator('.fm-brief-pop')).toContainText('📈 넷플릭스 13,500 → 17,000원으로 올랐어요');
+});

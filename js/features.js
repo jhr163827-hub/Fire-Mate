@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  }catch(e){console.warn('Layout refinement:',e)}
 });
-}catch(e){console.error('fm-layout',e)}
+}catch(e){console.error('fm-layout',e);window.fmLogError?.(e?.message,'fm-layout')}
 
 
 // ===== fm-ledger-keyboard — 가계부 · 입력 키보드 =====
@@ -111,7 +111,7 @@ try{
   new MutationObserver(sync).observe(overlay,{attributes:true,attributeFilter:['class']});overlay.addEventListener('focusin',sync);
  }
 })();
-}catch(e){console.error('fm-ledger-keyboard',e)}
+}catch(e){console.error('fm-ledger-keyboard',e);window.fmLogError?.(e?.message,'fm-ledger-keyboard')}
 
 
 // ===== fm-premium-finance-ui — FIRE·홈·자산·가계부 · 결정 중심 화면 동작 =====
@@ -199,7 +199,7 @@ try{
  });
 })();
 
-}catch(e){console.error('fm-premium-finance-ui',e)}
+}catch(e){console.error('fm-premium-finance-ui',e);window.fmLogError?.(e?.message,'fm-premium-finance-ui')}
 
 
 // ===== fm-strategy-conclusion — FIRE · 전략 비교 =====
@@ -247,7 +247,7 @@ try{
   sync();
  });
 })();
-}catch(e){console.error('fm-strategy-conclusion',e)}
+}catch(e){console.error('fm-strategy-conclusion',e);window.fmLogError?.(e?.message,'fm-strategy-conclusion')}
 
 
 // ===== fm-practical-fixes — 공통 · 시세 버튼, 백업 알림 =====
@@ -297,7 +297,7 @@ try{
   sync();
  });
 })();
-}catch(e){console.error('fm-practical-fixes',e)}
+}catch(e){console.error('fm-practical-fixes',e);window.fmLogError?.(e?.message,'fm-practical-fixes')}
 
 
 
@@ -391,7 +391,7 @@ try{
   sync();
  });
 })();
-}catch(e){console.error('fm-ledger-sync',e)}
+}catch(e){console.error('fm-ledger-sync',e);window.fmLogError?.(e?.message,'fm-ledger-sync')}
 
 
 
@@ -416,7 +416,7 @@ try{
   }
  });
 })();
-}catch(e){console.error('fm-daily-fixes-v3586',e)}
+}catch(e){console.error('fm-daily-fixes-v3586',e);window.fmLogError?.(e?.message,'fm-daily-fixes-v3586')}
 
 
 // ===== fm-plan-v3587 — 홈·자산 · 당겨서 업데이트 =====
@@ -439,7 +439,7 @@ try{
 
  });
 })();
-}catch(e){console.error('fm-plan-v3587',e)}
+}catch(e){console.error('fm-plan-v3587',e);window.fmLogError?.(e?.message,'fm-plan-v3587')}
 
 
 
@@ -509,7 +509,7 @@ try{
   };
  });
 })();
-}catch(e){console.error('fm-health-calc-v3590',e)}
+}catch(e){console.error('fm-health-calc-v3590',e);window.fmLogError?.(e?.message,'fm-health-calc-v3590')}
 
 
 // ===== fm-safety-v3592 — 설정 · 저장 보호, 분류 =====
@@ -549,7 +549,7 @@ const b=memo.replace(/주식회사|㈜|\(주\)|유한회사/g,'').replace(/[\s()
   for(const id of ['heroSpent','netWorth'])if($(id))new MutationObserver(render).observe($(id),{childList:true,characterData:true,subtree:true});
  });
 })();
-}catch(e){console.error('fm-safety-v3592',e)}
+}catch(e){console.error('fm-safety-v3592',e);window.fmLogError?.(e?.message,'fm-safety-v3592')}
 
 
 
@@ -572,7 +572,7 @@ try{
   }
  });
 })();
-}catch(e){console.error('fm-design-v3596',e)}
+}catch(e){console.error('fm-design-v3596',e);window.fmLogError?.(e?.message,'fm-design-v3596')}
 
 
 // ===== fm-start-v3597 — 홈 · 시작 화면, 예시 데이터 =====
@@ -619,4 +619,4 @@ try{
   }
  });
 })();
-}catch(e){console.error('fm-start-v3597',e)}
+}catch(e){console.error('fm-start-v3597',e);window.fmLogError?.(e?.message,'fm-start-v3597')}

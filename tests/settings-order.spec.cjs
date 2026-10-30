@@ -136,3 +136,15 @@ test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({p
  await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
 });
+
+test('Mensa and 기술자 등급 are in the search with what they are, and a 기술자 grade suggests the next one',async({page})=>{
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.locator('#fmCertQ').fill('멘사');await page.locator('.fm-cert-hits button',{hasText:'멘사 (Mensa) 회원'}).click();
+ const info=page.locator('#fmCertInfo');await expect(info).toContainText('멘사코리아 ↗');await expect(info).toContainText('지능검사 (상위 2%)');
+ await page.locator('#fmCertForm button.primary').click();
+ await page.locator('#fmCertQ').fill('기술자');await expect(page.locator('.fm-cert-hits button',{hasText:'소방기술자 초급'})).toBeVisible();
+ await page.locator('#fmCertQ').fill('건설기술인 중급');await page.locator('.fm-cert-hits button',{hasText:'건설기술인 중급'}).click();
+ await expect(info).toContainText('시험 없음 · 자격·학력·경력 점수로 등급');await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('[data-cert-sug="건설기술인 고급"]')).toBeVisible();
+ await expect(page.locator('.fm-cert-row',{hasText:'멘사'}).locator('.fm-cert-ico')).toHaveText('🧠');
+});

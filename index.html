@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.210</title><link rel="stylesheet" href="./app.css?v=3.5.210"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-210">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.211</title><link rel="stylesheet" href="./app.css?v=3.5.211"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-211">
 
 
 
@@ -390,7 +390,7 @@ i=at('4.보험현황');if(i>=0)for(let j=i+3;j<r.length&&!/^\d+\./.test(String(c
 i=at('5.투자현황');if(i>=0)for(let j=i+3;j<r.length;j++){const x=r[j];if(/^총계/.test(String(c(x,0)))||/^\d+\./.test(String(c(x,0))))break;if(c(x,2))snap.invest.push({co:String(c(x,1)),name:String(c(x,2)).trim(),cost:num(c(x,4)),value:num(c(x,5))})}
 return snap.cash.length||snap.invest.length||snap.ins.length?snap:null}
 function fmBsImport(wb){const snap=fmBsParse(wb);if(snap)try{localStorage.setItem('firemate_bs_snapshot_v1',JSON.stringify(snap))}catch{}}
-// v3.5.210: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
+// v3.5.211: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
 // Once, put back what it changed (the last 잔고 맞추기 and the accounts it added); what was there before is kept in firemate_bs_revert_v1 for 다시 적용.
 function fmBsRevertOnce(){if(localStorage.getItem('firemate_bs_revert_v1'))return;const b=read('firemate_bs_backup_v1',null),add=read('firemate_bs_added_v1',[]),gone=data.accounts.filter(a=>Array.isArray(add)&&add.includes(a.id)),rec={at:today,cash:Number(data.balance.cash)||0,accounts:{},gone};
  if(b){data.balance.cash=Number(b.cash)||0;for(const [id,v] of Object.entries(b.accounts||{})){const a=data.accounts.find(x=>x.id===id);if(a){rec.accounts[id]=a.amount;a.amount=v}}}
@@ -2431,15 +2431,16 @@ const fmCerts=()=>{const v=read(FM_CERTS,{});return Array.isArray(v?.list)?v.lis
 function fmCatLoad(){fetch('./cert-catalog.json').then(r=>r.ok?r.json():null).then(j=>{if(!j?.list)return;fmCat=j;try{localStorage.setItem('firemate_cert_catalog_v1',JSON.stringify(j))}catch{}fmRenderCerts()}).catch(()=>{})}
 // [시험 구성, 보통 시기, 응시 자격, 유효기간, 단계]
 const FM_CERT_GRADE={기술사:['필기(서술형 4교시) → 면접','보통 연 3회','기사 취득 후 실무 4년 등','평생',['필기','면접']],기능장:['필기 → 실기','보통 연 2회','산업기사+실무 5년 또는 기능사+7년','평생',['필기','실기']],기사:['필기(객관식) → 실기','보통 연 3회','관련 학과 4년제 졸업(예정) 또는 산업기사+1년 등','평생',['필기','실기']],산업기사:['필기 → 실기','보통 연 3회','관련 학과 2년제 졸업(예정) 또는 기능사+1년 등','평생',['필기','실기']],기능사:['필기(CBT) → 실기','연 4회 이상','제한 없음','평생',['필기','실기']],
- FE:['CBT 1회 (110문항, 약 6시간)','연중 수시 예약','제한 없음 (공학 학위 권장)','평생',['시험']],PE:['CBT 1회 (80문항, 약 9시간)','연중 수시 예약','FE 합격 + 주(州)별 실무 경력','면허는 주별 갱신 (PDH)',['시험']],국가전문:['1차 → 2차 (종목별)','보통 연 1회','종목별','평생',['1차','2차']],국가공인:['종목별','종목별 공지','대부분 제한 없음','평생',['시험']],민간:['종목별','종목별 공지','제한 없음','종목별',['시험']],해외:['종목별','종목별','종목별','종목별',['시험']],어학:['시험 1회','매달 수시','제한 없음','성적 2년',['시험']]};
-const FM_CERT_ICO={기계:'⚙️',전기:'⚡',정보:'💻',건설:'🏗️',안전:'🦺',환경:'🌿',화학:'🧪',에너지:'🔋',생활:'🍳',사무:'📊',금융:'💰',언어:'🌐',전문:'⚖️',기타:'🏅'},fmCertNorm=s=>String(s||'').toLowerCase().replace(/[\s()·:\-]/g,'');
+ FE:['CBT 1회 (110문항, 약 6시간)','연중 수시 예약','제한 없음 (공학 학위 권장)','평생',['시험']],PE:['CBT 1회 (80문항, 약 9시간)','연중 수시 예약','FE 합격 + 주(州)별 실무 경력','면허는 주별 갱신 (PDH)',['시험']],국가전문:['1차 → 2차 (종목별)','보통 연 1회','종목별','평생',['1차','2차']],국가공인:['종목별','종목별 공지','대부분 제한 없음','평생',['시험']],민간:['종목별','종목별 공지','제한 없음','종목별',['시험']],해외:['종목별','종목별','종목별','종목별',['시험']],어학:['시험 1회','매달 수시','제한 없음','성적 2년',['시험']],
+ 기술인등급:['시험 없음 · 자격·학력·경력 점수로 등급','수시 신청 (협회)','자격증 또는 학력 + 경력','경력이 쌓이면 승급',['경력 신고','등급 인정']],멤버십:['지능검사 (상위 2%)','연중 수시 (공지 확인)','만 14세 이상','연회비로 회원 유지',['검사','가입']],면허:['필기 → 기능 → 실기(도로·비행)','상시','연령 기준 (종목별)','갱신·적성검사 (종목별)',['필기','기능','실기']]};
+const FM_CERT_ICO={지능:'🧠',운전:'🚗',스포츠:'🏃',기계:'⚙️',전기:'⚡',정보:'💻',건설:'🏗️',안전:'🦺',환경:'🌿',화학:'🧪',에너지:'🔋',생활:'🍳',사무:'📊',금융:'💰',언어:'🌐',전문:'⚖️',기타:'🏅'},fmCertNorm=s=>String(s||'').toLowerCase().replace(/[\s()·:\-]/g,'');
 // Catalog entry for a saved name, or a guess from the name for anything typed by hand.
 function fmCertInfo(name){const n=fmCertNorm(name),hit=fmCat?.list?.find(x=>fmCertNorm(x[0])===n);if(hit){const o=fmCat.org[hit[2]]||['',''];return {name:hit[0],grade:hit[1],field:hit[3],org:o[0],url:o[1]}}
- const g=/기술사|\bPE\b|미국\s*기술사/i.test(name)?(/\bPE\b|미국/i.test(name)?'PE':'기술사'):/\bFE\b|미국\s*기사/i.test(name)?'FE':/기능장/.test(name)?'기능장':/산업기사/.test(name)?'산업기사':/기사/.test(name)?'기사':/기능사/.test(name)?'기능사':'민간',kr=/기술사|기능장|기사|기능사/.test(name)&&!/PE|FE|미국/.test(name);
+ const g=/기술인|기술자\s*(초|중|고|특)급/.test(name)?'기술인등급':/멘사|mensa/i.test(name)?'멤버십':/운전면허|조종자/.test(name)?'면허':/기술사|\bPE\b|미국\s*기술사/i.test(name)?(/\bPE\b|미국/i.test(name)?'PE':'기술사'):/\bFE\b|미국\s*기사/i.test(name)?'FE':/기능장/.test(name)?'기능장':/산업기사/.test(name)?'산업기사':/기사/.test(name)?'기사':/기능사/.test(name)?'기능사':'민간',kr=/기술사|기능장|기사|기능사/.test(name)&&!/PE|FE|미국/.test(name);
  return {name,grade:g,field:/기계|설비|냉동|용접|자동차/.test(name)?'기계':/전기|전자/.test(name)?'전기':/컴활|컴퓨터활용|한국사/.test(name)?'사무':'기타',org:kr?'한국산업인력공단 (Q-net)':g==='PE'||g==='FE'?'NCEES (미국)':'',url:kr?'https://www.q-net.or.kr':g==='PE'||g==='FE'?'https://ncees.org/exams/':''}}
 const fmCertD=c=>c.goal&&c.date?Math.round((new Date(c.date+'T00:00')-new Date(localDate(new Date())+'T00:00'))/864e5):null;
 function fmCertSearch(q){const n=fmCertNorm(q);if(!n||!fmCat?.list)return [];const bi=s=>{const o=new Set;for(let i=0;i<s.length-1;i++)o.add(s.slice(i,i+2));return o},qb=bi(n);
- return fmCat.list.map(x=>{const nm=fmCertNorm(x[0]),al=fmCertNorm(x[4]),i=nm.indexOf(n);let s=i>=0?100-i-nm.length/10:al.includes(n)?70:0;if(!s&&qb.size){const b=bi(nm);let k=0;qb.forEach(v=>{if(b.has(v))k++});if(k/qb.size>=.6)s=40*k/qb.size}return [s,x]}).filter(r=>r[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,8).map(r=>r[1])}
+ return fmCat.list.map(x=>{const nm=fmCertNorm(x[0]),al=fmCertNorm(x[4]),i=nm.indexOf(n);let s=i>=0?100-i-nm.length/10:al.includes(n)?70:0;if(!s&&qb.size){const b=bi(nm);let k=0;qb.forEach(v=>{if(b.has(v))k++});if(k/qb.size>=.6)s=40*k/qb.size}return [s,x]}).filter(r=>r[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,12).map(r=>r[1])}
 function fmRenderCerts(){const all=fmCerts(),got=all.filter(c=>!c.goal).sort((a,b)=>String(b.date).localeCompare(String(a.date))),goals=all.filter(c=>c.goal).sort((a,b)=>(fmCertD(a)<0)-(fmCertD(b)<0)||(a.date||'9').localeCompare(b.date||'9')),next=goals.map(fmCertD).find(d=>d>=0),n=got.length,box=$('fmCertList');
 $('fmCertBadge').textContent='🎓';$('fmCertTitle').textContent='🎓 내 자격증'+(n?' '+n+'개':'');$('fmCertSub').textContent=goals.length?'준비 중 '+goals.length+(next!=null?' · D-'+(next||'day'):''):n?'보유 '+n+'개':'검색해서 추가해 보세요';
 const by={};got.forEach(c=>{const g=fmCertInfo(c.name).grade;by[g]=(by[g]||0)+1});const g0=goals.find(c=>fmCertD(c)>=0);
@@ -2452,7 +2453,7 @@ const quest=c=>{const f=fmCertInfo(c.name),g=FM_CERT_GRADE[f.grade]||FM_CERT_GRA
  <div class="fm-cert-stages">${g[4].map((s,k)=>`<button type="button" data-cert-stage="${safe(c.id)}" data-k="${k}" class="${k<stage?'ok':''}">${k<stage?'✓':k+1} ${s}</button>`).join('')}</div>
  <div class="fm-cert-bars" aria-hidden="true">${bars}</div><div class="fm-cert-gfoot"><span>📚 ${Math.floor(total/60)}시간 ${total%60}분${streak?' · '+streak+'일 연속':''}${st[today_]?' · 오늘 '+st[today_]+'분':''}</span>${f.url?`<a href="${safe(f.url)}" target="_blank" rel="noopener">일정 ↗</a>`:''}<button type="button" class="primary" data-cert-study="${safe(c.id)}">+30분</button></div></div>`};
 // 💡 The usual next step from what is held: 기사 → same field's 기술사, 산업기사 → 기사, 기능사 → 산업기사, FE → PE.
-const owned=new Set(all.map(c=>fmCertNorm(c.name))),up={기사:'기술사',산업기사:'기사',기능사:'산업기사',FE:'PE'},sug=[];if(fmCat?.list)for(const c of got){const f=fmCertInfo(c.name),to=up[f.grade];if(!to)continue;for(const x of fmCat.list)if(x[1]===to&&x[3]===f.field&&!owned.has(fmCertNorm(x[0]))&&!sug.includes(x[0]))sug.push(x[0])}
+const owned=new Set(all.map(c=>fmCertNorm(c.name))),up={기사:'기술사',산업기사:'기사',기능사:'산업기사',FE:'PE'},sug=[];if(fmCat?.list)for(const c of got){const f=fmCertInfo(c.name),to=up[f.grade],lv=['초급','중급','고급','특급'],m=f.name.match(/(초급|중급|고급)$/);if(f.grade==='기술인등급'&&m){const nx=f.name.replace(m[1],lv[lv.indexOf(m[1])+1]);if(!owned.has(fmCertNorm(nx))&&!sug.includes(nx))sug.push(nx)}if(!to)continue;for(const x of fmCat.list)if(x[1]===to&&x[3]===f.field&&!owned.has(fmCertNorm(x[0]))&&!sug.includes(x[0]))sug.push(x[0])}
 const road=[...got].filter(c=>c.date).sort((a,b)=>a.date.localeCompare(b.date)).map(c=>'<li><b>'+c.date.slice(0,4)+'</b><span>'+safe(c.name)+'</span></li>').join('')+goals.map(c=>'<li class="goal"><b>'+(c.date?c.date.slice(0,4):'목표')+'</b><span>'+safe(c.name)+'</span></li>').join('');
 box.innerHTML=(goals.length?'<h3>🎯 준비 중</h3>'+goals.map(quest).join(''):'')+(n?'<h3>✅ 보유 '+n+'</h3><div class="fm-cert-rows">'+got.map(row).join('')+'</div>':'<p class="fm-cert-empty">위 검색창에서 자격증을 찾아 추가해 보세요</p>')+(sug.length?'<h3>💡 다음 도전</h3><div class="fm-cert-sug">'+sug.slice(0,6).map(s=>'<button type="button" data-cert-sug="'+safe(s)+'">'+safe(s)+'</button>').join('')+'</div>':'')+(road?'<h3>🗺️ 지나온 길</h3><ol class="fm-cert-road">'+road+'</ol>':'');
 box.querySelectorAll('[data-cert]').forEach(b=>b.onclick=()=>fmCertOpen(all.find(c=>c.id===b.dataset.cert)));
@@ -2558,7 +2559,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-210',VERSION='3.5.210';
+ const BUILD='fire-mate-v3-5-211',VERSION='3.5.211';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2772,4 +2773,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.210"></script></body></html>
+</style><script src="./js/features.js?v=3.5.211"></script></body></html>

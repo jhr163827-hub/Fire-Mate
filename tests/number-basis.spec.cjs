@@ -444,7 +444,7 @@ test('today\'s notice pops up once a day on the first open and names a bill that
  const t=new Date();t.setDate(t.getDate()+1);test.skip(t.getDate()===1,'tomorrow is in the next month');
  const day=String(t.getDate()).padStart(2,'0'),m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-k);return d.toISOString().slice(0,7)};
  await load(page,seed({tx:[1,2,3,4].map(k=>({id:'b'+k,date:m(k)+'-'+day,type:'expense',category:'통신',amount:95770,memo:'KT통신요금자동납부'}))}));
- const pop=page.locator('.fm-brief-pop');await expect(pop).toContainText('☀️ 오늘 알아 둘 것');await expect(pop).toContainText('🔁 KT통신요금자동납부 ₩95,770 내일 출금');
+ const pop=page.locator('.fm-brief-pop');await expect(pop).toContainText('☀️ 오늘 알아 둘 것');await expect(pop).toContainText('🔁 KT통신요금자동납부 ₩95,770 내일 출금');await expect(pop).toContainText('💾 아직 백업한 적 없어요');
  await pop.locator('button').click();await expect(pop).toHaveCount(0);
  await page.evaluate(()=>window.fmGo('assets'));await page.evaluate(()=>window.fmGo('home'));await expect(page.locator('.fm-brief-pop')).toHaveCount(0);
  expect(await page.evaluate(()=>localStorage.getItem('firemate_brief_seen_v1'))).toBe(await page.evaluate(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}));
@@ -577,4 +577,49 @@ test('the analysis screen splits into 요약 · 돈 흐름 · 더 보기',async(
  await page.locator('button[data-ins-part="more"]').click();
  await expect(month).toBeHidden();await expect(trip).toBeVisible();await expect(page.locator('button[data-ins-part="more"]')).toHaveAttribute('aria-pressed','true');
  await page.locator('button[data-ins-part="sum"]').click();await expect(month).toBeVisible();await expect(trip).toBeHidden();
+});
+
+test('old transactions are packed into a compressed archive and come back after reload',async({page})=>{
+ const y=new Date().getFullYear(),d=new Date().toISOString().slice(0,10);
+ const tx=[{id:'old1',date:(y-3)+'-05-02',type:'expense',category:'식비',amount:7000,memo:'김밥 한 줄'},{id:'last',date:(y-1)+'-02-01',type:'expense',category:'교통',amount:1500,memo:'버스'},{id:'now',date:d,type:'expense',category:'카페·간식',amount:4500,memo:'커피'}];
+ await page.addInitScript(s=>{window.__fmArcAt=1;if(sessionStorage.getItem('seeded'))return;sessionStorage.setItem('seeded','1');localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify(s))},seed({tx}));
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmGo('history'));
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.map(t=>t.id).sort())).toEqual(['last','now']);
+ expect(await page.evaluate(()=>!!localStorage.getItem('firemate_tx_archive_v1'))).toBe(true);
+ await page.reload();
+ expect(await page.evaluate(()=>window.fmLiveData().tx.map(t=>t.id).sort())).toEqual(['last','now','old1']);
+ expect(await page.evaluate(()=>window.fmLiveData().tx.find(t=>t.id==='old1').memo)).toBe('김밥 한 줄');
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await expect(page.locator('#fmStorageUse')).toContainText('오래된 거래 1건은 압축해 보관 중');
+});
+
+test('when the browser storage is full the old transactions are packed instead of failing',async({page})=>{
+ const y=new Date().getFullYear();
+ const tx=Array.from({length:40},(_,i)=>({id:'o'+i,date:(y-4)+'-03-'+String(1+i%28).padStart(2,'0'),type:'expense',category:'식비',amount:1000+i,memo:'점심 식사 '+i}));
+ await page.addInitScript(s=>{localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify(s));const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='firemate_smart_v3'&&String(v).length>JSON.stringify(s).length-500){const e=new Error('full');e.name='QuotaExceededError';throw e}return set.call(this,k,v)}},seed({tx}));
+ await page.goto('/index.html');
+ await expect.poll(()=>page.evaluate(()=>!!localStorage.getItem('firemate_tx_archive_v1'))).toBe(true);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.length)).toBe(0);
+ expect(await page.evaluate(()=>window.fmLiveData().tx.length)).toBe(40);
+});
+
+test('days without a net worth record are estimated from the holdings prices and drawn dashed',async({page})=>{
+ const day=k=>{const d=new Date();d.setDate(d.getDate()-k);return d.toISOString().slice(0,10)};
+ await load(page,seed({accounts:[{id:'a',name:'투자',kind:'investment',amount:0,fire:true}],holdings:[{id:'h1',accountId:'a',ticker:'ABSI',name:'ABSI',type:'USD',qty:1000,price:3,cost:3}],balance:{fx:1400,cash:10000000,other:0,debt:0},dailySnapshots:[{day:day(30),amount:14000000}]}));
+ await page.evaluate(()=>window.fmGo('assets'));
+ await expect(page.locator('#assetGrowthChart .fm-growth-est')).toHaveCount(1);
+ await expect(page.locator('#assetGrowthChart')).toContainText('점선은 시세로 추정');
+ expect(await page.evaluate(()=>window.fmLiveData().dailySnapshots.length)).toBe(2);
+ await page.evaluate(()=>window.fmGo('fire'));
+ await expect(page.locator('#fmFireReal')).toContainText('보유 종목 시세로 추정');
+});
+
+test('the card card shows the 연말정산 25% threshold and when 체크카드 starts to pay more',async({page})=>{
+ const n=new Date();test.skip(n.getMonth()<3,'needs three paydays this year');
+ const y=n.getFullYear(),m=n.toISOString().slice(0,7),key=(d,a)=>[d,'10:00','expense','쇼핑','','백화점',a,'현대카드'].join('|');
+ const pay=[1,2,3].map(k=>({id:'p'+k,date:y+'-0'+k+'-25',type:'income',category:'급여',amount:3400000,memo:'급여'}));
+ await load(page,seed({tx:[...pay,{id:'c',date:m+'-01',type:'expense',category:'쇼핑',amount:13000000,memo:'백화점',bankExcelKey:key(m+'-01',13000000)}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmCardCard .fm-cardtax')).toHaveText(/^🧾 연말정산 카드 공제 문턱 1,200만.* \(총급여 25% 추정\) · 넘었어요 → 남은 결제는 체크카드·현금이 공제 2배$/);
 });

@@ -14,7 +14,8 @@ async function setup(page,worker,snapshot=backup,live=null){
 }
 const quote=(price,extra={})=>({code:'360750',currency:'KRW',price,...extra});
 const holding=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings[0]);
-async function refresh(page){await page.locator('#refreshStocks').click();await expect(page.locator('#refreshStocks')).toBeEnabled();}
+// Wait for this refresh's own result (its time), not just an enabled button that may not have been disabled yet.
+async function refresh(page){const last=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_last_quote_v1')||'null')?.time||0),before=await last();await page.locator('#refreshStocks').click();await expect.poll(last).not.toBe(before);await expect(page.locator('#refreshStocks')).toBeEnabled();}
 test('successful prior-day close yields to newer snapshot, without double-counting success',async({page})=>{
  const date=new Date(now-86400000).toISOString().slice(0,10).replaceAll('-','');
  await setup(page,quote(25080,{date}));await refresh(page);
@@ -68,5 +69,6 @@ test('foreground return refreshes stale domestic prices without US API requests'
  await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.holdings.push({id:'us',accountId:'a',ticker:'JEPQ',type:'USD',qty:1,cost:50,price:60});localStorage.setItem('firemate_smart_v3',JSON.stringify(d));localStorage.setItem('firemate_td_key_v1','fake-qa-key-12345');localStorage.setItem('firemate_quote_cooldown_v1',String(Date.now()+600000))});
  await page.reload();await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
  await expect.poll(async()=> (await holding(page)).price).toBe(25400);
- const result=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_last_quote_v1')));expect([result.ok,result.total,result.failed]).toEqual([1,1,0]);
+ // The price lands before the run's summary is saved; wait for the summary itself.
+ await expect.poll(()=>page.evaluate(()=>{const r=JSON.parse(localStorage.getItem('firemate_last_quote_v1')||'null');return r&&[r.ok,r.total,r.failed]})).toEqual([1,1,0]);
 });

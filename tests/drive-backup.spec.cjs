@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
 // A stand-in for Google sign-in and the Drive appdata endpoints; nothing leaves the test.
-const fakeGoogle=async(page,{disabled=false}={})=>{
+const fakeGoogle=async(page,{disabled=false,garbled=false}={})=>{
  const drive={file:null,calls:[]};
  await page.addInitScript(()=>{window.__tokenRequests=0;window.google={accounts:{oauth2:{initTokenClient:cfg=>({requestAccessToken(){window.__tokenRequests++;cfg.callback({access_token:'drive-test-token',expires_in:3600,scope:cfg.scope})}})}}}});
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,async route=>{
@@ -10,7 +10,7 @@ const fakeGoogle=async(page,{disabled=false}={})=>{
   if(!url.startsWith('https://www.googleapis.com/'))return route.abort();
   drive.calls.push(req.method()+' '+url.replace(/\?.*/,''));
   if(disabled)return route.fulfill({status:403,contentType:'application/json',body:JSON.stringify({error:{errors:[{reason:'accessNotConfigured'}]}})});
-  if(url.includes('/drive/v3/files/f1?alt=media'))return route.fulfill({contentType:'application/json',body:drive.file});
+  if(url.includes('/drive/v3/files/f1?alt=media'))return route.fulfill({contentType:'application/json',body:garbled?drive.file.slice(0,-9):drive.file});
   if(url.includes('/upload/drive/v3/files')){const body=req.postDataBuffer()?.toString('utf8')||'';drive.file=req.method()==='PATCH'?body:body.split('\r\n\r\n').slice(2).join('\r\n\r\n').replace(/\r\n--firemate\d+--$/,'');return route.fulfill({json:{id:'f1'}})}
   if(url.includes('/drive/v3/files?'))return route.fulfill({json:{files:drive.file?[{id:'f1'}]:[]}});
   return route.abort();
@@ -73,4 +73,13 @@ test('after a save, a daily copy goes up quietly only when a token is already in
  await page.evaluate(()=>window.fmOpenEntry());await page.locator('#entryAmount').fill('7000');await page.locator('#saveEntry').click();
  await page.waitForTimeout(300);
  expect(drive.calls.filter(c=>c.startsWith('POST')||c.startsWith('PATCH')).length).toBe(1);
+});
+
+test('a Drive backup only counts once the copy read back matches what was sent',async({page})=>{
+ await fakeGoogle(page,{garbled:true});
+ await page.addInitScript(s=>localStorage.setItem('firemate_smart_v3',JSON.stringify(s)),seed);
+ await page.goto('/index.html');await openSettings(page);
+ await page.locator('#fmDriveOn').check();
+ await expect(page.locator('#fmDriveStatus')).toContainText('다시 읽어 보니 내용이 달라요');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_drive_last_v1'))).toBeNull();
 });

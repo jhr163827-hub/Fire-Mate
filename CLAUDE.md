@@ -51,6 +51,7 @@
 ## 코드 구조
 - `index.html`: 마크업 → 앞부분 작은 스크립트 2개(접근성, 첫 화면 순자산) → 메인 스크립트(전역 IIFE: `data`, `persist()`, `getTx()`, `render*()`, 모든 화면의 기본 그리기) → `fm-pwa-updates`(업데이트, 인라인 유지) → `js/features.js`.
   - 메인 스크립트와 `const BUILD=`는 index.html에 있어야 한다. `sw.js`의 `validPage`가 이 문자열과 100KB 이상 크기를 확인한다.
+- 대화창 안의 시트·사진 보기 같은 겹은 `fmLayerOpen(닫기함수)`로 열고 `fmLayerDone()`으로 닫는다(휴대폰 뒤로 가기가 그 겹만 닫음). 자격증 정보 시트(`fmCertSheetClose`)와 사진 보기가 이걸 쓴다.
 - 화면 배치는 index.html 마크업이 최종 구조다(앱이 켜질 때 재배치하지 않는다). 화면 구조를 바꿀 땐 마크업을 직접 고친다.
 - `js/features.js`: 화면별 기능 블록 12개. 맨 위 목차에 블록별 화면이 적혀 있다. 원래 순서대로 실행되고, 블록마다 try/catch로 감싸 한 기능의 오류가 다른 기능을 막지 않는다.
 - 스타일은 `app.css`. body 안의 `<style id="fm-premium-finance">` 1개만 인라인으로 남아 있다(옮기면 `!important`가 app.css 상한을 넘음).

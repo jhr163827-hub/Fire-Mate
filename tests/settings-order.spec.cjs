@@ -148,3 +148,22 @@ test('Mensa and 기술자 등급 are in the search with what they are, and a 기
  await expect(page.locator('[data-cert-sug="건설기술인 고급"]')).toBeVisible();
  await expect(page.locator('.fm-cert-row',{hasText:'멘사'}).locator('.fm-cert-ico')).toHaveText('🧠');
 });
+
+test('a certificate keeps a photo or PDF of itself on this phone',async({page})=>{
+ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR42mP8z8DwnxEJMDKgAhwmAQBSRgP7PwEQXgAAAABJRU5ErkJggg==','base64');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.locator('#fmCertQ').fill('일반기계기사');await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
+ // Picked before saving: kept with the new entry.
+ await page.locator('#fmCertFileIn').setInputFiles({name:'license.png',mimeType:'image/png',buffer:png});
+ await expect(page.locator('#fmCertFileOpen')).toContainText('사진 보기');
+ await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('.fm-cert-row .fm-cert-clip')).toHaveCount(1);
+ await page.locator('.fm-cert-row').click();await page.locator('#fmCertFileOpen').click();
+ await expect(page.locator('#fmCertView')).toBeVisible();await expect(page.locator('#fmCertViewImg')).toHaveAttribute('src',/^blob:/);
+ await page.locator('#fmCertViewX').click();
+ // A PDF replaces it; taking it off asks first.
+ await page.locator('#fmCertFileDel').click();await page.locator('#fmAskOk').click();
+ await page.locator('#fmCertFileIn').setInputFiles({name:'license.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\n%qa\n')});
+ await expect(page.locator('#fmCertFileOpen')).toContainText('license.pdf');
+ expect(await page.evaluate(()=>JSON.stringify(localStorage).includes('PDF-1.4'))).toBe(false);
+});

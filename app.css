@@ -2566,4 +2566,16 @@ html body[data-home-hide~="market"] #view-home #fmHomeMarket,html body[data-home
 #fmCertOverlay .fm-cert-datelbl{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--sub)}
 #fmCertOverlay .fm-cert-datelbl input{flex:1}
 #fmCertOverlay #fmCertForm .flex{gap:8px}#fmCertOverlay #fmCertForm .flex button{flex:1;min-height:48px}
-#fmCertOverlay .fm-cert-sheet[hidden],#fmCertOverlay .fm-cert-hits[hidden]{display:none}
+#fmCertOverlay .fm-cert-sheet[hidden],#fmCertOverlay .fm-cert-hits[hidden]{display:none}#fmCertOverlay .fm-cert-file{display:flex;gap:8px;align-items:stretch}
+#fmCertOverlay .fm-cert-file .mini{margin:0}
+#fmCertOverlay .fm-cert-attach{flex:1;min-height:48px;border-style:dashed}
+#fmCertOverlay .fm-cert-thumb{flex:1;display:flex;align-items:center;gap:10px;min-height:64px;padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--txt);font:inherit;text-align:left}
+#fmCertOverlay .fm-cert-thumb img{width:56px;height:48px;object-fit:cover;border-radius:8px}
+#fmCertOverlay .fm-cert-thumb span{font-size:28px}
+#fmCertOverlay .fm-cert-thumb b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fmCertOverlay .fm-cert-file>.secondary:not(.fm-cert-attach){min-width:64px}
+#fmCertOverlay .fm-cert-clip{font-style:normal;font-size:13px}
+#fmCertOverlay .fm-cert-view{position:fixed;inset:0;z-index:9;display:grid;place-items:center;padding:16px;background:#000e}
+#fmCertOverlay .fm-cert-view[hidden]{display:none}
+#fmCertOverlay .fm-cert-view img{max-width:100%;max-height:90vh;border-radius:12px}
+#fmCertOverlay .fm-cert-view .iconbtn{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px}

@@ -174,10 +174,9 @@ body{background:#b8d899}.restaurant-app{width:min(100%,1000px)}
  .chef-card{padding:8px 12px}
  .restaurant-world{margin:2px -4px;border-radius:22px;border:0;background:radial-gradient(ellipse at 50% 28%,#fff6dc 0,#f5dcac 52%,#e2b276 100%);box-shadow:0 12px 28px #6d4a2233,inset 0 0 0 1px #ffffff80}
 }
-.room-bulb{animation:roomTwinkle 2.6s ease-in-out infinite;filter:drop-shadow(0 0 3px #ffd36b);pointer-events:none}
+.room-bulb{animation:roomTwinkle 2.6s ease-in-out infinite;pointer-events:none;stroke:#fff3c4;stroke-width:1.2;stroke-opacity:.7}
 @keyframes roomTwinkle{50%{opacity:.45}}
-.room-contact{fill:#3a2410;opacity:.2;pointer-events:none}
-.room-beam{mix-blend-mode:screen}
+.room-contact{fill:#3a2410;opacity:.12;pointer-events:none}
 .room-steam{pointer-events:none}.room-steam path{fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;opacity:0;animation:roomSteam 2.2s ease-out infinite}
 .room-steam path:nth-child(2){animation-delay:.7s}.room-steam path:nth-child(3){animation-delay:1.4s}
 @keyframes roomSteam{0%{opacity:0;transform:translateY(6px)}30%{opacity:.75}100%{opacity:0;transform:translateY(-14px)}}

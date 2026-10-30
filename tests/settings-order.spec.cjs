@@ -101,13 +101,19 @@ test('앱 잠금 is a 6-digit PIN on the app\'s own keypad (no browser sheet sho
  expect(dialogs).toEqual([]);
 });
 
-test('an older Face ID lock opens once and then asks for a new PIN',async({page})=>{
- await page.addInitScript(()=>{if(!sessionStorage.getItem('fl')){sessionStorage.setItem('fl','1');localStorage.setItem('firemate_lock_v1','BwcH')}CredentialsContainer.prototype.get=async o=>({rawId:o.publicKey.allowCredentials[0].id})});
+test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({page})=>{
+ await page.addInitScript(()=>{PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable=async()=>true;
+  CredentialsContainer.prototype.create=async()=>({rawId:new Uint8Array([7,7,7]).buffer});
+  CredentialsContainer.prototype.get=async o=>{if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
  await page.goto('/index.html');
- const type=async pin=>{for(const k of pin)await page.locator('#fmPinPad [data-k="'+k+'"]').click()};
- await expect(page.locator('#fmLockTitle')).toHaveText('새 비밀번호 6자리');await type('246802');
- await expect(page.locator('#fmLockTitle')).toHaveText('한 번 더 입력해 주세요');await type('246802');
- await expect(page.locator('#fmLock')).toBeHidden();
- expect(await page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
- expect(await page.evaluate(()=>!!localStorage.getItem('firemate_pin_v1'))).toBe(true);
+ await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmLockRow')).toContainText('🔒 앱 잠금 (지문·Face ID)');
+ await page.locator('#fmLockOn').check();
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
+ await page.reload();
+ await expect(page.locator('#fmLockGo')).toHaveText('지문으로 열기');await expect(page.locator('#fmPinPad')).toBeHidden();await expect(page.locator('.app')).toBeHidden();
+ await page.evaluate(()=>{window.__pass=true});await page.locator('#fmLockGo').click();
+ await expect(page.locator('#fmLock')).toBeHidden();await expect(page.locator('.app')).toBeVisible();
+ await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
 });

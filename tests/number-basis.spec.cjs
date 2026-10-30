@@ -535,3 +535,23 @@ test('insurance shows the monthly premium from the ledger against salary',async(
  await page.locator('#fmInsCard>summary').click();
  await expect(page.locator('#fmInsList')).toContainText('💸 보험료월 ₩100,0001년 ₩1,200,000 · 월급의 2.5% · 최근 3달 평균');
 });
+
+test('#tags in memos are totalled for the year and open the search',async({page})=>{
+ const d=new Date().toISOString().slice(0,10);
+ await load(page,seed({tx:[{id:'a',date:d,type:'expense',category:'여행',amount:300000,memo:'호텔 #제주'},{id:'b',date:d,type:'expense',category:'식비',amount:50000,memo:'흑돼지 #제주 #가족'},{id:'c',date:d,type:'expense',category:'식비',amount:9000,memo:'점심'}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmTagSum')).toHaveText('#제주 35만 · #가족 5만');
+ await page.locator('#fmTagCard>summary').click();await page.locator('[data-tag="제주"]').click();
+ await expect(page.locator('#view-history')).toHaveClass(/active/);
+ expect((await page.locator('#historyList [data-edit]').evaluateAll(l=>l.map(e=>e.dataset.edit))).sort()).toEqual(['a','b']);
+});
+
+test('with a fresh Gmail sign-in the BankSalad mail is fetched once a day on open',async({page})=>{
+ await page.addInitScript(()=>{window.__fmAutoGmailTest=true;localStorage.setItem('firemate_gmail_token_v1',JSON.stringify({token:'qa-token',exp:Date.now()+3600000}))});
+ await load(page,seed());
+ await page.evaluate(()=>{window.fmImportFromHome=()=>{window.__fetched=(window.__fetched||0)+1}});
+ await expect.poll(()=>page.evaluate(()=>window.__fetched||0),{timeout:6000}).toBe(1);
+ const day=await page.evaluate(()=>localStorage.getItem('firemate_auto_gmail_day_v1'));expect(day).toMatch(/^\d{4}-\d\d-\d\d$/);
+ await page.reload();await page.evaluate(()=>{window.fmImportFromHome=()=>{window.__fetched=(window.__fetched||0)+1}});await page.waitForTimeout(3500);
+ expect(await page.evaluate(()=>window.__fetched||0)).toBe(0);
+});

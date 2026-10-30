@@ -29,6 +29,8 @@
 - 화면 글자를 다시 숫자로 읽지 않는다. 계산 결과는 `window.fmFireViewState` 같은 공통 값에서 가져온다.
 
 - 뱅크샐러드 `뱅샐현황` 시트(가져오기 때, 고객정보 칸은 읽지 않음, 섹션 제목 열 기준 상대 위치): `firemate_bs_snapshot_v1`{at,cash,invest,ins}. 자유입출금·현금·전자금융 잔고는 이름이 같은 앱 계좌(투자 계좌 제외, 저축성 포함)에 넣고 나머지 합을 `balance.cash`로, 이전 값은 `firemate_bs_backup_v1` → 가져오기 칸 아래 `#fmBsNote`의 되돌리기. 자산 분석 `🔄 뱅크샐러드와 다른 종목`(#fmBsCard): 평가금액이 5%·10만 원 넘게 다른 보유 종목(누르면 종목 상세)과 앱에 없는 종목(`FM_BS_ETF`로 이름→티커), 카드 이름은 `🔄 뱅크샐러드 기준`: 맨 위 `📈 증권사 기준 원금 → 평가`(투자현황 합계), 다른 종목, 아래 `🧩 앱에 없는 자산`(1만 원 이상, 투자성·연금·실물·저축성 항목 중 앱 계좌 이름에 없는 것 + 앱 종목과 안 맞는 투자 상품, 기본은 체크 안 됨) → fmAsk 후 계좌로 추가(투자성·연금→investment, 실물→physical, 나머지→safe), 만든 id는 `firemate_bs_added_v1` → `방금 추가한 계좌 지우기`. 접힌 `🛡️ 보험`(#fmInsCard): 가계부 보험사 이름 출금 최근 3달 평균 = 월 보험료와 월급 대비 %, 뱅크샐러드 보험 목록(만기 30일 안이면 오늘 알림). 설정 `🏠 홈에 보일 것`(`firemate_home_hide_v1` → `body[data-home-hide]`). 카테고리 예산 `최근 3달 평균으로 채우기`(만 원 올림, 저장은 사용자가).
+- 속도: `fmVer`(persist·`fmXferDirAdd` 때 증가)로 `fmIsInvest`·`fmSafeSign`는 거래별 WeakMap 캐시, `fmFixedBills`는 버전·오늘·거래 수로 캐시, `fmHomePlan`은 의존 값이 같으면 다시 그리지 않는다. 데이터를 바꾸면 반드시 persist를 거칠 것.
+- 소비 분석 접힌 `🏷️ 태그`(#fmTagCard): 메모의 `#태그`별 올해 지출 합계, 누르면 목록 검색(올해). 앱을 열 때 하루 한 번(`firemate_auto_gmail_day_v1`), Gmail 로그인이 아직 유효하고(약 1시간, 창이 안 뜸) 마지막 가져오기가 12시간 넘었으면 홈 가져오기(`fmImportFromHome`)를 실행(테스트는 `__fmAutoGmailTest`).
 - 화면 문구는 짧게: 카드 아래 설명 문단은 두지 않는다(건강검진은 🟡·🔴일 때만 이유 한 줄).
 
 ## 코드 구조

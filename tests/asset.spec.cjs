@@ -302,6 +302,8 @@ test('a monthly dividend goal shows progress, when the plan reaches it, what to 
  await expect(goal).toContainText(/40% · 지금 계획대로면 \d{4}년쯤/);
  await expect(goal).toContainText('SCHD1,522주');
  await expect(goal).toContainText('📈 주당 배당 1년 변화SCHD+25%');
+ // Spending the 238만 a year instead of buying more pushes FIRE later.
+ await expect(goal.locator('.fm-div-reinvest')).toHaveText(/^🌱 배당을 다시 사면 FIRE 계획대로 · 다 쓰면 \d+년 \d+개월 늦어져요$/);
  expect(await page.evaluate(()=>localStorage.getItem('firemate_div_goal_v1'))).toBe('500000');
 });
 

@@ -39,6 +39,12 @@
 - 카드 실적 카드 아래 `🧾 연말정산 카드 공제`: 올해 급여·상여금 월평균×12÷0.85를 총급여로 보고 25% 문턱, 올해 카드 사용·연말 예상과 비교(`fmCardTax`).
 - 설정 `🔒 앱 잠금`(기기가 지원할 때만 보임): WebAuthn 플랫폼 인증(Face ID·지문), 자격 id만 `firemate_lock_v1`(백업 제외). 첫 스크립트가 `html[data-locked]`를 걸어 화면을 가리고, 5분 넘게 나갔다 오면 다시 잠근다.
 - 홈 화면 바로 가기: `?action=import|record|assets`.
+- 🐞 오류 기록: 첫 스크립트의 `fmLogError`가 `error`·`unhandledrejection`과 features.js 블록 오류를 `firemate_errlog_v1`({list:[{msg,src,first,last,n}]}, 최근 30가지)에 남기고 백업 extras에 포함. `내 데이터 보관`에 `🐞 최근 오류 N가지`.
+- 달력 `fmCalPlan(ym)`: 이번 달·다음 달의 오늘 이후 날에 아직 안 나간 고정비·카드값(`fmCardDue`)을 `-금액`(흐리게), 배당락(`fmDivAhead`)은 🌱, 그날을 누르면 `예정` 목록. 저장 안 함.
+- 배당 월급 카드 `.fm-div-reinvest`: 계획 수익률은 배당 재투자 기준이라, 지난 1년 세후 배당을 다 쓰면 월 적립이 그만큼 줄 때 FIRE가 얼마나 늦어지는지.
+- 건강검진 부채가 있으면 `#fmDebtForm`: 대출 이자율(`firemate_debt_rate_v1` {rate}, 백업 extras) vs 계획 수익률 — 이자 ≥ 수익률−1%p면 갚기 먼저.
+- 오늘 알림 `📈`: 고정비가 지난달보다 2%·500원 이상 올라 어제·오늘 나갔으면 한 줄(`fmFixedBills`의 `prev`).
+- 공통 도우미: `read(키,기본값)`(localStorage JSON), `fmPayOf(t)`(결제수단), `fmPlanNow()`(FIRE 계획), `fmDivAhead(끝날,첫 번째만)`.
 - 화면 문구는 짧게: 카드 아래 설명 문단은 두지 않는다(건강검진은 🟡·🔴일 때만 이유 한 줄).
 
 ## 코드 구조

@@ -80,8 +80,9 @@ def main():
         name = KR_NAMES.get(code)
         if not name:
             continue
-        flat = name.replace(" ", "")
-        items = [n for n in search(f'"{name}" when:7d', 24 * 7, 20) if flat in n["t"].replace(" ", "")][:3]
+        # "KODEX 200" must not match "KODEX 200선물인버스2X": the name has to end where a word ends.
+        named = re.compile(re.escape(name.replace(" ", "")) + r"(?![0-9A-Za-z가-힣])")
+        items = [n for n in search(f'"{name}" when:7d', 24 * 7, 20) if named.search(n["t"].replace(" ", ""))][:3]
         if items:
             by_sym[code] = items
         time.sleep(0.5)

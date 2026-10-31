@@ -1,0 +1,5588 @@
+{
+  "summary": {
+    "mixed": {
+      "wins": 20,
+      "meanWave": 12,
+      "meanLives": 26.55,
+      "meanGold": 2313.7,
+      "meanTime": 530.245
+    },
+    "alternative": {
+      "wins": 20,
+      "meanWave": 12,
+      "meanLives": 29.75,
+      "meanGold": 2237.75,
+      "meanTime": 473.19500000000005
+    },
+    "wide": {
+      "wins": 20,
+      "meanWave": 12,
+      "meanLives": 19.9,
+      "meanGold": 2173.05,
+      "meanTime": 538.6750000000001
+    },
+    "dart": {
+      "wins": 0,
+      "meanWave": 7,
+      "meanLives": 0,
+      "meanGold": 624.85,
+      "meanTime": 310.09999999999997
+    },
+    "bomb": {
+      "wins": 20,
+      "meanWave": 12,
+      "meanLives": 9.95,
+      "meanGold": 2424.75,
+      "meanTime": 488.285
+    },
+    "arc": {
+      "wins": 0,
+      "meanWave": 10.2,
+      "meanLives": 0,
+      "meanGold": 1516.85,
+      "meanTime": 431.975
+    }
+  },
+  "results": [
+    {
+      "seed": 1,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2312,
+      "time": 520.9,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25475
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 113426
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 3956
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 4263
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9062
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24895
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 27,
+      "gold": 2316,
+      "time": 531.1,
+      "kills": 1240,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25331
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 113898
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4203
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3711
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9488
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24448
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 29,
+      "gold": 2324,
+      "time": 528.3,
+      "kills": 1242,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 24905
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 113233
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4202
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3925
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9342
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 25489
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 21,
+      "gold": 2289,
+      "time": 523.3,
+      "kills": 1234,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25683
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 115790
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4118
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3907
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9260
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 22182
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2312,
+      "time": 529.5,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25265
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 113780
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4082
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3766
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9369
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24828
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 27,
+      "gold": 2316,
+      "time": 539.1,
+      "kills": 1240,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25768
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 110181
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4109
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3965
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9721
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 27324
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 29,
+      "gold": 2324,
+      "time": 535.4,
+      "kills": 1242,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25250
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 111554
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4430
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3904
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 10755
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 25191
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2311,
+      "time": 531.9,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 26048
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 108339
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4196
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 4286
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 10010
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 28179
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 24,
+      "gold": 2303,
+      "time": 530.1,
+      "kills": 1237,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25474
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 113724
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4069
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3791
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9558
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24436
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2312,
+      "time": 529.1,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25479
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112600
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4154
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3686
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9004
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 26153
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2311,
+      "time": 541.6,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 26388
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112928
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4182
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 4356
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9840
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 23363
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2311,
+      "time": 527,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25942
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 111655
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4262
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 4435
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9146
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 25631
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2285,
+      "time": 540.7,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25662
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 107858
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4172
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3815
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 10340
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 28856
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 24,
+      "gold": 2302,
+      "time": 536.6,
+      "kills": 1237,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25845
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112419
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4096
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 4373
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9610
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24630
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2329,
+      "time": 530.4,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25425
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112962
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4230
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3958
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9680
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24851
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 29,
+      "gold": 2324,
+      "time": 528.2,
+      "kills": 1242,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 24901
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112029
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4163
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3709
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9160
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 27135
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 29,
+      "gold": 2324,
+      "time": 525.9,
+      "kills": 1242,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25020
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112070
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4174
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3665
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9897
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 26270
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2329,
+      "time": 528.5,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25078
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 114465
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4198
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3250
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9884
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 24232
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 29,
+      "gold": 2324,
+      "time": 520.8,
+      "kills": 1242,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25489
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 112780
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4107
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3993
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9084
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 25643
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "mode": "mixed",
+      "phase": "won",
+      "wave": 12,
+      "lives": 27,
+      "gold": 2316,
+      "time": 526.5,
+      "kills": 1240,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 25088
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 111366
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4236
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 3762
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 9947
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 26680
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 472.2,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22904
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 123767
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16916
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 714
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8066
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8738
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 470.6,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22832
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 125646
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 15680
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 781
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8217
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 7950
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 475.1,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23117
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 125100
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16246
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 828
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7448
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8367
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 29,
+      "gold": 2234,
+      "time": 473.2,
+      "kills": 1242,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22975
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 125292
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16067
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 670
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7290
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8800
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 475.7,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23165
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124492
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16313
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 683
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8067
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8386
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 470.8,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23052
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124639
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16065
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 802
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8061
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8487
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 472.3,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23188
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 123870
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16995
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 884
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7427
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8743
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 474.5,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22881
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 122807
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16678
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 692
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7791
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 10258
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 473,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23243
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124593
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16239
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 657
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8460
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 7914
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 28,
+      "gold": 2229,
+      "time": 478.3,
+      "kills": 1241,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22696
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 125376
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 15768
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 581
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8299
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8375
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 473.1,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23126
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 125533
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 15486
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 782
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8660
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 7520
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 471,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22839
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 123914
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16484
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 803
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7824
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 9241
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 474,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23115
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 122231
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 17189
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 659
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7899
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 10014
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 28,
+      "gold": 2229,
+      "time": 471.8,
+      "kills": 1241,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23140
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124860
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16159
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 686
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7736
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8513
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 473.4,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23176
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124668
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16171
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 795
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8190
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8107
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 473.9,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 22909
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 123159
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16718
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 817
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7872
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 9631
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 473.6,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23211
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 123250
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16786
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 706
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7614
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 9539
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 473.8,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23032
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124482
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16901
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 741
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8202
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 7749
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 469,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23395
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 124666
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16010
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 878
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 7973
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8183
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "mode": "alternative",
+      "phase": "won",
+      "wave": 12,
+      "lives": 30,
+      "gold": 2239,
+      "time": 474.6,
+      "kills": 1243,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 23388
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 123640
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 16263
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 853
+        },
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 8303
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 8661
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 536.1,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18682
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 68140
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 3974
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2900
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7175
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 15502
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10579
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 479
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1570
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15274
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36455
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 25,
+      "gold": 2200,
+      "time": 539,
+      "kills": 1238,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18750
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 65735
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4077
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 3093
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7698
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16166
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10561
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 750
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1666
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15186
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37341
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 26,
+      "gold": 2205,
+      "time": 543.8,
+      "kills": 1239,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 19069
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 67717
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4102
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 3431
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7843
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 13795
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10541
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 890
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1624
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14691
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37212
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2095,
+      "time": 539.8,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18879
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 65982
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4068
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2744
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7700
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16838
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10701
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 658
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1525
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14953
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36526
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 537.3,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18858
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 65919
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4137
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 3007
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7329
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16221
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10604
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 830
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1644
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14884
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37315
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 540.4,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18591
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 64819
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4085
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2360
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7820
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 17646
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10571
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 266
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1631
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14807
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 38135
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 538.1,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 19047
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 65845
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4045
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2850
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7428
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16176
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10546
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 573
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1619
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14672
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37919
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 21,
+      "gold": 2184,
+      "time": 537.3,
+      "kills": 1234,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18726
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 65299
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4244
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2878
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7647
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 17027
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10532
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 673
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1730
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14797
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37219
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 536.6,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18859
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 66575
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 3916
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2977
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6946
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16963
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10503
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 881
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1506
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14757
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36772
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 537.5,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18785
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 67150
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 3927
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2721
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7371
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16845
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10560
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 826
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1555
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14850
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36153
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 22,
+      "gold": 2189,
+      "time": 541.6,
+      "kills": 1235,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 19020
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 66060
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 3990
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2852
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7275
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16981
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10498
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 617
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1483
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14910
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37208
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 535.9,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18836
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 68970
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4156
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2697
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7335
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 13488
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10617
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 928
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1645
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14835
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37229
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2095,
+      "time": 538.6,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18839
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 68755
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 3946
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2592
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7666
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 14806
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10593
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 324
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1586
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14651
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36791
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 538.6,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18832
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 66755
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4159
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2622
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7645
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 14745
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10490
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 302
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1733
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15357
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 38076
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2095,
+      "time": 544.4,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18977
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 64249
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4131
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 3099
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7839
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16933
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10405
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 706
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1554
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14935
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 37726
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 22,
+      "gold": 2188,
+      "time": 540.8,
+      "kills": 1235,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18921
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 67240
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4125
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 3465
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7337
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 16432
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10536
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 234
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1692
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14850
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36133
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 27,
+      "gold": 2209,
+      "time": 534.2,
+      "kills": 1240,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18711
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 68735
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4024
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2796
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7631
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 14350
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10608
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 856
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1536
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15048
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36774
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 539.1,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18584
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 68377
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4222
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2780
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7840
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 15264
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10526
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 317
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1894
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15031
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 35856
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 20,
+      "gold": 2180,
+      "time": 537.6,
+      "kills": 1233,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18657
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 67254
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4177
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2839
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7414
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 15676
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10606
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 959
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1656
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14766
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36679
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "mode": "wide",
+      "phase": "won",
+      "wave": 12,
+      "lives": 25,
+      "gold": 2201,
+      "time": 536.8,
+      "kills": 1238,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 3,
+          "damage": 18601
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 67255
+        },
+        {
+          "kind": "ice",
+          "level": 3,
+          "damage": 4071
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 2475
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7606
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 15916
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 10561
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 843
+        },
+        {
+          "kind": "ice",
+          "level": 2,
+          "damage": 1634
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15059
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 36922
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 615,
+      "time": 312.6,
+      "kills": 288,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7389
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6389
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4684
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2418
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2940
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2481
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 595,
+      "time": 317.2,
+      "kills": 284,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7516
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6244
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4749
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2385
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2593
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2495
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 691,
+      "time": 309.6,
+      "kills": 287,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7467
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6313
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4914
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2408
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2743
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2614
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 635,
+      "time": 306.7,
+      "kills": 290,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7499
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6287
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4810
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2286
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2678
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2411
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 625,
+      "time": 305.4,
+      "kills": 289,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7457
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6384
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4858
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2340
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2778
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2460
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 585,
+      "time": 315.5,
+      "kills": 283,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7386
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6206
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4848
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2349
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2613
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2421
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 701,
+      "time": 309.2,
+      "kills": 287,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7455
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6152
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4905
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2413
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2827
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2849
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 621,
+      "time": 310.1,
+      "kills": 289,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7522
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6415
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4966
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2306
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2755
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2587
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 605,
+      "time": 307.8,
+      "kills": 287,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7493
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6495
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4733
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2324
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2704
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2440
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 605,
+      "time": 306.1,
+      "kills": 285,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7448
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6328
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4846
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2311
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2665
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2334
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 625,
+      "time": 308.2,
+      "kills": 288,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7521
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6294
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4748
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2460
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2817
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2548
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 617,
+      "time": 309.9,
+      "kills": 286,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7446
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6319
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4944
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2356
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2777
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2465
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 615,
+      "time": 308.2,
+      "kills": 288,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7460
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6255
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4687
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2277
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2750
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2496
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 627,
+      "time": 311.7,
+      "kills": 288,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7524
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6259
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4886
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2374
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2614
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2522
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 607,
+      "time": 309.8,
+      "kills": 285,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7562
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6289
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 5040
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2244
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2564
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2475
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 585,
+      "time": 310,
+      "kills": 283,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7446
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6361
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4836
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2340
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2637
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2514
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 700,
+      "time": 307.9,
+      "kills": 287,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7386
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6355
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4968
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2364
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2695
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2449
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 607,
+      "time": 311.4,
+      "kills": 285,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7382
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6253
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4777
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2310
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2667
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2337
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 630,
+      "time": 310,
+      "kills": 289,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7523
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6411
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4807
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2393
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2810
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2579
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "mode": "dart",
+      "phase": "lost",
+      "wave": 7,
+      "lives": 0,
+      "gold": 606,
+      "time": 314.7,
+      "kills": 286,
+      "towers": [
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 7471
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 6406
+        },
+        {
+          "kind": "dart",
+          "level": 2,
+          "damage": 4698
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2338
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2763
+        },
+        {
+          "kind": "dart",
+          "level": 1,
+          "damage": 2573
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 478.9,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95741
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 46659
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 21514
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5601
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4179
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5996
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 488.3,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95736
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47375
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 22315
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5427
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3513
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5198
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 490,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 96037
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47720
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20154
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5317
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4279
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 6142
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 498,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95800
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 44950
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 23259
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5124
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5028
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5361
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 477.3,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 97850
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 45499
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 22341
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3001
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5475
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5525
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 481,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 96613
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 46978
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20267
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5862
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3991
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5896
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 9,
+      "gold": 2420,
+      "time": 496.4,
+      "kills": 1231,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 98295
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 46025
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 21688
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3052
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5818
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 4683
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 488.3,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95918
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 48917
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20326
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4783
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3345
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 6339
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 492.2,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 94249
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 46921
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 22798
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5531
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4378
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5729
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 486.9,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 99449
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 43622
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20550
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5626
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4410
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5845
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 493,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95912
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47823
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20108
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3684
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5906
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 6216
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 484.1,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95310
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 49133
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 19482
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3997
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 6220
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5445
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 478.7,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 97573
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 46528
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 21391
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4143
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4692
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5238
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 481.1,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 98011
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47750
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 19963
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4483
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3844
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5450
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 498.8,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 94302
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47645
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 21950
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4287
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4847
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 6661
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 492.4,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 97580
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 44725
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 23152
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4909
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4058
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5204
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 483,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95331
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47963
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 21139
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5834
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3639
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5764
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 486.6,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 96324
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 48629
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20214
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 3388
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4763
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 6206
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 484.9,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 95464
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 48842
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 19992
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5182
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4521
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 5670
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "mode": "bomb",
+      "phase": "won",
+      "wave": 12,
+      "lives": 10,
+      "gold": 2425,
+      "time": 505.8,
+      "kills": 1232,
+      "towers": [
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 96075
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 47291
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 20103
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 5233
+        },
+        {
+          "kind": "bomb",
+          "level": 3,
+          "damage": 4728
+        },
+        {
+          "kind": "bomb",
+          "level": 2,
+          "damage": 6135
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1412,
+      "time": 334.7,
+      "kills": 586,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18458
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15217
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13073
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4441
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6589
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8214
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1402,
+      "time": 336.3,
+      "kills": 584,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18334
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15585
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 12947
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4200
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6540
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8318
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1407,
+      "time": 337.5,
+      "kills": 585,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18447
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15347
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13072
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4120
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6809
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8149
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1510,
+      "time": 494,
+      "kills": 930,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33626
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29383
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25272
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8098
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13194
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 17273
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1540,
+      "time": 497.3,
+      "kills": 936,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33425
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29238
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25291
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8019
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13740
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 17025
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1397,
+      "time": 334.7,
+      "kills": 583,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18304
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15271
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13227
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4096
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6896
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8114
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 10,
+      "lives": 0,
+      "gold": 1852,
+      "time": 421.7,
+      "kills": 736,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 27147
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 22267
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18861
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 5641
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 9460
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 11729
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1396,
+      "time": 338,
+      "kills": 583,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18405
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15400
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13153
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4132
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6661
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8185
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1510,
+      "time": 492.4,
+      "kills": 930,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33742
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29591
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25642
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 7430
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13475
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16897
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1390,
+      "time": 331.2,
+      "kills": 582,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18432
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15507
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13023
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4230
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6742
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8122
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1495,
+      "time": 494.3,
+      "kills": 928,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33670
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29585
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25195
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8032
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13082
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16890
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 10,
+      "lives": 0,
+      "gold": 1863,
+      "time": 418.5,
+      "kills": 737,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 26859
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 22274
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18792
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 5848
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 9747
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 11863
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1545,
+      "time": 494.2,
+      "kills": 937,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33287
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29387
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25586
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8073
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13731
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16978
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1551,
+      "time": 494.1,
+      "kills": 937,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 34069
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29277
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25436
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8051
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13299
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16963
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1541,
+      "time": 492.7,
+      "kills": 935,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33589
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29236
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25632
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8096
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13099
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 17274
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 9,
+      "lives": 0,
+      "gold": 1408,
+      "time": 341.2,
+      "kills": 586,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 18316
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 15412
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13340
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 4268
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 6652
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8066
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1518,
+      "time": 497.1,
+      "kills": 932,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 34733
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29178
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 24874
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 7489
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13083
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16936
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1551,
+      "time": 499.7,
+      "kills": 939,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 34004
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29273
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25250
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8260
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13434
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16954
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1534,
+      "time": 495.6,
+      "kills": 935,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33214
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29518
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25363
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 7986
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 14348
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 16608
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "mode": "arc",
+      "phase": "lost",
+      "wave": 11,
+      "lives": 0,
+      "gold": 1515,
+      "time": 494.3,
+      "kills": 933,
+      "towers": [
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 33526
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 29191
+        },
+        {
+          "kind": "arc",
+          "level": 3,
+          "damage": 25770
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 8130
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 13277
+        },
+        {
+          "kind": "arc",
+          "level": 2,
+          "damage": 17015
+        }
+      ]
+    }
+  ]
+}

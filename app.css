@@ -2747,3 +2747,4 @@ html body #view-home #fmHomeRows>.fm-folded{display:none}#view-home #fmHomeRows 
 .fm-jn-here{width:100%;min-height:48px;margin:0 0 10px;font-weight:800}.fm-jn-map path.pin{stroke:#ffd54f;stroke-width:1.5}.fm-jn-pick .fm-jn-open{flex:none;width:100%;background:color-mix(in srgb,#4fc3f7 22%,var(--panel));color:var(--txt)}
 .fm-jn-mapcard{position:relative}.fm-jn-map{touch-action:pan-y;user-select:none;-webkit-user-select:none}.fm-jn-map.zoomed{touch-action:none}
 .fm-jn-zoombtn{position:absolute;right:20px;top:58px;display:grid;gap:6px}.fm-jn-zoombtn button{width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:12px;background:color-mix(in srgb,var(--panel2) 90%,transparent);color:var(--txt);font-size:20px;font-weight:800;box-shadow:0 2px 8px #0005}
+.fm-cardtax p{margin:0 0 4px}.fm-cardtax b{color:var(--txt)}.fm-stale{display:block;margin-top:2px;font-size:12px;color:#ffb74d}

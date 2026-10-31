@@ -36,3 +36,9 @@ test('home keeps at most four lines; the rest fold under one line that opens the
  await page.locator('#fmHomeMore').click();
  await expect(vis).toHaveCount(6);await expect(page.locator('#fmHomeMore')).toBeHidden();
 });
+
+test('the home-line fold is quiet when nothing changes (it must not re-run every frame)',async({page})=>{
+ await page.goto('/index.html');await page.waitForTimeout(800);
+ const n=await page.evaluate(()=>new Promise(ok=>{let c=0;const o=new MutationObserver(m=>c+=m.length);o.observe(document.getElementById('fmHomeRows'),{attributes:true,subtree:true,childList:true});setTimeout(()=>{o.disconnect();ok(c)},1000)}));
+ expect(n).toBeLessThan(30);// a per-frame loop was ~480 a second
+});

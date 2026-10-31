@@ -1,0 +1,32 @@
+{
+  "checks": [
+    "real UI free placement, blocked road, immediate first combat and pause",
+    "seven portrait/landscape sizes preserve state, map ratio and 44px controls",
+    "save/reload resumes without touching finance or classic save",
+    "12 waves: actual UI buying, 3-tier upgrades, target choice, aimed bombardment, splitting bosses and victory (engine-accelerated)",
+    "victory retry clears battle state",
+    "upgrade and sale preview/cancel/confirm; branch lock",
+    "weak defense loses with cause-specific advice and retries",
+    "sound/reduced effects, restart confirmation and lifecycle cleanup",
+    "corrupt save recovers safely",
+    "50/100/200 enemies render submission benchmark (desktop, not mobile FPS)",
+    "actual arcade entry and shared service worker: first-visit caching, offline resume/exit, finance key preserved",
+    "no uncaught browser errors"
+  ],
+  "errors": [],
+  "realtime": false,
+  "renderSubmissionMs": {
+    "50": {
+      "median": 0.6999999999534339,
+      "p95": 1.1999999999534339
+    },
+    "100": {
+      "median": 1.3000000000465661,
+      "p95": 2
+    },
+    "200": {
+      "median": 2.5,
+      "p95": 3.9000000001396984
+    }
+  }
+}

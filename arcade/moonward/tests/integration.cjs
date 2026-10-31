@@ -59,6 +59,8 @@ let browser;
     "./watermelon.html",
     "./restaurant.html",
     "./sudoku.html",
+    "./paper-calendar/",
+    "./casefiles/",
     "./nightfall.html",
   ]);
   await page.evaluate(async () => {
@@ -68,6 +70,9 @@ let browser;
   });
   await page.waitForFunction(() => navigator.serviceWorker.controller);
   await page.reload();
+  await page
+    .locator("#moonwardOpen")
+    .evaluate((a) => (a.href = "moonward/?classic"));
   await page.click("#moonwardOpen");
   await page.waitForSelector(".pad");
   await page.waitForFunction(() => !document.querySelector("#summon").disabled);
@@ -117,6 +122,9 @@ let browser;
     assert.ok(assets.includes("/arcade/moonward/" + f), "Not cached: " + f);
   await context.setOffline(true);
   await page.reload();
+  await page
+    .locator("#moonwardOpen")
+    .evaluate((a) => (a.href = "moonward/?classic"));
   await page.click("#moonwardOpen");
   await page.waitForSelector("#resume");
   await page.click("#resume");
@@ -142,6 +150,9 @@ let browser;
       ),
     );
   }
+  await page
+    .locator("#moonwardOpen")
+    .evaluate((a) => (a.href = "moonward/?classic"));
   await page.click("#moonwardOpen");
   await page.waitForSelector("#resume");
   await page.click("#resume");

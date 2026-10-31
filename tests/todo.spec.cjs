@@ -40,3 +40,17 @@ test('오늘 할 일 is in settings and in the backup extras',async({page})=>{
  expect(src).toContain("'firemate_todo_v1',");
  await expect(page.locator('#fmTodoOpen')).toHaveCount(1);
 });
+
+test('the morning popup starts with today\'s to-dos and adds English review, last night\'s sleep and a trip within a week',async({page})=>{
+ await page.addInitScript(([t,s])=>{window.__fmBriefTest=1;if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');
+  localStorage.setItem('firemate_todo_v1',JSON.stringify({list:[{id:'a',text:'세금 서류',day:t},{id:'b',text:'운동',day:t,repeat:true}]}));
+  localStorage.setItem('firemate_english_v1',JSON.stringify({cards:{accomplish:{b:1,due:t,at:'2026-01-01'}},days:{},goal:10}));
+  localStorage.setItem('firemate_health_v1',JSON.stringify({sleep:{[t]:[432,'23:40','06:52']},steps:{}}));
+  localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'x',name:'다낭',area:'world',place:'VN',from:s,to:s}]))},[day(0),day(5)]);
+ await page.goto('/index.html');
+ const li=page.locator('.fm-brief-pop li');
+ await expect(li.first()).toHaveText('✅ 오늘 할 일 2개 · 세금 서류');
+ await expect(page.locator('.fm-brief-pop')).toContainText('📖 영어 복습');
+ await expect(page.locator('.fm-brief-pop')).toContainText('😴 어젯밤 7시간 12분 잤어요');
+ await expect(page.locator('.fm-brief-pop')).toContainText('✈️ 다낭 D-5');
+});

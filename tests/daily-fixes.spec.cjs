@@ -241,7 +241,7 @@ test('fixing one branch of a shop also fixes its other branches and teaches the 
  await expect.poll(async()=>(await saved(page)).tx.find(t=>t.memo==='라온상회 선릉점')?.category).toBe('쇼핑');
 });
 
-test('the BankSalad summary sheet never changes balances or adds accounts; holdings follow its values and insurance is listed',async({page})=>{
+test('the BankSalad summary sheet never changes balances, accounts or holdings; it only compares holdings and lists insurance',async({page})=>{
  const wb=XLSX.utils.book_new();
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단'],[ago(1),'10:00','지출','식비','','점심',-9000,'KRW','카드']]),'가계부 내역');
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
@@ -262,9 +262,8 @@ test('the BankSalad summary sheet never changes balances or adds accounts; holdi
  const snap=await page.evaluate(()=>localStorage.getItem('firemate_bs_snapshot_v1'));expect(snap).not.toContain('홍길동');
  await page.keyboard.press('Escape');await page.evaluate(()=>{document.querySelectorAll('.modalbg.open,.modalbg.show').forEach(m=>m.classList.remove('open','show'));window.fmGo('assets')});
  await page.locator('#fmAssetQuickAnalysis').click();
- // Holdings follow BankSalad (owner's call): 5,000,000 ÷ (30 × 1,400) = 119 shares, so nothing is listed as different any more.
- expect((await saved(page)).holdings[0].qty).toBe(119);
- await expect(page.locator('#fmBsList')).not.toContainText('SCHD');
+ expect((await saved(page)).holdings[0].qty).toBe(10);
+ await expect(page.locator('#fmBsList')).toContainText('SCHD');await expect(page.locator('#fmBsList')).toContainText('뱅크샐러드 ₩5,000,000');
  await expect(page.locator('#fmInsSum')).toHaveText('1개');
  await expect(page.locator('#fmBsReturn')).toContainText('📈 증권사 기준 원금 ₩4,000,000 → ₩5,000,000 (+25.0%)');
  await expect(page.locator('#fmBsMissing')).toBeHidden();

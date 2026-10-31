@@ -54,4 +54,10 @@ require(scripts_n <= budget["index_script_blocks"], f"index.html script blocks {
 require(styles_n <= budget["index_style_blocks"], f"index.html style blocks {styles_n} <= {budget['index_style_blocks']}")
 require(size + js_size <= budget["app_code_bytes"], f"index.html + js size {size + js_size} <= {budget['app_code_bytes']} bytes")
 require(important_n <= budget["app_css_important"], f"app.css !important {important_n} <= {budget['app_css_important']}")
+# Two function declarations with one name in the same script: the later one silently replaces the earlier
+# (v3.5.222 drew 수면·걸음 into the money 건강검진 card this way).
+from collections import Counter
+for i, block in enumerate(re.findall(r"<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)</script>", html)):
+    dup = [k for k, v in Counter(re.findall(r"(?<!['\"\w$.])function\s+([A-Za-z_$][\w$]*)\s*\(", block)).items() if v > 1]
+    require(not dup, f"script {i + 1} has no duplicate function names {dup or ''}".rstrip())
 print("PASS: static regression checks completed (not a browser end-to-end test)")

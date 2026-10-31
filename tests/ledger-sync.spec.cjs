@@ -19,12 +19,13 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
 test('the 뱅크샐러드 importer lives in settings, the ledger keeps its calendar, home opens it',async({page})=>{
  await page.goto('/index.html');
- await expect(page.locator('#view-home #fmHomeSync > span').first()).toHaveText('📥 뱅크샐러드 가져오기');
+ await expect(page.locator('#view-home #fmHomeSync')).toHaveAttribute('aria-label','뱅크샐러드 가져오기');
  await expect(page.locator('#view-home #fmHomeSyncNote')).toHaveText('아직 가져온 적 없어요');
  // Records come from 뱅크샐러드 only, so home has one quiet import button; manual entry stays in 가계부.
  await expect(page.locator('#view-home #fmHomeRecord')).toHaveCount(0);
  const sync=await page.locator('#fmHomeSync').boundingBox();
- expect(sync.height).toBeGreaterThanOrEqual(44);expect(sync.height).toBeLessThanOrEqual(52);
+ // A small icon on the spending card's top line, next to the payday chip.
+ expect(sync.height).toBeGreaterThanOrEqual(44);expect(sync.width).toBeLessThanOrEqual(48);
  await expect(page.locator('#fmHomeSync')).not.toHaveClass(/primary/);
  // 가계부 has no import panel; the calendar follows the budget card.
  await page.evaluate(()=>window.fmGo('calendar'));

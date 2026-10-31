@@ -204,3 +204,23 @@ test('🗾 a country with a region map opens it from its name card, and marking 
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toMatchObject({world:{IT:1},sub:{IT:{tuscany:1}}});
  await page.locator('#fmJournalOverlay [data-close]').click();await expect(page.locator('#fmJnHead')).toHaveText('여행 일지');
 });
+
+test('🔍 the travel map zooms with ＋/−, pinch and wheel, pans by dragging, and a drag is not a tap',async({page})=>{
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.locator('[data-area=world]').click();
+ const map=page.locator('.fm-jn-map'),vb=async()=>(await map.getAttribute('viewBox')).split(' ').map(Number);
+ const full=await vb();expect(full[2]).toBe(1000);
+ await page.locator('.fm-jn-zoombtn button').first().click();
+ let z=await vb();expect(z[2]).toBeCloseTo(625,0);await expect(map).toHaveClass(/zoomed/);
+ // Drag to pan: the view moves and no place gets picked.
+ const r=await map.boundingBox();await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await page.mouse.move(r.x+r.width/2-80,r.y+r.height/2,{steps:5});await page.mouse.up();
+ const p=await vb();expect(p[0]).toBeGreaterThan(z[0]);await expect(page.locator('.fm-jn-pick')).toHaveCount(0);
+ // Two fingers apart zoom in further.
+ await map.evaluate(svg=>{const r=svg.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,ev=(t,id,x)=>svg.dispatchEvent(new PointerEvent(t,{pointerId:id,clientX:x,clientY:cy,bubbles:true,pointerType:'touch'}));ev('pointerdown',1,cx-20);ev('pointerdown',2,cx+20);ev('pointermove',1,cx-60);ev('pointermove',2,cx+60);ev('pointerup',1,cx-60);ev('pointerup',2,cx+60)});
+ const q=await vb();expect(q[2]).toBeLessThan(p[2]*0.5);
+ // Picking a country keeps the zoom; − goes back out; the view never leaves the map.
+ await page.waitForTimeout(400);await page.locator('path[data-place]').nth(40).dispatchEvent('click');await expect(page.locator('.fm-jn-pick')).toHaveCount(1);
+ expect((await vb())[2]).toBeCloseTo(q[2],0);
+ for(let i=0;i<8;i++)await page.locator('.fm-jn-zoombtn button').nth(1).click();
+ expect(await vb()).toEqual(full);await expect(map).not.toHaveClass(/zoomed/);
+});

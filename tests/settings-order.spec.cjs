@@ -6,7 +6,7 @@ test('settings is one page of grouped rows: 나의 목표 · 돈 관리 · 보�
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const groups=await page.evaluate(()=>[...document.querySelectorAll('#settingsOverlay .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
- expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['돈 관리',['📋월급 주기 계획','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']],['재미',['fmArcadeOpen']]]);
+ expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['돈 관리',['📋월급 주기 계획','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']],['생활',['fmEngOpen','fmHealthOpen','fmJournalOpen']],['재미',['fmArcadeOpen']]]);
  // A full page, not a sheet; the lock is a switch.
  const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
  await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);

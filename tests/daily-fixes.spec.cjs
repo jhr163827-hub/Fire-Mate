@@ -187,6 +187,21 @@ test('one payment BankSalad records twice (간편결제 + 머니) is imported on
  expect((await saved(page)).tx.filter(t=>t.memo==='택시').length).toBe(2);
 });
 
+test('a charge marked 결제취소 in another column is not spending, and an earlier copy of it goes on re-import',async({page})=>{
+ const d=ago(1),wb=XLSX.utils.book_new(),r=(time,amount,mark='')=>[d,time,'지출','교통','택시','주식회사 티머니',amount,'KRW','카카오페이 간편결제',mark];
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단','메모'],r('21:10',-14600,'결제취소'),r('20:52',-14600),r('22:00',-14300)]),'가계부 내역');
+ const key=[d,'21:10','expense','교통','택시','주식회사 티머니',14600,'카카오페이 간편결제'].join('|');
+ // The cancelled charge came in with an earlier import, before BankSalad marked it.
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'old',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:XLSX.write(wb,{type:'buffer',bookType:'xlsx'})});
+ await expect(page.locator('#bankExcelPreview')).toContainText('결제 취소 1건');
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300,14600]);
+ expect((await saved(page)).tx.some(t=>t.id==='old')).toBe(false);
+});
+
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{
  const d=ago(1),row=(time,amount,memo='주식회사 티머니')=>[d,time,'지출','교통','',memo,amount,'KRW','카드'];
  // 뱅크샐러드 writes 지출 as negative; the +12,700 row is the cancellation of the 08:00 charge.

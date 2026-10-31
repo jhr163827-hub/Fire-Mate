@@ -12,6 +12,11 @@ RSS = "https://news.google.com/rss"
 KO = "hl=ko&gl=KR&ceid=KR:ko"
 # Company names for single stocks (Korean headlines rarely use the ticker). Other symbols are treated as ETFs:
 # searched with "ETF" and kept only when the headline names the ticker, so "I SPY" songs or Vietnam's VTI group stay out.
+# Korean holdings are searched by name (codes are never in headlines); a code without a known name is skipped.
+KR_NAMES = {"005930": "삼성전자", "000660": "SK하이닉스", "360750": "TIGER 미국S&P500", "379800": "KODEX 미국S&P500TR",
+            "133690": "TIGER 미국나스닥100", "069500": "KODEX 200", "102110": "TIGER 200", "252670": "KODEX 200선물인버스2X",
+            "229200": "KODEX 코스닥150", "305720": "KODEX 2차전지산업", "381170": "TIGER 미국테크TOP10", "458730": "TIGER 미국배당다우존스",
+            "498400": "KODEX 200타겟위클리커버드콜", "441680": "TIGER 미국나스닥100커버드콜", "453810": "KODEX 인도Nifty50", "411060": "ACE KRX금현물"}
 NAMES = {"ENPH": ["엔페이즈", "인페이즈", "Enphase"], "RKLB": ["로켓랩", "Rocket Lab"], "SBUX": ["스타벅스", "Starbucks"], "ABSI": ["앱사이", "Absci"]}
 
 
@@ -70,6 +75,15 @@ def main():
         items = [n for n in search(q + " when:7d", 24 * 7, 20) if named.search(n["t"])][:3]
         if items:
             by_sym[sym] = items
+        time.sleep(0.5)
+    for code in config.get("korean_symbols", []):
+        name = KR_NAMES.get(code)
+        if not name:
+            continue
+        flat = name.replace(" ", "")
+        items = [n for n in search(f'"{name}" when:7d', 24 * 7, 20) if flat in n["t"].replace(" ", "")][:3]
+        if items:
+            by_sym[code] = items
         time.sleep(0.5)
     if not top and not market:
         print("no headlines; keeping the old file", file=sys.stderr)

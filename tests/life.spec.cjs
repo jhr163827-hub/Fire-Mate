@@ -11,6 +11,7 @@ test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다�
  await page.goto('/index.html');
  await openSettings(page,'fmEngOpen');
  const box=page.locator('#fmEngOverlay');
+ await box.locator('[data-mode=card]').click();
  await expect(box.locator('.fm-eng-card strong')).toHaveText('accomplish');
  await expect(box.locator('.fm-eng-card small')).toContainText('남은 10개');
  await page.click('#fmEngReveal');
@@ -106,4 +107,53 @@ test('✈️ an upcoming trip has a checklist and shows on home with its D-day',
  await expect(page.locator('.fm-cele')).toContainText('준비 끝!');
  await page.locator('#fmJournalOverlay [data-close]').click();await page.locator('#fmJournalOverlay [data-close]').click();
  await expect(line).toContainText('준비 8/8');
+});
+
+test('📖 퀴즈 picks the meaning out of four; my own words come first and can be removed',async({page})=>{
+ await page.goto('/index.html');
+ await openSettings(page,'fmEngOpen');
+ const box=page.locator('#fmEngOverlay');
+ await expect(box.locator('[data-mode=quiz]')).toHaveAttribute('aria-pressed','true');
+ await expect(box.locator('.fm-eng-card strong')).toHaveText('accomplish');
+ const opts=box.locator('[data-opt]');await expect(opts).toHaveCount(4);
+ await opts.filter({hasText:'성취하다, 해내다'}).click();
+ await expect(box.locator('[data-opt].ok')).toHaveText('성취하다, 해내다');await expect(box.locator('.fm-eng-ex')).toContainText('ahead of schedule');
+ await page.click('#fmEngNext');
+ // A wrong pick shows the right one and brings the word back today.
+ await expect(box.locator('.fm-eng-card strong')).toHaveText('accurate');
+ await opts.filter({hasNotText:'정확한'}).first().click();
+ await expect(box.locator('[data-opt].no')).toHaveCount(1);await expect(box.locator('[data-opt].ok')).toHaveText('정확한');
+ await page.click('#fmEngNext');
+ let s=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_english_v1')));
+ expect(s.cards.accomplish.b).toBe(1);expect(s.cards.accurate.b).toBe(0);
+ // 내 단어: added words are learned before the built-in list.
+ await box.locator('#fmEngMineSum').click();
+ await page.fill('#fmEngW','hydraulic');await page.fill('#fmEngM','유압의');await page.fill('#fmEngX','Check the hydraulic pressure.');await page.click('#fmEngAdd button');
+ await expect(box.locator('#fmEngMineSum')).toHaveText('＋ 내 단어 1개');
+ s=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_english_v1')));expect(s.mine).toEqual([['hydraulic','유압의','Check the hydraulic pressure.']]);
+ await box.locator('[data-close]').click();await page.locator('#fmEngOpen').click();
+ await expect(box.locator('.fm-eng-card strong')).toHaveText('accurate');// due review first
+ await opts.filter({hasText:'정확한'}).click();await page.click('#fmEngNext');
+ await expect(box.locator('.fm-eng-card strong')).toHaveText('hydraulic');await expect(box.locator('.fm-eng-card small')).toContainText('내 단어');
+ await box.locator('[data-mine="hydraulic"]').click();await page.locator('#fmAskOk').click();
+ await expect(box.locator('#fmEngMineSum')).toHaveText('＋ 내 단어');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_english_v1')).mine)).toEqual([]);
+});
+
+test('📸 photos and PDFs on this phone are counted and saved as one ZIP that puts them back',async({page})=>{
+ const path=require('path'),ZIPJS=path.join(path.dirname(require.resolve('@zip.js/zip.js/package.json')),'dist','zip.min.js');
+ await page.route('https://cdn.jsdelivr.net/npm/@zip.js/zip.js@2.7.62/dist/zip.min.js',r=>r.fulfill({path:ZIPJS,contentType:'application/javascript'}));
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'t',name:'제주',from:'2026-07-10',to:'2026-07-11',photos:['trip:t:1']}]))});
+ await page.goto('/index.html');
+ await page.evaluate(()=>new Promise((ok,no)=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs','readwrite');t.objectStore('certs').put(new Blob(['jpg-bytes'],{type:'image/jpeg'}),'trip:t:1');t.oncomplete=()=>{r.result.close();ok()};t.onerror=no}}));
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await expect(page.locator('#fmPhotoKeepN')).toHaveText('📸 사진·파일 1개는 이 폰에만 있어요');
+ const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#fmPhotoSave')]);
+ expect(dl.suggestedFilename()).toMatch(/^firemate-photos-\d{4}-\d\d-\d\d\.zip$/);
+ const file=await dl.path(),buf=require('fs').readFileSync(file);
+ // Wipe the photo, then load the ZIP back.
+ await page.evaluate(()=>new Promise(ok=>{const r=indexedDB.open('firemate_files_v1',1);r.onsuccess=()=>{const t=r.result.transaction('certs','readwrite');t.objectStore('certs').clear();t.oncomplete=()=>{r.result.close();ok()}}}));
+ await page.setInputFiles('#fmPhotoFile',{name:'p.zip',mimeType:'application/zip',buffer:buf});
+ await expect(page.locator('#toast')).toContainText('사진·파일 1개를 되살렸어요');
+ expect(await page.evaluate(()=>new Promise(ok=>{const r=indexedDB.open('firemate_files_v1',1);r.onsuccess=()=>{const q=r.result.transaction('certs').objectStore('certs').get('trip:t:1');q.onsuccess=async()=>ok(q.result&&await q.result.text())}}))).toBe('jpg-bytes');
 });

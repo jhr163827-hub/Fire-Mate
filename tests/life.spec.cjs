@@ -52,32 +52,58 @@ test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage 
  await expect(page.locator('#fmHomeHealth')).toContainText('지난밤 7시간 12분 · 어제 8,432걸음');
 });
 
-test('✈️ 여행 일지: add a trip, write a day note, add and delete a photo, and the trip also shows in 소비 분석',async({page})=>{
+test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어요, a trip gets a place, checklist, budget, rating, notes and photos, and shows on home',async({page})=>{
  await page.addInitScript(([a,b])=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',accounts:[],holdings:[],tx:[{id:'x1',date:a,type:'expense',category:'식비',amount:32000,memo:'라멘'},{id:'x2',date:b,type:'expense',category:'교통',amount:15000,memo:'JR'}]}))},[day(-3),day(-2)]);
  await page.goto('/index.html');
  await openSettings(page,'fmJournalOpen');
- for(const w of [390,320]){await page.setViewportSize({width:w,height:844});const r=await page.locator('#fmJnAdd button').boundingBox();expect(r.x+r.width).toBeLessThanOrEqual(w);expect((await page.locator('#fmJnName').boundingBox()).width).toBeLessThanOrEqual(w)}
+ const box=page.locator('#fmJournalOverlay');
+ await expect(box.locator('.fm-jn-map path')).toHaveCount(17);
+ // Tapping 강원 marks it 가 봤어요, then 가고 싶어요 (a chip), then clears it.
+ const gw=box.locator('path[data-place="gangwon"]');
+ await gw.click();await expect(gw).toHaveClass('been');await expect(box.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 17곳');
+ await gw.click();await expect(gw).toHaveClass('want');await expect(box.locator('.fm-jn-wants button')).toHaveText('강원');
+ await gw.click();await expect(gw).not.toHaveClass(/been|want/);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{}});
+ // 해외: add a past trip to Japan; the country turns visited.
+ await box.locator('[data-area=world]').click();
+ await expect(box.locator('.fm-jn-map path[data-place="JP"]')).toHaveCount(1);
+ await page.click('#fmJnNew');
+ for(const w of [390,320]){await page.setViewportSize({width:w,height:844});const r=await page.locator('#fmJnAdd button').boundingBox();expect(r.x+r.width).toBeLessThanOrEqual(w)}
  await page.setViewportSize({width:390,height:844});
- await page.fill('#fmJnName','오사카');await page.fill('#fmJnFrom',day(-3));await page.fill('#fmJnTo',day(-2));await page.click('#fmJnAdd button');
- const trip=page.locator('.fm-jn-trip');await expect(trip).toContainText('오사카');await expect(trip).toContainText('₩47,000');
+ await page.fill('#fmJnName','오사카');await page.selectOption('#fmJnPlace','JP');await page.fill('#fmJnFrom',day(-3));await page.fill('#fmJnTo',day(-2));await page.click('#fmJnAdd button');
+ await expect(box.locator('path[data-place="JP"]')).toHaveClass('been');
+ const trip=box.locator('.fm-jn-trip');await expect(trip).toContainText('오사카');await expect(trip).toContainText('₩47,000');await expect(trip.locator('.fm-jn-noimg')).toHaveText('🇯🇵');
  await trip.click();
  await expect(page.locator('#fmJnHead')).toHaveText('오사카');
- await expect(page.locator('.fm-jn-day')).toHaveCount(2);
- await expect(page.locator('.fm-jn-day').first()).toContainText('₩32,000');await expect(page.locator('.fm-jn-day').first()).toContainText('라멘');
+ await expect(box.locator('.fm-jn-hero')).toContainText('₩47,000');
+ await expect(page.locator('.fm-jn-day')).toHaveCount(2);await expect(page.locator('.fm-jn-day').first()).toContainText('라멘');
+ await page.fill('#fmJnBudget','10');await page.locator('#fmJnBudget').blur();await expect(box.locator('.fm-jn-budget')).toContainText('₩53,000 남음');
+ await box.locator('[data-rate="5"]').click();await page.fill('#fmJnReview','또 가고 싶다');await page.locator('#fmJnReview').blur();
  await page.locator('[data-note]').first().fill('도톤보리 산책');await page.locator('[data-note]').first().blur();
  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==','base64');
  await page.setInputFiles('#fmJnPhoto',{name:'a.png',mimeType:'image/png',buffer:png});
  await expect(page.locator('.fm-jn-photos [data-view]')).toHaveCount(1);
  let t=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_trips_v1'))[0]);
- expect(t.notes).toEqual({[t.from]:'도톤보리 산책'});expect(t.photos).toHaveLength(1);
+ expect(t).toMatchObject({area:'world',place:'JP',budget:100000,rating:5,review:'또 가고 싶다',notes:{[t.from]:'도톤보리 산책'}});expect(t.photos).toHaveLength(1);
  await page.locator('.fm-jn-photos [data-view]').click();
  await page.locator('.fm-jn-view button',{hasText:'지우기'}).click();await page.locator('#fmAskOk').click();
  await expect(page.locator('.fm-jn-photos [data-view]')).toHaveCount(0);
- // Back from the trip returns to the list, which shows the note.
- await page.locator('#fmJournalOverlay [data-close]').click();
- await expect(trip).toContainText('📝 도톤보리 산책');
  // The phone's back closes only the trip page.
- await trip.click();await expect(page.locator('#fmJnHead')).toHaveText('오사카');
- await page.goBack();await expect(page.locator('#fmJnHead')).toHaveText('여행 일지');await expect(page.locator('#fmJournalOverlay')).toBeVisible();
+ await page.goBack();await expect(page.locator('#fmJnHead')).toHaveText('여행 일지');await expect(box).toBeVisible();
+ await expect(trip).toContainText('★★★★★ 또 가고 싶다');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('✈️ an upcoming trip has a checklist and shows on home with its D-day',async({page})=>{
+ await page.addInitScript(([a,b,c])=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'s',name:'다낭',area:'world',place:'VN',from:a,to:b}]))},[day(10),day(13)]);
+ await page.goto('/index.html');
+ const line=page.locator('#fmHomeTrip');await expect(line).toContainText('다낭 D-10 · 준비 0/7');
+ await line.click();
+ await expect(page.locator('#fmJnHead')).toHaveText('다낭');
+ await page.fill('#fmJnItemIn','선크림');await page.click('#fmJnItem button');
+ const checks=page.locator('#fmJournalOverlay [data-chk]');await expect(checks).toHaveCount(8);
+ for(let i=0;i<8;i++)await checks.nth(i).click();
+ await expect(page.locator('.fm-cele')).toContainText('준비 끝!');
+ await page.locator('#fmJournalOverlay [data-close]').click();await page.locator('#fmJournalOverlay [data-close]').click();
+ await expect(line).toContainText('준비 8/8');
 });

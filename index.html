@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.219</title><link rel="stylesheet" href="./app.css?v=3.5.219"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-219">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.220</title><link rel="stylesheet" href="./app.css?v=3.5.220"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-220">
 
 
 
@@ -394,7 +394,7 @@ i=at('4.보험현황');if(i>=0)for(let j=i+3;j<r.length&&!/^\d+\./.test(String(c
 i=at('5.투자현황');if(i>=0)for(let j=i+3;j<r.length;j++){const x=r[j];if(/^총계/.test(String(c(x,0)))||/^\d+\./.test(String(c(x,0))))break;if(c(x,2))snap.invest.push({co:String(c(x,1)),name:String(c(x,2)).trim(),cost:num(c(x,4)),value:num(c(x,5))})}
 return snap.cash.length||snap.invest.length||snap.ins.length?snap:null}
 function fmBsImport(wb){const snap=fmBsParse(wb);if(snap)try{localStorage.setItem('firemate_bs_snapshot_v1',JSON.stringify(snap))}catch{}}
-// v3.5.219: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
+// v3.5.220: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
 // Once, put back what it changed (the last 잔고 맞추기 and the accounts it added); what was there before is kept in firemate_bs_revert_v1 for 다시 적용.
 function fmBsRevertOnce(){if(localStorage.getItem('firemate_bs_revert_v1'))return;const b=read('firemate_bs_backup_v1',null),add=read('firemate_bs_added_v1',[]),gone=data.accounts.filter(a=>Array.isArray(add)&&add.includes(a.id)),rec={at:today,cash:Number(data.balance.cash)||0,accounts:{},gone};
  if(b){data.balance.cash=Number(b.cash)||0;for(const [id,v] of Object.entries(b.accounts||{})){const a=data.accounts.find(x=>x.id===id);if(a){rec.accounts[id]=a.amount;a.amount=v}}}
@@ -2605,7 +2605,7 @@ try{fmRenderTodos()}catch{}
 // 📰 뉴스: headlines saved every hour by the repo's scheduled job (chart-data/news.json: top·market·symbols, titles and links only).
 // Home shows one line (news on a held US symbol in the last day first), the screen lists 내 종목 → 증시 → 경제. Never saved.
 let fmNews=null,fmNewsAt=0;
-function fmNewsLoad(){if(Date.now()-fmNewsAt<30*60e3)return;fmNewsAt=Date.now();const get=u=>fetch(u,{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject());get('https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/chart-data/news.json?_='+Date.now()).catch(()=>get('./chart-data/news.json')).then(j=>{if(j?.at){fmNews=j;fmHomeNews();if($('fmNewsOverlay')?.classList.contains('show'))fmRenderNews()}}).catch(()=>{})}
+function fmNewsLoad(){if(Date.now()-fmNewsAt<30*60e3||navigator.webdriver&&!window.__fmNewsTest)return;fmNewsAt=Date.now();const get=u=>fetch(u,{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject());get('https://raw.githubusercontent.com/jhr163827-hub/Fire-Mate/main/chart-data/news.json?_='+Date.now()).catch(()=>get('./chart-data/news.json')).then(j=>{if(j?.at){fmNews=j;fmHomeNews();if($('fmNewsOverlay')?.classList.contains('show'))fmRenderNews()}}).catch(()=>{})}
 function fmNewsMine(){const held=new Set(data.holdings.filter(h=>+h.qty>0&&h.type==='USD').map(h=>String(h.ticker||'').toUpperCase()));return Object.entries(fmNews?.symbols||{}).filter(([s])=>held.has(s)).flatMap(([s,l])=>l.map(n=>({...n,sym:s}))).sort((a,b)=>b.at.localeCompare(a.at))}
 function fmNewsAgo(at){const m=Math.max(0,Math.round((Date.now()-Date.parse(at))/6e4));return m<60?m+'분 전':m<1440?Math.floor(m/60)+'시간 전':Math.floor(m/1440)+'일 전'}
 function fmHomeNews(){const el=$('fmHomeNews');if(!el)return;const mine=fmNewsMine().filter(n=>Date.now()-Date.parse(n.at)<864e5),n=mine[0]||fmNews?.top?.[0]||fmNews?.market?.[0];el.hidden=!n;if(n)el.innerHTML='📰 '+(n.sym&&!n.t.toUpperCase().includes(n.sym)?'<b>'+safe(n.sym)+'</b> ':'')+safe(n.t)}
@@ -2681,7 +2681,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-219',VERSION='3.5.219';
+ const BUILD='fire-mate-v3-5-220',VERSION='3.5.220';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2895,4 +2895,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.219"></script></body></html>
+</style><script src="./js/features.js?v=3.5.220"></script></body></html>

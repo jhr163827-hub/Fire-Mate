@@ -6,7 +6,7 @@ const feed={at:ago(0.5),top:[{t:'경제 헤드라인',src:'한국경제',url:'ht
 test.beforeEach(async({page})=>{
  await page.route(/news\.json/,r=>r.fulfill({json:feed}));
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
- await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],accounts:[],holdings:[{id:'h',name:'QQQ',ticker:'QQQ',type:'USD',qty:1,avg:400,price:500}]}))});
+ await page.addInitScript(()=>{window.__fmNewsTest=1});await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],accounts:[],holdings:[{id:'h',name:'QQQ',ticker:'QQQ',type:'USD',qty:1,avg:400,price:500}]}))});
 });
 test('📰 home line shows news on a held symbol first; the screen lists 내 종목 · 증시 · 경제 with links',async({page})=>{
  await page.goto('/index.html');

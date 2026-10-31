@@ -30,7 +30,7 @@ test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다�
  expect(await page.evaluate(()=>localStorage.getItem('firemate_english_words_v1')!==null)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  await box.locator('[data-close]').click();await page.locator('#settingsOverlay [data-close]').first().click();
- await expect(page.locator('#fmHomeEng')).toContainText('영어 오늘 4개');
+ await expect(page.locator('#fmHomeEng')).toHaveCount(0);await expect(page.locator('#fmEngSub')).toHaveText('외운 단어 0개 · 🔥 1일');
 });
 
 test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage files and shows the last night on home',async({page})=>{
@@ -50,7 +50,7 @@ test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage 
  await expect(page.locator('#fmHealthHero')).toContainText('23:40 → 06:52');
  await expect(page.locator('#fmHealthBody .fm-hl-bars')).toHaveCount(2);
  await page.locator('#fmHealthOverlay [data-close]').click();await page.locator('#settingsOverlay [data-close]').first().click();
- await expect(page.locator('#fmHomeHealth')).toContainText('지난밤 7시간 12분 · 어제 8,432걸음');
+ await expect(page.locator('#fmHomeHealth')).toHaveCount(0);await expect(page.locator('#fmHealthSub')).toHaveText('지난 수면 7시간 12분');
 });
 
 test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어요, a trip gets a place, checklist, budget, rating, notes and photos, and shows on home',async({page})=>{
@@ -95,17 +95,19 @@ test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 
-test('✈️ an upcoming trip has a checklist and shows on home with its D-day',async({page})=>{
+test('✈️ an upcoming trip has a checklist and sits at the top of the journal with its D-day (not on home)',async({page})=>{
  await page.addInitScript(([a,b,c])=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'s',name:'다낭',area:'world',place:'VN',from:a,to:b}]))},[day(10),day(13)]);
  await page.goto('/index.html');
- const line=page.locator('#fmHomeTrip');await expect(line).toContainText('다낭 D-10 · 준비 0/7');
+ await expect(page.locator('#fmHomeTrip')).toHaveCount(0);
+ await openSettings(page,'fmJournalOpen');
+ const line=page.locator('.fm-jn-next');await expect(line).toContainText('다낭 D-10');await expect(line).toContainText('준비 0/7');
  await line.click();
  await expect(page.locator('#fmJnHead')).toHaveText('다낭');
  await page.fill('#fmJnItemIn','선크림');await page.click('#fmJnItem button');
  const checks=page.locator('#fmJournalOverlay [data-chk]');await expect(checks).toHaveCount(8);
  for(let i=0;i<8;i++)await checks.nth(i).click();
  await expect(page.locator('.fm-cele')).toContainText('준비 끝!');
- await page.locator('#fmJournalOverlay [data-close]').click();await page.locator('#fmJournalOverlay [data-close]').click();
+ await page.locator('#fmJournalOverlay [data-close]').click();
  await expect(line).toContainText('준비 8/8');
 });
 

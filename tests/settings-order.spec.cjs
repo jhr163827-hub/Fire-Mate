@@ -175,19 +175,15 @@ test('a certificate keeps a photo or PDF of itself on this phone',async({page})=
  expect(await page.evaluate(()=>JSON.stringify(localStorage).includes('PDF-1.4'))).toBe(false);
 });
 
-test('the main goal sits on home with one-tap study, today\'s notice nudges, and passing is celebrated',async({page})=>{
+test('certificates live in settings only (no home line or morning notice), and passing is celebrated',async({page})=>{
  await page.addInitScript(()=>{window.__fmBriefTest=true;localStorage.setItem('firemate_last_backup_v1',new Date().toISOString());if(sessionStorage.getItem('cg'))return;sessionStorage.setItem('cg','1');const k=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
   localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'g',name:'건설기계기술사',goal:true,date:k(7),apply:k(2),study:{[k(-4)]:60}}]}))});
  await page.goto('/index.html');
- const pop=page.locator('.fm-brief-pop');
- await expect(pop).toContainText('🎯 건설기계기술사 시험 D-7');await expect(pop).toContainText('📝 건설기계기술사 접수 마감 D-2');await expect(pop).toContainText('📚 4일째 공부 기록이 없어요 · 건설기계기술사');
- await pop.locator('button').click();
- const line=page.locator('#fmHomeCert');
- await expect(line.locator('.go')).toHaveText('🎯 건설기계기술사 D-7 · 오늘 0분');
- await line.locator('.add').click();await expect(line.locator('.go')).toHaveText('🎯 건설기계기술사 D-7 · 오늘 30분');
- // Hidden from settings like the other home lines.
- await page.locator('#settingsBottom').click();await page.locator('#fmHomeLines>summary').click();await page.locator('[data-home-line="cert"]').uncheck();
- await expect(line).toBeHidden();
+ // FIRE MATE's home and morning popup are about money; the certificate screen is in settings.
+ await page.waitForTimeout(400);
+ await expect(page.locator('#fmHomeCert')).toHaveCount(0);
+ expect(await page.locator('.fm-brief-pop').count()?await page.locator('.fm-brief-pop').textContent():'').not.toContain('건설기계기술사');
+ await page.locator('#settingsBottom').click();await page.locator('#fmHomeLines>summary').click();await expect(page.locator('[data-home-line="cert"]')).toHaveCount(0);
  await page.locator('#fmCertOpen').click();
  await page.locator('.fm-cert-thead').click();await page.locator('[data-cert-mode="have"]').click();await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('.fm-cele')).toContainText('합격 축하해요!');

@@ -723,3 +723,13 @@ test('small payments, a next-year budget from this year and the year FIRE report
  await page.evaluate(()=>window.fmGo('monthly'));await page.locator('#fmYearToggle').click();
  const card=page.locator('.fm-year-fire');await expect(card).toContainText(y+'년 FIRE 성적표');await expect(card).toContainText(/FIRE .*(앞당김|늦어짐|계획대로)/);await expect(card).toContainText('저축률 92%');
 });
+
+test('생활비 in the payday plan leaves out 고정비 and says how much it left out',async({page})=>{
+ await page.clock.setFixedTime(new Date(2026,9,28,9,0));
+ const bill=(id,date)=>({id,date,type:'expense',category:'통신·구독',amount:13500,memo:'넷플릭스'});
+ await load(page,seed({tx:[bill('n7','2026-07-24'),bill('n8','2026-08-24'),bill('n9','2026-09-24'),bill('n10','2026-10-24'),{id:'f',date:'2026-10-26',type:'expense',category:'식비',amount:100000,memo:'마트'}]}));
+ await page.locator('#fmHomePlanSum').click();
+ const rows=page.locator('#fmHomePlanRows');
+ await expect(rows).toContainText('🛒 생활비10만 / 80만');
+ await expect(rows.locator('.fm-plan-life')).toHaveText('식비 10만 · 고정비 1.4만 제외');
+});

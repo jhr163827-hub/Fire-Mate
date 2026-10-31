@@ -2748,3 +2748,7 @@ html body #view-home #fmHomeRows>.fm-folded{display:none}#view-home #fmHomeRows 
 .fm-jn-mapcard{position:relative}.fm-jn-map{touch-action:pan-y;user-select:none;-webkit-user-select:none}.fm-jn-map.zoomed{touch-action:none}
 .fm-jn-zoombtn{position:absolute;right:20px;top:58px;display:grid;gap:6px}.fm-jn-zoombtn button{width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:12px;background:color-mix(in srgb,var(--panel2) 90%,transparent);color:var(--txt);font-size:20px;font-weight:800;box-shadow:0 2px 8px #0005}
 .fm-cardtax p{margin:0 0 4px}.fm-cardtax b{color:var(--txt)}.fm-stale{display:block;margin-top:2px;font-size:12px;color:#ffb74d}
+.fm-small-pay{margin:0 0 8px;font-size:14px;color:var(--sub)}.fm-small-pay b{color:var(--txt)}
+.fm-catb-sum{margin:8px 0 0;font-size:13px;color:var(--sub)}.fm-catb-sum:empty{display:none}.fm-catb-sum b{color:var(--txt)}#fmCatBudgetYear{width:100%;margin-top:8px}
+.fm-year-fire{display:grid;gap:4px;margin:0 0 12px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,color-mix(in srgb,var(--green) 18%,var(--panel)),var(--panel))}.fm-year-fire b{font-size:15px}.fm-year-fire span{font-size:14px;color:var(--sub)}
+#fmHomePlanRows .fm-plan-life{margin:-4px 0 8px;font-size:12px;color:var(--sub)}

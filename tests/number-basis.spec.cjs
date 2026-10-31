@@ -135,6 +135,8 @@ test('home plan follows the payday cycle and checks investing, 청약, bills and
  await rows.locator('summary',{hasText:'비상금'}).click();
  await expect(rows).toContainText('10/26 세이프박스에 보관 ₩400,000');
  await expect(rows).toContainText('남은 30만원은 ISA로 💪');
+ // 생활비 says what it is made of (보험·핸드폰 are their own lines).
+ await expect(rows.locator('.fm-plan-life')).toContainText('식비 50만');
  await expect(rows).toContainText('10/23 월급 ~ 11/25 월급 전');
  // ‹ 지난 주기 shows the cycle before payday.
  await rows.locator('#fmPlanBack').click();
@@ -705,4 +707,19 @@ test('two accounts with nearly the same money are flagged as possibly entered tw
  await load(page,seed({balance:{fx:1400,cash:0,other:0,debt:0},accounts:[{id:'a',name:'ISA',kind:'investment',amount:9937188,fire:true},{id:'b',name:'기타 자산',kind:'physical',amount:9940000,fire:true},{id:'c',name:'예금',kind:'safe',amount:3000000,fire:true}]}));
  await page.evaluate(()=>window.fmGo('assets'));
  await expect(page.locator('#fmDupWarn')).toHaveText('⚠️ ISA · 기타 자산 금액이 거의 같아요(994만원). 같은 돈이면 한쪽을 지워야 순자산이 맞아요');
+});
+
+test('small payments, a next-year budget from this year and the year FIRE report card',async({page})=>{
+ const n=new Date();test.skip(n.getMonth()<2,'needs whole months this year');
+ const y=n.getFullYear(),mm=k=>y+'-'+String(k).padStart(2,'0'),last=n.getMonth();// whole months: 1..last
+ const tx=[];for(let k=1;k<=last;k++){tx.push({id:'s'+k,date:mm(k)+'-25',type:'income',category:'급여',amount:4000000,memo:'급여'},{id:'f'+k,date:mm(k)+'-10',type:'expense',category:'식비',amount:300000,memo:'마트'});for(let j=0;j<3;j++)tx.push({id:'c'+k+'-'+j,date:mm(k)+'-1'+j,type:'expense',category:'카페·간식',amount:5000,memo:'커피'})}
+ await load(page,seed({tx,dailySnapshots:[{day:(y-1)+'-12-31',amount:100000000},{day:mm(last)+'-28',amount:130000000}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('.fm-small-pay')).toContainText('☕ 1만 원 이하 결제 올해 '+(last*3)+'건');
+ await page.locator('#fmCatBudgetEdit > summary').click();await page.locator('#fmCatBudgetYear').click();
+ await expect(page.locator('#fmCatB-식비')).toHaveValue('300,000');await expect(page.locator('#fmCatB-카페·간식')).toHaveValue('20,000');
+ await expect(page.locator('#fmCatBudgetSum')).toContainText('합계 월 32만');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_category_budgets_v1'))).toBeNull();// 저장 still decides
+ await page.evaluate(()=>window.fmGo('monthly'));await page.locator('#fmYearToggle').click();
+ const card=page.locator('.fm-year-fire');await expect(card).toContainText(y+'년 FIRE 성적표');await expect(card).toContainText(/FIRE .*(앞당김|늦어짐|계획대로)/);await expect(card).toContainText('저축률 92%');
 });

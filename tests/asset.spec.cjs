@@ -295,6 +295,8 @@ test('a monthly dividend goal shows progress, when the plan reaches it, what to 
  await page.goto('/index.html');
  await page.locator('button.bottom-item[data-view="assets"]').click();
  await page.locator('#fmAssetQuickDividend').click();
+ // The card redraws once the dividend file lands; type the goal after that so the input is not replaced under it.
+ await expect(page.locator('#fmDivGoal .fm-div-reinvest')).toBeVisible();
  await page.locator('#fmDivGoalIn').fill('50');await page.locator('#fmDivGoalForm button').click();
  // 1,000주 × $2 × 1,400 × 85% = 연 238만 → 월 약 19.8만 of 50만.
  const goal=page.locator('#fmDivGoal');

@@ -3,13 +3,16 @@
 
 Google News RSS, no API key. The app reads chart-data/news.json for the home 📰 line and the news screen.
 """
-import datetime, email.utils, json, pathlib, sys, time, urllib.parse, urllib.request
+import datetime, email.utils, json, pathlib, re, sys, time, urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 
 root = pathlib.Path(__file__).resolve().parents[1]
 out = root / "chart-data" / "news.json"
 RSS = "https://news.google.com/rss"
 KO = "hl=ko&gl=KR&ceid=KR:ko"
+# Company names for single stocks (Korean headlines rarely use the ticker). Other symbols are treated as ETFs:
+# searched with "ETF" and kept only when the headline names the ticker, so "I SPY" songs or Vietnam's VTI group stay out.
+NAMES = {"ENPH": ["엔페이즈", "인페이즈", "Enphase"], "RKLB": ["로켓랩", "Rocket Lab"], "SBUX": ["스타벅스", "Starbucks"], "ABSI": ["앱사이", "Absci"]}
 
 
 def parse(xml, max_age_h, limit, now=None):
@@ -60,7 +63,11 @@ def main():
     market = search("증시 OR 코스피 OR 나스닥 when:1d", 24, 10)
     by_sym = {}
     for sym in config.get("symbols", []):
-        items = search(f'"{sym}" when:7d', 24 * 7, 3)
+        # Google matches the ticker anywhere in the article; keep only headlines that actually name it.
+        names = NAMES.get(sym, [])
+        named = re.compile("|".join([r"(?<![A-Za-z])" + re.escape(sym) + r"(?![A-Za-z])"] + [re.escape(n) for n in names]), re.I if names else 0)
+        q = " OR ".join(f'"{n}"' for n in [sym] + names) if names else f'"{sym}" ETF'
+        items = [n for n in search(q + " when:7d", 24 * 7, 20) if named.search(n["t"])][:3]
         if items:
             by_sym[sym] = items
         time.sleep(0.5)

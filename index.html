@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.222</title><link rel="stylesheet" href="./app.css?v=3.5.222"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-222">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.223</title><link rel="stylesheet" href="./app.css?v=3.5.223"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-223">
 
 
 
@@ -393,8 +393,8 @@ let i=at('3.재무현황');if(i>=0){let kind='';for(let j=i+3;j<r.length;j++){co
 i=at('4.보험현황');if(i>=0)for(let j=i+3;j<r.length&&!/^\d+\./.test(String(c(r[j],0)));j++){const x=r[j];const dt=v=>/^\d{5}(\.\d+)?$/.test(String(v))?new Date(Date.UTC(1899,11,30)+Math.floor(Number(v))*864e5).toISOString().slice(0,10):String(v).slice(0,10).replace(/\./g,'-');if(c(x,1)&&/\d/.test(String(c(x,6))))snap.ins.push({co:String(c(x,0)),name:String(c(x,1)).trim(),state:String(c(x,3)),paid:num(c(x,4)),from:dt(c(x,5)),to:dt(c(x,6))})}
 i=at('5.투자현황');if(i>=0)for(let j=i+3;j<r.length;j++){const x=r[j];if(/^총계/.test(String(c(x,0)))||/^\d+\./.test(String(c(x,0))))break;if(c(x,2))snap.invest.push({co:String(c(x,1)),name:String(c(x,2)).trim(),cost:num(c(x,4)),value:num(c(x,5))})}
 return snap.cash.length||snap.invest.length||snap.ins.length?snap:null}
-function fmBsImport(wb){const snap=fmBsParse(wb);if(snap)try{localStorage.setItem('firemate_bs_snapshot_v1',JSON.stringify(snap))}catch{}}
-// v3.5.222: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
+function fmBsImport(wb){const snap=fmBsParse(wb);if(snap)try{localStorage.setItem('firemate_bs_snapshot_v1',JSON.stringify(snap));fmBsQty()}catch(e){window.fmLogError?.(e?.message,'bs-qty')}}
+// v3.5.223: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
 // Once, put back what it changed (the last 잔고 맞추기 and the accounts it added); what was there before is kept in firemate_bs_revert_v1 for 다시 적용.
 function fmBsRevertOnce(){if(localStorage.getItem('firemate_bs_revert_v1'))return;const b=read('firemate_bs_backup_v1',null),add=read('firemate_bs_added_v1',[]),gone=data.accounts.filter(a=>Array.isArray(add)&&add.includes(a.id)),rec={at:today,cash:Number(data.balance.cash)||0,accounts:{},gone};
  if(b){data.balance.cash=Number(b.cash)||0;for(const [id,v] of Object.entries(b.accounts||{})){const a=data.accounts.find(x=>x.id===id);if(a){rec.accounts[id]=a.amount;a.amount=v}}}
@@ -414,6 +414,7 @@ const card=get('firemate_cardbill_backup_v1');if(Array.isArray(card)&&card.lengt
 const dup=get('firemate_dup_backup_v1');if(Array.isArray(dup)&&dup.length)rows.push(['dup','🧹 두 번 찍힌 같은 결제 정리',dup.length]);
 const sp=get('firemate_split_v1');if(Array.isArray(sp)&&sp.length)rows.push(['split','🤝 더치페이 내 몫만 지출로',sp.length]);
 const cat=get('firemate_autocat_undo_v1');if(cat?.ids?.length)rows.push(['cat','🏷️ 가게 이름으로 자동 분류',cat.ids.length]);
+const bq=get('firemate_bs_qty_v1');if(bq?.list?.length)rows.push(['bsqty','🔄 뱅크샐러드 기준 보유 수량',bq.list.length]);
 const rv=get('firemate_bs_revert_v1');if(rv&&!rv.none&&!rv.undone)rows.push(['bsrev','↩️ 뱅크샐러드가 바꾼 잔고·계좌 원래대로',1+(rv.gone||[]).length,'다시 적용']);
 box.innerHTML=rows.length?rows.map(([k,l,n,btn])=>'<p><span>'+l+'</span><b>'+n+'건</b><button type="button" class="secondary" data-autolog="'+k+'">'+(btn||'되돌리기')+'</button></p>').join(''):'<p class="mini">아직 자동으로 바꾼 게 없어요.</p>';
 box.querySelectorAll('[data-autolog]').forEach(b=>b.onclick=async()=>{const k=b.dataset.autolog;if(!await fmAsk(k==='bsrev'?'뱅크샐러드 잔고·계좌를 다시 적용할까요?':b.parentElement.querySelector('span').textContent+'을(를) 되돌릴까요?',{ok:b.textContent,cancel:'취소'}))return;let n=0;
@@ -422,6 +423,7 @@ box.querySelectorAll('[data-autolog]').forEach(b=>b.onclick=async()=>{const k=b.
  else if(k==='split')n=fmSplitUndo();
  else if(k==='cat')n=fmUndoAutoCategorize();
  else if(k==='bsrev')n=fmBsReapply();
+ else if(k==='bsqty')n=fmBsQtyUndo();
  render();fmAutoLog();window.fmToast?.(n?'되돌렸어요 ('+n+'건)':'되돌릴 게 없어요')})}
 function bankCategoryRules(){try{const r=JSON.parse(localStorage.getItem(BANK_RULES_KEY)||'{}');return r&&typeof r==='object'?r:{}}catch{return {}}}
 // Merchant names that settle a category on their own (checked when the bank category says 기타).
@@ -531,11 +533,21 @@ $('fmBuyIn').addEventListener('input',e=>{const v=Math.round(Number(String(e.tar
 // 🔄 Holdings whose value differs from the last BankSalad file by more than 5% and ₩100,000 (a missed buy or sale), plus products the app does not have.
 // Names are matched by the holding's display name or a few well-known ETF names. 🛡️ Insurance from the same file: total paid and the end date.
 const FM_BS_ETF=[[/슈왑\s*미국\s*배당/,'SCHD'],[/JP모건\s*나스닥/,'JEPQ'],[/JP모건\s*에쿼티|JP모건\s*S&P/,'JEPI'],[/QQQ\s*2배/,'QLD'],[/QQQ\s*3배/,'TQQQ'],[/0-3개월/,'SGOV'],[/SPDR\s*S&P\s*500/,'SPYM|SPY|SPLG'],[/뱅가드\s*S&P/,'VOO'],[/테슬라\s*2배/,'TSLL']];
+// A BankSalad 투자현황 row → the app holding it is (ticker for known ETFs, else the first 8 letters of the name).
+function fmBsHolding(v){const n=v.name.replace(/\s/g,''),etf=FM_BS_ETF.find(([re])=>re.test(v.name));return data.holdings.find(h=>Number(h.qty)>0&&(etf&&new RegExp('^('+etf[1]+')$','i').test(String(h.ticker||'').trim())||(d=>d&&(n.startsWith(d.slice(0,8))||d.startsWith(n.slice(0,8))))(fmDisplayHoldingName(h).replace(/\s/g,''))))}
+// 🔄 Holdings follow BankSalad (the owner's call): a holding whose value in a file from the last 3 days is 3% and ₩100,000+ off gets
+// qty = BankSalad value ÷ its price now, in whole shares. Balances and accounts are still never changed. Each file applies once; what
+// changed is kept in firemate_bs_qty_v1 {sig,list:[{id,name,from,to}]} for 자동 변경 기록 → 되돌리기.
+function fmBsQty(){const bs=fmBs();if(!bs?.invest?.length||Date.parse(today)-Date.parse(bs.at)>3*864e5)return 0;const sig=bs.at+'|'+bs.invest.map(v=>v.name+':'+v.value).join('|'),old=read('firemate_bs_qty_v1',null);if(old?.sig===sig)return 0;const list=[];
+ for(const v of bs.invest){const h=v.value>0&&fmBsHolding(v),q=h&&Number(h.qty),a=h&&assetValue(h);if(!(a>0)||Math.abs(v.value-a)<1e5||Math.abs(v.value/a-1)<.03)continue;const to=Math.max(0,Math.round(v.value/(a/q)));if(to!==q)list.push({id:h.id,name:fmDisplayHoldingName(h),from:q,to})}
+ for(const c of list)data.holdings.find(h=>h.id===c.id).qty=c.to;if(list.length&&!persist()){for(const c of list)data.holdings.find(h=>h.id===c.id).qty=c.from;return 0}
+ try{localStorage.setItem('firemate_bs_qty_v1',JSON.stringify({sig,list:list.length?list:old?.list||[]}))}catch{}if(list.length)setTimeout(()=>window.fmToast?.('뱅크샐러드 기준으로 '+list.map(c=>c.name+' '+c.from.toLocaleString()+'→'+c.to.toLocaleString()+'주').join(', ')),300);return list.length}
+function fmBsQtyUndo(){const r=read('firemate_bs_qty_v1',null);let n=0;for(const c of r?.list||[]){const h=data.holdings.find(x=>x.id===c.id);if(h&&Number(h.qty)===c.to){h.qty=c.from;n++}}if(n&&!persist())return 0;try{localStorage.setItem('firemate_bs_qty_v1',JSON.stringify({sig:r?.sig,list:[]}))}catch{}return n}
 function fmRenderBs(){const card=$('fmBsCard'),ins=$('fmInsCard'),bs=fmBs();if(!card||!ins)return;card.hidden=true;fmRenderIns(bs);if(!bs)return;$('fmBsAt').textContent=bs.at.slice(5).replace('-','/')+' 파일';
 // 📈 What the brokers report: total invested and value from the 투자현황 sheet, independent of the average costs typed into the app.
 const iv=bs.invest.filter(v=>v.cost>0&&v.value>0),C=iv.reduce((n,v)=>n+v.cost,0),V=iv.reduce((n,v)=>n+v.value,0),ret=$('fmBsReturn');ret.hidden=!C;if(C)ret.innerHTML='📈 증권사 기준 원금 '+won(C)+' → <b style="color:'+(V>=C?'var(--up)':'var(--down)')+'">'+won(V)+' ('+(V>=C?'+':'')+((V/C-1)*100).toFixed(1)+'%)</b>';
-const hs=data.holdings.filter(h=>Number(h.qty)>0),rows=[],missing=[],usedHold=new Set;
-for(const v of bs.invest){if(!(v.value>0))continue;const n=v.name.replace(/\s/g,''),etf=FM_BS_ETF.find(([re])=>re.test(v.name)),h=hs.find(h=>{const dn=fmDisplayHoldingName(h).replace(/\s/g,'');return etf&&new RegExp('^('+etf[1]+')$','i').test(String(h.ticker||'').trim())||dn&&(n.startsWith(dn.slice(0,8))||dn.startsWith(n.slice(0,8)))});
+const rows=[],missing=[],usedHold=new Set;
+for(const v of bs.invest){if(!(v.value>0))continue;const h=fmBsHolding(v);
  if(!h){if(v.value>=10000)missing.push({name:v.name,amount:v.value,kind:'investment'});continue}usedHold.add(h.id);const a=assetValue(h),d=v.value-a;if(Math.abs(d)>=100000&&Math.abs(d)>=a*.05)rows.push('<p data-bs-hold="'+safe(h.id)+'"><span>'+safe(fmDisplayHoldingName(h))+'</span><strong>'+fmSW(d)+'</strong><small>앱 '+won(a)+' · 뱅크샐러드 '+won(v.value)+' ›</small></p>')}
 // 🧩 Accounts and things in the file the app does not have (pension, gold, ISA or broker cash, 청약): same name as an app account counts as present.
 const names=new Set(data.accounts.map(a=>String(a.name).trim())),products=new Set(bs.invest.map(v=>v.name)),kindOf=k=>/투자성|연금/.test(k)?'investment':/실물/.test(k)?'physical':'safe';
@@ -543,6 +555,7 @@ for(const c of bs.cash)if(/투자성|실물|저축성|연금/.test(c.kind)&&!nam
 $('fmBsList').innerHTML=rows.join('');$('fmBsList').querySelectorAll('[data-bs-hold]').forEach(p=>p.onclick=()=>fmOpenHoldingDetail(p.dataset.bsHold));
 const box=$('fmBsMissing');box.hidden=true;box.innerHTML='';
 card.hidden=!C&&!rows.length}
+setTimeout(()=>{try{if(fmBsQty())render()}catch(e){window.fmLogError?.(e?.message,"bs-qty")}},0);
 // 🛡️ Insurance: monthly premium from the ledger (last 3 months, insurer names) against salary, plus the policies from the BankSalad file.
 function fmRenderIns(bs){const ins=$('fmInsCard');if(!ins)return;const now=new Date(),ms=fmMonthsBack(3),isIns=t=>/보험|생명|화재|손해|손보|해상|라이나|AIA|처브|ABL|라이프|KB손|DB손/.test(fmTxText(t)),month=ms.reduce((n,m)=>n+fmSum(fmMonthExpenses(data,m).filter(isIns)),0)/3,pay=ms.reduce((n,m)=>n+data.tx.filter(t=>t.type==='income'&&t.category==='급여'&&t.date.slice(0,7)===m).reduce((x,t)=>x+Number(t.amount),0),0)/3;
 const list=(bs?.ins||[]).filter(i=>!/해지|만기|휴면/.test(i.state));ins.hidden=!list.length&&!(month>0);if(ins.hidden)return;
@@ -2758,7 +2771,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-222',VERSION='3.5.222';
+ const BUILD='fire-mate-v3-5-223',VERSION='3.5.223';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -2972,4 +2985,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.222"></script></body></html>
+</style><script src="./js/features.js?v=3.5.223"></script></body></html>

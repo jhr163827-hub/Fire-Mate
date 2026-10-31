@@ -27,3 +27,12 @@ test('📰 hides from home with 홈에 보일 것',async({page})=>{
  await page.goto('/index.html');
  await expect(page.locator('#fmHomeNews')).toBeHidden();
 });
+
+test('home keeps at most four lines; the rest fold under one line that opens them',async({page})=>{
+ await page.goto('/index.html');
+ await page.evaluate(()=>{const box=document.getElementById('fmHomeRows');box.querySelectorAll(':scope>*:not(#fmHomeMore)').forEach(e=>e.hidden=true);for(let i=1;i<=6;i++){const b=document.createElement('button');b.className='fm-home-market qa-row';b.textContent='줄 '+i;box.append(b)}});
+ const vis=page.locator('#fmHomeRows .qa-row:visible');
+ await expect(vis).toHaveCount(3);await expect(page.locator('#fmHomeMore')).toHaveText('＋ 3개 더');
+ await page.locator('#fmHomeMore').click();
+ await expect(vis).toHaveCount(6);await expect(page.locator('#fmHomeMore')).toBeHidden();
+});

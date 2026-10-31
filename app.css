@@ -2579,7 +2579,7 @@ html body[data-home-hide~="market"] #view-home #fmHomeMarket,html body[data-home
 #fmCertOverlay .fm-cert-view[hidden]{display:none}
 #fmCertOverlay .fm-cert-view img{max-width:100%;max-height:90vh;border-radius:12px}
 #fmCertOverlay .fm-cert-view .iconbtn{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px}
-.fm-home-cert{display:flex;align-items:center;gap:8px;margin:0 0 10px}.fm-home-cert[hidden],html body[data-home-hide~="cert"] #view-home #fmHomeCert{display:none}
+.fm-home-cert{display:flex;align-items:center;gap:8px;margin:0 0 10px}.fm-home-cert[hidden],html body[data-home-hide~="cert"] #view-home #fmHomeCert,html body[data-home-hide~="todo"] #view-home #fmHomeTodo,html body[data-home-hide~="news"] #view-home #fmHomeNews{display:none}
 .fm-home-cert .go{flex:1;min-width:0;min-height:44px;padding:0 4px;border:0;background:none;color:var(--sub);font:inherit;font-size:15px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fm-home-cert .go b{color:var(--txt)}
 .fm-home-cert .add{min-height:38px;padding:0 14px;border:0;border-radius:12px;background:var(--green2);color:var(--green);font:inherit;font-weight:800}
 #fmCertOverlay .fm-cert-today{display:grid;gap:12px;padding:18px;border-radius:22px;background:var(--panel)}
@@ -2628,9 +2628,9 @@ html body #settingsOverlay #fmStorage>summary small{margin:0 0 0 auto}
 .fm-switch::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0005;transition:transform .2s}
 .fm-switch:checked{background:var(--green)}.fm-switch:checked::after{transform:translateX(20px)}
 /* 🪣 버킷리스트 */
-html body #fmBucketOverlay,html body #fmTodoOverlay{z-index:41}
-#fmBucketOverlay .modal,#fmTodoOverlay .modal{width:100%;max-width:560px;height:100%;max-height:none;margin:0 auto;border-radius:0;padding:max(12px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));background:var(--bg);overflow-y:auto}
-#fmBucketOverlay .fm-cert-top,#fmTodoOverlay .fm-cert-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}#fmBucketOverlay .fm-cert-top h2{margin:0;font-size:20px}
+html body #fmBucketOverlay,html body #fmTodoOverlay,html body #fmNewsOverlay{z-index:41}
+#fmBucketOverlay .modal,#fmTodoOverlay .modal,#fmNewsOverlay .modal{width:100%;max-width:560px;height:100%;max-height:none;margin:0 auto;border-radius:0;padding:max(12px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));background:var(--bg);overflow-y:auto}
+#fmBucketOverlay .fm-cert-top,#fmTodoOverlay .fm-cert-top,#fmNewsOverlay .fm-cert-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}#fmBucketOverlay .fm-cert-top h2{margin:0;font-size:20px}
 #fmBucketOverlay .fm-bk-hero{display:grid;gap:6px;padding:20px;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,#ffb74d 22%,var(--panel)),var(--panel))}
 #fmBucketOverlay .fm-bk-hero small{font-size:13px;color:var(--sub)}#fmBucketOverlay .fm-bk-hero strong{font-size:34px;font-weight:800}#fmBucketOverlay .fm-bk-hero strong small{font-size:18px}
 #fmBucketOverlay .fm-bk-hero .progress{margin:4px 0}#fmBucketOverlay .fm-bk-hero p{margin:0;font-size:13px;color:var(--sub)}
@@ -2705,7 +2705,7 @@ html body #view-calendar #fmLedgerCalendarPane{padding:10px 0 14px;border-radius
 .fm-todo-hero span{display:grid;gap:4px}.fm-todo-hero span>small{font-size:13px;color:var(--sub)}.fm-todo-hero strong{font-size:34px;font-weight:800}.fm-todo-hero strong small{font-size:18px;color:var(--sub)}
 .fm-todo-hero i{flex:none;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;font-style:normal;background:conic-gradient(var(--green) calc(var(--p)*1%),var(--line) 0)}.fm-todo-hero i b{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:var(--panel);font-size:14px}
 #fmTodoOverlay .fm-todo-rep{flex:none;width:auto;padding:0 12px;font-size:14px;border-radius:16px;background:var(--panel);color:var(--sub)}.fm-todo-rep[aria-pressed=true]{background:var(--green);color:#fff}
-#fmTodoList h3{margin:18px 4px 8px;font-size:14px;color:var(--sub)}
+#fmTodoList h3,#fmNewsList h3{margin:18px 4px 8px;font-size:14px;color:var(--sub)}
 .fm-todo-rows{border-radius:20px;background:var(--panel);overflow:hidden}
 .fm-todo-row{display:flex;align-items:center;gap:4px;padding-left:12px;border-bottom:1px solid var(--line)}.fm-todo-row:last-child{border-bottom:0}
 .fm-todo-check{flex:0 0 28px;width:28px;height:28px;min-height:28px;border:2px solid var(--line);border-radius:50%;background:none;color:#fff;font-weight:900;padding:0}
@@ -2717,3 +2717,5 @@ html body #view-calendar #fmLedgerCalendarPane{padding:10px 0 14px;border-radius
 #fmTodoSheet form{display:grid;gap:10px}
 #fmTodoOverlay #fmTodoForm{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;margin:12px 0}#fmTodoOverlay #fmTodoForm input{flex:1;min-width:0;width:auto;min-height:52px;border:0;border-radius:16px;background:var(--panel)}#fmTodoOverlay #fmTodoForm button{flex:none;width:52px;min-height:52px;margin:0;padding:0;font-size:22px}#fmTodoOverlay #fmTodoForm .fm-todo-rep{width:auto;padding:0 14px;font-size:14px;border:0}
 #fmTodoOverlay #fmTodoEForm{display:grid;gap:12px}#fmTodoOverlay #fmTodoEForm input:not([type]){min-height:52px}#fmTodoOverlay #fmTodoEForm .fm-bk-done{display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px;color:var(--txt)}#fmTodoOverlay #fmTodoEForm .fm-bk-done input{width:22px;height:22px;min-height:0;margin:0}#fmTodoOverlay #fmTodoEForm .flex{gap:8px}#fmTodoOverlay #fmTodoEForm .flex button{flex:1;min-height:48px}
+.fm-news-row{display:grid;gap:4px;padding:14px 16px;border-bottom:1px solid var(--line);color:var(--txt);text-decoration:none}.fm-news-row:last-child{border-bottom:0}.fm-news-row span{font-size:15px;line-height:1.4;overflow-wrap:anywhere}.fm-news-row b{color:var(--blue,#3182f6);font-weight:800}.fm-news-row small{font-size:12px;color:var(--sub)}
+.fm-news-at{margin:16px 4px;font-size:12px;color:var(--sub);text-align:center}

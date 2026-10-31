@@ -621,8 +621,33 @@ test('the card card shows the 연말정산 25% threshold and when 체크카드 s
  const pay=[1,2,3].map(k=>({id:'p'+k,date:y+'-0'+k+'-25',type:'income',category:'급여',amount:3400000,memo:'급여'}));
  await load(page,seed({tx:[...pay,{id:'c',date:m+'-01',type:'expense',category:'쇼핑',amount:13000000,memo:'백화점',bankExcelKey:key(m+'-01',13000000)}]}));
  await page.evaluate(()=>window.fmGo('insights'));
- await expect(page.locator('#fmCardCard .fm-cardtax')).toHaveText(/^🧾 연말정산 카드 공제 문턱 1,200만.* \(총급여 25% 추정\) · 넘었어요 → 남은 결제는 체크카드·현금이 공제 2배$/);
+ const tax=page.locator('#fmCardCard .fm-cardtax p');
+ await expect(tax.first()).toHaveText(/^🧾 연말정산 카드 공제 문턱 1,200만.* \(총급여 25% 추정\) · 넘었어요$/);
+ // 신용 1,300만 − 문턱 1,200만 = 100만 × 15% = 15만 소득공제.
+ await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('신용 1,300만 · 체크 0 → 카드 소득공제 약 15만');
+ if(n.getMonth()>=9)await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('💡 남은 결제는 체크카드·현금이 유리(공제 30%, 신용 15%)');
 });
+
+test('연말정산 adds 의료비 above 3% of 총급여, 교육비 and 기부금 from the ledger',async({page})=>{
+ const n=new Date();test.skip(n.getMonth()<3,'needs three paydays this year');
+ const y=n.getFullYear(),m=n.toISOString().slice(0,7),key=(a,pay)=>[m+'-01','10:00','expense','쇼핑','','가게',a,pay].join('|');
+ const pay=[1,2,3].map(k=>({id:'p'+k,date:y+'-0'+k+'-25',type:'income',category:'급여',amount:3400000,memo:'급여'}));
+ await load(page,seed({tx:[...pay,{id:'c',date:m+'-01',type:'expense',category:'쇼핑',amount:500000,memo:'가게',bankExcelKey:key(500000,'토스 체크카드')},
+  {id:'h',date:m+'-02',type:'expense',category:'의료·건강',amount:2000000,memo:'서울치과'},{id:'e',date:m+'-03',type:'expense',category:'교육',amount:300000,memo:'영어학원'},{id:'g',date:m+'-04',type:'expense',category:'기타',amount:50000,memo:'유니세프 후원'}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ // 총급여 4,800만 × 3% = 144만 → 의료비 200만 중 56만.
+ await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('의료비 200만 (3% 넘은 56만 공제) · 교육비 30만 · 기부금 5만');
+ await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('신용 0 · 체크 50만');
+});
+
+test('an account or holding not updated for 60+ days says so on the account row',async({page})=>{
+ const old=new Date(Date.now()-95*864e5).toISOString().slice(0,10);
+ await page.addInitScript(o=>localStorage.setItem('firemate_asset_seen_v1',JSON.stringify(o)),{sig:{a1:'3000000|'},a:{'1':old},h:{}});
+ await load(page,seed({accounts:[{id:'1',name:'KB',kind:'cash',amount:3000000}]}));
+ await page.evaluate(()=>window.fmGo('assets'));
+ const row=page.locator('.fm-account-row',{hasText:'KB'});await expect(row.locator('.fm-stale')).toHaveText('🕒 3달 전 입력 · 지금 맞는지 확인');
+});
+
 
 test('errors on the phone are kept, shown in 내 데이터 보관 and carried in the backup',async({page})=>{
  await load(page,seed());

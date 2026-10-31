@@ -37,6 +37,6 @@ test('오늘 할 일 is in settings and in the backup extras',async({page})=>{
  await page.goto('/index.html');
  await expect(page.locator('#fmHomeTodo')).toBeHidden();
  const src=require('./app-source.cjs')();
- expect(src).toContain("'firemate_todo_v1'];");
+ expect(src).toContain("'firemate_todo_v1',");
  await expect(page.locator('#fmTodoOpen')).toHaveCount(1);
 });

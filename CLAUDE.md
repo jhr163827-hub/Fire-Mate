@@ -51,6 +51,7 @@
 ## 코드 구조
 - `index.html`: 마크업 → 앞부분 작은 스크립트 2개(접근성, 첫 화면 순자산) → 메인 스크립트(전역 IIFE: `data`, `persist()`, `getTx()`, `render*()`, 모든 화면의 기본 그리기) → `fm-pwa-updates`(업데이트, 인라인 유지) → `js/features.js`.
   - 메인 스크립트와 `const BUILD=`는 index.html에 있어야 한다. `sw.js`의 `validPage`가 이 문자열과 100KB 이상 크기를 확인한다.
+- 정돈 규칙: 홈의 한 줄짜리 알림(`#fmHomeCert`·시장·배당·이상 지출·환율·연말·월급 계획)은 `#fmHomeRows` 카드 하나에, FIRE 메인의 설명 줄(`#fmFireDiv`·`#fmFireSave`·`#fmFireReal`·`#fmFireRaise`)은 `.fm-fire-notes`에 모은다. 구분선은 1px gap으로 그려서 숨은 줄은 선을 남기지 않는다. 새 한 줄 알림도 이 묶음 안에 넣을 것.
 - 대화창 안의 시트·사진 보기 같은 겹은 `fmLayerOpen(닫기함수)`로 열고 `fmLayerDone()`으로 닫는다(휴대폰 뒤로 가기가 그 겹만 닫음). 자격증 정보 시트(`fmCertSheetClose`)와 사진 보기가 이걸 쓴다.
 - 화면 배치는 index.html 마크업이 최종 구조다(앱이 켜질 때 재배치하지 않는다). 화면 구조를 바꿀 땐 마크업을 직접 고친다.
 - `js/features.js`: 화면별 기능 블록 12개. 맨 위 목차에 블록별 화면이 적혀 있다. 원래 순서대로 실행되고, 블록마다 try/catch로 감싸 한 기능의 오류가 다른 기능을 막지 않는다.

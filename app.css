@@ -1986,15 +1986,6 @@ html,body{overscroll-behavior-y:contain}
 #fmNoSpendLine{grid-column:1/-1;margin:0;font-size:12px;color:var(--sub)}
 #fmNoSpendLine strong{color:var(--green)}
 
-/* ---- 홈 지출 카드 버튼: every rule for .fm-home-actions lives here ---- */
-#view-home .fm-home-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:10px}
-#view-home .fm-home-record{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin:0;padding:4px 10px;border-radius:14px;font-size:15px;font-weight:800;white-space:nowrap}
-#view-home #fmHomeSync{flex-direction:column;gap:1px;line-height:1.2;min-width:0}
-#view-home #fmHomeSyncNote{max-width:100%;font-size:12px;font-weight:600;opacity:.85;overflow:hidden;text-overflow:ellipsis}
-#view-home #fmHomeSyncNote:empty{display:none}
-#view-home #fmHomeSyncNote.due{opacity:1;font-weight:800}
-#view-home #fmHomeSyncNote.due::before{content:'⚠ '}
-@media(max-width:360px){#view-home .fm-home-record{font-size:13px;padding:4px 6px;letter-spacing:-.02em}}
 /* ---- fm-habits (was inline in <head>, loads right after app.css) ---- */
 #fmWeekReport,#fmMilestone{margin-top:12px}
 #fmWeekReport h3,#fmMilestone h3{margin:0 0 6px;font-size:16px}
@@ -2006,7 +1997,6 @@ html,body{overscroll-behavior-y:contain}
 #view-calendar .day.fm-nospend .num::after{content:' 🌱';font-size:10px}
 .fm-market-ext{display:block;grid-column:1/-1;font-size:12px;font-weight:700;line-height:1.4}
 /* ---- home: my holdings and this month's savings ---- */
-#view-home .fm-home-actions{grid-template-columns:minmax(0,1fr)}
 .fm-home-holdings{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
 .fm-home-holdings[hidden]{display:none}
 .fm-home-holdings-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--sub)}
@@ -2083,10 +2073,6 @@ html,body{overscroll-behavior-y:contain}
 #view-home .fm-home-budget-grid{margin-top:8px}
 #view-home .fm-home-budget .progress{height:6px;margin:8px 0 4px}
 #view-home .fm-pace,#view-home #fmHomeSaving{font-size:13px;line-height:1.55}
-#view-home .fm-home-actions{margin-top:12px;padding-top:4px;border-top:1px solid var(--line)}
-#view-home .fm-home-actions #fmHomeSync{display:flex;flex-direction:row;justify-content:space-between;align-items:center;width:100%;min-height:48px;padding:0;border:0;background:none;color:var(--txt);font-size:14px;font-weight:800;text-align:left}
-#view-home .fm-home-actions #fmHomeSync.primary{color:var(--green)}
-#view-home #fmHomeSyncNote{font-size:12px;font-weight:600;color:var(--sub)}
 #view-home .fm-home-fire{padding:16px 18px}
 #view-home .fm-backup-nudge .fm-backup-nudge-actions button{min-height:44px;font-size:14px}
 #view-home .fm-pace .over{color:var(--yellow)}
@@ -2149,8 +2135,6 @@ html body #view-home .fm-home-budget-total .big{font-weight:800;letter-spacing:-
 html body #view-home .fm-home-budget-grid span,html body #view-home .fm-home-budget-usage span{font-size:13px;color:var(--sub)}
 html body #view-home .fm-home-budget-grid strong{font-size:17px;font-weight:700}
 html body #view-home .fm-pace,html body #view-home #fmHomeSaving{font-size:14px;color:var(--sub)}
-html body #view-home .fm-home-actions{border-top-color:var(--line)}
-html body #view-home .fm-home-actions #fmHomeSync{font-size:15px}
 html body #view-home .fm-home-fire{padding:20px}
 html body #view-home .fm-home-fire-head>span{font-size:17px;font-weight:800;color:var(--txt)}
 html body #view-home .fm-home-fire-head>button{font-size:13px;color:var(--sub);background:none;border:0}
@@ -2719,3 +2703,7 @@ html body #view-calendar #fmLedgerCalendarPane{padding:10px 0 14px;border-radius
 #fmTodoOverlay #fmTodoEForm{display:grid;gap:12px}#fmTodoOverlay #fmTodoEForm input:not([type]){min-height:52px}#fmTodoOverlay #fmTodoEForm .fm-bk-done{display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px;color:var(--txt)}#fmTodoOverlay #fmTodoEForm .fm-bk-done input{width:22px;height:22px;min-height:0;margin:0}#fmTodoOverlay #fmTodoEForm .flex{gap:8px}#fmTodoOverlay #fmTodoEForm .flex button{flex:1;min-height:48px}
 .fm-news-row{display:grid;gap:4px;padding:14px 16px;border-bottom:1px solid var(--line);color:var(--txt);text-decoration:none}.fm-news-row:last-child{border-bottom:0}.fm-news-row span{font-size:15px;line-height:1.4;overflow-wrap:anywhere}.fm-news-row b{color:var(--blue,#3182f6);font-weight:800}.fm-news-row small{font-size:12px;color:var(--sub)}
 .fm-news-at{margin:16px 4px;font-size:12px;color:var(--sub);text-align:center}
+
+#view-home .fm-home-budget-head{display:flex;align-items:center;gap:6px;min-height:44px;margin:-8px 0 0}#view-home .fm-home-budget-head #fmPayDay{position:static}#view-home .fm-home-budget-head #fmPayDay:empty{display:none}
+#view-home #fmHomeSync{position:relative;flex:none;display:grid;place-items:center;width:44px;height:44px;min-height:44px;margin:0 0 0 auto;padding:0;border:0;border-radius:50%;background:var(--panel2);font-size:18px}#view-home #fmHomeSync.primary::after{content:"";position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--green)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

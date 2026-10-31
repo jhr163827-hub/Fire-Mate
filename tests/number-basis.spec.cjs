@@ -271,7 +271,7 @@ test('FIRE shows how much of the planned living cost the last year of dividends 
  // 1,000주 × $2/년 × 1,400원 × 85% = 연 238만 → 월 약 19.8만 of 200만 = 10%.
  await load(page,seed({retirement:{items:[],monthly:200,yield:4,priceChange:0,crash:25},holdings:[{id:'h',ticker:'SCHD',name:'SCHD',type:'USD',qty:1000,price:27,avg:25}]}));
  await page.evaluate(()=>window.fmGo('fire'));
- await expect(page.locator('#fmFireDiv')).toHaveText(/^💰 배당으로 생활비 10% 커버 · 월 ₩198,000 · 배당만으로 다 내는 건 \d{4}년쯤$/);
+ await expect(page.locator('#fmFireDiv')).toHaveText(/^💰 배당으로 생활비 10% 커버 · 월 20만 원 · 배당만으로 다 내는 건 \d{4}년쯤$/);
 });
 
 test('the analysis screen finds monthly bills by itself and shows which are still to come',async({page})=>{

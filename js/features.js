@@ -346,8 +346,8 @@ try{
   // Home runs the import in place: the live status, preview and 추가 button move under the
   // home buttons, and back into this panel whenever settings open.
   const live=[$('bankGmailStatus'),$('bankExcelPreview'),confirmImport].filter(Boolean);
-  const homeActions=$('fmHomeSync')?.closest('.fm-home-actions');let homeBox=null;
-  if(homeActions){homeBox=document.createElement('div');homeBox.id='fmHomeImport';homeActions.after(homeBox)}
+  const homeCard=$('fmHomeSync')?.closest('.fm-home-budget');let homeBox=null;
+  if(homeCard){homeBox=document.createElement('div');homeBox.id='fmHomeImport';homeCard.append(homeBox)}
   const toPanel=()=>{if(live[0]?.parentElement!==panel)panel.querySelector('.fm-sync-head').after(...live)};
   $('settingsBottom')?.addEventListener('click',toPanel);
   $('fmLedgerImport')?.addEventListener('toggle',e=>{if(e.target.open)toPanel()});

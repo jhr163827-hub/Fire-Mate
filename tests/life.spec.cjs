@@ -58,13 +58,20 @@ test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어
  await page.goto('/index.html');
  await openSettings(page,'fmJournalOpen');
  const box=page.locator('#fmJournalOverlay');
- await expect(box.locator('.fm-jn-map path')).toHaveCount(17);
- // Tapping 강원 marks it 가 봤어요, then 가고 싶어요 (a chip), then clears it.
- const gw=box.locator('path[data-place="gangwon"]');
- await gw.click();await expect(gw).toHaveClass('been');await expect(box.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 17곳');
- await gw.click();await expect(gw).toHaveClass('want');await expect(box.locator('.fm-jn-wants button')).toHaveText('강원');
- await gw.click();await expect(gw).not.toHaveClass(/been|want/);
+ // 국내 is cities (시·군·구, 광역시 as one): find 강릉, mark it, then 가고 싶어요, then clear.
+ await expect(box.locator('.fm-jn-map path[data-place]')).toHaveCount(161);
+ await page.fill('#fmJnFind','강릉');await box.locator('#fmJnHits [data-hit]').first().click();
+ await expect(box.locator('.fm-jn-pick strong')).toHaveText('강원 강릉시');
+ const gn=box.locator('path.pick');await expect(gn).toHaveCount(1);
+ await box.locator('[data-mark="1"]').click();await expect(box.locator('path.pick')).toHaveClass(/been/);await expect(box.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 161곳');
+ await box.locator('[data-mark="2"]').click();await expect(box.locator('path.pick')).toHaveClass(/want/);await expect(box.locator('.fm-jn-wants button.want')).toHaveText('강원 강릉시');
+ await box.locator('[data-mark="0"]').click();await expect(box.locator('path.pick')).not.toHaveClass(/been|want/);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{}});
+ // A tap on the map only shows the name until a button is pressed; 권역 chips zoom in.
+ await box.locator('[data-zone=jeju]').click();await expect(box.locator('.fm-jn-map')).not.toHaveAttribute('viewBox',/^0 0 /);
+ await box.locator('path[data-place]').first().dispatchEvent('click');await expect(box.locator('.fm-jn-pick strong')).not.toBeEmpty();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{}});
+ expect(await page.evaluate(()=>document.querySelector('#fmJournalOverlay .modal').scrollWidth<=innerWidth)).toBe(true);
  // 해외: add a past trip to Japan; the country turns visited.
  await box.locator('[data-area=world]').click();
  await expect(box.locator('.fm-jn-map path[data-place="JP"]')).toHaveCount(1);
@@ -72,7 +79,7 @@ test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어
  for(const w of [390,320]){await page.setViewportSize({width:w,height:844});const r=await page.locator('#fmJnAdd button').boundingBox();expect(r.x+r.width).toBeLessThanOrEqual(w)}
  await page.setViewportSize({width:390,height:844});
  await page.fill('#fmJnName','오사카');await page.selectOption('#fmJnPlace','JP');await page.fill('#fmJnFrom',day(-3));await page.fill('#fmJnTo',day(-2));await page.click('#fmJnAdd button');
- await expect(box.locator('path[data-place="JP"]')).toHaveClass('been');
+ await expect(box.locator('path[data-place="JP"]')).toHaveClass(/been/);
  const trip=box.locator('.fm-jn-trip');await expect(trip).toContainText('오사카');await expect(trip).toContainText('₩47,000');await expect(trip.locator('.fm-jn-noimg')).toHaveText('🇯🇵');
  await trip.click();
  await expect(page.locator('#fmJnHead')).toHaveText('오사카');
@@ -158,4 +165,13 @@ test('📸 photos and PDFs on this phone are counted and saved as one ZIP that p
  await page.setInputFiles('#fmPhotoFile',{name:'p.zip',mimeType:'application/zip',buffer:buf});
  await expect(page.locator('#toast')).toContainText('사진·파일 1개를 되살렸어요');
  expect(await page.evaluate(()=>new Promise(ok=>{const r=indexedDB.open('firemate_files_v1',1);r.onsuccess=()=>{const q=r.result.transaction('certs').objectStore('certs').get('trip:t:1');q.onsuccess=async()=>ok(q.result&&await q.result.text())}}))).toBe('jpg-bytes');
+});
+
+test('✈️ marks and trips from the province map move to the city map once (광역시 kept, whole 도 dropped)',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa4'))return;sessionStorage.setItem('qa4','1');localStorage.setItem('firemate_travel_map_v1',JSON.stringify({kr:{seoul:1,gyeonggi:1,busan:2},world:{}}));localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'부산 바다',area:'kr',place:'busan',from:'2026-03-01',to:'2026-03-02'},{id:'b',name:'제주',area:'kr',place:'jeju',from:'2026-07-10',to:'2026-07-12'}]))});
+ await page.goto('/index.html');await openSettings(page,'fmJournalOpen');
+ await expect(page.locator('.fm-jn-map path[data-place="26"]')).toHaveClass(/been/);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')).kr)).toEqual({'11':1,'26':2});
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_trips_v1')).map(t=>t.place))).toEqual(['26','jeju']);
+ await expect(page.locator('.fm-jn-trip',{hasText:'제주'})).toContainText('제주 ·');
 });

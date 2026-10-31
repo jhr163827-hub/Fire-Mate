@@ -1,0 +1,33 @@
+{
+  "checks": [
+    "default entry redirects to tactics; direct role purchase and first combat with real controls",
+    "tactical pause freezes combat and speed controls work",
+    "seven phone/tablet portrait and landscape sizes: no overflow, 44px pads, no overlaps, undistorted map and preserved state",
+    "resume survives repeated reload; classic and finance keys preserved",
+    "five-wave seeded engine run with actual UI purchases, upgrades, boss and victory",
+    "victory retry resets all combat state",
+    "free preparation move, sale preview, cancellation and refund",
+    "weak all-slow defense can lose and retry cleanly",
+    "upgrade preview/cancel/confirm and mutually exclusive branches",
+    "sound/reduced motion and cancellable restart",
+    "pagehide cleanup and bfcache return",
+    "corrupt save starts safely",
+    "30/60/100-enemy render submission benchmark (headless desktop, not phone FPS)",
+    "no uncaught browser errors"
+  ],
+  "errors": [],
+  "renderSubmissionMs": {
+    "30": {
+      "median": 0.20000000001164153,
+      "p95": 0.6000000000349246
+    },
+    "60": {
+      "median": 0.20000000001164153,
+      "p95": 0.5
+    },
+    "100": {
+      "median": 0.40000000002328306,
+      "p95": 0.7999999999883585
+    }
+  }
+}

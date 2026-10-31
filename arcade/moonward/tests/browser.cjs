@@ -782,7 +782,7 @@ function ok(name) {
   );
   ok("bounded effect queues");
   await page.goto(url);
-  await page.waitForFunction(() => moonward);
+  await page.waitForFunction(() => window.moonward);
   if (await page.locator("#resume").count()) await page.click("#resume");
   if (await page.locator("#again").count()) await page.click("#again");
   await page.evaluate(() => {
@@ -823,7 +823,7 @@ function ok(name) {
     localStorage.setItem("firemate_moonward_v1", "{broken"),
   );
   await page.reload();
-  await page.waitForFunction(() => moonward);
+  await page.waitForFunction(() => window.moonward);
   assert.equal(await page.evaluate(() => moonward.game.s.wave), 0);
   ok("corrupt storage fails safely to fresh session");
   // Rotate the same paused match: presentation must not mutate simulation.

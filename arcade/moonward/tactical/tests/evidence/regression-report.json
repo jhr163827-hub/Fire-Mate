@@ -1,0 +1,17 @@
+{
+  "engineTests": {
+    "pass": 44,
+    "fail": 0
+  },
+  "classicBrowserChecks": 24,
+  "sharedChecks": [
+    "scripts/check_app.py",
+    "tests/pwa-update.test.cjs",
+    "tests/storage-rollback.test.cjs",
+    "scripts/test_calculations.cjs",
+    "npm run -s test:finance"
+  ],
+  "sharedChecksResult": "pass",
+  "baseCommit": "fee8166b2e09c0db075ff1855f27c1289d7741cd",
+  "limitations": "headless Chromium; physical phone and human enjoyment not verified"
+}

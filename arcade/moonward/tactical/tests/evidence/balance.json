@@ -1,0 +1,7751 @@
+{
+  "results": [
+    {
+      "seed": 1,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 72,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 160,
+      "combo": 77,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 10,
+      "gold": 284,
+      "seconds": 167,
+      "combo": 77,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 10,
+          "gold": 280,
+          "leaks": [
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 10,
+          "gold": 263,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 10,
+          "gold": 347,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 10,
+          "gold": 284,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 159,
+      "combo": 80,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 82,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 159,
+      "combo": 81,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 77,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 70,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 89,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 11,
+      "gold": 289,
+      "seconds": 167,
+      "combo": 71,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 11,
+          "gold": 285,
+          "leaks": [
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 11,
+          "gold": 268,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 11,
+          "gold": 352,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 11,
+          "gold": 289,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 86,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 77,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 74,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 70,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 72,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 76,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 76,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 71,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 76,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 72,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 21,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 83,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 22,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 79,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 23,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 81,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 24,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 75,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 25,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 74,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 26,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 76,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 27,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 72,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 28,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 79,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 73,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 30,
+      "strategy": "mixed",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 73,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 45,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 158,
+      "combo": 44,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 10,
+      "gold": 284,
+      "seconds": 165,
+      "combo": 48,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 10,
+          "gold": 280,
+          "leaks": [
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 10,
+          "gold": 263,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 10,
+          "gold": 347,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 10,
+          "gold": 284,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 45,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 46,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 153,
+      "combo": 51,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 152,
+      "combo": 43,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 49,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 50,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 11,
+      "gold": 289,
+      "seconds": 164,
+      "combo": 46,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 11,
+          "gold": 285,
+          "leaks": [
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 11,
+          "gold": 268,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 11,
+          "gold": 352,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 11,
+          "gold": 289,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 47,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 153,
+      "combo": 53,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 151,
+      "combo": 51,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 41,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 157,
+      "combo": 53,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 152,
+      "combo": 44,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 50,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 47,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 49,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 149,
+      "combo": 50,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 21,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 48,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 22,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 150,
+      "combo": 46,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 23,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 152,
+      "combo": 45,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 24,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 46,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 25,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 47,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 26,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 156,
+      "combo": 47,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 27,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 154,
+      "combo": 50,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 28,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 153,
+      "combo": 43,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 152,
+      "combo": 46,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 30,
+      "strategy": "alternative",
+      "result": "won",
+      "wave": 5,
+      "lives": 12,
+      "gold": 294,
+      "seconds": 155,
+      "combo": 45,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 12,
+          "gold": 357,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 12,
+          "gold": 294,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 276,
+      "seconds": 197,
+      "combo": 17,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 10,
+          "gold": 280,
+          "leaks": [
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 10,
+          "gold": 263,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 339,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 276,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 303,
+      "seconds": 199,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 321,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 303,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 276,
+      "seconds": 199,
+      "combo": 18,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 10,
+          "gold": 280,
+          "leaks": [
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 10,
+          "gold": 263,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 339,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 276,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 306,
+      "seconds": 200,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 7,
+          "gold": 265,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 7,
+          "gold": 248,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 324,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 306,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 293,
+      "seconds": 197,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 6,
+          "gold": 260,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 6,
+          "gold": 243,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 4,
+          "gold": 311,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 293,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 10,
+      "gold": 284,
+      "seconds": 196,
+      "combo": 15,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 10,
+          "gold": 280,
+          "leaks": [
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 10,
+          "gold": 263,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 10,
+          "gold": 347,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 10,
+          "gold": 284,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 271,
+      "seconds": 197,
+      "combo": 19,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 9,
+          "gold": 275,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 9,
+          "gold": 258,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 334,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 271,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 303,
+      "seconds": 199,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 321,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 303,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 4,
+      "gold": 340,
+      "seconds": 197,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 7,
+          "gold": 265,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 7,
+          "gold": 248,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 4,
+          "gold": 308,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 4,
+          "gold": 340,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 293,
+      "seconds": 197,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 6,
+          "gold": 260,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 6,
+          "gold": 243,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 4,
+          "gold": 311,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 293,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 273,
+      "seconds": 201,
+      "combo": 17,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 11,
+          "gold": 285,
+          "leaks": [
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 11,
+          "gold": 268,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 336,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 273,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 296,
+      "seconds": 196,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 5,
+          "gold": 255,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 5,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 4,
+          "gold": 314,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 296,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 11,
+      "gold": 286,
+      "seconds": 198,
+      "combo": 16,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 290,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 273,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 11,
+          "gold": 349,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 11,
+          "gold": 286,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 7,
+      "gold": 266,
+      "seconds": 196,
+      "combo": 15,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 329,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 7,
+          "gold": 266,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 303,
+      "seconds": 197,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 321,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 303,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 306,
+      "seconds": 193,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 7,
+          "gold": 265,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 7,
+          "gold": 248,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 324,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 306,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 214,
+      "seconds": 199,
+      "combo": 16,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 6,
+          "gold": 260,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 6,
+          "gold": 243,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 327,
+          "leaks": []
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 214,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 301,
+      "seconds": 199,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 6,
+          "gold": 260,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 6,
+          "gold": 243,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 5,
+          "gold": 319,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 301,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 271,
+      "seconds": 196,
+      "combo": 13,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 9,
+          "gold": 275,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 9,
+          "gold": 258,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 334,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 271,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 5,
+      "gold": 348,
+      "seconds": 196,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 7,
+          "gold": 265,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 7,
+          "gold": 248,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 5,
+          "gold": 316,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 5,
+          "gold": 348,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 21,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 7,
+      "gold": 266,
+      "seconds": 197,
+      "combo": 19,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 329,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 7,
+          "gold": 266,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 22,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 271,
+      "seconds": 197,
+      "combo": 18,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 9,
+          "gold": 275,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 9,
+          "gold": 258,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 334,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 271,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 23,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 216,
+      "seconds": 198,
+      "combo": 17,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 329,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 216,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 24,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 303,
+      "seconds": 197,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 8,
+          "gold": 270,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 8,
+          "gold": 253,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 6,
+          "gold": 321,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 303,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 25,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 7,
+      "gold": 263,
+      "seconds": 199,
+      "combo": 18,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 9,
+          "gold": 275,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 9,
+          "gold": 258,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 326,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 7,
+          "gold": 263,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 26,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 285,
+      "seconds": 196,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 6,
+          "gold": 260,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 6,
+          "gold": 243,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 3,
+          "gold": 303,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 285,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 27,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 4,
+      "gold": 340,
+      "seconds": 198,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 7,
+          "gold": 265,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 7,
+          "gold": 248,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 4,
+          "gold": 308,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 4,
+          "gold": 340,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 28,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 223,
+      "seconds": 199,
+      "combo": 15,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 11,
+          "gold": 285,
+          "leaks": [
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 11,
+          "gold": 268,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 336,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 223,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "strategy": "scattered",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 301,
+      "seconds": 198,
+      "combo": 1,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 6,
+          "gold": 260,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 6,
+          "gold": 243,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 5,
+          "gold": 319,
+          "leaks": [
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 301,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 30,
+      "strategy": "scattered",
+      "result": "won",
+      "wave": 5,
+      "lives": 7,
+      "gold": 263,
+      "seconds": 205,
+      "combo": 18,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 165,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 9,
+          "gold": 275,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 9,
+          "gold": 258,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 326,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 7,
+          "gold": 263,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 168,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 10,
+      "gold": 358,
+      "seconds": 163,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 10,
+          "gold": 276,
+          "leaks": [
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 10,
+          "gold": 358,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 164,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 164,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 342,
+      "seconds": 169,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 342,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 284,
+      "seconds": 174,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 252,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 284,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 342,
+      "seconds": 170,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 342,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 172,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 342,
+      "seconds": 166,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 342,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 166,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 164,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 168,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 162,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 284,
+      "seconds": 167,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 7,
+          "gold": 252,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 284,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 342,
+      "seconds": 164,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 342,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 21,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 164,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 22,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 173,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 23,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 166,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 24,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 168,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 25,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 9,
+      "gold": 350,
+      "seconds": 170,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 9,
+          "gold": 350,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 26,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 300,
+      "seconds": 167,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 9,
+          "gold": 268,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 300,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 27,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 342,
+      "seconds": 163,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 342,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 28,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "strategy": "archers",
+      "result": "won",
+      "wave": 5,
+      "lives": 8,
+      "gold": 342,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 8,
+          "gold": 342,
+          "leaks": []
+        }
+      ]
+    },
+    {
+      "seed": 30,
+      "strategy": "archers",
+      "result": "lost",
+      "wave": 5,
+      "lives": 0,
+      "gold": 292,
+      "seconds": 165,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 12,
+          "gold": 195,
+          "leaks": []
+        },
+        {
+          "wave": 2,
+          "lives": 12,
+          "gold": 235,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 12,
+          "gold": 238,
+          "leaks": []
+        },
+        {
+          "wave": 4,
+          "lives": 8,
+          "gold": 260,
+          "leaks": [
+            "beetle",
+            "beetle",
+            "beetle",
+            "beetle"
+          ]
+        },
+        {
+          "wave": 5,
+          "lives": 0,
+          "gold": 292,
+          "leaks": [
+            "boss"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 48,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 47,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 47,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 48,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 44,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 21,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 22,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 23,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 24,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 48,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 25,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 44,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 26,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 45,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 27,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 28,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 44,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 30,
+      "strategy": "frost",
+      "result": "lost",
+      "wave": 1,
+      "lives": 0,
+      "gold": 40,
+      "seconds": 46,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 0,
+          "gold": 40,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 2,
+      "lives": 0,
+      "gold": 195,
+      "seconds": 77,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 0,
+          "gold": 195,
+          "leaks": [
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 132,
+      "seconds": 91,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 3,
+          "gold": 210,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 3,
+          "gold": 310,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 132,
+          "leaks": [
+            "wolf",
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 2,
+      "lives": 0,
+      "gold": 195,
+      "seconds": 79,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 0,
+          "gold": 195,
+          "leaks": [
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 121,
+      "seconds": 89,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 121,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 5,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 116,
+      "seconds": 87,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 116,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 6,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 122,
+      "seconds": 95,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": [
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 122,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 7,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 110,
+      "seconds": 86,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 110,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 8,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 150,
+      "seconds": 96,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 3,
+          "gold": 210,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 3,
+          "gold": 310,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 150,
+          "leaks": [
+            "wolf",
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 9,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 122,
+      "seconds": 87,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 122,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 10,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 2,
+      "lives": 0,
+      "gold": 195,
+      "seconds": 77,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 0,
+          "gold": 195,
+          "leaks": [
+            "wisp",
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 11,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 115,
+      "seconds": 90,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 115,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 12,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 138,
+      "seconds": 94,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 3,
+          "gold": 210,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 3,
+          "gold": 310,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 138,
+          "leaks": [
+            "wolf",
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 13,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 137,
+      "seconds": 94,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 4,
+          "gold": 215,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 4,
+          "gold": 315,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 137,
+          "leaks": [
+            "wolf",
+            "wolf",
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 14,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 128,
+      "seconds": 100,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": [
+            "wisp"
+          ]
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 128,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 15,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 133,
+      "seconds": 91,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 133,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 16,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 2,
+      "lives": 0,
+      "gold": 195,
+      "seconds": 77,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 0,
+          "gold": 195,
+          "leaks": [
+            "wisp"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 139,
+      "seconds": 92,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 139,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 18,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 133,
+      "seconds": 88,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 133,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 19,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 133,
+      "seconds": 88,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 133,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 20,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 133,
+      "seconds": 86,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 133,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 21,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 127,
+      "seconds": 90,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 127,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 22,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 110,
+      "seconds": 86,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 110,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 23,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 127,
+      "seconds": 92,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 2,
+          "gold": 205,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 2,
+          "gold": 305,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 127,
+          "leaks": [
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 24,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 122,
+      "seconds": 91,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 122,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 25,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 138,
+      "seconds": 88,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 3,
+          "gold": 210,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 3,
+          "gold": 310,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 138,
+          "leaks": [
+            "wolf",
+            "wolf",
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 26,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 122,
+      "seconds": 88,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 122,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 27,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 110,
+      "seconds": 88,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 110,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 28,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 110,
+      "seconds": 86,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 110,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 29,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 116,
+      "seconds": 87,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 116,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 30,
+      "strategy": "blast",
+      "result": "lost",
+      "wave": 3,
+      "lives": 0,
+      "gold": 122,
+      "seconds": 87,
+      "combo": 0,
+      "waves": [
+        {
+          "wave": 1,
+          "lives": 1,
+          "gold": 200,
+          "leaks": [
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp",
+            "wisp"
+          ]
+        },
+        {
+          "wave": 2,
+          "lives": 1,
+          "gold": 300,
+          "leaks": []
+        },
+        {
+          "wave": 3,
+          "lives": 0,
+          "gold": 122,
+          "leaks": [
+            "wolf"
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "mixed": {
+      "wins": 30,
+      "runs": 30,
+      "avgWave": 5,
+      "avgLives": 11.9,
+      "avgSeconds": 157.7,
+      "avgGold": 293.5
+    },
+    "alternative": {
+      "wins": 30,
+      "runs": 30,
+      "avgWave": 5,
+      "avgLives": 11.9,
+      "avgSeconds": 154.6,
+      "avgGold": 293.5
+    },
+    "scattered": {
+      "wins": 15,
+      "runs": 30,
+      "avgWave": 5,
+      "avgLives": 3.7666666666666666,
+      "avgSeconds": 197.76666666666668,
+      "avgGold": 284.6666666666667
+    },
+    "archers": {
+      "wins": 14,
+      "runs": 30,
+      "avgWave": 5,
+      "avgLives": 4.033333333333333,
+      "avgSeconds": 166.4,
+      "avgGold": 319.06666666666666
+    },
+    "frost": {
+      "wins": 0,
+      "runs": 30,
+      "avgWave": 1,
+      "avgLives": 0,
+      "avgSeconds": 45.766666666666666,
+      "avgGold": 40
+    },
+    "blast": {
+      "wins": 0,
+      "runs": 30,
+      "avgWave": 2.8666666666666667,
+      "avgLives": 0,
+      "avgSeconds": 88.23333333333333,
+      "avgGold": 134.86666666666667
+    }
+  }
+}

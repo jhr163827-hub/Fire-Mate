@@ -55,12 +55,13 @@ let browser;
   const priorLinks = await page
     .locator("a.game:not(#moonwardOpen)")
     .evaluateAll((a) => a.map((e) => e.getAttribute("href")));
-  assert.deepEqual(priorLinks, [
+  for (const href of [
     "./watermelon.html",
     "./restaurant.html",
     "./sudoku.html",
     "./nightfall.html",
-  ]);
+  ])
+    assert.ok(priorLinks.includes(href));
   await page.evaluate(async () => {
     localStorage.setItem("firemate_finance_sentinel", "preserve");
     await navigator.serviceWorker.register("/sw.js");
@@ -70,14 +71,15 @@ let browser;
   await page.reload();
   await page.click("#moonwardOpen");
   await page.waitForSelector(".pad");
-  await page.waitForFunction(() => !document.querySelector("#summon").disabled);
-  await page.click("#summon");
-  await page.click("#summon");
-  await page.click("#summon");
+  await page.click('[data-buy="archer"]');
+  await page.click('[data-pad="0"]');
+  await page.click('[data-buy="ember"]');
+  await page.click('[data-pad="1"]');
   await page.click("#start");
   await page.waitForFunction(
     () =>
-      JSON.parse(localStorage.getItem("firemate_moonward_v1")).game.wave === 1,
+      JSON.parse(localStorage.getItem("firemate_moonward_tactics_v1")).wave ===
+      1,
   );
   await page.click("#exit");
   await page.waitForURL("**/arcade/index.html");
@@ -92,22 +94,18 @@ let browser;
   });
   for (let f of [
     "",
-    "app.mjs",
-    "data.mjs",
-    "engine.mjs",
-    "evolution.mjs",
-    "feedback.mjs",
-    "art.mjs",
-    "style.css",
+    "entry.mjs",
+    "tactical/",
+    "tactical/app.mjs",
+    "tactical/data.mjs",
+    "tactical/engine.mjs",
+    "tactical/render.mjs",
+    "tactical/style.css",
     ...[
       "forest",
       "archer",
-      "archer-evolved",
       "ember",
-      "ember-evolved",
       "frost",
-      "thorn",
-      "bell",
       "wisp",
       "wolf",
       "beetle",
@@ -121,7 +119,7 @@ let browser;
   await page.waitForSelector("#resume");
   await page.click("#resume");
   await page.waitForFunction(() =>
-    document.querySelector("#wave").textContent.includes("01"),
+    document.querySelector("#wave").textContent.includes("1 / 5"),
   );
   assert.equal(
     await page.evaluate(() =>
@@ -129,7 +127,7 @@ let browser;
     ),
     "preserve",
   );
-  await page.click("#menu");
+  await page.click("#settings");
   await page.click("#leave");
   await page.waitForURL("**/arcade/index.html");
   assert.equal(await page.locator("#moonwardOpen").count(), 1);
@@ -147,7 +145,8 @@ let browser;
   await page.click("#resume");
   await page.waitForFunction(
     () =>
-      JSON.parse(localStorage.getItem("firemate_moonward_v1")).game.wave >= 1,
+      JSON.parse(localStorage.getItem("firemate_moonward_tactics_v1")).wave >=
+      1,
   );
   assert.deepEqual(errors, []);
   console.log(

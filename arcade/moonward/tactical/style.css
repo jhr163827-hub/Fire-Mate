@@ -1,0 +1,503 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  background: #0a181f;
+  color: #e4eee5;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: radial-gradient(at 20% 10%, #2b4549, #09171e 80%);
+  height: 100dvh;
+  overflow: hidden;
+}
+button,
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  min-height: 44px;
+  font: 600 12px system-ui;
+  border: 1px solid #49616a;
+  border-radius: 10px;
+  padding: 8px;
+  background: #233943;
+  color: inherit;
+  cursor: pointer;
+}
+a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #e8d4a1;
+  text-decoration: none;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #f5d99c;
+  outline-offset: 2px;
+}
+[hidden] {
+  display: none !important;
+}
+#app {
+  max-width: 560px;
+  height: 100dvh;
+  margin: auto;
+  padding: 6px max(8px, env(safe-area-inset-right))
+    max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  display: grid;
+  grid-template-rows: 44px 54px minmax(0, 1fr) minmax(185px, 1fr) 44px;
+  gap: 6px;
+}
+header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+header > a {
+  width: 38px;
+  justify-content: center;
+  font-size: 30px;
+}
+header > div {
+  flex: 1;
+}
+header small {
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: #d1bd8f;
+}
+h1 {
+  font:
+    21px Georgia,
+    serif;
+  margin: 2px 0;
+}
+header button {
+  background: #10242c;
+}
+#hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: #142b34;
+  border: 1px solid #40545b;
+  border-radius: 10px;
+}
+#hud small {
+  display: block;
+  color: #a9c1c2;
+  font-size: 9px;
+}
+#hud b {
+  font-size: 19px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+#gold {
+  color: #f4d493;
+}
+#lives {
+  color: #a2dec2;
+}
+#hud button {
+  padding: 6px;
+  min-width: 44px;
+  font-size: 11px;
+}
+#field {
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  aspect-ratio: 460/300;
+  max-height: 100%;
+  border: 1px solid #5a716e;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1c3838;
+  box-shadow: 0 8px 26px #0004;
+}
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#pads {
+  position: absolute;
+  inset: 0;
+}
+.pad {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+}
+.pad.selected {
+  outline: 2px solid #efd796;
+  outline-offset: -3px;
+  background: #ffe49a13;
+}
+.pad em {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 600 9px system-ui;
+  white-space: nowrap;
+  color: #f3e9cd;
+  background: #0b242deb;
+  padding: 1px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.pad span {
+  position: absolute;
+  right: 0;
+  top: -4px;
+  color: #ffe0a1;
+  font-size: 10px;
+}
+#callout {
+  position: absolute;
+  left: 9%;
+  top: 6px;
+  width: 82%;
+  padding: 7px;
+  text-align: center;
+  border-radius: 8px;
+  background: #0d232cee;
+  border: 1px solid #b49a67;
+  color: #ffdf9a;
+  font-size: 11px;
+  opacity: 0;
+  pointer-events: none;
+}
+#callout.show {
+  opacity: 1;
+}
+#battleNote {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 9px;
+  color: #d0dfd4;
+  text-shadow: 0 1px 3px #000;
+  pointer-events: none;
+}
+#panel {
+  overflow: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  border: 1px solid #415b61;
+  border-radius: 12px;
+  padding: 10px;
+  background: linear-gradient(145deg, #1c333e, #132831);
+}
+#intel {
+  border-bottom: 1px solid #49615d88;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+#phase {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #a2cbb8;
+}
+#intel strong {
+  display: block;
+  font-size: 15px;
+  margin-top: 3px;
+}
+#tip {
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 3px 0;
+  color: #b7cbcc;
+}
+#shop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+#shop button {
+  padding: 4px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #253e48;
+  min-height: 64px;
+}
+#shop img {
+  width: 38px;
+  height: 48px;
+  object-fit: contain;
+}
+#shop b {
+  font-size: 12px;
+}
+#shop small {
+  display: block;
+  color: #eed092;
+  font-size: 10px;
+  margin-top: 4px;
+}
+#shop button.selected {
+  border-color: #f1d49b;
+  background: #344c4e;
+}
+#detail {
+  margin: 10px 0;
+}
+#detail h2 {
+  font-size: 14px;
+  margin: 0 0 4px;
+}
+#detail p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #bad0d1;
+  margin: 4px 0;
+}
+.numbers {
+  color: #dec998 !important;
+  font-variant-numeric: tabular-nums;
+}
+.row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.row button {
+  flex: 1;
+}
+.upgrades button {
+  text-align: left;
+}
+.upgrades small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #bbd0d0;
+  margin-top: 4px;
+}
+.primary {
+  background: linear-gradient(135deg, #d8b67d, #9d7b42);
+  border-color: #e6c78d;
+  color: #15262b;
+  font-weight: 800;
+}
+#start {
+  width: 100%;
+  margin-top: 4px;
+}
+#notice {
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 7px 0 0;
+  color: #c6d9d0;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: #a5bdbf;
+}
+footer button {
+  background: transparent;
+  border: 0;
+  color: #e6d3a1;
+  font-size: 11px;
+}
+footer a {
+  font-size: 10px;
+}
+dialog {
+  width: min(430px, 94vw);
+  max-height: 90dvh;
+  overflow: auto;
+  border: 1px solid #b5a074;
+  border-radius: 18px;
+  background: #19313b;
+  color: #e7eee6;
+  padding: 20px;
+  box-shadow: 0 24px 70px #000a;
+}
+dialog::backdrop {
+  background: #06151bc9;
+  backdrop-filter: blur(3px);
+}
+dialog h2 {
+  font:
+    24px Georgia,
+    serif;
+  color: #f0dba7;
+  margin: 5px 0 12px;
+}
+dialog p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #c2d5d1;
+}
+dialog button {
+  width: 100%;
+  margin-top: 10px;
+}
+dialog label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+}
+dialog input {
+  width: 22px;
+  height: 22px;
+}
+dialog img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+#close {
+  background: transparent;
+}
+@media (orientation: landscape) and (min-width: 560px) {
+  #app {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) clamp(210px, 34vw, 340px);
+    grid-template-rows: 44px 54px minmax(0, 1fr) 44px;
+  }
+  header {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  h1 {
+    font-size: 18px;
+  }
+  header small {
+    font-size: 7px;
+    letter-spacing: 2px;
+  }
+  #hud {
+    grid-column: 2;
+    grid-row: 2;
+    gap: 4px;
+    padding: 4px;
+  }
+  #hud b {
+    font-size: 14px;
+  }
+  #hud small {
+    font-size: 8px;
+  }
+  #plan {
+    font-size: 10px;
+    max-width: 48px;
+  }
+  #field {
+    grid-column: 1;
+    grid-row: 1/5;
+    max-width: calc((100dvh - 12px) * 460 / 300);
+  }
+  #panel {
+    grid-column: 2;
+    grid-row: 3;
+    padding: 8px;
+  }
+  footer {
+    grid-column: 2;
+    grid-row: 4;
+    font-size: 8px;
+  }
+  footer button,
+  footer a {
+    font-size: 9px;
+  }
+  #shop button {
+    display: block;
+    text-align: center;
+    min-height: 68px;
+  }
+  #shop img {
+    float: left;
+    width: 28px;
+    height: 34px;
+  }
+  #shop b {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+#stage {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+#field {
+  max-height: none;
+}
+#start {
+  margin: 0 0 8px;
+}
+@media (orientation: landscape) and (min-width: 560px) {
+  #stage {
+    grid-column: 1;
+    grid-row: 1/5;
+  }
+  #field {
+    grid-column: auto;
+    grid-row: auto;
+    max-width: 100%;
+  }
+}
+
+#app {
+  grid-template-rows: 44px 54px auto minmax(0, 1fr) 44px;
+}
+#stage {
+  aspect-ratio: 460/300;
+  max-height: 42dvh;
+}
+#plan {
+  white-space: nowrap;
+}
+@media (orientation: landscape) and (min-width: 560px) {
+  #app {
+    grid-template-rows: 44px 54px minmax(0, 1fr) 44px;
+  }
+  #stage {
+    aspect-ratio: auto;
+    max-height: none;
+  }
+  #plan {
+    max-width: none;
+  }
+}

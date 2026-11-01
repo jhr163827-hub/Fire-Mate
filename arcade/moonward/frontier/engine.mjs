@@ -1,5 +1,22 @@
 import {
+  stageFor,
+  endlessWave,
+  onPath,
+  pathLength,
+  nearPath,
+  UNLOCKS,
+} from "./campaign-data.mjs";
+import {
+  bossState,
+  effects,
+  boosted,
+  mine,
+  pierce,
+  poison,
+} from "./combat.mjs";
+import {
   STEP,
+  PATH,
   TOWERS,
   FOES,
   WAVES,
@@ -10,7 +27,10 @@ import {
 } from "./data.mjs";
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 export class Game {
-  constructor(seed = 1) {
+  constructor(seed = 1, options = {}) {
+    this.scene = options.stage
+      ? stageFor(options.stage, options.mode || "normal")
+      : null;
     this.s = {
       v: 1,
       seed: seed >>> 0,
@@ -31,7 +51,38 @@ export class Game {
       leaks: {},
       lastReward: 0,
     };
+    this.s.mines = [];
+    if (this.scene) {
+      this.s.stage = this.scene.id;
+      this.s.mode = this.scene.mode;
+      this.s.allowed =
+        options.allowed ||
+        UNLOCKS.filter(([, n]) => n <= this.scene.id).map(([k]) => k);
+      this.s.gold = this.scene.startingGold;
+    }
     this.events = [];
+  }
+  get paths() {
+    return this.scene?.paths || [PATH];
+  }
+  get waveCount() {
+    return this.s.mode === "endless"
+      ? Infinity
+      : this.scene?.waves.length || WAVES.length;
+  }
+  waveAt(i) {
+    return this.s.mode === "endless"
+      ? endlessWave(i)
+      : (this.scene?.waves || WAVES)[i];
+  }
+  remaining(e) {
+    return pathLength(this.paths[e.route || 0]) - e.d;
+  }
+  allowed(k) {
+    return !this.scene || this.s.allowed.includes(k);
+  }
+  bossState(e) {
+    return bossState(e);
   }
   rand() {
     this.s.seed = (Math.imul(this.s.seed, 1664525) + 1013904223) >>> 0;
@@ -45,7 +96,14 @@ export class Game {
       x <= 615 &&
       y >= 25 &&
       y <= 375 &&
-      roadDistance(x, y) > 36 &&
+      this.paths.every((p) => nearPath(x, y, p) > 36) &&
+      !(this.scene?.blocks || []).some(
+        (b) =>
+          x > b.x - 16 &&
+          x < b.x + b.w + 16 &&
+          y > b.y - 16 &&
+          y < b.y + b.h + 16,
+      ) &&
       this.s.towers.every((t) => Math.hypot(x - t.x, y - t.y) >= 42)
     );
   }
@@ -53,10 +111,11 @@ export class Game {
     const a = TOWERS[kind];
     if (
       !Object.hasOwn(TOWERS, kind) ||
+      !this.allowed(kind) ||
       !["ready", "battle"].includes(this.s.phase) ||
       this.s.gold < a.cost ||
       !this.legal(x, y) ||
-      this.s.towers.length >= 24
+      this.s.towers.length >= (this.scene?.maxTowers || 24)
     )
       return null;
     this.s.gold -= a.cost;
@@ -72,6 +131,8 @@ export class Game {
       damage: 0,
       kills: 0,
       slowed: 0,
+      buffed: 0,
+      splashHits: 0,
       target: "first",
       angle: 0,
     };
@@ -109,24 +170,29 @@ export class Game {
   start() {
     if (
       this.s.phase !== "ready" ||
-      this.s.wave >= WAVES.length ||
+      this.s.wave >= this.waveCount ||
       !this.s.towers.length
     )
       return false;
-    const w = WAVES[this.s.wave++];
+    const w = this.waveAt(this.s.wave++);
     let time = 0;
     for (let [k, n, gap] of w.packs)
       for (let i = 0; i < n; i++) {
-        this.s.queue.push({ kind: k, time });
+        this.s.queue.push({ kind: k, time, route: i % this.paths.length });
         time += gap;
       }
     this.s.spawn = 0;
     this.s.phase = "battle";
     return true;
   }
-  spawn(kind, d = 0, child = false) {
+  spawn(kind, d = 0, child = false, route = 0) {
     const a = FOES[kind],
-      scale = 1 + Math.max(0, this.s.wave - 3) * 0.13,
+      scale = this.scene
+        ? this.scene.hpScale *
+          (this.s.mode === "endless"
+            ? Math.pow(1.14, Math.min(100, Math.max(0, this.s.wave - 1)))
+            : 1 + Math.max(0, this.s.wave - 2) * 0.065)
+        : 1 + Math.max(0, this.s.wave - 3) * 0.13,
       e = {
         id: this.s.id++,
         kind,
@@ -139,15 +205,26 @@ export class Game {
         broken: 0,
         flash: 0,
         child,
+        route,
+        age: 0,
+        poison: 0,
+        poisonTime: 0,
+        poisonOwner: 0,
+        slowOwner: 0,
+        pattern:
+          kind === "boss" && this.scene ? this.scene.theme.pattern : null,
       };
-    Object.assign(e, at(d));
+    Object.assign(e, onPath(d, this.paths[route]));
     this.s.enemies.push(e);
     return e;
   }
   hit(e, damage, t, ignore = false) {
     if (e.hp <= 0) return;
     const armor = ignore || e.broken > 0 ? 0 : FOES[e.kind].armor || 0;
-    let dealt = Math.min(e.hp, damage * (1 - armor));
+    let dealt = Math.min(
+      e.hp,
+      damage * (1 - armor) * (bossState(e) === "방패 전개" ? 0.4 : 1),
+    );
     e.hp -= dealt;
     e.flash = 0.12;
     if (t) t.damage += dealt;
@@ -162,6 +239,7 @@ export class Game {
             i % 3 === 0 ? "runner" : "bud",
             Math.max(0, e.d - i * 5),
             true,
+            e.route || 0,
           );
         this.events.push({ type: "split", x: e.x, y: e.y });
       }
@@ -171,6 +249,7 @@ export class Game {
     if (
       this.s.phase !== "battle" ||
       this.s.spell > 0 ||
+      this.scene?.spell === false ||
       !Number.isFinite(x) ||
       !Number.isFinite(y) ||
       x < 0 ||
@@ -200,8 +279,11 @@ export class Game {
     s.time += STEP;
     s.spawn += STEP;
     s.spell = Math.max(0, s.spell - STEP);
-    while (s.queue.length && s.queue[0].time <= s.spawn)
-      this.spawn(s.queue.shift().kind);
+    while (s.queue.length && s.queue[0].time <= s.spawn) {
+      const q = s.queue.shift();
+      this.spawn(q.kind, 0, false, q.route || 0);
+    }
+    effects(this);
     for (const p of [...s.shots]) {
       p.time -= STEP;
       if (p.time > 0) continue;
@@ -211,6 +293,7 @@ export class Game {
           if (e.hp > 0 && Math.hypot(e.x - p.tx, e.y - p.ty) <= p.radius) {
             if (p.breakArmor) e.broken = 3;
             this.hit(e, p.damage, t, p.kind === "meteor");
+            if (t) t.splashHits++;
           }
         this.events.push({ type: "blast", x: p.tx, y: p.ty, radius: p.radius });
         if (p.burn)
@@ -224,7 +307,10 @@ export class Game {
           });
       } else {
         const e = s.enemies.find((e) => e.id === p.enemy && e.hp > 0);
-        if (e) this.hit(e, p.damage, t, p.ignore);
+        if (e) {
+          this.hit(e, p.damage, t, p.ignore);
+          if (p.poison) poison(this, e, p);
+        }
       }
     }
     s.shots = s.shots.filter((p) => p.time > 0);
@@ -237,17 +323,24 @@ export class Game {
     }
     s.fields = s.fields.filter((f) => f.life > 0);
     for (const t of s.towers) {
-      t.cool -= STEP;
+      if (t.kind === "beacon") continue;
+      const a = boosted(this, t);
+      t.cool -= STEP * a.coolRate;
       if (t.cool > 0) continue;
-      const a = stats(t),
-        targets = s.enemies.filter((e) => e.hp > 0 && dist(t, e) <= a.range);
+      if (t.kind === "trap") {
+        mine(this, t, a);
+        continue;
+      }
+      const targets = s.enemies.filter(
+        (e) => e.hp > 0 && dist(t, e) <= a.range,
+      );
       if (!targets.length) continue;
       targets.sort((x, y) =>
         t.target === "strong"
           ? y.hp - x.hp
           : t.target === "last"
-            ? x.d - y.d
-            : y.d - x.d,
+            ? this.remaining(y) - this.remaining(x)
+            : this.remaining(x) - this.remaining(y),
       );
       let e = targets[0];
       if (t.kind === "bomb" && t.target === "first") {
@@ -263,10 +356,13 @@ export class Game {
       t.cool = a.rate;
       t.angle = Math.atan2(e.y - t.y, e.x - t.x);
       let damage = a.damage * (e.kind === "boss" ? a.big : 1);
-      if (t.kind === "ice") {
+      if (t.kind === "pierce") {
+        pierce(this, t, a);
+      } else if (t.kind === "ice") {
         targets.sort((x, y) => x.slowTime - y.slowTime);
         for (const q of targets.slice(0, a.targets)) {
           q.slow = Math.max(q.slow, a.slow * (q.kind === "boss" ? 0.5 : 1));
+          q.slowOwner = t.id;
           q.slowTime = t.level === 3 && t.branch === 0 ? 4 : 2;
           this.hit(q, a.damage, t, true);
         }
@@ -307,6 +403,9 @@ export class Game {
           duration: a.duration,
           ignore: a.ignore,
           breakArmor: a.breakArmor,
+          poison: a.poison,
+          poisonDuration: a.poisonDuration,
+          poisonRadius: a.poisonRadius,
         });
       }
     }
@@ -316,9 +415,11 @@ export class Game {
       e.broken = Math.max(0, e.broken - STEP);
       e.flash = Math.max(0, e.flash - STEP);
       if (!e.slowTime) e.slow = 0;
+      const owner = s.towers.find((t) => t.id === e.slowOwner);
+      if (owner) owner.slowed += STEP * e.slow;
       e.d += e.speed * (1 - e.slow) * STEP;
-      Object.assign(e, at(e.d));
-      if (e.d >= LENGTH) {
+      Object.assign(e, onPath(e.d, this.paths[e.route || 0]));
+      if (e.d >= pathLength(this.paths[e.route || 0])) {
         e.hp = 0;
         s.lives = Math.max(0, s.lives - FOES[e.kind].leak);
         s.leaks[e.kind] = (s.leaks[e.kind] || 0) + 1;
@@ -333,11 +434,12 @@ export class Game {
     }
     if (!s.queue.length && !s.enemies.length && !s.shots.length) {
       if (s.lastReward < s.wave) {
-        s.gold += WAVES[s.wave - 1].reward;
+        s.gold += this.waveAt(s.wave - 1).reward;
         s.lastReward = s.wave;
       }
       s.fields = [];
-      s.phase = s.wave === WAVES.length ? "won" : "ready";
+      s.mines = [];
+      s.phase = s.wave >= this.waveCount ? "won" : "ready";
       this.events.push({ type: s.phase });
     }
     this.events = this.events.slice(-180);
@@ -348,12 +450,43 @@ export class Game {
   static restore(raw) {
     try {
       let s = JSON.parse(raw);
+      if (!s || (!s.stage && (s.mode !== undefined || s.allowed !== undefined)))
+        return null;
+      const g = new Game(s.seed, {
+        stage: s.stage,
+        mode: s.mode,
+        allowed: s.allowed,
+      });
+      if (
+        s.stage &&
+        (!Array.isArray(s.allowed) ||
+          !s.allowed.length ||
+          s.allowed.length > 8 ||
+          s.allowed.some((k) => !Object.hasOwn(TOWERS, k)))
+      )
+        return null;
+      s.mines ??= [];
+      if (!Array.isArray(s.mines) || s.mines.length > 48) return null;
+      for (const m of s.mines) {
+        if (
+          !["x", "y", "damage", "radius", "life", "owner"].every((k) =>
+            Number.isFinite(m[k]),
+          ) ||
+          m.damage < 0 ||
+          m.radius <= 0 ||
+          m.radius > 120 ||
+          m.life <= 0 ||
+          m.life > 45
+        )
+          return null;
+      }
+
       if (
         s.v !== 1 ||
         !["ready", "battle", "won", "lost"].includes(s.phase) ||
         !Number.isInteger(s.wave) ||
         s.wave < 0 ||
-        s.wave > 12 ||
+        s.wave > (g.waveCount === Infinity ? 9999 : g.waveCount) ||
         !Number.isInteger(s.id) ||
         s.id < 1
       )
@@ -380,7 +513,7 @@ export class Game {
         return null;
       if (
         (s.phase === "battle" && s.wave < 1) ||
-        (s.phase === "won" && s.wave !== WAVES.length)
+        (s.phase === "won" && s.wave !== g.waveCount)
       )
         return null;
       if (!s.leaks || typeof s.leaks !== "object" || Array.isArray(s.leaks))
@@ -396,10 +529,12 @@ export class Game {
         ["queue", 400],
       ])
         if (!Array.isArray(s[k]) || s[k].length > max) return null;
+      if (s.towers.length > (g.scene?.maxTowers || 24)) return null;
       const ids = new Set();
       for (const t of s.towers) {
         if (
           !Object.hasOwn(TOWERS, t.kind) ||
+          (s.stage && !s.allowed.includes(t.kind)) ||
           ![0, 1, 2, 3].includes(t.level) ||
           ![-1, 0, 1].includes(t.branch) ||
           !["first", "strong", "last"].includes(t.target)
@@ -426,15 +561,47 @@ export class Game {
           t.x > 615 ||
           t.y < 25 ||
           t.y > 375 ||
-          roadDistance(t.x, t.y) <= 36 ||
+          !g.legal(t.x, t.y) ||
           t.spent < 0 ||
           t.damage < 0
         )
           return null;
+        t.buffed ??= 0;
+        t.splashHits ??= 0;
+        t.slowed ??= 0;
+        if (
+          ![t.buffed, t.splashHits, t.slowed].every(
+            (n) => Number.isFinite(n) && n >= 0,
+          )
+        )
+          return null;
+        g.s.towers.push(t);
         ids.add(t.id);
       }
       for (const e of s.enemies) {
-        if (!Object.hasOwn(FOES, e.kind)) return null;
+        if (
+          !Object.hasOwn(FOES, e.kind) ||
+          !Number.isInteger(e.route ?? 0) ||
+          !g.paths[e.route || 0]
+        )
+          return null;
+        e.age ??= 0;
+        e.poison ??= 0;
+        e.poisonTime ??= 0;
+        if (
+          ![e.age, e.poison, e.poisonTime].every(
+            (n) => Number.isFinite(n) && n >= 0,
+          )
+        )
+          return null;
+        if (
+          e.pattern != null &&
+          (!["shield", "summon", "frost", "heal", "final"].includes(
+            e.pattern,
+          ) ||
+            e.kind !== "boss")
+        )
+          return null;
         for (const k of [
           "hp",
           "max",
@@ -457,7 +624,7 @@ export class Game {
           e.hp <= 0 ||
           e.max < e.hp ||
           e.d < 0 ||
-          e.d >= LENGTH ||
+          e.d >= pathLength(g.paths[e.route || 0]) ||
           e.speed <= 0 ||
           e.slow < 0 ||
           e.slow > 0.9
@@ -468,19 +635,21 @@ export class Game {
       for (const q of s.queue)
         if (
           !Object.hasOwn(FOES, q.kind) ||
+          !Number.isInteger(q.route ?? 0) ||
+          !g.paths[q.route || 0] ||
           !Number.isFinite(q.time) ||
           q.time < 0
         )
           return null;
       for (const p of s.shots) {
-        if (!["dart", "bomb", "meteor"].includes(p.kind)) return null;
+        if (!["dart", "bomb", "meteor", "venom"].includes(p.kind)) return null;
         for (const k of ["x", "y", "tx", "ty", "time", "total", "damage"])
           if (!Number.isFinite(p[k])) return null;
       }
       for (const f of s.fields)
         for (const k of ["x", "y", "radius", "life", "damage"])
           if (!Number.isFinite(f[k])) return null;
-      let g = new Game();
+
       g.s = s;
       return g;
     } catch {

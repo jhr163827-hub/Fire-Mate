@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <section id="campaign" hidden aria-label="원정 지도"></section>
     <main>
       <header>
         <a href="../../index.html" aria-label="아케이드로 나가기">‹</a>
@@ -44,9 +45,11 @@
       </section>
       <aside>
         <section id="intel">
+          <div id="bossStatus" hidden></div>
           <small id="phase">준비 시간</small>
           <h2 id="next"></h2>
           <p id="hint"></p>
+          <div id="forecast"></div>
           <div class="actions">
             <button id="start" class="go">방어 시작</button
             ><button id="spell">긴급 포격</button>
@@ -59,7 +62,8 @@
         </p>
       </aside>
       <footer>
-        <span id="saved">자동 저장</span><button id="help">적·포탑 도감</button
+        <button id="campaignMap">원정 지도</button
+        ><span id="saved">자동 저장</span><button id="help">적·포탑 도감</button
         ><a href="../?classic">기존 게임</a>
       </footer>
     </main>

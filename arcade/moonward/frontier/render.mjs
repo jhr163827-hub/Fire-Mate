@@ -1,4 +1,6 @@
-import { PATH, W, H, TOWERS, FOES, stats } from "./data.mjs";
+import { stageFor, onPath, pathLength } from "./campaign-data.mjs";
+import { bossState } from "./combat.mjs";
+import { PATH as BASE_PATH, W, H, TOWERS, FOES, stats } from "./data.mjs";
 const poly = (c, pts, fill, stroke = "#263d3f", width = 2) => {
   c.beginPath();
   pts.forEach((p, i) => (i ? c.lineTo(...p) : c.moveTo(...p)));
@@ -73,7 +75,154 @@ export function tower(c, t, scale = 1) {
       ],
       "#fff1ab",
     );
-  if (t.kind === "dart" || t.kind === "bomb") {
+  if (t.kind === "pierce") {
+    c.save();
+    c.translate(0, -5);
+    c.rotate(t.angle || -0.6);
+    poly(
+      c,
+      [
+        [-10, -12],
+        [19, -12],
+        [33, -6],
+        [19, 0],
+        [-10, 0],
+      ],
+      "#bac8c5",
+      "#3c565b",
+    );
+    for (const y of [-8, 5])
+      line(
+        c,
+        [
+          [-3, y],
+          [29, y],
+        ],
+        "#fff1bb",
+        3,
+      );
+    c.restore();
+  } else if (t.kind === "venom") {
+    for (const x of [-9, 5]) {
+      poly(
+        c,
+        [
+          [x, -27],
+          [x + 8, -27],
+          [x + 8, -7],
+          [x, -7],
+        ],
+        "#91ad51",
+        "#456347",
+      );
+      line(
+        c,
+        [
+          [x + 4, -24],
+          [x + 4, -10],
+        ],
+        "#ddf5a3",
+        2,
+      );
+    }
+    poly(
+      c,
+      [
+        [-14, -7],
+        [12, -7],
+        [16, 7],
+        [-14, 7],
+      ],
+      "#375b51",
+      "#244748",
+    );
+    line(
+      c,
+      [
+        [8, -17],
+        [19, -20],
+        [25, -13],
+      ],
+      "#8cae91",
+      5,
+    );
+  } else if (t.kind === "beacon") {
+    poly(
+      c,
+      [
+        [-8, 6],
+        [-4, -23],
+        [4, -23],
+        [9, 6],
+      ],
+      "#d6bc78",
+      "#456263",
+    );
+    poly(
+      c,
+      [
+        [-20, -29],
+        [0, -18],
+        [20, -29],
+        [0, -34],
+      ],
+      "#f2d89a",
+      "#7b805e",
+    );
+    oval(c, 0, -34, 4, 4, "#fff6bc");
+    line(
+      c,
+      [
+        [-24, -20],
+        [-17, -28],
+      ],
+      "#fff3b5",
+      2,
+    );
+    line(
+      c,
+      [
+        [24, -20],
+        [17, -28],
+      ],
+      "#fff3b5",
+      2,
+    );
+  } else if (t.kind === "trap") {
+    poly(
+      c,
+      [
+        [-17, 3],
+        [-17, -18],
+        [13, -18],
+        [20, -6],
+        [14, 7],
+      ],
+      "#7f8d75",
+      "#36545a",
+    );
+    for (const x of [-10, 0, 10])
+      poly(
+        c,
+        [
+          [x - 4, -17],
+          [x, -31],
+          [x + 4, -17],
+        ],
+        "#d4dbaf",
+        "#36545a",
+      );
+    oval(c, 17, -2, 8, 8, "#c1c8a0", "#36545a");
+    line(
+      c,
+      [
+        [17, -7],
+        [17, 3],
+      ],
+      "#667b70",
+      2,
+    );
+  } else if (t.kind === "dart" || t.kind === "bomb") {
     c.save();
     c.translate(0, -5);
     c.rotate(t.angle || -0.5);
@@ -297,7 +446,7 @@ function foe(c, e, time) {
     boss = e.kind === "boss";
   oval(c, 0, 8, boss ? 27 : 13, boss ? 12 : 6, "#173e4c30");
   c.translate(0, wob);
-  if (e.kind === "bud") {
+  if (e.kind === "bud" || e.kind === "regenerator") {
     poly(
       c,
       [
@@ -391,7 +540,7 @@ function foe(c, e, time) {
         3,
       );
     }
-  } else if (e.kind === "pod") {
+  } else if (e.kind === "pod" || e.kind === "shell") {
     oval(c, 0, -3, 20, 21, "#c5a362", "#6c6651");
     for (let i = -1; i <= 1; i++)
       line(
@@ -477,6 +626,118 @@ function foe(c, e, time) {
     oval(c, x, eyeY, 3, 4, "#fff2be");
     oval(c, x + 1, eyeY, 1.5, 2.5, "#233f46");
   }
+  if (e.kind === "regenerator") {
+    line(
+      c,
+      [
+        [-6, -11],
+        [6, -11],
+      ],
+      "#f2cfdd",
+      4,
+    );
+    line(
+      c,
+      [
+        [0, -17],
+        [0, -5],
+      ],
+      "#f2cfdd",
+      4,
+    );
+  }
+  if (e.kind === "shell")
+    poly(
+      c,
+      [
+        [-16, -13],
+        [0, -22],
+        [16, -13],
+        [13, 7],
+        [-13, 7],
+      ],
+      "#b6c6c7",
+      "#587079",
+    );
+  if (e.poisonTime > 0)
+    for (const x of [-14, 14]) oval(c, x, -7, 3, 5, "#c4eb77");
+  if (e.pattern) {
+    if (["shield", "final"].includes(e.pattern))
+      for (const v of [-1, 1])
+        poly(
+          c,
+          [
+            [v * 22, -25],
+            [v * 34, -18],
+            [v * 31, 7],
+            [v * 22, 14],
+          ],
+          "#c9b580",
+          "#615f4d",
+        );
+    if (e.pattern === "summon")
+      for (const x of [-22, 22]) {
+        oval(c, x, -18, 10, 16, "#b48f58", "#584f45");
+        for (const v of [-4, 4])
+          line(
+            c,
+            [
+              [x + v, -30],
+              [x + v, -6],
+            ],
+            "#e0bd77",
+            2,
+          );
+      }
+    if (e.pattern === "frost")
+      for (const x of [-23, 0, 23])
+        poly(
+          c,
+          [
+            [x - 7, -16],
+            [x - 3, -40],
+            [x + 7, -23],
+            [x + 5, -12],
+          ],
+          "#c2e9ef",
+          "#638d9e",
+        );
+    if (e.pattern === "heal")
+      for (const x of [-25, 25]) {
+        oval(c, x, -16, 7, 17, "#9cac71", "#486c58");
+        line(
+          c,
+          [
+            [x, -27],
+            [x, -4],
+          ],
+          "#cfe6a4",
+          3,
+        );
+      }
+    if (e.pattern === "final")
+      poly(
+        c,
+        [
+          [-17, -28],
+          [-20, -41],
+          [-7, -33],
+          [0, -44],
+          [7, -33],
+          [20, -41],
+          [17, -28],
+        ],
+        "#e6bc70",
+        "#725f55",
+      );
+    if (["방패 전개", "냉기 가동"].includes(bossState(e))) {
+      c.beginPath();
+      c.arc(0, -4, 34, 0, 7);
+      c.strokeStyle = e.pattern === "frost" ? "#bff9ff" : "#ffe3a3";
+      c.lineWidth = 4;
+      c.stroke();
+    }
+  }
   if (e.slow) {
     c.strokeStyle = "#a8faff";
     c.lineWidth = 2;
@@ -498,8 +759,9 @@ function foe(c, e, time) {
   }
   c.restore();
 }
-let background;
-function landscape() {
+let background, backgroundKey;
+function landscape(scene) {
+  const PATH = scene?.paths[0] || BASE_PATH;
   const c = document.createElement("canvas");
   c.width = W * 2;
   c.height = H * 2;
@@ -522,10 +784,29 @@ function landscape() {
       r() > 0.5 ? "#bdd28e66" : "#427c4b22",
     );
   }
-  line(g, PATH, "#526f4f", 49);
-  line(g, PATH, "#c49b63", 43);
-  line(g, PATH, "#e7c28a", 35);
-  line(g, PATH, "#ebcd98", 25);
+  for (const b of scene?.blocks || []) {
+    g.fillStyle =
+      b.kind === "water" ? "#587f8e" : b.kind === "ice" ? "#96bacb" : "#978a7b";
+    g.beginPath();
+    g.roundRect(b.x, b.y, b.w, b.h, 10);
+    g.fill();
+    for (let i = 0; i < 4; i++)
+      line(
+        g,
+        [
+          [b.x + 8 + i * 15, b.y + 9],
+          [b.x + 16 + i * 15, b.y + 29],
+        ],
+        "#dfd9be",
+        2,
+      );
+  }
+  for (const path of scene?.paths || [PATH]) {
+    line(g, path, scene?.theme.edge || "#526f4f", 49);
+    line(g, path, "#b29b73", 43);
+    line(g, path, scene?.theme.road || "#e7c28a", 35);
+    line(g, path, "#ffffff16", 25);
+  }
   for (let d = 0; d < 70; d++) {
     let i = Math.floor(r() * (PATH.length - 1)),
       a = PATH[i],
@@ -569,7 +850,17 @@ function landscape() {
       [9, -2, 15],
       [0, -14, 17],
     ])
-      oval(g, x + a, y + b, z, z * 0.82, "#477f54", "#3e744d");
+      oval(
+        g,
+        x + a,
+        y + b,
+        z,
+        z * 0.82,
+        ["#477f54", "#967257", "#88a8b0", "#56786d", "#747388"][
+          scene?.region || 0
+        ],
+        scene?.theme.edge || "#3e744d",
+      );
     oval(g, x - 4, y - 19, 9, 6, "#77a85e");
   }
   for (const [x, y] of [
@@ -614,6 +905,8 @@ function landscape() {
     "#675a41",
     1,
   );
+  g.save();
+  g.translate(0, PATH.at(-1)[1] - 335);
   poly(
     g,
     [
@@ -647,10 +940,15 @@ function landscape() {
   g.fillStyle = "#fff0bc";
   g.fillRect(608, 321, 6, 6);
   g.fillRect(626, 321, 6, 6);
+  g.restore();
   return c;
 }
 export function paint(c, s, ui, fx, now) {
-  if (!background) background = landscape();
+  const scene = s.stage ? stageFor(s.stage, s.mode) : null;
+  if (!background || backgroundKey !== (s.stage || 0)) {
+    background = landscape(scene);
+    backgroundKey = s.stage || 0;
+  }
   c.clearRect(0, 0, 1280, 800);
   c.save();
   c.scale(2, 2);
@@ -670,6 +968,55 @@ export function paint(c, s, ui, fx, now) {
     c.stroke();
     c.setLineDash([]);
   }
+  if (t || preview) {
+    const p = preview || t,
+      a = stats(preview ? { kind: ui.build, level: 0, branch: -1 } : t);
+    for (const path of scene?.paths || [BASE_PATH]) {
+      let segment = [];
+      for (let d = 0; d <= pathLength(path); d += 8) {
+        const q = onPath(d, path);
+        if (Math.hypot(q.x - p.x, q.y - p.y) <= a.range)
+          segment.push([q.x, q.y]);
+        else {
+          if (segment.length > 1) line(c, segment, "#fff2a8", 4);
+          segment = [];
+        }
+      }
+      if (segment.length > 1) line(c, segment, "#fff2a8", 4);
+    }
+  }
+  for (const m of s.mines || []) {
+    oval(c, m.x, m.y, 10, 5, "#635b4d", "#d7be85");
+    for (const x of [-5, 0, 5])
+      poly(
+        c,
+        [
+          [m.x + x - 2, m.y],
+          [m.x + x, m.y - 8],
+          [m.x + x + 2, m.y],
+        ],
+        m.slow ? "#9ce5e5" : "#d7dcb9",
+      );
+  }
+  for (const b of s.towers.filter((t) => t.kind === "beacon"))
+    for (const ally of s.towers)
+      if (
+        ally.id !== b.id &&
+        ally.kind !== "beacon" &&
+        Math.hypot(b.x - ally.x, b.y - ally.y) <= stats(b).range
+      ) {
+        c.globalAlpha = 0.35;
+        line(
+          c,
+          [
+            [b.x, b.y - 10],
+            [ally.x, ally.y - 8],
+          ],
+          "#fff4b5",
+          2,
+        );
+        c.globalAlpha = 1;
+      }
   for (const f of s.fields) {
     oval(c, f.x, f.y, f.radius, f.radius * 0.7, "#f08c3e55");
     for (let i = 0; i < 6; i++) {
@@ -698,7 +1045,10 @@ export function paint(c, s, ui, fx, now) {
   for (const o of [
     ...s.towers.map((t) => ({ ...t, unit: true })),
     ...s.enemies,
-  ].sort((a, b) => a.y - b.y))
+  ].sort(
+    (a, b) =>
+      (a.kind === "boss" ? 1 : 0) - (b.kind === "boss" ? 1 : 0) || a.y - b.y,
+  ))
     o.unit ? tower(c, o) : foe(c, o, now);
   if (preview) {
     c.globalAlpha = 0.65;
@@ -722,6 +1072,8 @@ export function paint(c, s, ui, fx, now) {
         8,
       );
       oval(c, x, y, 10, 10, "#ed7445", "#fff3bc");
+    } else if (p.kind === "venom") {
+      oval(c, x, y, 4, 5, "#bcdf61", "#6d8d48");
     } else if (p.kind === "bomb") {
       y -= Math.sin(q * Math.PI) * 30;
       oval(c, x, y, 5, 5, "#354852", "#fff4bc");
@@ -743,7 +1095,19 @@ export function paint(c, s, ui, fx, now) {
   for (const f of fx) {
     let q = f.life / f.max;
     c.globalAlpha = q;
-    if (f.type === "arc") {
+    if (f.type === "pierce") {
+      line(
+        c,
+        [
+          [f.x, f.y],
+          [f.tx, f.ty],
+        ],
+        "#fff6c5",
+        3,
+      );
+    } else if (f.type === "poison" || f.type === "heal") {
+      oval(c, f.x, f.y, (f.radius || 25) * (1 - q * 0.5), 12, "#c3dc6977");
+    } else if (f.type === "arc") {
       line(
         c,
         [

@@ -66,11 +66,11 @@ test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어
  await box.locator('[data-mark="1"]').click();await expect(box.locator('path.pick')).toHaveClass(/been/);await expect(box.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 161곳');
  await box.locator('[data-mark="2"]').click();await expect(box.locator('path.pick')).toHaveClass(/want/);await expect(box.locator('.fm-jn-wants button.want')).toHaveText('강원 강릉시');
  await box.locator('[data-mark="0"]').click();await expect(box.locator('path.pick')).not.toHaveClass(/been|want/);
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{},sub:{},pin:{}});
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{},sub:{},pin:{},pts:[]});
  // A tap on the map only shows the name until a button is pressed; 권역 chips zoom in.
  await box.locator('[data-zone=jeju]').click();await expect(box.locator('.fm-jn-map')).not.toHaveAttribute('viewBox',/^0 0 /);
  await box.locator('path[data-place]').first().dispatchEvent('click');await expect(box.locator('.fm-jn-pick strong')).not.toBeEmpty();
- expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{},sub:{},pin:{}});
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')))).toEqual({kr:{},world:{},sub:{},pin:{},pts:[]});
  expect(await page.evaluate(()=>document.querySelector('#fmJournalOverlay .modal').scrollWidth<=innerWidth)).toBe(true);
  // 해외: add a past trip to Japan; the country turns visited.
  await box.locator('[data-area=world]').click();
@@ -176,7 +176,7 @@ test('✈️ marks and trips from the province map move to the city map once (�
  await expect(page.locator('.fm-jn-trip',{hasText:'제주'})).toContainText('제주 ·');
 });
 
-test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the country and its region, keeping only place and date',async({browser})=>{
+test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the country and its region',async({browser})=>{
  for(const [geo,expectMarks,head,pick] of [
   [{latitude:37.75,longitude:128.9},m=>expect(m).toMatchObject({kr:{'51150':1},pin:{'kr:51150':expect.any(String)}}),'여행 일지','📍 강원 강릉시'],
   [{latitude:34.69,longitude:135.5},m=>expect(m).toMatchObject({world:{JP:1},sub:{JP:{osaka:1}},pin:{'world:JP':expect.any(String),'JP:osaka':expect.any(String)}}),'🇯🇵 일본','📍 오사카']]){
@@ -188,7 +188,8 @@ test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the
   await expect(page.locator('.fm-cele')).toContainText('위치 인증!');
   await expect(page.locator('#fmJnHead')).toHaveText(head);await expect(page.locator('.fm-jn-pick strong')).toHaveText(pick);
   const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));expectMarks(m);
-  expect(JSON.stringify(m)).not.toMatch(/128\.9|135\.5|34\.69/);
+  // Abroad keeps only the place; in Korea the spot (rounded to ~100 m) is kept as a dot.
+  expect(JSON.stringify(m)).not.toMatch(/135\.5|34\.69/);
   if(asked){expect(asked).toContain('lat=34.690');await page.goBack();await expect(page.locator('#fmJnHead')).toHaveText('여행 일지');await expect(page.locator('path[data-place="JP"]')).toHaveClass(/been/)}
   else expect(geo.latitude).toBe(37.75);// Korea needs no lookup
   await ctx.close()}
@@ -223,4 +224,22 @@ test('🔍 the travel map zooms with ＋/−, pinch and wheel, pans by dragging,
  expect((await vb())[2]).toBeCloseTo(q[2],0);
  for(let i=0;i<8;i++)await page.locator('.fm-jn-zoombtn button').nth(1).click();
  expect(await vb()).toEqual(full);await expect(map).not.toHaveClass(/zoomed/);
+});
+
+test('🏙️ a city split into 구 opens a 구 map, and 📍 marks the 구 and drops a dot where you are',async({browser})=>{
+ const ctx=await browser.newContext({viewport:{width:390,height:844},geolocation:{latitude:35.2210,longitude:128.6850},permissions:['geolocation']}),page=await ctx.newPage();
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.click('#fmJnHere');
+ await expect(page.locator('.fm-cele')).toContainText('경남 창원시 성산구');
+ const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));
+ expect(m.kr['4812']).toBe(1);expect(Object.values(m.sub.K4812)).toEqual([1]);expect(m.pts).toEqual([[35.221,128.685,expect.any(String)]]);
+ await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);
+ // (the 위치 인증 celebration still covers the screen, so tap the button directly)
+ await page.locator('[data-country="K4812"]').dispatchEvent('click');
+ await expect(page.locator('#fmJnHead')).toHaveText('🏙️ 경남 창원시');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(5);
+ await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 5곳');
+ await page.locator('.fm-jn-map path[data-place]').filter({has:page.locator('xpath=self::*[not(contains(@class,"been"))]')}).first().dispatchEvent('click');
+ await page.locator('[data-mark="1"]').dispatchEvent('click');await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 2 / 5곳');
+ await ctx.close();
 });

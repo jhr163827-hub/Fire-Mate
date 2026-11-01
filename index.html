@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.248</title><link rel="stylesheet" href="./app.css?v=3.5.248"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-248">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.249</title><link rel="stylesheet" href="./app.css?v=3.5.249"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-249">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.248 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.249 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -2833,7 +2833,7 @@ let fmJnCountry=null,fmJnView=null,fmJnDrag=0;
 // 🔍 Maps zoom by pinch, wheel, double tap or ＋/−, and pan by dragging once zoomed (one finger still scrolls the page at full view).
 // The view is kept per map (area·zone·country) so picking a place does not jump back out; a drag is not a tap.
 function fmJnZoom(svg){if(!svg)return;const key=fmJnArea+'|'+fmJnZone+'|'+(fmJnCountry||''),b=svg.viewBox.baseVal,B=[b.x,b.y,b.width,b.height],pts=new Map;let v=fmJnView?.key===key?fmJnView.vb.slice():B.slice(),start=null;
- const set=(cx,cy,w)=>{w=Math.min(B[2],Math.max(B[2]/16,w));const h=w*B[3]/B[2],x=Math.min(B[0]+B[2]-w,Math.max(B[0],cx-w/2)),y=Math.min(B[1]+B[3]-h,Math.max(B[1],cy-h/2));v=[x,y,w,h];svg.setAttribute('viewBox',v.join(' '));svg.classList.toggle('zoomed',w<B[2]*.99);fmJnView={key,vb:v}};
+ const set=(cx,cy,w)=>{w=Math.min(B[2],Math.max(B[2]/16,w));const h=w*B[3]/B[2],x=Math.min(B[0]+B[2]-w,Math.max(B[0],cx-w/2)),y=Math.min(B[1]+B[3]-h,Math.max(B[1],cy-h/2));v=[x,y,w,h];svg.setAttribute('viewBox',v.join(' '));const px=svg.getBoundingClientRect().width||340;svg.querySelectorAll('.fm-jn-dot').forEach(c=>c.setAttribute('r',(w/px*6).toFixed(4)));svg.classList.toggle('zoomed',w<B[2]*.99);fmJnView={key,vb:v}};
  const at=e=>{const r=svg.getBoundingClientRect(),k=Math.max(v[2]/r.width,v[3]/r.height),ox=(r.width*k-v[2])/2,oy=(r.height*k-v[3])/2;return [v[0]+(e.clientX-r.left)*k-ox,v[1]+(e.clientY-r.top)*k-oy,k]};
  set(v[0]+v[2]/2,v[1]+v[3]/2,v[2]);
  svg.onwheel=e=>{e.preventDefault();const [x,y]=at(e),f=e.deltaY>0?1.25:.8;set(x+(v[0]+v[2]/2-x)*f,y+(v[1]+v[3]/2-y)*f,v[2]*f)};
@@ -2879,7 +2879,7 @@ let fmJnWith='',fmJnRec=null;
 const fmSpots=()=>{const l=read('firemate_travel_spots_v1',[]);return Array.isArray(l)?l:[]},fmSpotSave=l=>{try{localStorage.setItem('firemate_travel_spots_v1',JSON.stringify(l.slice(-1000)));return true}catch{window.fmToast('저장하지 못했어요');return false}};
 function fmSpotsMigrate(){const a=fmJnMarks();if(!a.pts.length)return;const l=fmSpots();for(const [lat,lon,d] of a.pts)l.push({id:uid(),lat,lon,d,area:'kr',place:'',name:'',dong:'',with:''});a.pts=[];if(fmSpotSave(l))fmJnSaveMarks(a)}
 const fmSpotName=s=>s.name||s.dong||(s.area==='world'?fmPlaceName('world',s.place):fmPlaceName('kr',s.place))||'내 발자국';
-async function fmSpotLookup(s){try{const j=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=ko&lat='+s.lat+'&lon='+s.lon).then(r=>r.json()),a=j.address||{};return {name:j.name||a.tourism||a.amenity||a.leisure||a.shop||'',dong:a.quarter||a.suburb||a.neighbourhood||a.village||a.town||a.city_district||''}}catch{return null}}
+async function fmSpotLookup(s){try{const j=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=ko&lat='+s.lat+'&lon='+s.lon).then(r=>r.json()),a=j.address||{},n=j.name||a.tourism||a.amenity||a.leisure||a.shop||'';return {name:/(동|리|읍|면|가|\d)$/.test(n)?'':n,dong:a.quarter||a.suburb||a.neighbourhood||a.village||a.town||a.city_district||''}}catch{return null}}
 // Spot dots for a map drawn in the 국내 projection; the filter hides other companions.
 function fmSpotDots(P,rad,inKey){return fmSpots().filter(s=>(!fmJnWith||s.with===fmJnWith)&&s.area!=='world'&&(!inKey||s.place===inKey)).map(s=>'<circle class="fm-jn-dot'+(s.want?' want':s.with?' w-'+s.with:'')+'" data-spot="'+s.id+'" cx="'+(5+(s.lon*P.k-P.x0)*P.s).toFixed(2)+'" cy="'+(5+(-s.lat-P.y0)*P.s).toFixed(2)+'" r="'+rad.toFixed(3)+'"></circle>').join('')}
 // Filter chips, ✨ results and the spot list under a map (all of 국내, or one city's 구 map).
@@ -2913,7 +2913,7 @@ function fmSpotSheet(s,isNew){let sh=$('fmJnSheet');if(!sh){sh=document.createEl
  $('fmSpotX').onclick=()=>{if(isNew)save({});close();fmLayerDone();fmRenderJournal()};
  if($('fmSpotDel'))$('fmSpotDel').onclick=async()=>{if(!await window.fmAsk('이 발자국을 지울까요?',{ok:'지우기',cancel:'취소'}))return;fmSpotSave(fmSpots().filter(x=>x.id!==s.id));close();fmLayerDone();fmRenderJournal()};
  $('fmSpotNear').onclick=()=>{save({});close();fmLayerDone();fmJnRecommend((s.name||s.dong||'이 근처')+' 근처 가볼 만한 곳',s.area==='world'?'':s.place,'around:3000,'+s.lat+','+s.lon,[s.lat,s.lon])};
- if(isNew&&!s.name)fmSpotLookup(s).then(r=>{if(!r)return;s.dong=s.dong||r.dong;if(!s.name)s.name=r.name;const n=$('fmSpotName');if(n&&!n.value)n.value=r.name||r.dong;if(n)n.placeholder='여기 이름 (예: 용지호수공원)';const h=sh.querySelector('.fm-jn-sheethead small');if(h&&s.dong)h.textContent=[[s.gu,s.dong].filter(Boolean).join(' '),s.area==='world'?fmPlaceName('world',s.place):fmPlaceName('kr',s.place)].filter(Boolean).join(' · ')})}
+ if(isNew&&!s.name)fmSpotLookup(s).then(r=>{if(!r)return;s.dong=s.dong||r.dong;if(!s.name)s.name=r.name;const n=$('fmSpotName');if(n&&!n.value&&r.name)n.value=r.name;if(n)n.placeholder='여기 이름 (예: 용지호수공원)';const h=sh.querySelector('.fm-jn-sheethead small');if(h&&s.dong)h.textContent=[[s.gu,s.dong].filter(Boolean).join(' '),s.area==='world'?fmPlaceName('world',s.place):fmPlaceName('kr',s.place)].filter(Boolean).join(' · ')})}
 function fmRenderJournal(){fmHomeTrip();try{fmSpotsMigrate()}catch{}const box=$('fmJnBody');if(!box)return;const l=fmTrips(),tr=l.find(x=>x.id===fmJnId);$('fmJnHead').textContent=tr?tr.name:fmJnCountry?(/^[KD]/.test(fmJnCountry)?(fmJnCountry[0]==='K'?'🏙️ ':'🏘️ ')+fmPlaceName('kr',fmJnCountry.slice(1)):fmFlag(fmJnCountry)+' '+fmPlaceName('world',fmJnCountry)):'여행 일지';if(tr)return fmJnTrip(tr,box);if(fmJnCountry)return fmJnCountryPage(fmJnCountry,box);
  const area=fmJnArea,m=fmJnMaps[area],d=localDate(new Date());if(!m){box.innerHTML='<p class="fm-todo-empty">지도를 불러오는 중이에요</p>';fmJnLoadMap(area).then(()=>{if(area==='kr')fmJnMigrate();fmRenderJournal()}).catch(()=>{box.innerHTML='<p class="fm-todo-empty">지도를 불러오지 못했어요</p>'});return}
  const pins={};for(const k in fmJnMarks().pin)if(k.startsWith(area+':'))pins[k.slice(area.length+1)]=fmJnMarks().pin[k];const ids=new Set(m.c.map(r=>r[0])),mine=l.filter(t=>(t.area||'kr')===area).sort((a,b)=>b.from.localeCompare(a.from)),marks=fmJnMarks()[area],tripsAt=id=>mine.filter(t=>t.place===id&&t.from<=d).length,been=new Set([...mine.filter(t=>t.place&&t.from<=d).map(t=>t.place),...Object.keys(marks).filter(k=>marks[k]===1)].filter(k=>ids.has(k))),want=Object.keys(marks).filter(k=>marks[k]===2&&!been.has(k)&&ids.has(k)),next=l.filter(t=>fmJnState(t,d)!=='past').sort((a,b)=>a.from.localeCompare(b.from))[0],yr=l.filter(t=>t.from.slice(0,4)===d.slice(0,4)&&t.from<=d);
@@ -3034,7 +3034,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-248',VERSION='3.5.248';
+ const BUILD='fire-mate-v3-5-249',VERSION='3.5.249';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3248,4 +3248,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.248"></script></body></html>
+</style><script src="./js/features.js?v=3.5.249"></script></body></html>

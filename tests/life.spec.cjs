@@ -242,6 +242,10 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
  expect(sp).toEqual([expect.objectContaining({lat:35.221,lon:128.685,area:'kr',place:'4812',name:'용지호수공원',gu:'성산구',dong:'상남동',with:'couple',memo:'저녁 산책'})]);
  const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));expect(m.kr['4812']).toBe(1);expect(Object.values(m.sub.K4812)).toEqual([1]);
  await expect(page.locator('.fm-jn-map .fm-jn-dot.w-couple')).toHaveCount(1);
+ // Zooming in keeps the dot the same size on screen instead of growing into a big circle.
+ const dotPx=async()=>page.locator('.fm-jn-map .fm-jn-dot').first().evaluate(c=>c.getBoundingClientRect().width);const before=await dotPx();
+ await page.locator('.fm-jn-zoombtn button').first().click();await page.locator('.fm-jn-zoombtn button').first().click();
+ expect(Math.abs(await dotPx()-before)).toBeLessThan(3);
  await expect(page.locator('.fm-jn-spots').first()).toContainText('용지호수공원');await expect(page.locator('#fmJnBody .fm-jn-with')).toContainText('💑 연인 1');
  // The 연인 filter keeps the 연인 발자국, 전체 shows all again.
  await page.locator('#fmJnBody [data-with="couple"]').click();await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);await page.locator('#fmJnBody [data-with=""]').click();

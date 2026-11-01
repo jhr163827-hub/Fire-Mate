@@ -1,0 +1,233 @@
+[
+  {
+    "stage": 1,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 427,
+    "time": 200
+  },
+  {
+    "stage": 1,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 287,
+    "time": 130
+  },
+  {
+    "stage": 1,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "battle",
+    "wave": 20,
+    "lives": 18,
+    "gold": 6682,
+    "time": 1167
+  },
+  {
+    "stage": 6,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 830,
+    "time": 190
+  },
+  {
+    "stage": 6,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 810,
+    "time": 160
+  },
+  {
+    "stage": 6,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "lost",
+    "wave": 20,
+    "lives": 0,
+    "gold": 7266,
+    "time": 1056
+  },
+  {
+    "stage": 9,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 18,
+    "gold": 818,
+    "time": 192
+  },
+  {
+    "stage": 9,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 789,
+    "time": 162
+  },
+  {
+    "stage": 9,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "lost",
+    "wave": 15,
+    "lives": 0,
+    "gold": 2058,
+    "time": 664
+  },
+  {
+    "stage": 12,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 1098,
+    "time": 282
+  },
+  {
+    "stage": 12,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 1038,
+    "time": 232
+  },
+  {
+    "stage": 12,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "lost",
+    "wave": 15,
+    "lives": 0,
+    "gold": 2592,
+    "time": 893
+  },
+  {
+    "stage": 18,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 1200,
+    "time": 260
+  },
+  {
+    "stage": 18,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 1080,
+    "time": 174
+  },
+  {
+    "stage": 18,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "lost",
+    "wave": 15,
+    "lives": 0,
+    "gold": 2298,
+    "time": 802
+  },
+  {
+    "stage": 24,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 24,
+    "gold": 1016,
+    "time": 309
+  },
+  {
+    "stage": 24,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 1289,
+    "time": 213
+  },
+  {
+    "stage": 24,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "lost",
+    "wave": 10,
+    "lives": 0,
+    "gold": 515,
+    "time": 577
+  },
+  {
+    "stage": 30,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "hard",
+    "phase": "won",
+    "wave": 6,
+    "lives": 24,
+    "gold": 1534,
+    "time": 333
+  },
+  {
+    "stage": 30,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "challenge",
+    "phase": "won",
+    "wave": 6,
+    "lives": 30,
+    "gold": 1098,
+    "time": 254
+  },
+  {
+    "stage": 30,
+    "seed": 7,
+    "strategy": "artillery",
+    "mode": "endless",
+    "phase": "lost",
+    "wave": 15,
+    "lives": 0,
+    "gold": 2522,
+    "time": 906
+  }
+]

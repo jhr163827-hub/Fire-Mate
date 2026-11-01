@@ -767,7 +767,7 @@ function landscape(scene) {
   c.height = H * 2;
   const g = c.getContext("2d");
   g.scale(2, 2);
-  g.fillStyle = "#91b875";
+  g.fillStyle = scene?.theme.color || "#91b875";
   g.fillRect(0, 0, W, H);
   let seed = 17;
   const r = () =>
@@ -883,6 +883,68 @@ function landscape(scene) {
       1,
     );
   }
+  for (const path of scene?.paths || [PATH])
+    poly(
+      g,
+      [
+        [4, path[0][1] - 7],
+        [17, path[0][1]],
+        [4, path[0][1] + 7],
+      ],
+      "#766b43",
+    );
+  if (scene?.region)
+    for (const [x, y] of [
+      [32, 25],
+      [28, 280],
+      [585, 25],
+    ]) {
+      if (scene.region === 1)
+        poly(
+          g,
+          [
+            [x - 15, y + 10],
+            [x - 6, y - 22],
+            [x + 8, y - 16],
+            [x + 18, y + 10],
+          ],
+          "#a77758",
+          "#775940",
+        );
+      if (scene.region === 2)
+        poly(
+          g,
+          [
+            [x - 12, y + 8],
+            [x, y - 28],
+            [x + 14, y + 8],
+          ],
+          "#d7f4ee",
+          "#7fabb8",
+        );
+      if (scene.region === 3)
+        for (let j = -1; j <= 1; j++)
+          line(
+            g,
+            [
+              [x + j * 5, y + 8],
+              [x + j * 7, y - 22],
+            ],
+            "#426e60",
+            3,
+          );
+      if (scene.region === 4)
+        line(
+          g,
+          [
+            [x - 12, y + 8],
+            [x - 12, y - 18],
+            [x + 12, y - 18],
+          ],
+          "#756c79",
+          7,
+        );
+    }
   // Hand-built entrance banner and exit workshop.
   line(
     g,

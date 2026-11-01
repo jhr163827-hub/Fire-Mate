@@ -300,6 +300,17 @@ $("#canvas").addEventListener("pointerup", (e) => {
   detailKey = "";
   update();
 });
+function contribution(t) {
+  return t.kind === "beacon"
+    ? `아군 지원 ${Math.round(t.buffed)}초`
+    : t.kind === "ice"
+      ? `감속 기여 ${Math.round(t.slowed)}초`
+      : ["bomb", "pierce", "trap"].includes(t.kind)
+        ? `광역 명중 ${t.splashHits}회`
+        : t.kind === "venom"
+          ? "독 피해 포함 · 회복 70% 억제"
+          : "선두 적을 빠르게 정리";
+}
 function detail() {
   const t = game.s.towers.find((t) => t.id === ui.selected),
     key = JSON.stringify([
@@ -316,6 +327,7 @@ function detail() {
     if (t) {
       $("#damage").textContent = Math.round(t.damage);
       $("#kills").textContent = t.kills;
+      if ($("#contribution")) $("#contribution").textContent = contribution(t);
     }
     return;
   }
@@ -354,7 +366,7 @@ function detail() {
   const a = stats(t),
     type = TOWERS[t.kind];
   $("#detail").innerHTML =
-    `<h3>${type.name} ${t.level ? `· ${type.branches[t.branch].name} ${t.level}` : ""}</h3><small>${type.hint}</small><div class="metrics"><span>피해 ${Math.round(a.damage)} / ${a.rate.toFixed(2)}초</span><span>사거리 ${a.range}</span><span>누적 <b id="damage">${Math.round(t.damage)}</b> · 처치 <b id="kills">${t.kills}</b></span></div><div class="targets" ${["beacon", "trap"].includes(t.kind) ? "hidden" : ""}>타깃 ${[
+    `<h3>${type.name} ${t.level ? `· ${type.branches[t.branch].name} ${t.level}` : ""}</h3><small>${type.hint}</small><div class="metrics"><span>피해 ${Math.round(a.damage)} / ${a.rate.toFixed(2)}초</span><span>사거리 ${a.range}</span><span>누적 <b id="damage">${Math.round(t.damage)}</b> · 처치 <b id="kills">${t.kills}</b></span></div><p id="contribution">${contribution(t)}</p><div class="targets" ${["beacon", "trap"].includes(t.kind) ? "hidden" : ""}>타깃 ${[
       ["first", "선두"],
       ["strong", "강한 적"],
       ["last", "후미"],

@@ -666,3 +666,233 @@ html:fullscreen {
     font-size: 15px;
   }
 }
+[hidden],
+#shop button[hidden] {
+  display: none !important;
+}
+#campaign {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  z-index: 20;
+  background: radial-gradient(ellipse at 80% 0%, #40635a, #183e49 70%);
+  color: #f1edce;
+  overscroll-behavior: contain;
+}
+.atlas {
+  max-width: 1080px;
+  margin: auto;
+  padding: 28px 22px 60px;
+}
+.atlas-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+.atlas-head small {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #a8c3b5;
+}
+.atlas-head h1 {
+  font-size: 34px;
+  margin-top: 8px;
+}
+.atlas-head p {
+  color: #bbd1bf;
+}
+.atlas-head a {
+  border: 1px solid #6d8d83;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.journey {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 15px;
+  background: #315751;
+}
+.journey b {
+  color: #ffda8b;
+}
+.journey span {
+  flex: 1;
+  font-size: 12px;
+}
+.resume {
+  width: 100%;
+  background: #b9d8c2;
+}
+.region {
+  margin-top: 30px;
+}
+.region-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.region-title small {
+  color: #9cbeb3;
+  letter-spacing: 2px;
+  font-size: 10px;
+}
+.region-title h2 {
+  font-size: 22px;
+}
+.region-title span {
+  font-size: 12px;
+  color: #d1d9b9;
+}
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.stage-card {
+  text-align: left;
+  padding: 0;
+  overflow: hidden;
+  background: #e9e6cb;
+  border: 2px solid #8d9e7a;
+  box-shadow: 0 4px 12px #0a252c44;
+}
+.stage-card svg {
+  width: 100%;
+  display: block;
+  aspect-ratio: 1.6;
+}
+.stage-card > span {
+  display: block;
+  padding: 10px;
+}
+.stage-card b {
+  font-size: 14px;
+  display: block;
+}
+.stage-card small {
+  display: block;
+  margin-top: 5px;
+  color: #7a5d22;
+  font-size: 12px;
+}
+.stage-card.current {
+  border-color: #ffcd78;
+  box-shadow: 0 0 0 2px #ffcd7833;
+}
+.stage-card:disabled {
+  opacity: 0.42;
+  filter: saturate(0.45);
+}
+.atlas-end {
+  margin-top: 28px;
+  color: #b9cebd;
+}
+.atlas-end a {
+  font-size: 12px;
+}
+.route-preview svg {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mode-grid small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+.fine {
+  font-size: 11px;
+  color: #677d70;
+}
+.contributions {
+  max-height: 170px;
+  overflow: auto;
+  background: #e0e6cf;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+.contributions p {
+  font-size: 11px;
+}
+#forecast {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 5px 0;
+}
+#forecast span {
+  font-size: 10px;
+  background: #e1e7d3;
+  padding: 4px 6px;
+  border-radius: 5px;
+}
+aside.focused #forecast {
+  display: none;
+}
+#bossStatus {
+  padding: 7px;
+  background: #643c48;
+  color: #fff3db;
+  border: 1px solid #e6b77d;
+  border-radius: 8px;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+header h1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+footer #saved {
+  font-size: 8px;
+}
+footer button {
+  padding: 3px 5px;
+  min-height: 44px;
+}
+.unlock {
+  padding: 10px;
+  background: #d9e5bd;
+  border: 1px solid #9fb876;
+  border-radius: 10px;
+}
+@media (max-width: 540px) {
+  .atlas {
+    padding: 22px 16px 40px;
+  }
+  .stage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .atlas-head h1 {
+    font-size: 28px;
+  }
+  .journey {
+    gap: 8px;
+    padding: 10px;
+  }
+  .journey button {
+    padding: 8px;
+    font-size: 12px;
+  }
+  .region-title {
+    gap: 6px;
+  }
+  .region-title span {
+    flex-basis: 100%;
+  }
+  .stage-card b {
+    font-size: 12px;
+  }
+}

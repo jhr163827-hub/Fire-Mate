@@ -2,6 +2,26 @@ import { setupLandscape } from "./landscape.mjs";
 import { Game } from "./engine.mjs";
 import { KEY, STEP, WAVES, TOWERS, FOES, stats } from "./data.mjs";
 import { paint, tower } from "./render.mjs";
+import { PROFILE_KEY, RUN_KEY, UNLOCKS } from "./campaign-data.mjs";
+import {
+  loadProfile,
+  availableTowers,
+  canStart,
+  complete,
+} from "./progress.mjs";
+import {
+  campaignMenu,
+  hideCampaign,
+  stageDetail,
+  modeNames,
+} from "./campaign-ui.mjs";
+let profile;
+try {
+  profile = loadProfile(localStorage.getItem(PROFILE_KEY));
+} catch {
+  profile = loadProfile(null);
+}
+let playing = false;
 const $ = (s) => document.querySelector(s),
   c = $("#canvas").getContext("2d"),
   dialog = $("#dialog");
@@ -41,10 +61,12 @@ function banner(s) {
   bannerEnd = performance.now() + 2200;
 }
 function save() {
+  if (!playing) return;
+  const key = game.s.stage ? RUN_KEY : KEY;
   try {
     if (!game.s.towers.length && game.s.wave === 0)
-      localStorage.removeItem(KEY);
-    else localStorage.setItem(KEY, game.serialize());
+      localStorage.removeItem(key);
+    else localStorage.setItem(key, game.serialize());
     $("#saved").textContent = "전용 자동 저장";
   } catch {
     $("#saved").textContent = "저장 공간 확인 필요";
@@ -84,7 +106,22 @@ dialog.addEventListener("cancel", (e) => {
   close();
 });
 function fresh() {
-  game = new Game(1);
+  game = game.s.stage
+    ? new Game(game.s.stage * 101, {
+        stage: game.s.stage,
+        mode: game.s.mode,
+        allowed: availableTowers(profile),
+      })
+    : new Game(1);
+  activate();
+}
+function activate() {
+  playing = true;
+  hideCampaign();
+  bannerEnd = 0;
+  $("#banner").classList.remove("show");
+  $("#banner").textContent = "";
+  note(game.scene?.description || "포탑 선택 → 길 옆 선택 → 설치");
   ui = { selected: 0, build: null, preview: null, valid: false, spell: false };
   fx = [];
   result = "";
@@ -97,6 +134,50 @@ function fresh() {
   save();
   update();
 }
+function readRun(key) {
+  try {
+    return Game.restore(localStorage.getItem(key));
+  } catch {
+    return null;
+  }
+}
+function menu() {
+  save();
+  playing = false;
+  paused = true;
+  if (dialog.open) dialog.close();
+  const run = readRun(RUN_KEY),
+    old = readRun(KEY);
+  campaignMenu(profile, {
+    resume: run && ["ready", "battle"].includes(run.s.phase),
+    legacy: !!old,
+    choose(id) {
+      show(stageDetail(profile, id));
+      document
+        .querySelectorAll("[data-mode]")
+        .forEach((b) => (b.onclick = () => beginStage(id, b.dataset.mode)));
+    },
+    onResume() {
+      game = run;
+      activate();
+    },
+    onLegacy() {
+      game = old || new Game(1);
+      activate();
+    },
+  });
+}
+function beginStage(id, mode = "normal") {
+  if (!canStart(profile, id, mode)) return false;
+  game = new Game(id * 101, {
+    stage: id,
+    mode,
+    allowed: availableTowers(profile),
+  });
+  activate();
+  return true;
+}
+$("#campaignMap").onclick = menu;
 function settings() {
   show(
     '<h2>잠깐 쉬어가기</h2><p>전투가 정지했어요. 위치와 강화를 천천히 생각해 보세요.</p><div class="settingrow">소리<button id="sound"></button></div><div class="settingrow">효과 줄이기<button id="motion"></button></div><button id="restart">처음부터 다시</button><button id="exit">저장하고 아케이드로</button>',
@@ -139,7 +220,7 @@ $("#start").onclick = () => {
     ui.build = null;
     ui.preview = null;
     detailKey = "";
-    banner(`${game.s.wave}웨이브 · ${WAVES[game.s.wave - 1].name}`);
+    banner(`${game.s.wave}웨이브 · ${game.waveAt(game.s.wave - 1).name}`);
     document.querySelector("aside").scrollTop = 0;
     save();
     update();
@@ -164,12 +245,12 @@ $("#help").onclick = () =>
       Object.entries(TOWERS)
         .map(([k, t]) => `<article><b>${t.name}</b><p>${t.hint}</p></article>`)
         .join("") +
-      "</div><p><b>철갑벌레</b> · 일반 피해를65% 줄입니다. 번개·화염·저격 강화로 대응하세요.</p><p><b>수송체 / 전차</b> · 파괴되면 작은 적이 나옵니다. 전차가 통과하면 성문20을 잃습니다.</p><p>굽이 안쪽에서는 같은 포탑이 위·아래 길을 모두 공격해요. 전투 중 정지해도 구매와 강화는 가능합니다. 판매는 투자금75%를 돌려줍니다.</p><p>각 포탑은 두 강화 갈래 중 하나를 골라3단계까지 성장합니다. 긴급 포격은32초마다 다시 사용할 수 있어요.</p>",
+      "</div><p><b>철갑벌레</b> · 일반 피해를65% 줄입니다. 번개·화염·저격 강화로 대응하세요.</p><p><b>재생 정령</b> · 독은 회복을70% 억제합니다.</p><p><b>지원탑</b> · 연결된 아군을 강화해요. 같은 효과는 가장 강한 것만 적용합니다.</p><p><b>함정 공방</b> · 가장 가까운 길에 지뢰를 설치합니다.</p><p><b>수송체 / 전차</b> · 파괴되면 작은 적이 나옵니다. 전차가 통과하면 성문20을 잃습니다.</p><p>굽이 안쪽에서는 같은 포탑이 위·아래 길을 모두 공격해요. 전투 중 정지해도 구매와 강화는 가능합니다. 판매는 투자금75%를 돌려줍니다.</p><p>각 포탑은 두 강화 갈래 중 하나를 골라3단계까지 성장합니다. 긴급 포격은32초마다 다시 사용할 수 있어요.</p>",
   );
 $("#shop").innerHTML = Object.entries(TOWERS)
   .map(
     ([k, t]) =>
-      `<button data-buy="${k}" aria-label="${t.name} ${t.cost}동전 구매"><canvas width="110" height="98" aria-hidden="true"></canvas><strong>${t.name}</strong><span>${k === "dart" ? "빠른 단일" : k === "bomb" ? "넓은 폭발" : k === "ice" ? "무리 감속" : "갑옷 관통"}</span><b>${t.cost}</b></button>`,
+      `<button data-buy="${k}" aria-label="${t.name} ${t.cost}동전 구매"><canvas width="110" height="98" aria-hidden="true"></canvas><strong>${t.name}</strong><span>${t.role}</span><b>${t.cost}</b></button>`,
   )
   .join("");
 for (const b of document.querySelectorAll("[data-buy]")) {
@@ -219,6 +300,17 @@ $("#canvas").addEventListener("pointerup", (e) => {
   detailKey = "";
   update();
 });
+function contribution(t) {
+  return t.kind === "beacon"
+    ? `아군 지원 ${Math.round(t.buffed)}초`
+    : t.kind === "ice"
+      ? `감속 기여 ${Math.round(t.slowed)}초`
+      : ["bomb", "pierce", "trap"].includes(t.kind)
+        ? `광역 명중 ${t.splashHits}회`
+        : t.kind === "venom"
+          ? "독 피해 포함 · 회복 70% 억제"
+          : "선두 적을 빠르게 정리";
+}
 function detail() {
   const t = game.s.towers.find((t) => t.id === ui.selected),
     key = JSON.stringify([
@@ -235,6 +327,7 @@ function detail() {
     if (t) {
       $("#damage").textContent = Math.round(t.damage);
       $("#kills").textContent = t.kills;
+      if ($("#contribution")) $("#contribution").textContent = contribution(t);
     }
     return;
   }
@@ -273,7 +366,7 @@ function detail() {
   const a = stats(t),
     type = TOWERS[t.kind];
   $("#detail").innerHTML =
-    `<h3>${type.name} ${t.level ? `· ${type.branches[t.branch].name} ${t.level}` : ""}</h3><small>${type.hint}</small><div class="metrics"><span>피해 ${Math.round(a.damage)} / ${a.rate.toFixed(2)}초</span><span>사거리 ${a.range}</span><span>누적 <b id="damage">${Math.round(t.damage)}</b> · 처치 <b id="kills">${t.kills}</b></span></div><div class="targets">타깃 ${[
+    `<h3>${type.name} ${t.level ? `· ${type.branches[t.branch].name} ${t.level}` : ""}</h3><small>${type.hint}</small><div class="metrics"><span>피해 ${Math.round(a.damage)} / ${a.rate.toFixed(2)}초</span><span>사거리 ${a.range}</span><span>누적 <b id="damage">${Math.round(t.damage)}</b> · 처치 <b id="kills">${t.kills}</b></span></div><p id="contribution">${contribution(t)}</p><div class="targets" ${["beacon", "trap"].includes(t.kind) ? "hidden" : ""}>타깃 ${[
       ["first", "선두"],
       ["strong", "강한 적"],
       ["last", "후미"],
@@ -336,15 +429,32 @@ function update() {
   document
     .querySelector("aside")
     .classList.toggle("battle", s.phase === "battle");
-  $("#mapSpell").disabled = s.phase !== "battle" || s.spell > 0;
+  $("#mapSpell").disabled =
+    s.phase !== "battle" || s.spell > 0 || game.scene?.spell === false;
   $("#mapSpell").textContent =
     s.spell > 0 ? `포격 ${Math.ceil(s.spell)}초` : ui.spell ? "취소" : "포격";
   $("#gold").textContent = s.gold;
   $("#lives").textContent = s.lives;
-  $("#wave").textContent = `${s.wave} / 12`;
+  $("#wave").textContent =
+    `${s.wave} / ${game.waveCount === Infinity ? "∞" : game.waveCount}`;
   $("#speed").textContent = speed + "×";
   $("#pause").textContent = paused ? "재개" : "정지";
-  let w = WAVES[Math.min(s.wave, 11)];
+  let w = game.waveAt(Math.min(s.wave, game.waveCount - 1));
+  $("main h1").textContent = s.stage
+    ? `${s.stage}탄 · ${game.scene.name}`
+    : "톱니숲 방어전";
+  const forecast = game.waveAt(
+    s.phase === "battle" ? s.wave - 1 : Math.min(s.wave, game.waveCount - 1),
+  );
+  $("#forecast").innerHTML = forecast.packs
+    .map(([k, n]) => `<span>${FOES[k].name} ×${n}</span>`)
+    .join("");
+  const boss = s.enemies.find((e) => e.kind === "boss");
+  $("#bossStatus").hidden = !boss;
+  if (boss)
+    $("#bossStatus").textContent =
+      `${game.scene?.theme.boss || "거목 전차"} · ${game.bossState(boss)} · ${Math.ceil((boss.hp / boss.max) * 100)}%`;
+
   $("#phase").textContent =
     s.phase === "battle"
       ? `방어 중 · 남은 적 ${s.enemies.length + s.queue.length}`
@@ -353,14 +463,15 @@ function update() {
         : "첫 방어선 준비";
   $("#next").textContent =
     s.phase === "battle"
-      ? `${s.wave} · ${WAVES[s.wave - 1].name}`
+      ? `${s.wave} · ${game.waveAt(s.wave - 1).name}`
       : `다음 ${s.wave + 1} · ${w.name}`;
   $("#hint").textContent =
-    s.phase === "battle" ? WAVES[s.wave - 1].hint : w.hint;
+    s.phase === "battle" ? game.waveAt(s.wave - 1).hint : w.hint;
   $("#start").disabled = s.phase !== "ready" || !s.towers.length;
   $("#start").textContent =
     s.phase === "battle" ? "방어 중" : `${s.wave + 1}웨이브 시작`;
-  $("#spell").disabled = s.phase !== "battle" || s.spell > 0;
+  $("#spell").disabled =
+    s.phase !== "battle" || s.spell > 0 || game.scene?.spell === false;
   $("#spell").textContent =
     s.spell > 0
       ? `포격 ${Math.ceil(s.spell)}초`
@@ -374,8 +485,16 @@ function update() {
       : s.phase === "battle"
         ? "포탑을 눌러 타깃·강화 선택"
         : "길 옆 자유 배치 · 굽이를 활용하세요";
+  $("#shop").style.gridTemplateColumns =
+    `repeat(${Math.min(4, s.stage ? s.allowed.length : 4)},minmax(0,1fr))`;
   for (const b of document.querySelectorAll("[data-buy]")) {
+    const allowed = s.stage
+      ? game.allowed(b.dataset.buy)
+      : ["dart", "bomb", "ice", "arc"].includes(b.dataset.buy);
+    b.hidden = !allowed;
     b.disabled =
+      !allowed ||
+      (game.scene && s.towers.length >= game.scene.maxTowers) ||
       s.gold < TOWERS[b.dataset.buy].cost ||
       !["ready", "battle"].includes(s.phase);
     b.classList.toggle("active", ui.build === b.dataset.buy);
@@ -383,6 +502,13 @@ function update() {
   detail();
   if (["won", "lost"].includes(s.phase) && result !== s.phase) {
     result = s.phase;
+    if (complete(profile, s)) {
+      try {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      } catch {
+        note("진행 기록 저장 공간을 확인해 주세요.");
+      }
+    }
     save();
     const top = Object.entries(s.leaks).sort((a, b) => b[1] - a[1])[0]?.[0];
     const advice =
@@ -394,8 +520,11 @@ function update() {
             ? "작은 적 무리가 샜어요. 수송체를 깨는 위치 뒤에 폭탄포를 두세요."
             : "갑옷과 무리의 균형을 살펴보세요. 전기탑과 폭탄포의 역할이 달라요.";
     show(
-      `<h2>${s.phase === "won" ? "숲길을 지켜냈어요!" : "방어선이 뚫렸어요"}</h2><p>${s.wave}/12웨이브 · 처치 ${s.kills} · 성문 ${s.lives}</p><p>${s.phase === "won" ? "다른 강화 갈래와 배치로 다시 도전해 보세요." : advice}</p><button id="retry" class="go">새 방어선으로 재도전</button><button id="resultExit">아케이드로</button>`,
+      `<h2>${s.phase === "won" ? "숲길을 지켜냈어요!" : "방어선이 뚫렸어요"}</h2><p>${s.wave}/${game.waveCount === Infinity ? "∞" : game.waveCount}웨이브 · 처치 ${s.kills} · 성문 ${s.lives}</p><p>${s.phase === "won" ? "다른 강화 갈래와 배치로 다시 도전해 보세요." : advice}</p>${s.stage ? `<p><b>${s.mode === "endless" ? `무한 기록 ${profile.endless[s.stage] || 0}파` : s.phase === "won" ? "★".repeat(s.lives >= 27 ? 3 : s.lives >= 18 ? 2 : 1) + " · " + modeNames[s.mode] : game.scene.description}</b></p>${s.phase === "won" && s.mode === "normal" && UNLOCKS.some(([, n]) => n === s.stage + 1) ? `<p class="unlock">${TOWERS[UNLOCKS.find(([, n]) => n === s.stage + 1)[0]].name} 해금!</p>` : ""}<div class="contributions">${s.towers.map((t) => `<p><b>${TOWERS[t.kind].name}</b> · 피해 ${Math.round(t.damage)}${t.buffed ? " · 지원 " + Math.round(t.buffed) + "초" : ""}${t.slowed ? " · 감속 " + Math.round(t.slowed) + "초" : ""}${t.splashHits ? " · 광역 " + t.splashHits + "회" : ""}</p>`).join("")}</div>${s.phase === "won" && s.mode === "normal" && s.stage < 30 ? '<button id="nextStage" class="go">다음 탄으로</button>' : ""}<button id="resultMap">원정 지도 · 별과 해금</button>` : ""}<button id="retry" class="go">새 방어선으로 재도전</button><button id="resultExit">아케이드로</button>`,
     );
+    if ($("#nextStage"))
+      $("#nextStage").onclick = () => beginStage(s.stage + 1);
+    if ($("#resultMap")) $("#resultMap").onclick = menu;
     $("#retry").onclick = fresh;
     $("#resultExit").onclick = () => (location.href = "../../index.html");
   }
@@ -403,11 +532,14 @@ function update() {
 function drain() {
   for (const e of game.events) {
     if (e.type === "ready") {
-      banner(`웨이브 완료 · +${WAVES[game.s.wave - 1].reward} 동전`);
+      banner(`웨이브 완료 · +${game.waveAt(game.s.wave - 1).reward} 동전`);
       save();
     }
     if (
       [
+        "pierce",
+        "poison",
+        "heal",
         "blast",
         "arc",
         "ice",
@@ -430,7 +562,7 @@ function frame(now) {
   if (disposed) return;
   let dt = Math.min(0.1, (now - (last || now)) / 1000);
   last = now;
-  if (!paused && !document.hidden) {
+  if (playing && !paused && !document.hidden) {
     acc += dt * speed;
     while (acc >= STEP) {
       game.step();
@@ -440,8 +572,8 @@ function frame(now) {
     for (const f of fx) f.life -= dt * speed;
     fx = fx.filter((f) => f.life > 0);
   }
-  paint(c, game.s, ui, fx, now / 1000);
-  if (now - lastUI > 120) {
+  if (playing) paint(c, game.s, ui, fx, now / 1000);
+  if (playing && now - lastUI > 120) {
     update();
     lastUI = now;
   }
@@ -454,6 +586,7 @@ function frame(now) {
 }
 function stop() {
   landscape.release(true);
+  resize.disconnect();
   save();
   disposed = true;
   cancelAnimationFrame(raf);
@@ -464,6 +597,7 @@ addEventListener("pagehide", stop);
 addEventListener("pageshow", (e) => {
   if (e.persisted) {
     disposed = false;
+    resize.observe($("#stage"));
     paused = true;
     last = 0;
     raf = requestAnimationFrame(frame);
@@ -476,34 +610,37 @@ document.addEventListener("visibilitychange", () => {
     audio?.suspend().catch(() => {});
   }
 });
-let raw;
-try {
-  raw = localStorage.getItem(KEY);
-} catch {}
-const restored = raw && Game.restore(raw);
-if (restored) {
-  game = restored;
-  show(
-    '<h2>방어선을 이어갈까요?</h2><p>이 게임의 전용 저장만 불러옵니다.</p><button id="resume" class="go">이어하기</button><button id="newGame">새로 시작</button>',
-  );
-  $("#resume").onclick = () => {
-    beforeDialog = false;
-    close();
-    update();
-  };
-  $("#newGame").onclick = () => {
-    show(
-      '<h2>저장된 방어선을 초기화할까요?</h2><button id="confirmRestart">새로 시작</button>',
-    );
-    $("#confirmRestart").onclick = fresh;
-  };
-} else if (raw) {
+if (new URLSearchParams(location.search).has("legacy")) {
+  playing = true;
+  let raw;
   try {
-    localStorage.removeItem(KEY);
+    raw = localStorage.getItem(KEY);
   } catch {}
-  note("손상된 전술전 저장을 초기화했어요.");
-}
-update();
+  const restored = raw && Game.restore(raw);
+  if (restored) {
+    game = restored;
+    show(
+      '<h2>방어선을 이어갈까요?</h2><p>이 게임의 전용 저장만 불러옵니다.</p><button id="resume" class="go">이어하기</button><button id="newGame">새로 시작</button>',
+    );
+    $("#resume").onclick = () => {
+      beforeDialog = false;
+      close();
+      update();
+    };
+    $("#newGame").onclick = () => {
+      show(
+        '<h2>저장된 방어선을 초기화할까요?</h2><button id="confirmRestart">새로 시작</button>',
+      );
+      $("#confirmRestart").onclick = fresh;
+    };
+  } else if (raw) {
+    try {
+      localStorage.removeItem(KEY);
+    } catch {}
+    note("손상된 전술전 저장을 초기화했어요.");
+  }
+  update();
+} else menu();
 raf = requestAnimationFrame(frame);
 if (new URLSearchParams(location.search).has("test"))
   window.frontier = {
@@ -514,6 +651,9 @@ if (new URLSearchParams(location.search).has("test"))
       return ui;
     },
     setGame(g) {
+      playing = true;
+      hideCampaign();
+      if (dialog.open) dialog.close();
       game = g;
       ui.selected = 0;
       ui.build = null;
@@ -524,6 +664,15 @@ if (new URLSearchParams(location.search).has("test"))
       update();
     },
     Game,
+    beginStage,
+    menu,
+    setProfile(p) {
+      profile = loadProfile(JSON.stringify(p));
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    },
+    get profile() {
+      return profile;
+    },
     step(n) {
       for (let i = 0; i < n; i++) {
         game.step();

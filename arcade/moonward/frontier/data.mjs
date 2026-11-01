@@ -166,6 +166,121 @@ export const TOWERS = {
     ],
   },
 };
+
+Object.assign(TOWERS, {
+  pierce: {
+    name: "관통포",
+    role: "직선 관통",
+    hint: "일렬로 선 적을 꿰뚫는 레일 탄환",
+    cost: 155,
+    damage: 28,
+    rate: 1,
+    range: 155,
+    color: "#ddd5a6",
+    branches: [
+      {
+        name: "레일건",
+        costs: [130, 250, 700],
+        descs: [
+          "최대 7명 관통",
+          "갑옷 무시 · 피해 +70%",
+          "최대 12명 · 피해 2배",
+        ],
+      },
+      {
+        name: "산탄포",
+        costs: [120, 230, 650],
+        descs: ["탄환 3갈래", "피해 +60%", "탄환 5갈래 · 공격 속도 +40%"],
+      },
+    ],
+  },
+  venom: {
+    name: "독 타워",
+    role: "중독 · 회복 억제",
+    hint: "독으로 지속 피해 · 적 회복 70% 억제",
+    cost: 145,
+    damage: 8,
+    rate: 0.9,
+    range: 120,
+    color: "#a8c866",
+    branches: [
+      {
+        name: "맹독",
+        costs: [110, 230, 650],
+        descs: [
+          "초당 독 피해 18",
+          "초당 독 피해 30 · 5초 지속",
+          "초당 독 피해 55",
+        ],
+      },
+      {
+        name: "독안개",
+        costs: [120, 250, 680],
+        descs: [
+          "반경 45에 독 확산",
+          "반경 65 · 초당 피해 18",
+          "반경 80 · 초당 피해 30",
+        ],
+      },
+    ],
+  },
+  beacon: {
+    name: "지원탑",
+    role: "주변 공격 가속",
+    hint: "연결된 아군의 공격 가속 · 같은 효과 중첩 없음",
+    cost: 180,
+    damage: 0,
+    rate: 1,
+    range: 115,
+    color: "#e9d18e",
+    branches: [
+      {
+        name: "가속 신호",
+        costs: [120, 250, 650],
+        descs: [
+          "공격 속도 +28%",
+          "공격 속도 +40%",
+          "공격 속도 +60% · 범위 +25",
+        ],
+      },
+      {
+        name: "관측 신호",
+        costs: [110, 240, 650],
+        descs: [
+          "아군 사거리 +20",
+          "아군 사거리 +35 · 피해 +12%",
+          "아군 사거리 +50 · 피해 +25%",
+        ],
+      },
+    ],
+  },
+  trap: {
+    name: "함정 공방",
+    role: "길목 지뢰",
+    hint: "가장 가까운 길에 지뢰 설치 · 최대 2개 대기",
+    cost: 140,
+    damage: 42,
+    rate: 3,
+    range: 90,
+    color: "#b5bb99",
+    branches: [
+      {
+        name: "폭발 지뢰",
+        costs: [100, 240, 650],
+        descs: [
+          "피해 +60% · 폭발 확대",
+          "피해 2배 · 갑옷 파괴",
+          "피해 +70% · 반경 65",
+        ],
+      },
+      {
+        name: "끈끈이 지뢰",
+        costs: [100, 220, 620],
+        descs: ["적 55% 감속", "설치 간격 2초", "적 70% 감속 · 반경 60"],
+      },
+    ],
+  },
+});
 export const FOES = {
   bud: { name: "새싹", hp: 32, speed: 42, cash: 4, leak: 1 },
   runner: { name: "질주벌레", hp: 46, speed: 76, cash: 5, leak: 1 },
@@ -369,5 +484,52 @@ export function stats(t) {
       if (n >= 3) a.big = 2;
     }
   }
+
+  if (t.kind === "pierce") {
+    a.pierce = n && b === 0 ? (n === 3 ? 12 : 7) : 4;
+    a.fan = n && b === 1 ? (n === 3 ? 5 : 3) : 1;
+    if (n >= 2) a.damage *= b === 0 ? 1.7 : 1.6;
+    if (n === 3 && b === 0) a.damage *= 2;
+    if (n === 3 && b === 1) a.rate /= 1.4;
+    a.ignore = n >= 2 && b === 0;
+  }
+  if (t.kind === "venom") {
+    a.poison = n && b === 0 ? [0, 18, 30, 55][n] : n ? [0, 10, 18, 30][n] : 10;
+    a.poisonDuration = n >= 2 && b === 0 ? 5 : 3;
+    a.poisonRadius = n && b === 1 ? [0, 45, 65, 80][n] : 0;
+  }
+  if (t.kind === "beacon") {
+    a.boost = n && b === 0 ? [0, 0.28, 0.4, 0.6][n] : 0.18;
+    a.rangeBoost = n && b === 1 ? [0, 20, 35, 50][n] : 0;
+    a.damageBoost = n >= 2 && b === 1 ? (n === 3 ? 0.25 : 0.12) : 0;
+    if (n === 3 && b === 0) a.range += 25;
+  }
+  if (t.kind === "trap") {
+    a.splash = n ? (n === 3 ? (b === 0 ? 65 : 60) : 45) : 34;
+    a.mineSlow = n && b === 1 ? (n === 3 ? 0.7 : 0.55) : 0;
+    if (n && b === 0) a.damage *= [1, 1.6, 3.2, 5.44][n];
+    a.breakArmor = n >= 2 && b === 0;
+    if (n >= 2 && b === 1) a.rate = 2;
+  }
   return a;
 }
+
+Object.assign(FOES, {
+  shell: {
+    name: "철갑 수송체",
+    hp: 190,
+    speed: 32,
+    cash: 12,
+    leak: 3,
+    armor: 0.35,
+    split: 3,
+  },
+  regenerator: {
+    name: "재생 정령",
+    hp: 120,
+    speed: 47,
+    cash: 8,
+    leak: 2,
+    regen: 5,
+  },
+});

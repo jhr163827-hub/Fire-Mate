@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "default 30-stage map, locked modes, first UI purchases and actual combat",
+    "isolated campaign resume and five viewport layouts/44px controls",
+    "six-wave first stage with UI upgrades, victory stars, next stage, unlock, challenge",
+    "first boss stage complete using normal economy and UI; next region and rail tower",
+    "five regional scenes and final-boss multi-route poison/mine save fixture",
+    "200-enemy benchmark, defeat, clean retry and endless score",
+    "actual shared SW offline campaign resume, financial and legacy storage preserved",
+    "no uncaught browser errors"
+  ],
+  "errors": [],
+  "realtime": true,
+  "lateBattleMs": {
+    "median": 1.599999999976717,
+    "p95": 2.5
+  }
+}

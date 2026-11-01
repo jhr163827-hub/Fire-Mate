@@ -53,7 +53,7 @@ let browser;
   const url =
     "http://127.0.0.1:" +
     server.address().port +
-    "/arcade/moonward/frontier/?test";
+    "/arcade/moonward/frontier/?test&legacy";
   await page.goto(url);
   await page.waitForFunction(() => window.frontier);
   await page.evaluate(() => {
@@ -126,7 +126,9 @@ let browser;
           ...document.querySelectorAll(
             "#shop button,#hud button,header button",
           ),
-        ].map((b) => b.getBoundingClientRect().height),
+        ]
+          .filter((b) => !b.hidden)
+          .map((b) => b.getBoundingClientRect().height),
       };
     });
     if (r.overflow) {
@@ -353,6 +355,7 @@ let browser;
   await page.reload();
   await page.click("#moonwardOpen");
   await page.waitForURL("**/frontier/");
+  await page.click("#legacyRun");
   await buy("dart", 175, 136);
   await page.click("#start");
   await page.waitForFunction(
@@ -360,7 +363,7 @@ let browser;
   );
   await page.context().setOffline(true);
   await page.reload();
-  await page.click("#resume");
+  await page.click("#legacyRun");
   assert.equal(
     await page.evaluate(() => localStorage.getItem("firemate_finance_test")),
     "preserve",
@@ -368,7 +371,7 @@ let browser;
   await page.click("header a");
   await page.waitForURL("**/arcade/index.html");
   await page.click("#moonwardOpen");
-  await page.waitForSelector("#resume");
+  await page.waitForSelector("#legacyRun");
   await page.context().setOffline(false);
   ok(
     "actual arcade entry and shared service worker: first-visit caching, offline resume/exit, finance key preserved",

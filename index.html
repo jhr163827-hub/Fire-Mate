@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.239</title><link rel="stylesheet" href="./app.css?v=3.5.239"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-239">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.240</title><link rel="stylesheet" href="./app.css?v=3.5.240"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-240">
 
 
 
@@ -233,7 +233,9 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due');sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
+// Imports before v3.5.240 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
+function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
 (()=>{
 let pending=null;
@@ -386,7 +388,7 @@ if(done.length===now&&!undone)return 0;try{localStorage.setItem('firemate_split_
 function fmSplitUndo(){let done=read('firemate_split_v1',[]);for(const r of done.reverse()){const e=data.tx.find(t=>t.id===r.e),x=data.tx.find(t=>t.id===r.x);if(e){e.amount=Number(e.amount)+r.a;if(Number(e.amount)>=Number(e.splitFrom))delete e.splitFrom}if(x)x.category=r.cat}
 if(!persist())return 0;try{localStorage.removeItem('firemate_split_v1');localStorage.setItem('firemate_split_off_v1','1')}catch{}render();return done.length}
 // 📬 Once a day on open, if Gmail import was used and its sign-in is still valid (about an hour, so no Google window opens), fetch the latest BankSalad mail the same way the home button does.
-setTimeout(()=>{try{if(navigator.webdriver&&!window.__fmAutoGmailTest)return;const t=JSON.parse(localStorage.getItem('firemate_gmail_token_v1')||'null'),last=Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0;if(!(t?.token&&t.exp>Date.now()+120000)||localStorage.getItem('firemate_auto_gmail_day_v1')===today||Date.now()-last<12*36e5)return;localStorage.setItem('firemate_auto_gmail_day_v1',today);window.fmImportFromHome?.()}catch{}},3000);
+setTimeout(()=>{try{if(navigator.webdriver&&!window.__fmAutoGmailTest)return;const t=JSON.parse(localStorage.getItem('firemate_gmail_token_v1')||'null'),last=Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0;if(!(t?.token&&t.exp>Date.now()+120000)||!fmImportOld()&&(localStorage.getItem('firemate_auto_gmail_day_v1')===today||Date.now()-last<12*36e5))return;localStorage.setItem('firemate_auto_gmail_day_v1',today);window.fmImportFromHome?.()}catch{}},3000);
 // Runs after the whole script so every helper it uses is ready; again after each import.
 setTimeout(()=>{try{if(fmSplitApply())render()}catch{}},0);
 try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_cardbill_fix_v1')){const hit=data.tx.filter(t=>{if(t.type!=='expense'||!t.bankExcelKey)return false;const p=t.bankExcelKey.split('|');return fmCardBill(p[3],p[5],p.at(-1))});if(hit.length){const back=hit.map(t=>({id:t.id,category:t.category}));hit.forEach(t=>{t.type='transfer';t.category='계좌 이체'});if(persist()){localStorage.setItem('firemate_cardbill_backup_v1',JSON.stringify(back));localStorage.setItem('firemate_cardbill_fix_v1',String(hit.length));fmXferDirAdd(hit.map(t=>[t.bankExcelKey,-1]))}else back.forEach(b=>{const t=data.tx.find(x=>x.id===b.id);t.type='expense';t.category=b.category})}else localStorage.setItem('firemate_cardbill_fix_v1','0')}}catch{}
@@ -479,9 +481,9 @@ async function bankProcessFile(inputFile){bankPending=[];$('bankExcelConfirm').h
 // BankSalad writes 지출 as negative; a positive 지출 (or negative 수입) is a cancellation: it removes its charge instead of adding one.
 // 이체 carries its direction in the sign (out is negative), so it is never a cancellation.
 if(type==='expense'?raw>0:type==='income'&&raw<0){cancels.push({date,amount,key,memo:(memo||sub||main).slice(0,120)});continue}
-// A row BankSalad marks 결제취소·승인취소 (any column but 내용) is the cancelled charge itself (struck through there); the re-charge next to it is real and stays. If it came in before, it goes now.
-if(type==='expense'&&row.some((v,i)=>i!==col('내용')&&/결제\s*취소|승인\s*취소|^취소$/.test(String(v).trim()))){const old=data.tx.find(x=>x.bankExcelKey===key);if(old&&!bankDrop.includes(old.id))bankDrop.push(old.id);const g=dupIdx.get(dupK(key));if(g)dupIdx.set(dupK(key),g.filter(k=>k!==key));voided++;continue}if(existing.has(key)||deletedKeys.has(key)||inFile.has(key)||type==='expense'&&(dupIdx.get(dupK(key))||[]).some(k=>fmDupPay(k,key))){duplicates++;continue}inFile.add(key);dupAdd(key);bankPending.push({id:uid(),date,type:own,amount,category,memo:(memo||sub||main).slice(0,120),bankExcelKey:key})}fmXferDirAdd(outKeys);const day=864e5,stored=data.tx.filter(x=>x.bankExcelKey);for(const c of cancels){const old=stored.find(x=>x.bankExcelKey===c.key&&!bankDrop.includes(x.id));if(old)bankDrop.push(old.id)}
-let undone=voided;for(const c of cancels){const same=x=>x.memo===c.memo&&x.amount===c.amount&&x.type!=='income'&&x.date<=c.date&&new Date(c.date)-new Date(x.date)<=60*day,i=bankPending.findLastIndex(same);if(i>=0){bankPending.splice(i,1);undone++;continue}const o=stored.filter(x=>same(x)&&!bankDrop.includes(x.id)).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);if(o){bankDrop.push(o.id);undone++}}
+// A row BankSalad marks 결제취소·승인취소 (any column but 내용) is a cancellation record: it and the earlier same charge both go (뱅크샐러드 leaves both out of its total), like a + row; if either came in before, it goes now.
+if(type==='expense'&&row.some((v,i)=>i!==col('내용')&&/결제\s*취소|승인\s*취소|^취소$/.test(String(v).trim()))){const old=data.tx.find(x=>x.bankExcelKey===key);if(old&&!bankDrop.includes(old.id))bankDrop.push(old.id);const g=dupIdx.get(dupK(key));if(g)dupIdx.set(dupK(key),g.filter(k=>k!==key));voided++;cancels.push({date,amount,key,memo:(memo||sub||main).slice(0,120),pair:1});continue}if(existing.has(key)||deletedKeys.has(key)||inFile.has(key)||type==='expense'&&(dupIdx.get(dupK(key))||[]).some(k=>fmDupPay(k,key))){duplicates++;continue}inFile.add(key);dupAdd(key);bankPending.push({id:uid(),date,type:own,amount,category,memo:(memo||sub||main).slice(0,120),bankExcelKey:key})}fmXferDirAdd(outKeys);const day=864e5,stored=data.tx.filter(x=>x.bankExcelKey);for(const c of cancels){const old=stored.find(x=>x.bankExcelKey===c.key&&!bankDrop.includes(x.id));if(old)bankDrop.push(old.id)}
+let undone=voided;for(const c of cancels){const same=x=>x.memo===c.memo&&x.amount===c.amount&&x.type!=='income'&&x.date<=c.date&&new Date(c.date)-new Date(x.date)<=60*day,i=bankPending.findLastIndex(same);if(i>=0){bankPending.splice(i,1);undone+=!c.pair;continue}const o=stored.filter(x=>same(x)&&!bankDrop.includes(x.id)).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);if(o){bankDrop.push(o.id);undone+=!c.pair}}
 // The file is BankSalad's whole record for its dates (its first day may be cut, so not that one): an imported row in that range that is no longer in it was cancelled, re-classified
 // (a new key came in) or deleted there, so it goes too. Kept in firemate_import_gone_v1 for 되돌리기; skipped if it would be a big share.
 {const inRange=stored.filter(x=>x.date>fileFrom&&x.date<=fileTo),keep=new Set(read('firemate_import_gone_off_v1',[])),gone=inRange.filter(x=>!fileKeys.has(x.bankExcelKey)&&!keep.has(x.bankExcelKey)&&!bankDrop.includes(x.id));if(gone.length&&gone.length<=Math.max(10,inRange.length*.2)){bankStale=gone.map(x=>x.id);bankDrop.push(...bankStale)}}
@@ -2937,7 +2939,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-239',VERSION='3.5.239';
+ const BUILD='fire-mate-v3-5-240',VERSION='3.5.240';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3151,4 +3153,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.239"></script></body></html>
+</style><script src="./js/features.js?v=3.5.240"></script></body></html>

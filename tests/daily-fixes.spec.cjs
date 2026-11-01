@@ -187,7 +187,7 @@ test('one payment BankSalad records twice (간편결제 + 머니) is imported on
  expect((await saved(page)).tx.filter(t=>t.memo==='택시').length).toBe(2);
 });
 
-test('a row marked 결제취소 is the cancelled charge itself: it goes, the same-amount re-charge stays',async({page})=>{
+test('a row marked 결제취소 cancels the earlier same charge: both go, the final fare stays',async({page})=>{
  const d=ago(1),wb=XLSX.utils.book_new(),r=(time,amount,mark='')=>[d,time,'지출','교통','택시','주식회사 티머니',amount,'KRW','카카오페이 간편결제',mark];
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단','메모'],r('21:10',-14600,'결제취소'),r('20:52',-14600),r('22:00',-14300)]),'가계부 내역');
  const key=[d,'21:10','expense','교통','택시','주식회사 티머니',14600,'카카오페이 간편결제'].join('|');
@@ -198,23 +198,22 @@ test('a row marked 결제취소 is the cancelled charge itself: it goes, the sam
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:XLSX.write(wb,{type:'buffer',bookType:'xlsx'})});
  await expect(page.locator('#bankExcelPreview')).toContainText('결제 취소 1건');
  await page.locator('#bankExcelConfirm').click();
- await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300,14600]);
- expect((await saved(page)).tx.some(t=>t.id==='old')).toBe(false);expect((await saved(page)).tx.some(t=>t.id==='first')).toBe(true);
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300]);
+ expect((await saved(page)).tx.some(t=>t.id==='old'||t.id==='first')).toBe(false);
 });
 
-test('the phone case: 14,600 cancelled + 14,600 real + 14,300; re-import keeps both real ones',async({page})=>{
+test('the phone case: one ride shows 14,600 + its 결제취소 + 14,300; re-import leaves only 14,300',async({page})=>{
  const d=ago(1),wb=XLSX.utils.book_new(),r=(time,amount,mark='')=>[d,time,'지출','교통','택시','주식회사 티머니',amount,'KRW','카카오페이 간편결제',mark];
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단','메모'],r('21:10',-14600,'결제취소'),r('20:52',-14600),r('22:00',-14300)]),'가계부 내역');
  const key=[d,'21:10','expense','교통','택시','주식회사 티머니',14600,'카카오페이 간편결제'].join('|');
- // What the phone has after earlier imports: the cancelled row already went, the two real fares stay.
+ // What the phone has after earlier imports: the 결제취소 record already went, its charge stayed.
  await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'fin',date:d,type:'expense',category:'교통',amount:14300,memo:'주식회사 티머니',bankExcelKey:key.replace('21:10','22:00').replace('14600','14300')},{id:'first',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key.replace('21:10','20:52')}]});
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:XLSX.write(wb,{type:'buffer',bookType:'xlsx'})});
- // Nothing to add or remove: the cancelled row is skipped and both real fares are already in.
- await expect(page.locator('#bankExcelConfirm')).toBeHidden();
- await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300,14600]);
- expect((await saved(page)).tx.some(t=>t.id==='first')).toBe(true);
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300]);
+ expect((await saved(page)).tx.some(t=>t.id==='first')).toBe(false);
 });
 
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{

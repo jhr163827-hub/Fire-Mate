@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.235</title><link rel="stylesheet" href="./app.css?v=3.5.235"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-235">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.236</title><link rel="stylesheet" href="./app.css?v=3.5.236"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-236">
 
 
 
@@ -335,7 +335,7 @@ let bankPending=[],bankDrop=[],bankStale=[];
 function fmKeySec(k){const v=String(k||'').split('|')[1]||'',[h,m=0,x=0]=v.split(':').map(Number);return v.includes(':')?h*3600+m*60+x:Number(v)}
 function fmDupPay(a,b){const p=String(a).split('|'),q=String(b).split('|');return p[0]===q[0]&&p[2]==='expense'&&q[2]==='expense'&&p[5]===q[5]&&p[6]===q[6]&&(p.at(-1)!==q.at(-1)&&Math.abs(fmKeySec(a)-fmKeySec(b))<=5||FM_TAXI.test(p[4]+' '+p[5])&&Math.abs(fmKeySec(a)-fmKeySec(b))<=1800)}
 // A taxi app charges, cancels and charges the same fare again; 뱅크샐러드 keeps both, so a same-fare taxi row within 30 minutes is the same ride.
-const FM_TAXI=/택시|카카오\s*T|카카오모빌리티|티머니|우티|타다/;
+const FM_TAXI=/택시|카카오\s*T|카카오모빌리티|이동의즐거움/;
 const FM_OWN_XFER=/업비트|두나무|빗썸|코인원|증권|나무|NH투자|청약|\d+-\d+회차/;
 // A card bill paid from a bank (금융 · 삼성카드 …) repeats the card purchases already counted, so it is a transfer, not spending.
 const FM_CARD_BILL=/^(삼성|현대|신한|KB국민|국민|롯데|하나|우리|BC|비씨|NH농협|농협|씨티)카드$/,fmCardBill=(main,memo,pay)=>main==='금융'&&FM_CARD_BILL.test(memo)&&!/카드/.test(pay);
@@ -403,7 +403,7 @@ i=at('4.보험현황');if(i>=0)for(let j=i+3;j<r.length&&!/^\d+\./.test(String(c
 i=at('5.투자현황');if(i>=0)for(let j=i+3;j<r.length;j++){const x=r[j];if(/^총계/.test(String(c(x,0)))||/^\d+\./.test(String(c(x,0))))break;if(c(x,2))snap.invest.push({co:String(c(x,1)),name:String(c(x,2)).trim(),cost:num(c(x,4)),value:num(c(x,5))})}
 return snap.cash.length||snap.invest.length||snap.ins.length?snap:null}
 function fmBsImport(wb){const snap=fmBsParse(wb);if(snap)try{localStorage.setItem('firemate_bs_snapshot_v1',JSON.stringify(snap))}catch{}}
-// v3.5.235: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
+// v3.5.236: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
 // Once, put back what it changed (the last 잔고 맞추기 and the accounts it added); what was there before is kept in firemate_bs_revert_v1 for 다시 적용.
 function fmBsRevertOnce(){if(localStorage.getItem('firemate_bs_revert_v1'))return;const b=read('firemate_bs_backup_v1',null),add=read('firemate_bs_added_v1',[]),gone=data.accounts.filter(a=>Array.isArray(add)&&add.includes(a.id)),rec={at:today,cash:Number(data.balance.cash)||0,accounts:{},gone};
  if(b){data.balance.cash=Number(b.cash)||0;for(const [id,v] of Object.entries(b.accounts||{})){const a=data.accounts.find(x=>x.id===id);if(a){rec.accounts[id]=a.amount;a.amount=v}}}
@@ -477,9 +477,9 @@ async function bankProcessFile(inputFile){bankPending=[];$('bankExcelConfirm').h
 // BankSalad writes 지출 as negative; a positive 지출 (or negative 수입) is a cancellation: it removes its charge instead of adding one.
 // 이체 carries its direction in the sign (out is negative), so it is never a cancellation.
 if(type==='expense'?raw>0:type==='income'&&raw<0){cancels.push({date,amount,key,memo:(memo||sub||main).slice(0,120)});continue}
-// A charge BankSalad marks as cancelled in place (결제취소·승인취소 in any column but 내용) is never spending; if it came in before, it goes now.
-if(type==='expense'&&row.some((v,i)=>i!==col('내용')&&/결제\s*취소|승인\s*취소|^취소$/.test(String(v).trim()))){const old=data.tx.find(x=>x.bankExcelKey===key);if(old&&!bankDrop.includes(old.id))bankDrop.push(old.id);const g=dupIdx.get(dupK(key));if(g)dupIdx.set(dupK(key),g.filter(k=>k!==key));voided++;continue}if(existing.has(key)||inFile.has(key)||type==='expense'&&(dupIdx.get(dupK(key))||[]).some(k=>fmDupPay(k,key))){duplicates++;continue}inFile.add(key);dupAdd(key);bankPending.push({id:uid(),date,type:own,amount,category,memo:(memo||sub||main).slice(0,120),bankExcelKey:key})}fmXferDirAdd(outKeys);const day=864e5,stored=data.tx.filter(x=>x.bankExcelKey);for(const c of cancels){const old=stored.find(x=>x.bankExcelKey===c.key&&!bankDrop.includes(x.id));if(old)bankDrop.push(old.id)}
-let undone=voided;for(const c of cancels){const same=x=>x.memo===c.memo&&x.amount===c.amount&&x.type!=='income'&&x.date<=c.date&&new Date(c.date)-new Date(x.date)<=60*day,i=bankPending.findLastIndex(same);if(i>=0){bankPending.splice(i,1);undone++;continue}const o=stored.filter(x=>same(x)&&!bankDrop.includes(x.id)).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);if(o){bankDrop.push(o.id);undone++}}
+// A row BankSalad marks 결제취소·승인취소 (any column but 내용) is the cancellation of an earlier same charge: both go, like a + row; if either came in before, it goes now.
+if(type==='expense'&&row.some((v,i)=>i!==col('내용')&&/결제\s*취소|승인\s*취소|^취소$/.test(String(v).trim()))){const old=data.tx.find(x=>x.bankExcelKey===key);if(old&&!bankDrop.includes(old.id))bankDrop.push(old.id);const g=dupIdx.get(dupK(key));if(g)dupIdx.set(dupK(key),g.filter(k=>k!==key));voided++;cancels.push({date,amount,key,memo:(memo||sub||main).slice(0,120),pair:1});continue}if(existing.has(key)||inFile.has(key)||type==='expense'&&(dupIdx.get(dupK(key))||[]).some(k=>fmDupPay(k,key))){duplicates++;continue}inFile.add(key);dupAdd(key);bankPending.push({id:uid(),date,type:own,amount,category,memo:(memo||sub||main).slice(0,120),bankExcelKey:key})}fmXferDirAdd(outKeys);const day=864e5,stored=data.tx.filter(x=>x.bankExcelKey);for(const c of cancels){const old=stored.find(x=>x.bankExcelKey===c.key&&!bankDrop.includes(x.id));if(old)bankDrop.push(old.id)}
+let undone=voided;for(const c of cancels){const same=x=>x.memo===c.memo&&x.amount===c.amount&&x.type!=='income'&&x.date<=c.date&&new Date(c.date)-new Date(x.date)<=60*day,i=bankPending.findLastIndex(same);if(i>=0){bankPending.splice(i,1);undone+=!c.pair;continue}const o=stored.filter(x=>same(x)&&!bankDrop.includes(x.id)).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);if(o){bankDrop.push(o.id);undone+=!c.pair}}
 // The file is BankSalad's whole record for its dates (its first day may be cut, so not that one): an imported row in that range that is no longer in it was cancelled, re-classified
 // (a new key came in) or deleted there, so it goes too. Kept in firemate_import_gone_v1 for 되돌리기; skipped if it would be a big share.
 {const inRange=stored.filter(x=>x.date>fileFrom&&x.date<=fileTo),keep=new Set(read('firemate_import_gone_off_v1',[])),gone=inRange.filter(x=>!fileKeys.has(x.bankExcelKey)&&!keep.has(x.bankExcelKey)&&!bankDrop.includes(x.id));if(gone.length&&gone.length<=Math.max(10,inRange.length*.2)){bankStale=gone.map(x=>x.id);bankDrop.push(...bankStale)}}
@@ -2935,7 +2935,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-235',VERSION='3.5.235';
+ const BUILD='fire-mate-v3-5-236',VERSION='3.5.236';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3149,4 +3149,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.235"></script></body></html>
+</style><script src="./js/features.js?v=3.5.236"></script></body></html>

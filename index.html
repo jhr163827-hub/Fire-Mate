@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.236</title><link rel="stylesheet" href="./app.css?v=3.5.236"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-236">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.237</title><link rel="stylesheet" href="./app.css?v=3.5.237"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-237">
 
 
 
@@ -233,7 +233,9 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due');sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
+// Imports before v3.5.237 kept a charge whose 결제취소 row came later; one more import of the file clears it, so ask for it (and run it on its own when Gmail allows).
+const FM_IMPORT_FIX=Date.parse('2026-11-01T03:00:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
+function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
 (()=>{
 let pending=null;
@@ -384,7 +386,7 @@ if(done.length===now&&!undone)return 0;try{localStorage.setItem('firemate_split_
 function fmSplitUndo(){let done=read('firemate_split_v1',[]);for(const r of done.reverse()){const e=data.tx.find(t=>t.id===r.e),x=data.tx.find(t=>t.id===r.x);if(e){e.amount=Number(e.amount)+r.a;if(Number(e.amount)>=Number(e.splitFrom))delete e.splitFrom}if(x)x.category=r.cat}
 if(!persist())return 0;try{localStorage.removeItem('firemate_split_v1');localStorage.setItem('firemate_split_off_v1','1')}catch{}render();return done.length}
 // 📬 Once a day on open, if Gmail import was used and its sign-in is still valid (about an hour, so no Google window opens), fetch the latest BankSalad mail the same way the home button does.
-setTimeout(()=>{try{if(navigator.webdriver&&!window.__fmAutoGmailTest)return;const t=JSON.parse(localStorage.getItem('firemate_gmail_token_v1')||'null'),last=Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0;if(!(t?.token&&t.exp>Date.now()+120000)||localStorage.getItem('firemate_auto_gmail_day_v1')===today||Date.now()-last<12*36e5)return;localStorage.setItem('firemate_auto_gmail_day_v1',today);window.fmImportFromHome?.()}catch{}},3000);
+setTimeout(()=>{try{if(navigator.webdriver&&!window.__fmAutoGmailTest)return;const t=JSON.parse(localStorage.getItem('firemate_gmail_token_v1')||'null'),last=Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0;if(!(t?.token&&t.exp>Date.now()+120000)||!fmImportOld()&&(localStorage.getItem('firemate_auto_gmail_day_v1')===today||Date.now()-last<12*36e5))return;localStorage.setItem('firemate_auto_gmail_day_v1',today);window.fmImportFromHome?.()}catch{}},3000);
 // Runs after the whole script so every helper it uses is ready; again after each import.
 setTimeout(()=>{try{if(fmSplitApply())render()}catch{}},0);
 try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_cardbill_fix_v1')){const hit=data.tx.filter(t=>{if(t.type!=='expense'||!t.bankExcelKey)return false;const p=t.bankExcelKey.split('|');return fmCardBill(p[3],p[5],p.at(-1))});if(hit.length){const back=hit.map(t=>({id:t.id,category:t.category}));hit.forEach(t=>{t.type='transfer';t.category='계좌 이체'});if(persist()){localStorage.setItem('firemate_cardbill_backup_v1',JSON.stringify(back));localStorage.setItem('firemate_cardbill_fix_v1',String(hit.length));fmXferDirAdd(hit.map(t=>[t.bankExcelKey,-1]))}else back.forEach(b=>{const t=data.tx.find(x=>x.id===b.id);t.type='expense';t.category=b.category})}else localStorage.setItem('firemate_cardbill_fix_v1','0')}}catch{}
@@ -403,7 +405,7 @@ i=at('4.보험현황');if(i>=0)for(let j=i+3;j<r.length&&!/^\d+\./.test(String(c
 i=at('5.투자현황');if(i>=0)for(let j=i+3;j<r.length;j++){const x=r[j];if(/^총계/.test(String(c(x,0)))||/^\d+\./.test(String(c(x,0))))break;if(c(x,2))snap.invest.push({co:String(c(x,1)),name:String(c(x,2)).trim(),cost:num(c(x,4)),value:num(c(x,5))})}
 return snap.cash.length||snap.invest.length||snap.ins.length?snap:null}
 function fmBsImport(wb){const snap=fmBsParse(wb);if(snap)try{localStorage.setItem('firemate_bs_snapshot_v1',JSON.stringify(snap))}catch{}}
-// v3.5.236: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
+// v3.5.237: the owner's totals came out wrong after BankSalad 잔고 맞추기 and 앱에 없는 자산, so the sheet no longer changes balances or adds accounts.
 // Once, put back what it changed (the last 잔고 맞추기 and the accounts it added); what was there before is kept in firemate_bs_revert_v1 for 다시 적용.
 function fmBsRevertOnce(){if(localStorage.getItem('firemate_bs_revert_v1'))return;const b=read('firemate_bs_backup_v1',null),add=read('firemate_bs_added_v1',[]),gone=data.accounts.filter(a=>Array.isArray(add)&&add.includes(a.id)),rec={at:today,cash:Number(data.balance.cash)||0,accounts:{},gone};
  if(b){data.balance.cash=Number(b.cash)||0;for(const [id,v] of Object.entries(b.accounts||{})){const a=data.accounts.find(x=>x.id===id);if(a){rec.accounts[id]=a.amount;a.amount=v}}}
@@ -2935,7 +2937,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-236',VERSION='3.5.236';
+ const BUILD='fire-mate-v3-5-237',VERSION='3.5.237';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3149,4 +3151,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.236"></script></body></html>
+</style><script src="./js/features.js?v=3.5.237"></script></body></html>

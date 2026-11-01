@@ -202,6 +202,21 @@ test('a row marked 결제취소 cancels the earlier same charge: both go, also w
  expect((await saved(page)).tx.some(t=>t.id==='old'||t.id==='first')).toBe(false);
 });
 
+test('the phone case: only the first charge and the final fare are stored; re-import leaves the final fare',async({page})=>{
+ const d=ago(1),wb=XLSX.utils.book_new(),r=(time,amount,mark='')=>[d,time,'지출','교통','택시','주식회사 티머니',amount,'KRW','카카오페이 간편결제',mark];
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단','메모'],r('21:10',-14600,'결제취소'),r('20:52',-14600),r('22:00',-14300)]),'가계부 내역');
+ const key=[d,'21:10','expense','교통','택시','주식회사 티머니',14600,'카카오페이 간편결제'].join('|');
+ // The cancelled charge came in with an earlier import, before BankSalad marked it.
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'fin',date:d,type:'expense',category:'교통',amount:14300,memo:'주식회사 티머니',bankExcelKey:key.replace('21:10','22:00').replace('14600','14300')},{id:'first',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key.replace('21:10','20:52')}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:XLSX.write(wb,{type:'buffer',bookType:'xlsx'})});
+ 
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300]);
+ expect((await saved(page)).tx.some(t=>t.id==='old'||t.id==='first')).toBe(false);
+});
+
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{
  const d=ago(1),row=(time,amount,memo='주식회사 티머니')=>[d,time,'지출','교통','',memo,amount,'KRW','카드'];
  // 뱅크샐러드 writes 지출 as negative; the +12,700 row is the cancellation of the 08:00 charge.

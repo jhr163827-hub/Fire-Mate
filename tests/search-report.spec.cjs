@@ -39,6 +39,8 @@ test('home shows last month in one card and closing it keeps it closed',async({p
  await expect(card).toContainText('₩50,000 넘었어요');
  await expect(card).toContainText('쇼핑 ₩120,000');
  await expect(card).toContainText('+₩2,500,000');
+ // (3,000,000 − 150,000) ÷ 3,000,000
+ await expect(card).toContainText('저축률95%');
  await page.locator('#fmMonthReportClose').click();
  await expect(card).toHaveCount(0);
  await page.reload();

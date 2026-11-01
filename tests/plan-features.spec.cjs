@@ -76,7 +76,7 @@ test('pulling down on home runs the quiet net-worth refresh',async({page})=>{
 });
 
 test('records imported before the 결제취소 fix ask for one more import, a fresh import does not',async({page})=>{
- const tx=[{id:'a',date:'2026-10-31',type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:'k'}];
+ const tx=[{id:'a',date:'2026-10-30',type:'expense',category:'식비',amount:9000,memo:'점심',bankExcelKey:'k'}];
  await page.addInitScript(tx=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},tx}));localStorage.setItem('firemate_last_import_v1','2026-10-31T12:00:00Z')},tx);
  await page.goto('/index.html');
  await expect(page.locator('#fmHomeSync')).toHaveClass(/primary/);

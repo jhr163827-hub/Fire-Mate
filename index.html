@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.240</title><link rel="stylesheet" href="./app.css?v=3.5.240"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-240">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.241</title><link rel="stylesheet" href="./app.css?v=3.5.241"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-241">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.240 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.241 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -371,6 +371,10 @@ function fmIsInvestRaw(t){const k=String(t.bankExcelKey||'').split('|');if(t.cat
 // Rows imported before the double-payment check: drop the second record once, keeping a copy in firemate_dup_backup_v1 (run again for the taxi rule).
 // v3.5.235–237 also dropped a same-fare taxi row within 30 minutes, but 뱅크샐러드 marks the cancelled one itself, so the other is a real ride: put those back once.
 try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_taxifix_undo_v1')){const bk=JSON.parse(localStorage.getItem('firemate_dup_backup_v1')||'[]');if(Array.isArray(bk)&&bk.length){const keys=data.tx.filter(t=>t.bankExcelKey).map(t=>t.bankExcelKey),have=new Set(data.tx.map(t=>t.id)),back=bk.filter(r=>r?.bankExcelKey&&!have.has(r.id)&&!keys.some(k=>fmDupPay(k,r.bankExcelKey)));if(back.length){const prev=data.tx;data.tx=[...prev,...back];if(persist())localStorage.setItem('firemate_dup_backup_v1',JSON.stringify(bk.filter(r=>!back.includes(r))));else data.tx=prev}}localStorage.setItem('firemate_taxifix_undo_v1','1')}}catch{}
+// Once, without the file: v3.5.239 put back taxi rows that are a charge cancelled and charged again (same fare within 30 minutes), and the 10/31 티머니 14,600 is a charge the owner saw cancelled (뱅크샐러드 shows it struck through; the ride was 14,300).
+// Both go, kept in firemate_dup_backup_v1 (자동 변경 기록 되돌리기) and their keys in firemate_import_deleted_v1 so a later import does not bring them back.
+try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_cancelfix_v1')){const sec=k=>fmKeySec(k),seen=new Map,gone=[],known=t=>t.date==='2026-10-31'&&t.memo==='주식회사 티머니'&&Number(t.amount)===14600;for(const t of [...data.tx].filter(t=>t.type==='expense'&&t.bankExcelKey).sort((a,b)=>sec(a.bankExcelKey)-sec(b.bankExcelKey))){const p=t.bankExcelKey.split('|');if(known(t)){gone.push(t);continue}if(!/택시|카카오\s*T|카카오모빌리티|이동의즐거움/.test(p[4]+' '+p[5]))continue;const g=t.date+'|'+t.memo+'|'+t.amount,l=seen.get(g)||[];if(l.some(k=>Math.abs(sec(k)-sec(t.bankExcelKey))<=1800)){gone.push(t);continue}l.push(t.bankExcelKey);seen.set(g,l)}
+ if(gone.length){const prev=data.tx,ids=new Set(gone.map(t=>t.id));data.tx=prev.filter(t=>!ids.has(t.id));if(persist()){const add=(k,v)=>{let o=[];try{o=JSON.parse(localStorage.getItem(k)||'[]')}catch{}localStorage.setItem(k,JSON.stringify([...(Array.isArray(o)?o:[]),...v].slice(-2000)))};add('firemate_dup_backup_v1',gone);add('firemate_import_deleted_v1',gone.map(t=>t.bankExcelKey));localStorage.setItem('firemate_cancelfix_v1',String(gone.length))}else data.tx=prev}else localStorage.setItem('firemate_cancelfix_v1','0')}}catch{}
 try{if(Array.isArray(data?.tx)&&!localStorage.getItem('firemate_taxifix_v1')&&!localStorage.getItem('firemate_dupfix_v1')){const seen=new Map,gone=[],keep=data.tx.filter(t=>{if(t.type!=='expense'||!t.bankExcelKey)return true;const p=t.bankExcelKey.split('|'),g=p[0]+'|'+p[5]+'|'+p[6],list=seen.get(g)||[];if(list.some(k=>fmDupPay(k,t.bankExcelKey))){gone.push(t);return false}list.push(t.bankExcelKey);seen.set(g,list);return true});if(gone.length){const prev=data.tx;data.tx=keep;if(persist()){let o=[];try{o=JSON.parse(localStorage.getItem('firemate_dup_backup_v1')||'[]')}catch{}localStorage.setItem('firemate_dup_backup_v1',JSON.stringify([...(Array.isArray(o)?o:[]),...gone]));localStorage.setItem('firemate_taxifix_v1',String(gone.length))}else data.tx=prev}else localStorage.setItem('firemate_taxifix_v1','0')}}catch{}
 // 더치페이: money a friend sends back (a share of a meal I paid: total ÷ n, or all but my share) within 2 days lowers that payment to my own share.
 // The original amount stays in splitFrom, each pair is kept in firemate_split_v1, and 되돌리기 (analysis) puts everything back and stops it.
@@ -2939,7 +2943,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-240',VERSION='3.5.240';
+ const BUILD='fire-mate-v3-5-241',VERSION='3.5.241';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3153,4 +3157,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.240"></script></body></html>
+</style><script src="./js/features.js?v=3.5.241"></script></body></html>

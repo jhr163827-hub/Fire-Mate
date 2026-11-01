@@ -5,7 +5,8 @@ const SHEETJS=path.join(path.dirname(require.resolve('xlsx/package.json')),'dist
 const ago=n=>new Date(Date.now()-n*86400000).toISOString().slice(0,10);
 const month=ago(0).slice(0,7);
 const book=rows=>{const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단'],...rows]),'가계부 내역');return XLSX.write(wb,{type:'buffer',bookType:'xlsx'})};
-const seedWith=async(page,seed)=>page.addInitScript(seed=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');if(seed)localStorage.setItem('firemate_smart_v3',JSON.stringify(seed))},seed);
+// The one-time 10/31 repair (firemate_cancelfix_v1) is marked done unless a test is about it, since these tests use yesterday's date.
+const seedWith=async(page,seed,repair=false)=>page.addInitScript(([seed,repair])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');if(seed)localStorage.setItem('firemate_smart_v3',JSON.stringify(seed));if(!repair)localStorage.setItem('firemate_cancelfix_v1','t')},[seed,repair]);
 const saved=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')));
 test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort());
@@ -363,4 +364,16 @@ test('an imported row deleted by hand does not come back on the next import',asy
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([[d,'20:52','지출','교통','택시','주식회사 티머니',-14600,'KRW','카드'],[d,'22:00','지출','교통','택시','주식회사 티머니',-14300,'KRW','카드']])});
  await page.locator('#bankExcelConfirm').click();
  await expect.poll(async()=>(await saved(page)).tx.map(t=>t.amount)).toEqual([14300]);
+});
+
+test('on open, without the file: the 10/31 cancelled 14,600 and re-charged taxi rows go once and stay gone after an import',async({page})=>{
+ const k=(d,t,memo,amt)=>[d,t,'expense','교통','택시',memo,amt,'카카오페이 간편결제'].join('|'),row=(id,d,t,memo,amt)=>({id,date:d,type:'expense',category:'교통',amount:amt,memo,bankExcelKey:k(d,t,memo,amt)});
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[row('c','2026-10-31','20:52','주식회사 티머니',14600),row('f','2026-10-31','22:00','주식회사 티머니',14300),row('a','2026-10-23','21:00','주식회사 티머니',13000),row('b','2026-10-23','21:12','주식회사 티머니',13000),row('r1','2026-10-24','09:00','주식회사 티머니',13000),row('r2','2026-10-24','18:00','주식회사 티머니',13000)]},true);
+ await page.goto('/index.html');
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id).sort()).toEqual(['a','f','r1','r2']);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dup_backup_v1')).map(t=>t.id).sort())).toEqual(['b','c']);
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([['2026-10-31','20:52','지출','교통','택시','주식회사 티머니',-14600,'KRW','카카오페이 간편결제'],['2026-10-31','22:00','지출','교통','택시','주식회사 티머니',-14300,'KRW','카카오페이 간편결제'],['2026-10-31','23:00','지출','식비','','김밥',-4000,'KRW','카드']])});
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.date==='2026-10-31').map(t=>t.amount).sort()).toEqual([14300,4000].sort());
 });

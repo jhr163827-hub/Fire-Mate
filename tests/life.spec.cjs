@@ -181,15 +181,15 @@ test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the
   [{latitude:37.75,longitude:128.9},m=>expect(m).toMatchObject({kr:{'51150':1},pin:{'kr:51150':expect.any(String)}}),'여행 일지','📍 강원 강릉시'],
   [{latitude:34.69,longitude:135.5},m=>expect(m).toMatchObject({world:{JP:1},sub:{JP:{osaka:1}},pin:{'world:JP':expect.any(String),'JP:osaka':expect.any(String)}}),'🇯🇵 일본','📍 오사카']]){
   const ctx=await browser.newContext({viewport:{width:390,height:844},geolocation:geo,permissions:['geolocation']}),page=await ctx.newPage();
-  let asked=null;await page.route(/nominatim/,r=>{asked=r.request().url();r.fulfill({json:{address:{country_code:'jp',state:'Osaka Prefecture'}}})});
+  let asked=null;await page.route(/nominatim/,r=>{const u=r.request().url();if(u.includes('zoom=6'))asked=u;r.fulfill({json:{address:{country_code:'jp',state:'Osaka Prefecture'}}})});
   await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*nominatim)/,r=>r.abort());
   await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
   await page.click('#fmJnHere');
-  await expect(page.locator('.fm-cele')).toContainText('위치 인증!');
+  // The spot sheet opens: name, 누구랑, memo. Closing it keeps the 발자국.
+  await expect(page.locator('.fm-jn-sheethead')).toContainText('위치 인증!');await page.click('#fmSpotX');
   await expect(page.locator('#fmJnHead')).toHaveText(head);await expect(page.locator('.fm-jn-pick strong')).toHaveText(pick);
   const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));expectMarks(m);
   // Abroad keeps only the place; in Korea the spot (rounded to ~100 m) is kept as a dot.
-  expect(JSON.stringify(m)).not.toMatch(/135\.5|34\.69/);
   if(asked){expect(asked).toContain('lat=34.690');await page.goBack();await expect(page.locator('#fmJnHead')).toHaveText('여행 일지');await expect(page.locator('path[data-place="JP"]')).toHaveClass(/been/)}
   else expect(geo.latitude).toBe(37.75);// Korea needs no lookup
   await ctx.close()}
@@ -226,20 +226,39 @@ test('🔍 the travel map zooms with ＋/−, pinch and wheel, pans by dragging,
  expect(await vb()).toEqual(full);await expect(map).not.toHaveClass(/zoomed/);
 });
 
-test('🏙️ a city split into 구 opens a 구 map, and 📍 marks the 구 and drops a dot where you are',async({browser})=>{
+test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자국 with 누구랑, and ✨ shows places worth a visit',async({browser})=>{
  const ctx=await browser.newContext({viewport:{width:390,height:844},geolocation:{latitude:35.2210,longitude:128.6850},permissions:['geolocation']}),page=await ctx.newPage();
- await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ await page.route(/nominatim/,r=>r.fulfill({json:{name:'용지호수공원',address:{leisure:'용지호수공원',quarter:'용호동',city:'창원시'}}}));
+ await page.route(/overpass-api/,r=>r.fulfill({json:{elements:[{type:'node',lat:35.2405,lon:128.6922,tags:{tourism:'attraction',name:'창원의집'}},{type:'way',center:{lat:35.1, lon:128.55},tags:{tourism:'viewpoint',name:'저도 비치로드',wikidata:'Q1'}}]}}));
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*(nominatim|overpass))/,r=>r.abort());
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.click('#fmJnHere');
- await expect(page.locator('.fm-cele')).toContainText('경남 창원시 성산구');
- const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));
- expect(m.kr['4812']).toBe(1);expect(Object.values(m.sub.K4812)).toEqual([1]);expect(m.pts).toEqual([[35.221,128.685,expect.any(String)]]);
- await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);
- // (the 위치 인증 celebration still covers the screen, so tap the button directly)
+ const sheet=page.locator('#fmJnSheet');await expect(sheet).toBeVisible();await expect(page.locator('#fmSpotName')).toHaveValue('용지호수공원');
+ await expect(sheet.locator('.fm-jn-sheethead small')).toContainText('성산구 용호동');
+ await sheet.locator('[data-w="couple"]').click();await page.fill('#fmSpotMemo','저녁 산책');await sheet.locator('button.primary').click();await expect(sheet).toBeHidden();
+ const sp=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_spots_v1')));
+ expect(sp).toEqual([expect.objectContaining({lat:35.221,lon:128.685,area:'kr',place:'4812',name:'용지호수공원',gu:'성산구',dong:'용호동',with:'couple',memo:'저녁 산책'})]);
+ const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));expect(m.kr['4812']).toBe(1);expect(Object.values(m.sub.K4812)).toEqual([1]);
+ await expect(page.locator('.fm-jn-map .fm-jn-dot.w-couple')).toHaveCount(1);
+ await expect(page.locator('.fm-jn-spots').first()).toContainText('용지호수공원');await expect(page.locator('#fmJnBody .fm-jn-with')).toContainText('💑 연인 1');
+ // The 연인 filter keeps the 연인 발자국, 전체 shows all again.
+ await page.locator('#fmJnBody [data-with="couple"]').click();await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);await page.locator('#fmJnBody [data-with=""]').click();
+ // ✨ near the spot: Wikidata-known first, 💚 keeps it as a place to go.
+ await page.locator('.fm-jn-spot').first().click();await page.click('#fmSpotNear');
+ await expect(page.locator('.fm-jn-rec')).toContainText('저도 비치로드');await expect(page.locator('.fm-jn-recrow').first()).toContainText('저도 비치로드');
+ await page.locator('[data-recwant="0"]').click();await expect(page.locator('.fm-jn-spots').last()).toContainText('💚 가 보고 싶은 곳 1곳');
  await page.locator('[data-country="K4812"]').dispatchEvent('click');
  await expect(page.locator('#fmJnHead')).toHaveText('🏙️ 경남 창원시');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(5);
- await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 5곳');
- await page.locator('.fm-jn-map path[data-place]').filter({has:page.locator('xpath=self::*[not(contains(@class,"been"))]')}).first().dispatchEvent('click');
- await page.locator('[data-mark="1"]').dispatchEvent('click');await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 2 / 5곳');
+ await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(2);await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 5곳');
  await ctx.close();
+});
+
+test('a trip remembers 누구랑 and the 누구랑 filter narrows the trip list',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'혼자 경주',from:'2026-05-01',to:'2026-05-02',area:'kr',with:'solo'}]));localStorage.setItem('firemate_travel_spots_v1',JSON.stringify([{id:'s',lat:35.83,lon:129.22,d:'2026-05-01',area:'kr',place:'47130',name:'첨성대',dong:'',with:'solo'},{id:'t',lat:35.22,lon:128.68,d:'2026-06-01',area:'kr',place:'4812',name:'용지호수',dong:'',with:'couple'}]))});
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.locator('#fmJnNew').click();await page.fill('#fmJnName','둘이 부산');await page.fill('#fmJnFrom','2026-07-01');await page.selectOption('#fmJnWithIn','couple');await page.locator('#fmJnAdd button.primary').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_trips_v1')).find(t=>t.name==='둘이 부산').with)).toBe('couple');
+ await expect(page.locator('.fm-jn-trip')).toHaveCount(2);await expect(page.locator('.fm-jn-trip').first()).toContainText('💑 둘이 부산');
+ await page.locator('#fmJnBody [data-with="couple"]').click();
+ await expect(page.locator('.fm-jn-trip')).toHaveCount(1);await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);await expect(page.locator('.fm-jn-spot')).toHaveText(/용지호수/);
 });

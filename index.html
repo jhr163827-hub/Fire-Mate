@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.249</title><link rel="stylesheet" href="./app.css?v=3.5.249"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-249">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.250</title><link rel="stylesheet" href="./app.css?v=3.5.250"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-250">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.249 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.250 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -2824,7 +2824,7 @@ function fmHomeTrip(){const el=$('fmHomeTrip');if($('fmJournalSub'))$('fmJournal
  el.hidden=!html;el.innerHTML=html;el.dataset.trip=(now||soon||ago)?.id||''}
 function fmJnSvg(area,m,been,marks,pins={}){const at=area==='world'?1:3,z=m.zones?.[fmJnZone],vb=z?z[1]:m.vb,P=area!=='world'&&m.proj,rad=+vb.split(' ')[2]*.008;
  const dots=P?fmSpotDots(P,rad,/^c-[KD]/.test(area)?area.slice(3):null):'';
- return '<svg class="fm-jn-map" viewBox="'+vb+'" role="img" aria-label="'+(area==='kr'?'국내':'해외')+' 지도">'+m.c.map(r=>'<path data-place="'+r[0]+'" class="'+(been.has(r[0])?'been':marks[r[0]]===2?'want':'')+(fmJnPick===r[0]?' pick':'')+(pins[r[0]]?' pin':'')+'" d="'+r[at]+'"></path>').join('')+(m.border?'<path class="fm-jn-border" d="'+m.border+'"></path>':'')+dots+'</svg>'}
+ return '<svg class="fm-jn-map" viewBox="'+vb+'"'+(/^(kr|world)$/.test(area)?' data-main="1"':'')+' role="img" aria-label="'+(area==='kr'?'국내':'해외')+' 지도">'+m.c.map(r=>'<path data-place="'+r[0]+'" data-name="'+safe(area==='world'?fmPlaceName('world',r[0]):r[1])+'" class="'+(been.has(r[0])?'been':marks[r[0]]===2?'want':'')+(fmJnPick===r[0]?' pick':'')+(pins[r[0]]?' pin':'')+'" d="'+r[at]+'"></path>').join('')+(m.border?'<path class="fm-jn-border" d="'+m.border+'"></path>':'')+dots+'</svg>'}
 // 📍 여기 왔어요: the phone's position (asked each time) names the place; 국내 also keeps the spot rounded to ~100 m as a dot (pts [[lat,lon,date]], 300). 국내 is found on the city map itself (offline);
 // abroad the country comes from the world map (Equal Earth, offline) and the region of JP·CN·VN·TH·IT·ES·DE from OpenStreetMap's
 // reverse lookup (lat/lon rounded to ~100 m). Only the place and the date are kept: pin {'kr:id'|'world:A2'|'JP:osaka': date}.
@@ -2832,8 +2832,19 @@ function fmJnSvg(area,m,been,marks,pins={}){const at=area==='world'?1:3,z=m.zone
 let fmJnCountry=null,fmJnView=null,fmJnDrag=0;
 // 🔍 Maps zoom by pinch, wheel, double tap or ＋/−, and pan by dragging once zoomed (one finger still scrolls the page at full view).
 // The view is kept per map (area·zone·country) so picking a place does not jump back out; a drag is not a tap.
-function fmJnZoom(svg){if(!svg)return;const key=fmJnArea+'|'+fmJnZone+'|'+(fmJnCountry||''),b=svg.viewBox.baseVal,B=[b.x,b.y,b.width,b.height],pts=new Map;let v=fmJnView?.key===key?fmJnView.vb.slice():B.slice(),start=null;
- const set=(cx,cy,w)=>{w=Math.min(B[2],Math.max(B[2]/16,w));const h=w*B[3]/B[2],x=Math.min(B[0]+B[2]-w,Math.max(B[0],cx-w/2)),y=Math.min(B[1]+B[3]-h,Math.max(B[1],cy-h/2));v=[x,y,w,h];svg.setAttribute('viewBox',v.join(' '));const px=svg.getBoundingClientRect().width||340;svg.querySelectorAll('.fm-jn-dot').forEach(c=>c.setAttribute('r',(w/px*6).toFixed(4)));svg.classList.toggle('zoomed',w<B[2]*.99);fmJnView={key,vb:v}};
+// 🏷️ Place names sit at a point inside each shape and keep an 11 px size; a name shows only when its place is wide enough on screen
+// for it (and, on the 국내·해외 maps, only once zoomed in).
+function fmJnLabels(svg){const ns='http://www.w3.org/2000/svg',g=document.createElementNS(ns,'g');g.setAttribute('class','fm-jn-labels');
+ for(const p of svg.querySelectorAll('path[data-name]')){let b;try{b=p.getBBox()}catch{continue}if(!b.width)continue;let x=b.x+b.width/2,y=b.y+b.height/2;
+  if(p.isPointInFill&&!p.isPointInFill(new DOMPoint(x,y))){let best=null;for(let i=1;i<6;i++)for(let j=1;j<6;j++){const px=b.x+b.width*i/6,py=b.y+b.height*j/6;if(p.isPointInFill(new DOMPoint(px,py))){const d=Math.hypot(px-x,py-y);if(!best||d<best[2])best=[px,py,d]}}if(best)[x,y]=best}
+  const t=document.createElementNS(ns,'text');t.textContent=p.dataset.name;t.setAttribute('x',x.toFixed(2));t.setAttribute('y',y.toFixed(2));t._b=b;g.append(t)}
+ svg.append(g);svg.append(...svg.querySelectorAll('.fm-jn-dot'));return g}
+function fmJnZoom(svg){if(!svg)return;let labs=null;const key=fmJnArea+'|'+fmJnZone+'|'+(fmJnCountry||''),b=svg.viewBox.baseVal,B=[b.x,b.y,b.width,b.height],pts=new Map;let v=fmJnView?.key===key?fmJnView.vb.slice():B.slice(),start=null;
+ const set=(cx,cy,w)=>{w=Math.min(B[2],Math.max(B[2]/16,w));const h=w*B[3]/B[2],x=Math.min(B[0]+B[2]-w,Math.max(B[0],cx-w/2)),y=Math.min(B[1]+B[3]-h,Math.max(B[1],cy-h/2));v=[x,y,w,h];svg.setAttribute('viewBox',v.join(' '));const px=svg.getBoundingClientRect().width||340,k=w/px;svg.querySelectorAll('.fm-jn-dot').forEach(c=>c.setAttribute('r',(k*6).toFixed(4)));
+  labs=labs||fmJnLabels(svg);const on=!svg.dataset.main||w<B[2]*.99,placed=[];
+  // bigger places first; a name that would overlap one already shown stays hidden
+  for(const t of [...labs.children].sort((a,b)=>b._b.width*b._b.height-a._b.width*a._b.height)){const b=t._b,hw=t.textContent.length*5.5*k,hh=7*k,x=+t.getAttribute('x'),y=+t.getAttribute('y');let show=on&&b.width/k>=t.textContent.length*10+6&&b.height/k>=14&&x>v[0]&&x<v[0]+v[2]&&y>v[1]&&y<v[1]+v[3];
+   if(show&&placed.some(([px,py,pw])=>Math.abs(px-x)<pw+hw&&Math.abs(py-y)<hh*2))show=false;if(show)placed.push([x,y,hw]);t.style.display=show?'':'none';if(show)t.setAttribute('font-size',(k*11).toFixed(4))}svg.classList.toggle('zoomed',w<B[2]*.99);fmJnView={key,vb:v}};
  const at=e=>{const r=svg.getBoundingClientRect(),k=Math.max(v[2]/r.width,v[3]/r.height),ox=(r.width*k-v[2])/2,oy=(r.height*k-v[3])/2;return [v[0]+(e.clientX-r.left)*k-ox,v[1]+(e.clientY-r.top)*k-oy,k]};
  set(v[0]+v[2]/2,v[1]+v[3]/2,v[2]);
  svg.onwheel=e=>{e.preventDefault();const [x,y]=at(e),f=e.deltaY>0?1.25:.8;set(x+(v[0]+v[2]/2-x)*f,y+(v[1]+v[3]/2-y)*f,v[2]*f)};
@@ -3034,7 +3045,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-249',VERSION='3.5.249';
+ const BUILD='fire-mate-v3-5-250',VERSION='3.5.250';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3248,4 +3259,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.249"></script></body></html>
+</style><script src="./js/features.js?v=3.5.250"></script></body></html>

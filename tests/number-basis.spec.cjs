@@ -724,12 +724,23 @@ test('small payments, a next-year budget from this year and the year FIRE report
  const card=page.locator('.fm-year-fire');await expect(card).toContainText(y+'년 FIRE 성적표');await expect(card).toContainText(/FIRE .*(앞당김|늦어짐|계획대로)/);await expect(card).toContainText('저축률 92%');
 });
 
-test('생활비 in the payday plan leaves out 고정비 and says how much it left out',async({page})=>{
+test('생활비 in the payday plan includes 고정비·구독 and shows it first in what it was spent on',async({page})=>{
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  const bill=(id,date)=>({id,date,type:'expense',category:'통신·구독',amount:13500,memo:'넷플릭스'});
  await load(page,seed({tx:[bill('n7','2026-07-24'),bill('n8','2026-08-24'),bill('n9','2026-09-24'),bill('n10','2026-10-24'),{id:'f',date:'2026-10-26',type:'expense',category:'식비',amount:100000,memo:'마트'}]}));
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
- await expect(rows).toContainText('🛒 생활비10만 / 80만');
- await expect(rows.locator('.fm-plan-life')).toHaveText('식비 10만 · 고정비 1.4만 제외');
+ await expect(rows).toContainText('🛒 생활비11.4만 / 80만');
+ await expect(rows.locator('.fm-plan-life')).toHaveText('고정비 1.4만 · 식비 10만');
+});
+
+test('연말정산 tells check cards from credit cards by their bills, not only by the name',async({page})=>{
+ const n=new Date();test.skip(n.getMonth()<3,'needs three paydays this year');
+ const y=n.getFullYear(),m=n.toISOString().slice(0,7),d=m+'-01',k=(a,pay,i)=>[d,'10:0'+i,'expense','쇼핑','','가게',a,pay].join('|');
+ const pay=[1,2,3].map(i=>({id:'p'+i,date:y+'-0'+i+'-25',type:'income',category:'급여',amount:3400000,memo:'급여'}));
+ // KB pays a bill (KB카드출금), 신한 never does → 신한 is a check card; 토스뱅크 체크카드 by its name.
+ await load(page,seed({tx:[...pay,{id:'b',date:d,type:'transfer',category:'계좌 이체',amount:300000,memo:'KB카드출금'},
+  {id:'1',date:d,type:'expense',category:'쇼핑',amount:300000,memo:'가게',bankExcelKey:k(300000,'KB국민 CLiP카드',1)},{id:'2',date:d,type:'expense',category:'쇼핑',amount:200000,memo:'가게',bankExcelKey:k(200000,'신한카드 Deep',2)},{id:'3',date:d,type:'expense',category:'쇼핑',amount:50000,memo:'가게',bankExcelKey:k(50000,'토스뱅크 체크카드',3)}]}));
+ await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('신용 30만 · 체크 25만');
 });

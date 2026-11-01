@@ -615,3 +615,54 @@ aside.focused #intel > h2 {
 aside.focused #intel .actions {
   margin-top: 0;
 }
+header .screen-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+header .screen-actions button {
+  font-size: 11px;
+  padding: 6px 8px;
+  min-height: 44px;
+}
+header #landscape {
+  min-width: 64px;
+}
+header #landscape[aria-pressed="true"] {
+  background: #ecc475;
+  color: #233e43;
+}
+header {
+  gap: 6px;
+}
+header a {
+  width: 28px;
+  flex: 0 0 28px;
+  padding: 3px;
+}
+header h1 {
+  font-size: clamp(15px, 3.9vw, 20px);
+  white-space: nowrap;
+}
+header small {
+  letter-spacing: 1px;
+  font-size: 7px;
+}
+#banner {
+  max-width: calc(100% - 90px);
+  white-space: normal;
+  text-align: center;
+}
+html:fullscreen {
+  background: #163a44;
+}
+@media (max-width: 700px) {
+  header small {
+    display: none;
+  }
+}
+@media (min-width: 560px) and (max-width: 799px) and (orientation: landscape) {
+  header h1 {
+    font-size: 15px;
+  }
+}

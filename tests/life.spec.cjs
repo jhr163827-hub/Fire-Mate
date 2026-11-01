@@ -229,7 +229,9 @@ test('🔍 the travel map zooms with ＋/−, pinch and wheel, pans by dragging,
 test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자국 with 누구랑, and ✨ shows places worth a visit',async({browser})=>{
  const ctx=await browser.newContext({viewport:{width:390,height:844},geolocation:{latitude:35.2210,longitude:128.6850},permissions:['geolocation']}),page=await ctx.newPage();
  await page.route(/nominatim/,r=>r.fulfill({json:{name:'용지호수공원',address:{leisure:'용지호수공원',quarter:'용호동',city:'창원시'}}}));
- await page.route(/overpass-api/,r=>r.fulfill({json:{elements:[{type:'node',lat:35.2405,lon:128.6922,tags:{tourism:'attraction',name:'창원의집'}},{type:'way',center:{lat:35.1, lon:128.55},tags:{tourism:'viewpoint',name:'저도 비치로드',wikidata:'Q1'}}]}}));
+ // The first Overpass server is busy; the next one answers (a POST).
+ let posted='';await page.route(/overpass-api/,r=>r.fulfill({status:429,body:'busy'}));
+ await page.route(/overpass\.private\.coffee/,r=>{posted=r.request().postData()||'';r.fulfill({json:{elements:[{type:'node',lat:35.2405,lon:128.6922,tags:{tourism:'attraction',name:'창원의집'}},{type:'way',center:{lat:35.1, lon:128.55},tags:{tourism:'viewpoint',name:'저도 비치로드',wikidata:'Q1'}}]}})});
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*(nominatim|overpass))/,r=>r.abort());
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.click('#fmJnHere');
@@ -246,6 +248,7 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
  // ✨ near the spot: Wikidata-known first, 💚 keeps it as a place to go.
  await page.locator('.fm-jn-spot').first().click();await page.click('#fmSpotNear');
  await expect(page.locator('.fm-jn-rec')).toContainText('저도 비치로드');await expect(page.locator('.fm-jn-recrow').first()).toContainText('저도 비치로드');
+ expect(decodeURIComponent(posted)).toContain('around:3000,35.221,128.685');
  await page.locator('[data-recwant="0"]').click();await expect(page.locator('.fm-jn-spots').last()).toContainText('💚 가 보고 싶은 곳 1곳');
  await page.locator('[data-country="K4812"]').dispatchEvent('click');
  await expect(page.locator('#fmJnHead')).toHaveText('🏙️ 경남 창원시');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(5);

@@ -1139,7 +1139,7 @@ class HomeResponsiveTest(unittest.TestCase):
                         page.locator('.bottomnav [data-view="fire"]').tap()
                         # FIRE keeps the estimate and the forecast; the rest lives in 🧪 FIRE 실험실.
                         self.assertEqual(page.locator('#view-fire>.hero,#view-fire>.card').count(),2)
-                        self.assertEqual(page.locator('#view-firelab>.card').count(),1)
+                        self.assertEqual(page.locator('#view-firelab>.card.fm-fire-overview').count(),1)  # plus the 📈 적립식 시뮬레이터 card
                         self.assertFalse(page.locator('#fmForecastPlot').is_visible())
                         self.open_forecast(page)
                         self.assertTrue(page.locator('#fmForecastPlot').is_visible())

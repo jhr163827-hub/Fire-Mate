@@ -31,6 +31,8 @@ test('US capital gains: gain in won from the buy rate, what is left of the 2.5M 
  await expect(card).toContainText('+460만원');await expect(card).toContainText('약 46.2만원');
  // 250만 ÷ 46만 = 5주(230만)
  await expect(card.locator('.fm-ustax-tip')).toContainText('QQQ 5주');await expect(card.locator('.fm-ustax-tip')).toContainText('230만원');
+ // 5주 × 700 × 1,400 = 490만 원어치를 팔고 다시 사는 비용(0.64%) 약 3.1만 원 < 아끼는 세금 50.6만 원
+ await expect(card.locator('.fm-ustax-tip')).toContainText('매매·환전 비용 약 3.1만원');
  await expect(async()=>{await page.locator('#fmUsTaxIn').fill('100');await page.locator('#fmUsTaxForm button').click();expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_us_tax_v1')||'{}').realized)).toBe(1000000)}).toPass({timeout:15000});
  // 남은 한도 150만 → 3주(138만)
  await expect(card.locator('.fm-ustax-tip')).toContainText('QQQ 3주');
@@ -45,4 +47,11 @@ test('the DCA simulator in the FIRE lab uses real closes and compares with the p
  // 3년 = 36달, 매달 30만 → 넣은 돈 1,080만
  await expect(page.locator('#fmDcaOut')).toContainText('1,080만원');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dca_v1')))).toEqual({sym:'QQQ',amt:30,years:3});
+});
+
+test('with nothing spent yet this month, the insights do not show −100% against last month',async({page})=>{
+ const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);const prev=d.toISOString().slice(0,7)+'-01';
+ await page.addInitScript(p=>{const s=JSON.parse(localStorage.getItem('firemate_smart_v3'));s.tx=[{id:'p',date:p,type:'expense',category:'식비',amount:30000,memo:'점심'}];localStorage.setItem('firemate_smart_v3',JSON.stringify(s))},prev);
+ await page.goto('/index.html');await page.evaluate(()=>window.fmGo('insights'));
+ await expect(page.locator('#monthDelta')).toHaveText('—');
 });

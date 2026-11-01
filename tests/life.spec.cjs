@@ -275,3 +275,17 @@ test('a trip remembers 누구랑 and the 누구랑 filter narrows the trip list'
  await page.locator('#fmJnBody [data-with="couple"]').click();
  await expect(page.locator('.fm-jn-trip')).toHaveCount(1);await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(1);await expect(page.locator('.fm-jn-spot')).toHaveText(/용지호수/);
 });
+
+test('🏷️ place names show once zoomed in, at a steady size, and fit inside their place',async({page})=>{
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ const shown=()=>page.locator('.fm-jn-labels text').evaluateAll(ts=>ts.filter(t=>t.style.display!=='none').map(t=>[t.textContent,Math.round(t.getBoundingClientRect().height)]));
+ await expect(page.locator('.fm-jn-map path[data-place]').first()).toBeAttached();
+ expect(await shown()).toEqual([]);
+ for(let i=0;i<3;i++)await page.locator('.fm-jn-zoombtn button').first().click();
+ const z=await shown();expect(z.length).toBeGreaterThan(3);for(const [,h] of z){expect(h).toBeGreaterThan(8);expect(h).toBeLessThan(18)}
+ // A 동 map names its 동 even at full view where they fit.
+ await page.locator('.fm-jn-zoombtn button').last().click();await page.locator('.fm-jn-zoombtn button').last().click();await page.locator('.fm-jn-zoombtn button').last().click();
+ await page.locator('path[data-place="4812"]').dispatchEvent('click');await page.locator('[data-country="D4812"]').click();
+ await expect(page.locator('#fmJnHead')).toHaveText('🏘️ 경남 창원시');await expect.poll(async()=>(await shown()).length).toBeGreaterThan(3);
+});

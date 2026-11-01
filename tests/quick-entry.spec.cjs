@@ -10,7 +10,9 @@ const history={theme:'dark',rec:[],budgets:{},tx:[
  {id:'o2',date:ago(201),type:'expense',category:'식비',amount:9000,memo:'오래된 기록'},
  {id:'once',date:ago(1),type:'expense',category:'쇼핑',amount:55000,memo:'한 번'},
  {id:'p1',date:ago(10),type:'income',category:'급여',amount:3000000,memo:'월급'},
- {id:'p2',date:ago(40),type:'income',category:'급여',amount:3000000,memo:'월급'}]};
+ {id:'p2',date:ago(40),type:'income',category:'급여',amount:3000000,memo:'월급'},
+ // Something in this month's list to edit, also on the 1st.
+ {id:'now',date:ago(0),type:'expense',category:'쇼핑',amount:12000,memo:'오늘'}]};
 const open=async(page,seed)=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort());
  if(seed)await page.addInitScript(seed=>{if(!sessionStorage.getItem('qa-seeded')){sessionStorage.setItem('qa-seeded','1');localStorage.setItem('firemate_smart_v3',JSON.stringify(seed))}},seed);
@@ -48,7 +50,7 @@ test('history suggests repeated recent entries per type and hides while editing'
  await expect(page.locator('#fmQuickEntry')).toBeHidden();
  await page.locator('#entryOverlay [data-close]').click();
  await page.evaluate(()=>window.fmGo('history'));
- await page.locator('[data-edit]').first().click();
+ await page.locator('#historyList [data-edit]').first().click();
  await expect(page.locator('#entryTitle')).toHaveText('거래 수정');
  await expect(page.locator('#fmQuickEntry')).toBeHidden();
 });

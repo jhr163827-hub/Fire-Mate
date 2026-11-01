@@ -18,8 +18,8 @@ test('imports map 뱅크샐러드 분류 to app categories and learn a merchant 
  const load=async rows=>{await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
   await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
   await page.locator('#bankExcelConfirm').click()};
- await load([[ago(1),'08:00','지출','편의점','','GS25',-3000,'KRW','카드'],[ago(1),'09:00','지출','생활','','다이소',-5000,'KRW','카드'],
-  [ago(1),'10:00','수입','급여','','회사',3000000,'KRW','계좌'],[ago(1),'11:00','수입','금융수입','','이자',1200,'KRW','계좌'],[ago(1),'12:00','지출','알수없음','','무언가',-700,'KRW','카드']]);
+ await load([[ago(0),'08:00','지출','편의점','','GS25',-3000,'KRW','카드'],[ago(0),'09:00','지출','생활','','다이소',-5000,'KRW','카드'],
+  [ago(0),'10:00','수입','급여','','회사',3000000,'KRW','계좌'],[ago(0),'11:00','수입','금융수입','','이자',1200,'KRW','계좌'],[ago(0),'12:00','지출','알수없음','','무언가',-700,'KRW','카드']]);
  await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.bankExcelKey).length).toBe(5);
  const cat=async memo=>(await saved(page)).tx.find(t=>t.memo===memo).category;
  expect([await cat('GS25'),await cat('다이소'),await cat('회사'),await cat('이자'),await cat('무언가')]).toEqual(['식비','쇼핑','급여','배당·이자','기타']);
@@ -29,7 +29,7 @@ test('imports map 뱅크샐러드 분류 to app categories and learn a merchant 
  await page.locator('#fmLedgerAllTx .tx',{hasText:'다이소'}).locator('[data-edit]').click();
  await page.locator('#entryCat').selectOption('주거·관리비');await page.locator('#saveEntry').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_category_rules_v1')))).toEqual({'expense|다이소':'주거·관리비'});
- await load([[ago(0),'09:00','지출','생활','','다이소',-8000,'KRW','카드']]);
+ await load([[ago(0),'09:30','지출','생활','','다이소',-8000,'KRW','카드']]);
  await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='다이소').map(t=>t.category)).toEqual(['주거·관리비','주거·관리비']);
 });
 
@@ -39,7 +39,7 @@ test('money sent to my own account is a transfer, not spending, and one fix teac
   await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
   await page.locator('#bankExcelConfirm').click()};
  // 뱅크샐러드 says 지출, but its own category says 이체: no hand fix needed.
- await load([[ago(1),'08:00','지출','이체','내계좌이체','적금 이체',-500000,'KRW','계좌'],[ago(1),'09:00','지출','기타','','마이뱅크',-300000,'KRW','계좌'],[ago(2),'09:00','지출','기타','','마이뱅크',-200000,'KRW','계좌'],[ago(1),'10:00','지출','기타','','업비트 입금',-300000,'KRW','계좌']]);
+ await load([[ago(0),'08:00','지출','이체','내계좌이체','적금 이체',-500000,'KRW','계좌'],[ago(0),'09:00','지출','기타','','마이뱅크',-300000,'KRW','계좌'],[ago(0),'09:30','지출','기타','','마이뱅크',-200000,'KRW','계좌'],[ago(0),'10:00','지출','기타','','업비트 입금',-300000,'KRW','계좌']]);
  await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.bankExcelKey).length).toBe(4);
  const type=async memo=>(await saved(page)).tx.filter(t=>t.memo===memo).map(t=>t.type);
  expect(await type('적금 이체')).toEqual(['transfer']);
@@ -51,7 +51,7 @@ test('money sent to my own account is a transfer, not spending, and one fix teac
  await page.locator('#fmLedgerAllTx .tx',{hasText:'마이뱅크'}).first().locator('[data-edit]').click();
  await page.locator('#entryTypes button[data-type="transfer"]').click();await page.locator('#saveEntry').click();
  await expect.poll(()=>type('마이뱅크')).toEqual(['transfer','transfer']);
- await load([[ago(0),'09:00','지출','기타','','마이뱅크',-100000,'KRW','계좌']]);
+ await load([[ago(0),'09:45','지출','기타','','마이뱅크',-100000,'KRW','계좌']]);
  await expect.poll(()=>type('마이뱅크')).toEqual(['transfer','transfer','transfer']);
 });
 
@@ -179,12 +179,12 @@ test('one payment BankSalad records twice (간편결제 + 머니) is imported on
  await page.goto('/index.html');
  await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id)).toEqual(['a']);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dup_backup_v1')).map(t=>t.id))).toEqual(['b']);
- // A new pair in a file comes in once; two separate rides at different times both count.
+ // A new pair in a file comes in once; a taxi fare charged again 11 minutes later is the same ride (the app cancels and re-charges).
  await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([row('13:44:10','카카오페이 머니','숙소',-40000),row('13:44:10','카카오페이 간편결제','숙소',-40000),row('11:06:38','카카오페이 간편결제','택시',-6700),row('11:17:53','카카오페이 간편결제','택시',-6700)])});
  await page.locator('#bankExcelConfirm').click();
  await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='숙소').length).toBe(1);
- expect((await saved(page)).tx.filter(t=>t.memo==='택시').length).toBe(2);
+ expect((await saved(page)).tx.filter(t=>t.memo==='택시').length).toBe(1);
 });
 
 test('a charge marked 결제취소 in another column is not spending, and an earlier copy of it goes on re-import',async({page})=>{
@@ -209,6 +209,8 @@ test('a cancelled card payment removes its charge instead of counting as spendin
  const key=(time,amount,memo='주식회사 티머니')=>[d,time,'expense','교통','',memo,amount,'카드'].join('|');
  // The old importer stored all three 티머니 rows as spending.
  await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:['08:00','08:05','08:10'].map((t,i)=>({id:'old'+i,date:d,type:'expense',category:'교통',amount:12700,memo:'주식회사 티머니',bankExcelKey:key(t,12700)}))});
+ // Only the import path here; the one-time taxi cleanup at start has its own test.
+ await page.addInitScript(()=>localStorage.setItem('firemate_taxifix_v1','0'));
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book(rows)});
@@ -297,4 +299,39 @@ test('balances and accounts changed by the BankSalad sheet before are put back o
  await page.locator('[data-autolog="bsrev"]').click();await page.locator('#fmAskOk').click();
  await expect.poll(async()=>(await saved(page)).balance.cash).toBe(3879561);
  d=await saved(page);expect(d.accounts.filter(a=>!a.id.startsWith('legacy-')).map(a=>[a.id,a.amount])).toEqual([['s',3000000],['g',9937188]]);
+});
+
+test('an imported row that BankSalad no longer has in the file dates goes, kept for 되돌리기',async({page})=>{
+ const d=ago(2),row=(time,amount,memo)=>[d,time,'지출','교통','택시',memo,amount,'KRW','카드'];
+ const key=(time,amount,memo)=>[d,time,'expense','교통','택시',memo,amount,'카드'].join('|');
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'keep',date:d,type:'expense',category:'교통',amount:7000,memo:'코레일',bankExcelKey:key('10:00',7000,'코레일')},{id:'gone',date:d,type:'expense',category:'교통',amount:14600,memo:'티머니',bankExcelKey:key('11:00',14600,'티머니')},{id:'hand',date:d,type:'expense',category:'식비',amount:5000,memo:'손으로'}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([row('10:00',-7000,'코레일'),row('12:00',-3000,'GS25'),[ago(4),'09:00','지출','식비','','김밥',-4000,'KRW','카드']])});
+ await expect(page.locator('#bankExcelPreview')).toContainText('뱅크샐러드에 없어진 1건 정리');
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id).includes('gone')).toBe(false);
+ const ids=(await saved(page)).tx.map(t=>t.id);expect(ids).toContain('keep');expect(ids).toContain('hand');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_import_gone_v1')).length)).toBe(1);
+});
+
+test('되돌리기 of a cleaned-up row puts it back and the next import leaves it',async({page})=>{
+ const d=ago(2),key=[d,'11:00','expense','교통','택시','티머니',14600,'카드'].join('|'),gone={id:'gone',date:d,type:'expense',category:'교통',amount:14600,memo:'티머니',bankExcelKey:key};
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[]});
+ await page.addInitScript(g=>{if(!localStorage.getItem('qa_gone_seeded')){localStorage.setItem('firemate_import_gone_v1',JSON.stringify([g]));localStorage.setItem('qa_gone_seeded','1')}},gone);
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmStorage > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});await page.locator('#fmAutoLog > summary').click();
+ await page.locator('[data-autolog="gone"]').click();await page.locator('#fmAskOk').click();
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id)).toContain('gone');
+ await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([[ago(4),'09:00','지출','식비','','김밥',-4000,'KRW','카드'],[d,'12:00','지출','식비','','GS25',-3000,'KRW','카드']])});
+ await expect(page.locator('#bankExcelPreview')).not.toContainText('없어진');
+});
+
+test('a taxi fare charged twice within 30 minutes counts once, also for rows imported before',async({page})=>{
+ const d=ago(1),key=t=>[d,t,'expense','교통','택시','카카오T',14600,'카카오페이'].join('|');
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'a',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('20:52:10')},{id:'b',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('21:10:40')},{id:'c',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('23:30:00')}]});
+ await page.goto('/index.html');
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id).sort()).toEqual(['a','c']);
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dup_backup_v1')).map(t=>t.id))).toEqual(['b']);
 });

@@ -14,6 +14,8 @@ test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const open=async(page,s=seed(),flags={})=>{await page.addInitScript(([s,flags])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_smart_v3',JSON.stringify(s));Object.assign(window,flags);for(const [k,v] of Object.entries(flags.store||{}))localStorage.setItem(k,v)},[s,flags]);await page.goto('/index.html')};
 
 test('home shows the month pace in one short line',async({page})=>{
+ // The pace starts on the 3rd, so look from the middle of this month.
+ await page.clock.setFixedTime((d=>new Date(d.getFullYear(),d.getMonth(),15,12))(new Date()));
  await open(page);
  await expect(page.locator('#fmPaceLine')).not.toContainText('오늘 ₩');
  await expect(page.locator('#fmPaceLine')).toContainText('이 속도면 월');

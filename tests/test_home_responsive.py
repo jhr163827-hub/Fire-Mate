@@ -630,7 +630,7 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('.bottomnav [data-view="calendar"]').click()
             page.locator("#fmLedgerAddBtn").click()
             page.locator("#entryAmount").fill("12345")
-            page.locator("#entryDate").fill("2026-10-17")
+            page.locator("#entryDate").fill(page.evaluate("() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') }"))  # this month's list
             page.locator("#entryMemo").fill("Playwright ledger regression")
             page.locator("#saveEntry").click()
             self.assertEqual(page.locator("#entryOverlay.show").count(), 0)

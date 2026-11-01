@@ -327,6 +327,8 @@ test('a different purchase at a bill\'s shop is not counted as the bill, and las
  const m=k=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+k);return d.toISOString().slice(0,7)},tx=[];
  for(const k of [-1,-2,-3,-4])tx.push({id:'k'+k,date:m(k)+'-01',type:'expense',category:'쇼핑',amount:3900,memo:'주식회사 카카오'},{id:'s'+k,date:m(k)+'-25',type:'income',category:'급여',amount:3000000,memo:'급여'});
  tx.push({id:'big',date:m(0)+'-20',type:'expense',category:'쇼핑',amount:25000,memo:'주식회사 카카오'},{id:'air',date:m(-11)+'-05',type:'expense',category:'여행',amount:400000,memo:'대한항공'},{id:'car',date:m(-11)+'-06',type:'expense',category:'보험',amount:600000,memo:'DB손해보험 자동차'});
+ // Seen from the 15th: on the 1st itself the bill is still "due today".
+ await page.clock.setFixedTime((d=>new Date(d.getFullYear(),d.getMonth(),15,12))(new Date()));
  await load(page,seed({tx}));
  await page.evaluate(()=>window.fmGo('insights'));
  const row=page.locator('#fmBillsCard .fm-bills-row').first();

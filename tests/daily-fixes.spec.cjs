@@ -187,19 +187,19 @@ test('one payment BankSalad records twice (간편결제 + 머니) is imported on
  expect((await saved(page)).tx.filter(t=>t.memo==='택시').length).toBe(1);
 });
 
-test('a charge marked 결제취소 in another column is not spending, and an earlier copy of it goes on re-import',async({page})=>{
+test('a row marked 결제취소 cancels the earlier same charge: both go, also when they came in before',async({page})=>{
  const d=ago(1),wb=XLSX.utils.book_new(),r=(time,amount,mark='')=>[d,time,'지출','교통','택시','주식회사 티머니',amount,'KRW','카카오페이 간편결제',mark];
  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['날짜','시간','타입','대분류','소분류','내용','금액','화폐','결제수단','메모'],r('21:10',-14600,'결제취소'),r('20:52',-14600),r('22:00',-14300)]),'가계부 내역');
  const key=[d,'21:10','expense','교통','택시','주식회사 티머니',14600,'카카오페이 간편결제'].join('|');
  // The cancelled charge came in with an earlier import, before BankSalad marked it.
- await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'old',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key}]});
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'old',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key},{id:'first',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key.replace('21:10','20:52')}]});
  await page.goto('/index.html');
  await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
  await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:XLSX.write(wb,{type:'buffer',bookType:'xlsx'})});
  await expect(page.locator('#bankExcelPreview')).toContainText('결제 취소 1건');
  await page.locator('#bankExcelConfirm').click();
- await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300,14600]);
- expect((await saved(page)).tx.some(t=>t.id==='old')).toBe(false);
+ await expect.poll(async()=>(await saved(page)).tx.filter(t=>t.memo==='주식회사 티머니').map(t=>t.amount).sort()).toEqual([14300]);
+ expect((await saved(page)).tx.some(t=>t.id==='old'||t.id==='first')).toBe(false);
 });
 
 test('a cancelled card payment removes its charge instead of counting as spending, and re-import repairs old ones',async({page})=>{
@@ -329,9 +329,9 @@ test('되돌리기 of a cleaned-up row puts it back and the next import leaves i
 });
 
 test('a taxi fare charged twice within 30 minutes counts once, also for rows imported before',async({page})=>{
- const d=ago(1),key=t=>[d,t,'expense','교통','택시','카카오T',14600,'카카오페이'].join('|');
- await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'a',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('20:52:10')},{id:'b',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('21:10:40')},{id:'c',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('23:30:00')}]});
+ const d=ago(1),key=t=>[d,t,'expense','교통','택시','카카오T',14600,'카카오페이'].join('|'),bus=t=>[d,t,'expense','교통','대중교통','모바일티머니_지하철',1550,'카드'].join('|');
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'a',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('20:52:10')},{id:'b',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('21:10:40')},{id:'c',date:d,type:'expense',category:'교통',amount:14600,memo:'카카오T',bankExcelKey:key('23:30:00')},{id:'s1',date:d,type:'expense',category:'교통',amount:1550,memo:'모바일티머니_지하철',bankExcelKey:bus('08:00:00')},{id:'s2',date:d,type:'expense',category:'교통',amount:1550,memo:'모바일티머니_지하철',bankExcelKey:bus('08:20:00')}]});
  await page.goto('/index.html');
- await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id).sort()).toEqual(['a','c']);
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id).sort()).toEqual(['a','c','s1','s2']);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dup_backup_v1')).map(t=>t.id))).toEqual(['b']);
 });

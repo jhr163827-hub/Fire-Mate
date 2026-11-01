@@ -1,0 +1,13 @@
+{
+  "menuNavigation": "pass",
+  "existingGameLinks": "unchanged",
+  "realServiceWorker": "pass",
+  "runtimeAssetsCached": 21,
+  "offlineMenuAndGameResume": "pass",
+  "offlineExit": "pass",
+  "onlineReturn": "pass",
+  "financeSentinel": "preserved",
+  "mobileMenuOverflow": "none at 320/390/430",
+  "pageErrors": [],
+  "limitations": "headless Chromium only; not an installed mobile PWA"
+}

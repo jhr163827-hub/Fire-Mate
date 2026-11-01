@@ -1,0 +1,16 @@
+{
+  "unitTests": {
+    "pass": 44,
+    "fail": 0
+  },
+  "classicBrowserChecks": 24,
+  "financeAndSharedRegression": "pass",
+  "checks": [
+    "scripts/check_app.py",
+    "tests/pwa-update.test.cjs",
+    "tests/storage-rollback.test.cjs",
+    "scripts/test_calculations.cjs",
+    "npm run -s test:finance"
+  ],
+  "limitations": "Headless Chromium only; physical phones and human enjoyment not verified"
+}

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#183e49" />
+    <title>톱니숲 방어전 · FIRE MATE</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <a href="../../index.html" aria-label="아케이드로 나가기">‹</a>
+        <div>
+          <small>WOODLAND WORKSHOP</small>
+          <h1>톱니숲 방어전</h1>
+        </div>
+        <button id="settings">설정</button>
+      </header>
+      <section id="hud">
+        <span>성문 <b id="lives">30</b></span
+        ><span>동전 <b id="gold">340</b></span
+        ><span>웨이브 <b id="wave">0 / 12</b></span
+        ><button id="speed">1×</button><button id="pause">정지</button>
+      </section>
+      <section id="stage">
+        <div id="board">
+          <canvas
+            id="canvas"
+            width="1280"
+            height="800"
+            aria-label="전장. 포탑을 선택하고 길 옆을 눌러 설치 위치를 고르세요."
+          ></canvas>
+          <div id="banner" role="status"></div>
+          <button id="mapSpell" aria-label="긴급 포격 조준">포격</button>
+          <div id="mapNote">포탑 선택 → 길 옆 선택 → 설치</div>
+        </div>
+      </section>
+      <aside>
+        <section id="intel">
+          <small id="phase">준비 시간</small>
+          <h2 id="next"></h2>
+          <p id="hint"></p>
+          <div class="actions">
+            <button id="start" class="go">방어 시작</button
+            ><button id="spell">긴급 포격</button>
+          </div>
+        </section>
+        <nav id="shop" aria-label="포탑 구매"></nav>
+        <section id="detail"></section>
+        <p id="notice" role="status">
+          처음엔 속사포와 폭탄포를 굽이에 놓아 보세요.
+        </p>
+      </aside>
+      <footer>
+        <span id="saved">자동 저장</span><button id="help">적·포탑 도감</button
+        ><a href="../?classic">기존 게임</a>
+      </footer>
+    </main>
+    <dialog id="dialog">
+      <div id="dialogBody"></div>
+      <button id="close">돌아가기</button>
+    </dialog>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

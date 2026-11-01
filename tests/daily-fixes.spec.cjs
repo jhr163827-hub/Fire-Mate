@@ -350,3 +350,16 @@ test('a taxi fare charged twice within 30 minutes counts once, also for rows imp
  await expect.poll(async()=>(await saved(page)).tx.map(t=>t.id).sort()).toEqual(['a','c','s1','s2']);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_dup_backup_v1')).map(t=>t.id))).toEqual(['b']);
 });
+
+test('an imported row deleted by hand does not come back on the next import',async({page})=>{
+ const d=ago(1),key=[d,'20:52','expense','교통','택시','주식회사 티머니',14600,'카드'].join('|');
+ await seedWith(page,{theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[{id:'x',date:d,type:'expense',category:'교통',amount:14600,memo:'주식회사 티머니',bankExcelKey:key}]});
+ await page.goto('/index.html');
+ await page.evaluate(()=>window.fmOpenEntry(window.fmLiveData().tx.find(t=>t.id==='x')));
+ await page.locator('#deleteEntry').click();await page.locator('#fmAskOk').click();
+ await expect.poll(async()=>(await saved(page)).tx.length).toBe(0);
+ await page.evaluate(()=>window.fmOpenImport());await page.locator('#fmSyncOptions > summary').evaluate(s=>{if(!s.parentElement.open)s.click()});
+ await page.locator('#bankExcelFile').setInputFiles({name:'b.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:book([[d,'20:52','지출','교통','택시','주식회사 티머니',-14600,'KRW','카드'],[d,'22:00','지출','교통','택시','주식회사 티머니',-14300,'KRW','카드']])});
+ await page.locator('#bankExcelConfirm').click();
+ await expect.poll(async()=>(await saved(page)).tx.map(t=>t.amount)).toEqual([14300]);
+});

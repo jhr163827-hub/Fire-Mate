@@ -234,10 +234,10 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.click('#fmJnHere');
  const sheet=page.locator('#fmJnSheet');await expect(sheet).toBeVisible();await expect(page.locator('#fmSpotName')).toHaveValue('용지호수공원');
- await expect(sheet.locator('.fm-jn-sheethead small')).toContainText('성산구 용호동');
+ await expect(sheet.locator('.fm-jn-sheethead small')).toContainText('성산구 상남동');
  await sheet.locator('[data-w="couple"]').click();await page.fill('#fmSpotMemo','저녁 산책');await sheet.locator('button.primary').click();await expect(sheet).toBeHidden();
  const sp=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_spots_v1')));
- expect(sp).toEqual([expect.objectContaining({lat:35.221,lon:128.685,area:'kr',place:'4812',name:'용지호수공원',gu:'성산구',dong:'용호동',with:'couple',memo:'저녁 산책'})]);
+ expect(sp).toEqual([expect.objectContaining({lat:35.221,lon:128.685,area:'kr',place:'4812',name:'용지호수공원',gu:'성산구',dong:'상남동',with:'couple',memo:'저녁 산책'})]);
  const m=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')));expect(m.kr['4812']).toBe(1);expect(Object.values(m.sub.K4812)).toEqual([1]);
  await expect(page.locator('.fm-jn-map .fm-jn-dot.w-couple')).toHaveCount(1);
  await expect(page.locator('.fm-jn-spots').first()).toContainText('용지호수공원');await expect(page.locator('#fmJnBody .fm-jn-with')).toContainText('💑 연인 1');
@@ -250,6 +250,12 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
  await page.locator('[data-country="K4812"]').dispatchEvent('click');
  await expect(page.locator('#fmJnHead')).toHaveText('🏙️ 경남 창원시');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(5);
  await expect(page.locator('.fm-jn-map .fm-jn-dot')).toHaveCount(2);await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 5곳');
+ // 🏘️ The 동 map: 상남동 is marked from where you stood (행정동 경계, offline once loaded).
+ expect(Object.values(m.sub.D4812)).toEqual([1]);
+ await page.locator('#fmJnToDong').dispatchEvent('click');
+ await expect(page.locator('#fmJnHead')).toHaveText('🏘️ 경남 창원시');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(55);
+ await expect(page.locator('.fm-jn-stat')).toContainText('가 봤어요 1 / 55곳');await expect(page.locator('.fm-jn-src')).toContainText('vuski/admdongkor (CC BY 4.0)');
+ await page.goBack();await expect(page.locator('#fmJnHead')).toHaveText('🏙️ 경남 창원시');
  await ctx.close();
 });
 

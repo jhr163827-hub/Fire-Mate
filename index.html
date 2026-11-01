@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.247</title><link rel="stylesheet" href="./app.css?v=3.5.247"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-247">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.248</title><link rel="stylesheet" href="./app.css?v=3.5.248"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-248">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.247 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.248 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -2893,11 +2893,14 @@ function fmSpotBind(box){box.querySelectorAll('[data-with]').forEach(b=>b.onclic
  box.querySelectorAll('[data-recwant]').forEach(b=>b.onclick=()=>{const p=fmJnRec.list[+b.dataset.recwant],l=fmSpots(),i=l.findIndex(s=>s.want&&s.name===p.name);if(i>=0)l.splice(i,1);else l.push({id:uid(),lat:p.lat,lon:p.lon,d:localDate(new Date()),area:'kr',place:fmJnRec.key||'',name:p.name,dong:'',with:'',want:true});if(fmSpotSave(l))fmRenderJournal()})}
 // ✨ 가볼 만한 곳: named attractions, viewpoints, museums, parks with a Wikidata entry and historic sites from OpenStreetMap (Overpass),
 // around a spot (3 km) or inside a city's box; Wikidata-known places first. Nothing is stored until 💚.
-async function fmJnRecommend(title,key,area,center){fmJnRec={title,key,list:null};fmRenderJournal();
- const q='[out:json][timeout:20];(nwr["tourism"~"attraction|viewpoint|museum|theme_park|zoo|aquarium|gallery"]["name"]('+area+');nwr["leisure"~"park|garden|nature_reserve"]["name"]["wikidata"]('+area+');nwr["historic"]["name"]["wikidata"]('+area+'););out center 80;';
- try{const j=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q)).then(r=>r.json()),K={viewpoint:'🌄 전망',museum:'🏛️ 박물관',gallery:'🖼️ 미술관',theme_park:'🎢 테마파크',zoo:'🦁 동물원',aquarium:'🐠 아쿠아리움',attraction:'📸 명소'},seen=new Set;
-  const list=(j.elements||[]).map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon,name=t['name:ko']||t.name;return {name,lat:+(+lat).toFixed(4),lon:+(+lon).toFixed(4),w:t.wikidata?2:0,kind:K[t.tourism]||(t.historic?'🏯 유적':t.leisure?'🌳 공원':'📸 명소'),km:center?Math.round(Math.hypot((lat-center[0])*111,(lon-center[1])*111*Math.cos(lat*Math.PI/180))*10)/10:null}}).filter(p=>p.name&&Number.isFinite(p.lat)&&!seen.has(p.name)&&seen.add(p.name)).sort((a,b)=>b.w-a.w||(a.km??0)-(b.km??0)).slice(0,12);
-  if(fmJnRec?.title===title)fmJnRec.list=list}catch{if(fmJnRec?.title===title)fmJnRec=null;window.fmToast('지금은 명소를 불러오지 못했어요')}fmRenderJournal()}
+// The public Overpass servers are often busy (429/504) or slow, so three are tried in turn, 20 s each, with a POST.
+async function fmOverpass(q){for(const u of ['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://maps.mail.ru/osm/tools/overpass/api/interpreter']){const c=new AbortController(),t=setTimeout(()=>c.abort(),20000);try{const r=await fetch(u,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:c.signal});if(r.ok)return await r.json()}catch{}finally{clearTimeout(t)}}throw Error('overpass')}
+async function fmJnRecommend(title,key,area,center){fmJnRec={title,key,list:null};fmRenderJournal();document.querySelector('.fm-jn-rec')?.scrollIntoView({behavior:'smooth',block:'center'});
+ // Korea has few tourism tags in OpenStreetMap, so well-known (Wikidata) parks, 유적, temples, peaks and beaches count too.
+ const q='[out:json][timeout:20];(nwr["tourism"~"attraction|viewpoint|museum|theme_park|zoo|aquarium|gallery"]["name"]('+area+');nwr["leisure"~"park|garden|nature_reserve"]["name"]["wikidata"]('+area+');nwr["historic"]["name"]["wikidata"]('+area+');nwr["amenity"="place_of_worship"]["name"]["wikidata"]('+area+');nwr["natural"~"peak|beach|bay|waterfall"]["name"]["wikidata"]('+area+'););out center 120;';
+ try{const j=await fmOverpass(q),K={viewpoint:'🌄 전망',museum:'🏛️ 박물관',gallery:'🖼️ 미술관',theme_park:'🎢 테마파크',zoo:'🦁 동물원',aquarium:'🐠 아쿠아리움',attraction:'📸 명소'},seen=new Set;
+  const list=(j.elements||[]).map(e=>{const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon,name=t['name:ko']||t.name;return {name,lat:+(+lat).toFixed(4),lon:+(+lon).toFixed(4),w:t.wikidata?2:0,kind:K[t.tourism]||(t.historic?'🏯 유적':t.leisure?'🌳 공원':t.amenity?'🛕 사찰·성당':t.natural==='peak'?'⛰️ 산':t.natural?'🏖️ 자연':'📸 명소'),km:center?Math.round(Math.hypot((lat-center[0])*111,(lon-center[1])*111*Math.cos(lat*Math.PI/180))*10)/10:null}}).filter(p=>p.name&&Number.isFinite(p.lat)&&!seen.has(p.name)&&seen.add(p.name)).sort((a,b)=>b.w-a.w||(a.km??0)-(b.km??0)).slice(0,12);
+  if(fmJnRec?.title===title)fmJnRec.list=list}catch{if(fmJnRec?.title===title)fmJnRec=null;window.fmToast('명소 서버가 바빠서 못 불러왔어요. 잠시 뒤 다시 눌러 주세요')}fmRenderJournal();document.querySelector('.fm-jn-rec')?.scrollIntoView({behavior:'smooth',block:'center'})}
 function fmJnCityRecommend(key,svg){const p=fmJnMaps.kr?.proj,el=svg?.querySelector('path[data-place="'+key+'"]');if(!p||!el)return;const b=el.getBBox(),lon=x=>((x-5)/p.s+p.x0)/p.k,lat=y=>-((y-5)/p.s+p.y0);fmJnRecommend(fmPlaceName('kr',key)+' 가볼 만한 곳',key,[lat(b.y+b.height),lon(b.x),lat(b.y),lon(b.x+b.width)].map(v=>v.toFixed(4)).join(','),null)}
 // The spot sheet: name (filled from the lookup unless typed), 누구랑, memo; new spots from 📍 open it right away.
 function fmSpotSheet(s,isNew){let sh=$('fmJnSheet');if(!sh){sh=document.createElement('form');sh.id='fmJnSheet';sh.className='fm-jn-sheet';$('fmJournalOverlay').querySelector('.modal').append(sh)}
@@ -3031,7 +3034,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-247',VERSION='3.5.247';
+ const BUILD='fire-mate-v3-5-248',VERSION='3.5.248';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3245,4 +3248,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.247"></script></body></html>
+</style><script src="./js/features.js?v=3.5.248"></script></body></html>

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.243</title><link rel="stylesheet" href="./app.css?v=3.5.243"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-243">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.244</title><link rel="stylesheet" href="./app.css?v=3.5.244"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-244">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.243 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.244 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -578,7 +578,7 @@ $('fmInsSum').textContent=month>0?'월 '+fmCompactMoney(month)+'원'+(pay>0?' ·
 $('fmInsList').innerHTML=(month>0?'<p class="fm-ins-sum"><span>💸 보험료</span><strong>월 '+won(Math.round(month))+'</strong><small>1년 '+won(Math.round(month*12))+(pay>0?' · 월급의 '+(month/pay*100).toFixed(1)+'%':'')+' · 최근 3달 평균</small></p>':'')+list.map(i=>{const left=i.to?Math.ceil((Date.parse(i.to)-Date.now())/864e5):null;return '<p><span>'+safe(i.name)+'</span><strong>'+(i.paid?won(i.paid):'—')+'</strong><small>'+safe(i.co)+(i.to?' · '+i.to.replaceAll('-','.')+' 만기'+(left!=null&&left<=365&&left>=0?' (D-'+left+')':''):'')+'</small></p>'}).join('')}
 // (Both cards skip a redraw while one of their inputs has focus, so quotes landing do not wipe what is being typed.)
 // 🎯 리밸런싱: 목표 비중(firemate_rebal_v1 {us,kr,cash} %) 대 지금 비중, 이번 달 적립(FIRE 월 적립)을 모자란 쪽부터 채우면 얼마씩·몇 주. 팔지 않고 사는 것만으로 맞춘다.
-function fmRebalNow(){const hs=data.holdings.filter(h=>Number(h.qty)>0&&assetValue(h)>0),cash=(Number(data.balance.cash)||0)+data.accounts.filter(a=>a.kind==='safe'||a.kind!=='investment'&&/세이프박스|비상금|파킹|CMA|예금|적금|모으기/.test(a.name||'')).reduce((n,a)=>n+(Number(a.amount)||0),0),v={us:0,kr:0,cash:Math.max(0,cash)};
+function fmRebalNow(){const hs=data.holdings.filter(h=>Number(h.qty)>0&&assetValue(h)>0),cash=(Number(data.balance.cash)||0)+data.accounts.reduce((n,a)=>n+Math.max(0,Number(a.amount)||0),0),v={us:0,kr:0,cash:Math.max(0,cash)};// 현금 = 현금 + 모든 계좌 금액(증권 계좌는 예수금, 종목은 따로)
  for(const h of hs)if(h.type==='USD')v.us+=assetValue(h);else if(h.type==='KRW')v.kr+=assetValue(h);return {hs,v,total:v.us+v.kr+v.cash}}
 function fmRebalSplit(v,t,money){const total=v.us+v.kr+v.cash+money,keys=['us','kr','cash'],gap=keys.map(k=>Math.max(0,total*t[k]/100-v[k])),g=gap.reduce((a,b)=>a+b,0),out={};keys.forEach((k,i)=>out[k]=g>0?Math.round(money*Math.min(1,g?gap[i]/g:0)):Math.round(money*t[k]/100));return out}
 function fmRenderRebal(){const card=$('fmRebalCard');if(!card||card.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;const {hs,v,total}=fmRebalNow();card.hidden=!hs.length||total<=0;if(card.hidden)return;
@@ -2983,7 +2983,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-243',VERSION='3.5.243';
+ const BUILD='fire-mate-v3-5-244',VERSION='3.5.244';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3197,4 +3197,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.243"></script></body></html>
+</style><script src="./js/features.js?v=3.5.244"></script></body></html>

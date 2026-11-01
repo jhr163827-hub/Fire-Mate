@@ -55,3 +55,10 @@ test('with nothing spent yet this month, the insights do not show −100% agains
  await page.goto('/index.html');await page.evaluate(()=>window.fmGo('insights'));
  await expect(page.locator('#monthDelta')).toHaveText('—');
 });
+
+test('rebalancing counts cash waiting in a brokerage account as cash',async({page})=>{
+ await page.addInitScript(()=>{const s=JSON.parse(localStorage.getItem('firemate_smart_v3'));s.accounts=[{id:'b',name:'증권',kind:'investment',amount:2000000,fire:true}];localStorage.setItem('firemate_smart_v3',JSON.stringify(s))});
+ await analysis(page);
+ // 현금 100만 + 예수금 200만 = 300만 / 1,380만 → 22%
+ await expect(page.locator('#fmRebalCard .fm-rebal-row').nth(2)).toContainText('22%');
+});

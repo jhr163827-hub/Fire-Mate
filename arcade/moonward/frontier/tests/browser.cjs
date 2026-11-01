@@ -87,6 +87,24 @@ let browser;
   await page.waitForTimeout(250);
   assert.equal(await page.evaluate(() => frontier.game.serialize()), state);
   ok("real UI free placement, blocked road, immediate first combat and pause");
+  await page.click("#landscape");
+  await page.waitForFunction(
+    () => !document.querySelector("#landscape").disabled,
+  );
+  assert.equal(await page.evaluate(() => frontier.game.serialize()), state);
+  if (
+    (await page.locator("#landscape").getAttribute("aria-pressed")) === "true"
+  ) {
+    await page.click("#landscape");
+    await page.waitForFunction(() => !document.fullscreenElement);
+  } else assert.match(await page.textContent("#notice"), /휴대폰을 가로/);
+  assert.equal(
+    await page.locator("#landscape").getAttribute("aria-pressed"),
+    "false",
+  );
+  ok(
+    "landscape button, native fullscreen return or unsupported guidance; combat preserved",
+  );
   for (const [w, h] of [
     [320, 568],
     [390, 844],
@@ -104,9 +122,11 @@ let browser;
         overflow: document.documentElement.scrollWidth > innerWidth,
         ratio: c.width / c.height,
         height: c.height,
-        buttons: [...document.querySelectorAll("#shop button,#hud button")].map(
-          (b) => b.getBoundingClientRect().height,
-        ),
+        buttons: [
+          ...document.querySelectorAll(
+            "#shop button,#hud button,header button",
+          ),
+        ].map((b) => b.getBoundingClientRect().height),
       };
     });
     if (r.overflow) {

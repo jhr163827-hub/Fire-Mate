@@ -1,3 +1,4 @@
+import { setupLandscape } from "./landscape.mjs";
 import { Game } from "./engine.mjs";
 import { KEY, STEP, WAVES, TOWERS, FOES, stats } from "./data.mjs";
 import { paint, tower } from "./render.mjs";
@@ -27,6 +28,10 @@ const resize = new ResizeObserver(() => {
   $("#board").style.width = Math.min(r.width, r.height * 1.6) + "px";
 });
 resize.observe($("#stage"));
+const landscape = setupLandscape($("#landscape"), (message) => {
+  note(message);
+  banner(message);
+});
 function note(s) {
   $("#notice").textContent = s;
 }
@@ -448,6 +453,7 @@ function frame(now) {
   raf = requestAnimationFrame(frame);
 }
 function stop() {
+  landscape.release(true);
   save();
   disposed = true;
   cancelAnimationFrame(raf);

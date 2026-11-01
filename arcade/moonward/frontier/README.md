@@ -14,6 +14,12 @@
 
 참고한 것은 Bloons TD 6의 **직접 배치·현금 강화·판매·웨이브 방어**라는 플레이 구조다. [공식 배급사 플레이 안내](https://help.netflix.com/en/node/718990757024356)를 확인했다. 해당 게임의 코드·캐릭터·맵·UI·수치·이미지·음원을 가져오지 않았다. 원본 게임을 직접 플레이했다는 주장은 하지 않는다.
 
+## 가로모드 버튼
+
+상단 **가로모드**를 누르면 문서 전체화면을 요청한 뒤 `screen.orientation.lock("landscape")`를 호출한다. 다시 누르거나 전체화면에서 나가면 잠금을 해제하며, 페이지를 나갈 때도 정리한다. API 미지원·거절 시 수동 회전 안내를 제공한다. CSS로 화면을 억지로 돌리지 않아 터치 좌표는 그대로 유지한다. [Screen Orientation API 참고](https://developer.mozilla.org/en-US/docs/Web/API/ScreenOrientation/lock).
+
+성공·미지원·거절·중복 탭·전체화면 종료·요청 중 이탈은 모의 API 테스트, 실제 버튼·전체화면 복귀·화면 크기·게임 상태 보존은 헤드리스 Chromium에서 확인한다. 실제 Android/iPhone 회전은 실기기 미확인이다.
+
 ## 실행
 
 저장소 루트에서:
@@ -86,6 +92,6 @@ NODE_PATH=/path/to/node_modules MOONWARD_CHROMIUM=/path/to/chromium FRONTIER_REA
 
 - 기존 메뉴 href `arcade/moonward/` 유지 가능. 게임 내부 `frontier-entry.mjs`가 `frontier/`로 연결한다. 메뉴 이름을 바꾼다면 **톱니숲 방어전 / 자유 배치·강화 디펜스**를 사용한다.
 - 저장 키 `firemate_frontier_v1`만 사용한다. `firemate_moonward_v1`과 PR #222의 `firemate_moonward_tactics_v1`, 금융 키를 읽거나 덮어쓰지 않는다. 기존 모드는 `?classic`, 기존 테스트는 `?test`로 원래 앱을 로드한다.
-- 현재 공용 SW의 `/arcade/` 런타임 캐시로 첫 온라인 방문 이후 오프라인 실행된다. 첫 방문 이전에도 오프라인 실행이 필요하면 Claude가 공용 사전 캐시에 `frontier-entry.mjs`, `frontier/index.html`, `frontier/style.css`, `frontier/app.mjs`, `frontier/data.mjs`, `frontier/engine.mjs`, `frontier/render.mjs`를 함께 넣는다. 별도 이미지 파일은 없다.
+- 현재 공용 SW의 `/arcade/` 런타임 캐시로 첫 온라인 방문 이후 오프라인 실행된다. 첫 방문 이전에도 오프라인 실행이 필요하면 Claude가 공용 사전 캐시에 `frontier-entry.mjs`, `frontier/index.html`, `frontier/style.css`, `frontier/app.mjs`, `frontier/data.mjs`, `frontier/engine.mjs`, `frontier/render.mjs`, `frontier/landscape.mjs`를 함께 넣는다. 별도 이미지 파일은 없다.
 - 다른 게임이 main에 추가되어 기존 통합 테스트의 고정 메뉴 목록이 낡아 있었으므로 새 게임 링크 두 개를 기대 목록에 반영했다. 해당 게임의 코드는 변경하지 않았다.
 - PR #222는 이 재제작으로 대체한다. main 병합과 배포는 이번 작업 범위에 포함하지 않는다.

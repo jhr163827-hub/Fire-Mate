@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#102336" />
+    <title>SKYFORGE · 비행 공방</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="lobby">
+      <header>
+        <a href="../">← 아케이드</a><span>FIRE MATE ORIGINAL</span>
+      </header>
+      <section class="hero">
+        <small>THE SKY IS YOUR WORKSHOP</small>
+        <h1>SKYFORGE</h1>
+        <p>비행 공방</p>
+        <canvas
+          id="showcase"
+          width="640"
+          height="250"
+          aria-label="나만의 비행기"
+        ></canvas>
+        <div class="tagline">피하고. 고르고. 더 강하게 날아라.</div>
+        <button id="launch" class="primary">1탄 출격</button
+        ><button id="resume" hidden>저장한 비행 이어하기</button
+        ><small>드래그로 이동 · 자동 사격 · 손을 떼면 감속</small>
+      </section>
+      <section>
+        <div class="section-title">
+          <h2>비행 항로</h2>
+          <span id="progress"></span>
+        </div>
+        <div id="stages"></div>
+      </section>
+      <section>
+        <h2>기체 격납고</h2>
+        <div id="ships"></div>
+        <div class="section-title">
+          <h2>정비소</h2>
+          <span id="medals"></span>
+        </div>
+        <p class="muted">
+          새 최고 기록으로 훈장 획득 · 정비는 모든 출격에 적용
+        </p>
+        <div id="mods"></div>
+        <button id="respec">정비 초기화 · 훈장 전액 반환</button>
+      </section>
+      <footer>
+        <button id="sound">소리 켜기</button
+        ><button id="motion">효과 줄이기: 끔</button>
+        <p>창작 기체와 무기로 즐기는 한 손 비행 슈팅</p>
+      </footer>
+    </main>
+    <section id="play" hidden>
+      <div class="flight">
+        <header class="hud">
+          <div>
+            <small id="stage-label"></small><strong id="hp-label"></strong
+            ><progress id="hp" max="100" value="100"></progress>
+          </div>
+          <button id="pause" aria-label="일시정지">Ⅱ</button>
+        </header>
+        <div class="board">
+          <canvas
+            id="field"
+            width="720"
+            height="1200"
+            aria-label="비행 전장: 드래그 또는 방향키로 이동"
+          ></canvas>
+          <div id="boss" hidden>
+            <span></span><progress max="100" value="100"></progress>
+          </div>
+          <div id="toast" role="status"></div>
+        </div>
+        <div class="console">
+          <div class="xp-row">
+            <span id="level"></span
+            ><progress id="xp" max="30" value="0"></progress
+            ><span id="tempo">감속 0.25×</span>
+          </div>
+          <div class="loadout" id="loadout"></div>
+          <button id="pulse" class="primary">긴급 펄스 · 2</button
+          ><small>펄스: 탄막 제거 + 범위 공격 · 45기 격추마다 충전</small>
+        </div>
+      </div>
+    </section>
+    <div id="veil" hidden>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-title"
+        id="dialog"
+      ></section>
+    </div>
+    <div id="storage-note" role="status" hidden>
+      저장 공간을 사용할 수 없어 이번 비행은 저장되지 않습니다.
+    </div>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

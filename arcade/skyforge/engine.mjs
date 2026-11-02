@@ -205,7 +205,10 @@ export class Game {
   }
   hit(e, n, source = "weapon") {
     if (e.hp <= 0 || this.s.phase === "lost") return;
-    const dealt = Math.min(e.hp, n);
+    const dealt = Math.min(
+      e.hp,
+      n * (e.kind === "boss" && e.age >= 35 ? 3 : 1),
+    );
     e.hp -= dealt;
     e.flash = 0.09;
     this.s.damage += dealt;
@@ -273,11 +276,18 @@ export class Game {
       s.hp = Math.min(s.maxHp, s.hp + 12);
       return;
     }
-    const picked = [];
-    while (picked.length < Math.min(3, pool.length)) {
+    const picked = [],
+      count = Math.min(3, pool.length);
+    while (picked.length < count) {
       const i = Math.floor(this.rand() * pool.length);
       picked.push(pool.splice(i, 1)[0]);
     }
+    // Always offer one owned weapon so a build can progress despite unlucky draws.
+    const owned = Object.keys(SKILLS).filter(
+      (k) => s.skills[k] > 0 && s.skills[k] < 6,
+    );
+    if (owned.length && !picked.some((k) => owned.includes(k)))
+      picked[0] = owned[Math.floor(this.rand() * owned.length)];
     s.choices = picked;
     s.phase = "choice";
   }
@@ -331,7 +341,7 @@ export class Game {
         const x = s.x + (i - (n - 1) / 2) * 27;
         for (const e of s.enemies)
           if (e.y < s.y && Math.abs(e.x - x) < e.r + 7)
-            this.hit(e, lv.laser >= 5 ? 65 : lv.laser >= 2 ? 40 : 27);
+            this.hit(e, lv.laser >= 5 ? 64.8 : lv.laser >= 2 ? 40.5 : 27);
         this.fx("laser", x, s.y, { to: 0 });
       }
     }
@@ -345,7 +355,7 @@ export class Game {
           s.x + (i - (n - 1) / 2) * 14,
           s.y,
           -Math.PI / 2,
-          lv.missile >= 5 ? 50 : 30,
+          lv.missile >= 5 ? 48 : 30,
           "missile",
           { target: target.id, radius: lv.missile >= 3 ? 55 : 0 },
         );
@@ -373,7 +383,7 @@ export class Game {
           p = { x: s.x + Math.cos(a) * r, y: s.y + Math.sin(a) * r };
         for (const e of near)
           if (e.orb <= 0 && distance(p, e) < e.r + 10) {
-            this.hit(e, lv.orbit >= 5 ? 55 : lv.orbit >= 2 ? 34 : 22);
+            this.hit(e, lv.orbit >= 5 ? 52.8 : lv.orbit >= 2 ? 33 : 22);
             e.orb = 0.25;
           }
         if (lv.orbit >= 6)
@@ -386,7 +396,7 @@ export class Game {
       for (const e of near.slice(0, lv.arc >= 6 ? 10 : lv.arc >= 3 ? 6 : 3)) {
         this.hit(
           e,
-          (lv.arc >= 5 ? 40 : lv.arc >= 2 ? 25 : 16) *
+          (lv.arc >= 5 ? 38.4 : lv.arc >= 2 ? 24 : 16) *
             (lv.arc === 6 && e.kind === "boss" ? 1.6 : 1),
         );
         this.fx("arc", prev.x, prev.y, { tx: e.x, ty: e.y });
@@ -446,7 +456,10 @@ export class Game {
       this.fx("boss", W / 2, 90);
     }
     for (const e of s.enemies) {
+      const oldAge = e.age;
       e.age += STEP;
+      if (e.kind === "boss" && oldAge < 35 && e.age >= 35)
+        this.fx("overheat", e.x, e.y);
       e.flash = Math.max(0, e.flash - STEP);
       e.slow = Math.max(0, e.slow - STEP);
       e.orb = Math.max(0, e.orb - STEP);
@@ -667,10 +680,26 @@ export class Game {
           e.hp > e.max
         )
           return null;
-      if (typeof s.hard !== 'boolean' || s.seed < 0 || s.seed > 4294967295 || s.nextXp <= 0 || s.maxHp <= 0) return null;
-      for (const p of s.shots) if (!Number.isFinite(p.damage) || p.damage < 0) return null;
-      for (const d of s.drops) if (!['xp','heal'].includes(d.kind) || !Number.isFinite(d.value) || !Number.isFinite(d.life)) return null;
-      for (const h of s.hazards) if (!['w','life','warning'].every(k=>Number.isFinite(h[k]))) return null;
+      if (
+        typeof s.hard !== "boolean" ||
+        s.seed < 0 ||
+        s.seed > 4294967295 ||
+        s.nextXp <= 0 ||
+        s.maxHp <= 0
+      )
+        return null;
+      for (const p of s.shots)
+        if (!Number.isFinite(p.damage) || p.damage < 0) return null;
+      for (const d of s.drops)
+        if (
+          !["xp", "heal"].includes(d.kind) ||
+          !Number.isFinite(d.value) ||
+          !Number.isFinite(d.life)
+        )
+          return null;
+      for (const h of s.hazards)
+        if (!["w", "life", "warning"].every((k) => Number.isFinite(h[k])))
+          return null;
       for (const p of [...s.shots, ...s.bullets])
         if (!["vx", "vy", "life", "r"].every((k) => Number.isFinite(p[k])))
           return null;

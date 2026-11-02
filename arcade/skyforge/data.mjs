@@ -45,7 +45,7 @@ export const SKILLS = {
       "탄환 피해 +25%",
       "진화 · 5갈래 탄막",
       "발사 간격 -15%",
-      "탄환 피해 +35%",
+      "탄환 피해 +36%",
       "완성 · 7갈래 집중포화",
     ],
   },
@@ -226,7 +226,7 @@ export function loadProfile(raw) {
       if (Number.isInteger(s.mods?.[k]) && s.mods[k] >= 0 && s.mods[k] <= 3)
         p.mods[k] = s.mods[k];
   } catch {}
-  if (medals(p) < 0) p.mods = {power:0,hull:0,magnet:0};
+  if (medals(p) < 0) p.mods = { power: 0, hull: 0, magnet: 0 };
   return p;
 }
 export function unlocked(p) {

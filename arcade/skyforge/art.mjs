@@ -269,6 +269,8 @@ export function enemyArt(c, e, t, pattern = 0) {
         ellipse(c, v * 16, 2, 8, 12, "#76879e", "#c4b8a9");
     ellipse(c, 0, 3, 3, 5, "#ffcaa8");
   }
+  if (e.kind === "boss" && e.age >= 35)
+    ellipse(c, 0, 0, 12, 18, "#ffb15b99", "#ffdf9e");
   if (e.slow) ellipse(c, 0, 0, e.r + 3, e.r + 3, "#a8d9ff18", "#b2e9ff");
   if (e.flash) {
     c.globalAlpha = 0.45;

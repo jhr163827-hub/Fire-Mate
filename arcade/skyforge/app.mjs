@@ -95,12 +95,16 @@ function release() {
   if (game) game.target = { x: game.s.x, y: game.s.y };
 }
 function closeDialog() {
+  $("lobby").inert = false;
+  $("play").inert = false;
   $("veil").hidden = true;
   modalPhase = "";
   release();
   acc = 0;
 }
 function dialog(title, content, actions = []) {
+  $("lobby").inert = true;
+  $("play").inert = true;
   release();
   $("dialog").innerHTML =
     '<small>SKYFORGE / FLIGHT LOG</small><h2 id="dialog-title">' +
@@ -127,7 +131,7 @@ function ask(title, body, fn) {
       },
       true,
     ],
-    ["취소", closeDialog],
+    ["취소", () => (active ? pause() : closeDialog())],
   ]);
 }
 function previewCanvas(id, w = 100, h = 80) {
@@ -451,7 +455,7 @@ function hud() {
   if (boss) {
     $("boss").querySelector("span").textContent =
       game.scene.boss +
-      " · " +
+      (boss.age >= 35 ? " · 장갑 과열 · 피해 3배 · " : " · ") +
       [
         "부채꼴 탄막 사이로 회피",
         "붉은 경고선을 벗어나세요",
@@ -465,9 +469,32 @@ function hud() {
     $("loadout").replaceChildren();
     for (const [k, lv] of Object.entries(s.skills))
       if (lv) {
-        const span = document.createElement("span");
+        const span = document.createElement("button");
         span.title = SKILLS[k].name + " Lv." + lv;
+        span.setAttribute("aria-label", SKILLS[k].name + " Lv." + lv + " 설명");
         span.append(skillCanvas(k, lv, 26), document.createTextNode(lv));
+        span.onclick = () => {
+          paused = true;
+          save();
+          dialog(
+            SKILLS[k].name + " Lv." + lv,
+            "<p>" +
+              SKILLS[k].role +
+              "</p><p>" +
+              SKILLS[k].desc.slice(0, lv).join("<br>") +
+              "</p>",
+            [
+              [
+                "계속 비행",
+                () => {
+                  paused = false;
+                  closeDialog();
+                },
+                true,
+              ],
+            ],
+          );
+        };
         $("loadout").append(span);
       }
     if (!$("loadout").children.length)
@@ -509,6 +536,7 @@ function frame(now) {
       }
     }
     for (const e of game.events.splice(0)) {
+      if (e.type === "overheat") toast("장갑 과열\n보스에게 주는 피해 3배!");
       if (e.type === "boss") toast("보스 접근\n" + game.scene.boss);
       if (e.type === "hurt") tone(130, 0.1);
       if (e.type === "evolve") tone(980, 0.2);

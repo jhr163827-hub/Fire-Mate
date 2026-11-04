@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.250</title><link rel="stylesheet" href="./app.css?v=3.5.250"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-250">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.251</title><link rel="stylesheet" href="./app.css?v=3.5.251"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-251">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.250 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.251 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -632,7 +632,7 @@ for(const t of exp){if(t.date<week||seen.includes(t.id))continue;const amt=Numbe
 const same=exp.filter(x=>x.date===t.date&&x.memo&&x.memo===t.memo);if(same.length>=3&&same[0]===t)hits.push({t,amt:same.reduce((n,x)=>n+Number(x.amount),0),text:'하루 '+same.length+'번 결제'})}
 const h=hits.sort((a,b)=>b.amt-a.amt)[0];el.hidden=!h;if(!h)return;el.innerHTML='🔔 '+Number(h.t.date.slice(5,7))+'/'+Number(h.t.date.slice(8))+' '+safe(String(h.t.memo||h.t.category).slice(0,14))+' '+won(h.amt)+' · '+h.text+' ›';
 el.onclick=()=>{try{localStorage.setItem('firemate_alert_seen_v1',JSON.stringify([...seen,h.t.id].slice(-200)))}catch{}el.hidden=true;openEntry(h.t)}}
-function fmHomeDiv(){const el=$('fmHomeDiv');if(!el)return;if(!fmDivFeed){if(!fmDivLoading){fmDivLoading=true;fetch('./dividends.json',{cache:'no-store'}).then(r=>r.json()).then(f=>{fmDivFeed=f?.symbols?f:null}).catch(()=>{}).finally(()=>{fmDivLoading=false;if(fmDivFeed){fmHomeDiv();fmFireDiv()}try{fmHomeBrief()}catch{}})}return}
+function fmHomeDiv(){const el=$('fmHomeDiv');if(!el)return;if(!fmDivFeed){if(!fmDivLoading){fmDivLoading=true;fetch('./dividends.json',{cache:'no-store'}).then(r=>r.json()).then(f=>{fmDivFeed=f?.symbols?f:null;fmDivFeedAt=Date.now()}).catch(()=>{}).finally(()=>{fmDivLoading=false;if(fmDivFeed){fmHomeDiv();fmFireDiv()}try{fmHomeBrief()}catch{}})}return}
 const day=864e5,now=new Date(localDate(new Date())+'T00:00'),fx=Number(data.balance.fx)||0,qty={},up=[];
 for(const h of data.holdings){let s=String(h.ticker||'').trim().toUpperCase();if(/^\d{6}$/.test(s))s+='.KS';if(Number(h.qty)>0)qty[s]=(qty[s]||0)+Number(h.qty)}
 const today=localDate(now),end=localDate(new Date(now.getTime()+7*day));for(const [s,q] of Object.entries(qty)){const e=fmDivFeed.symbols[s],rate=e?.currency==='USD'?fx:e?.currency==='KRW'?1:0,n=rate&&fmDivProject(e.events||[],today,end)[0];if(n)up.push({n:new Date(n.date+'T00:00'),v:n.amount*q*rate*(e.currency==='USD'?.85:.846)})}
@@ -1633,6 +1633,9 @@ const fmAssetScrollPositions={account:0,holding:0,dividend:0,analysis:0};
 window.fmSelectAssetView=fmSetAssetView;
 
 
+// The phone keeps the app alive for days, so the dividend file is fetched again when it is 3 hours old (on render or when the app comes back).
+let fmDivFeedAt=0;function fmDivRefresh(){if(!fmDivFeed||fmDivLoading||Date.now()-fmDivFeedAt<3*36e5)return;fmDivLoading=true;fmDivFeedAt=Date.now();fetch('./dividends.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(f=>{if(f?.symbols)fmDivFeed=f}).catch(()=>{}).finally(()=>{fmDivLoading=false;try{render()}catch{}})}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fmDivRefresh()});
 let fmDivFeed=null,fmDivLoading=false,fmDivSelectedYear=new Date().getFullYear(),fmDivSelectedMonth=new Date().getMonth()+1;
 // Months still ahead get estimated payouts: each symbol repeats its last amount on its last gap (ex-dates only in the feed).
 function fmDivProject(ev,today,end){const v=ev.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x?.date)&&Number(x.amount)>0).sort((a,b)=>a.date.localeCompare(b.date)),o=[];if(v.length<2)return o;const a=v.at(-1),[y,m,d]=a.date.split('-').map(Number),step=Math.round((new Date(a.date)-new Date(v.at(-2).date))/2629746e3);if(step<1)return o;
@@ -1660,10 +1663,11 @@ const status=$('fmDivStatus'),bars=$('fmDivBars'),list=$('fmDivHoldings');
 if(!status||!bars||!list)return;
 if(!fmDivFeed&&!fmDivLoading){
 fmDivLoading=true;
-fetch('./dividends.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('not ready');return r.json()}).then(feed=>{if(!feed||!feed.symbols)throw Error('invalid');fmDivFeed=feed;fmDivLoading=false;fmRenderDividends()}).catch(()=>{fmDivLoading=false;status.textContent='배당 데이터 갱신 대기 중 · Refresh dividend data 실행 필요'});
+fetch('./dividends.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('not ready');return r.json()}).then(feed=>{if(!feed||!feed.symbols)throw Error('invalid');fmDivFeed=feed;fmDivFeedAt=Date.now();fmDivLoading=false;fmRenderDividends()}).catch(()=>{fmDivLoading=false;status.textContent='배당 데이터 갱신 대기 중 · Refresh dividend data 실행 필요'});
 return;
 }
 if(!fmDivFeed)return;
+fmDivRefresh();
 const now=new Date(),today=localDate(now),current=today.slice(0,7);
 const year=fmDivSelectedYear;const months=Array.from({length:12},(_,i)=>year+'-'+String(i+1).padStart(2,'0'));const years=$('fmDivYears');years.innerHTML=Array.from({length:Math.max(3,new Date().getFullYear()-2024+1)},(_,i)=>2024+i).map(y=>'<button type="button" class="'+(y===year?'active':'')+'" data-year="'+y+'">'+y+'년</button>').join('');years.querySelectorAll('button').forEach(b=>b.onclick=()=>{fmDivSelectedYear=Number(b.dataset.year);fmDivSelectedMonth=1;fmRenderDividends()});
 const totals=Object.fromEntries(months.map(m=>[m,0]));const grossTotals=Object.fromEntries(months.map(m=>[m,0]));
@@ -3045,7 +3049,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-250',VERSION='3.5.250';
+ const BUILD='fire-mate-v3-5-251',VERSION='3.5.251';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3259,4 +3263,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.250"></script></body></html>
+</style><script src="./js/features.js?v=3.5.251"></script></body></html>

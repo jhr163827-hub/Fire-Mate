@@ -347,3 +347,18 @@ test('a dividend file fetched hours ago is fetched again when the app comes back
  // Right after, another return does not fetch again.
  const second=calls;await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));await page.waitForTimeout(300);expect(calls).toBe(second);
 });
+
+test('a monthly payout a few days past its usual date but not listed yet still shows as expected in that month',async({page,context})=>{
+ await page.clock.setFixedTime(new Date('2026-11-05T12:00:00'));
+ await context.route(/\/dividends\.json(?:\?|$)/,route=>route.fulfill({json:{updatedAt:'2026-11-05',symbols:{JEPQ:{currency:'USD',events:['2026-08-03','2026-09-01','2026-10-01'].map(date=>({date,amount:0.6}))}}}}));
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.request().url().includes('dividends.json')?r.fallback():r.abort());
+ await page.addInitScript(()=>{if(sessionStorage.getItem('dp'))return;sessionStorage.setItem('dp','1');localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],rec:[],budgets:{},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'JEPQ',name:'JEPQ',type:'USD',qty:100,price:55,cost:50}]}))});
+ await page.goto('/index.html');
+ await page.locator('button.bottom-item[data-view="assets"]').click();await page.locator('#fmAssetQuickDividend').click();
+ // 100주 × $0.6 × 1,400 × 85% = 71,400 → 7만, on 11/1 (예상) though today is 11/5.
+ await expect(page.locator('.fm-div-col[data-month="11"]')).toContainText('7만');
+ await page.locator('.fm-div-col[data-month="11"]').click();
+ await expect(page.locator('#fmDivHoldings')).toContainText('배당일 11/1 (예상)');
+ // The home 7-day line does not count a date already past.
+ await page.evaluate(()=>window.fmGo('home'));await expect(page.locator('#fmHomeDiv')).toBeHidden();
+});

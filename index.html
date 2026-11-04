@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.251</title><link rel="stylesheet" href="./app.css?v=3.5.251"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-251">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.252</title><link rel="stylesheet" href="./app.css?v=3.5.252"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-252">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.251 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.252 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -1638,9 +1638,10 @@ let fmDivFeedAt=0;function fmDivRefresh(){if(!fmDivFeed||fmDivLoading||Date.now(
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')fmDivRefresh()});
 let fmDivFeed=null,fmDivLoading=false,fmDivSelectedYear=new Date().getFullYear(),fmDivSelectedMonth=new Date().getMonth()+1;
 // Months still ahead get estimated payouts: each symbol repeats its last amount on its last gap (ex-dates only in the feed).
-function fmDivProject(ev,today,end){const v=ev.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x?.date)&&Number(x.amount)>0).sort((a,b)=>a.date.localeCompare(b.date)),o=[];if(v.length<2)return o;const a=v.at(-1),[y,m,d]=a.date.split('-').map(Number),step=Math.round((new Date(a.date)-new Date(v.at(-2).date))/2629746e3);if(step<1)return o;
+// grace: a projected date up to that many days before today still counts (Yahoo can take days to list a payout, e.g. JEPQ 11/1 missing on 11/5).
+function fmDivProject(ev,today,end,grace=0){const from=grace?localDate(new Date(Date.parse(today+'T00:00')-grace*864e5)):today;const v=ev.filter(x=>/^\d{4}-\d\d-\d\d$/.test(x?.date)&&Number(x.amount)>0).sort((a,b)=>a.date.localeCompare(b.date)),o=[];if(v.length<2)return o;const a=v.at(-1),[y,m,d]=a.date.split('-').map(Number),step=Math.round((new Date(a.date)-new Date(v.at(-2).date))/2629746e3);if(step<1)return o;
  // Step whole calendar months (payers on the 1st must not land twice in one month), keeping the day within the month.
- for(let k=step;;k+=step){const last=new Date(y,m-1+k+1,0).getDate(),n=localDate(new Date(y,m-1+k,Math.min(d,last)));if(n>end)break;if(n>today)o.push({...a,date:n,p:1})}return o}
+ for(let k=step;;k+=step){const last=new Date(y,m-1+k+1,0).getDate(),n=localDate(new Date(y,m-1+k,Math.min(d,last)));if(n>end)break;if(n>from)o.push({...a,date:n,p:1})}return o}
 // 배당 월급 목표 (firemate_div_goal_v1, won a month after tax): last 12 months of dividends against the goal, when the FIRE plan reaches it at the same yield,
 // which held stock fills the gap with the fewest won, and each stock's dividend growth (last 12 months per share vs the 12 before).
 function fmRenderDivGoal(){const el=$('fmDivGoal');if(!el||!fmDivFeed||el.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;let goal=0;try{goal=Number(localStorage.getItem('firemate_div_goal_v1'))||0}catch{}
@@ -1690,7 +1691,7 @@ if(!Number.isFinite(rate)||rate<=0){missing.push(sym);continue}
 covered++;
 const isCoveredCall=sym==='498400.KS';
 let grossYear=0,netYear=0,taxYear=0,latest='',uncertain=false;
-for(const e of [...entry.events,...fmDivProject(entry.events,today,yearEnd)]){
+for(const e of [...entry.events,...fmDivProject(entry.events,today,yearEnd,31)]){
 if(!e||!/^\d{4}-\d{2}-\d{2}$/.test(String(e.date))||!Number.isFinite(Number(e.amount))||Number(e.amount)<=0)continue;
 const gross=Number(e.amount)*qty*rate,month=e.date.slice(0,7);
 const taxBase=Number(e.taxBasePerShare);
@@ -3049,7 +3050,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-251',VERSION='3.5.251';
+ const BUILD='fire-mate-v3-5-252',VERSION='3.5.252';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3263,4 +3264,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.251"></script></body></html>
+</style><script src="./js/features.js?v=3.5.252"></script></body></html>

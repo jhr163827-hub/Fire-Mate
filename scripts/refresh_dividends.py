@@ -43,7 +43,16 @@ if not out["symbols"]:
 if os.path.exists("dividends.json"):
     with open("dividends.json", encoding="utf-8") as f:
         previous = json.load(f)
+    # Yahoo sometimes leaves a recent payout out of one day's answer (JEPQ·JEPI·SGOV lost 2026-10-01 on 2026-11-04),
+    # so a past event already collected is kept unless it has aged out of the window; a fresh amount wins on the same date.
+    cutoff = dt.datetime.fromtimestamp(start, dt.timezone.utc).date().isoformat()
     for symbol, record in (previous.get("symbols") or {}).items():
+        if symbol in out["symbols"]:
+            have = {e["date"] for e in out["symbols"][symbol]["events"]}
+            kept = [e for e in record.get("events") or [] if e.get("date", "") >= cutoff and e.get("date") not in have and float(e.get("amount") or 0) > 0]
+            if kept:
+                out["symbols"][symbol]["events"] = sorted(out["symbols"][symbol]["events"] + kept, key=lambda x: x["date"])
+                print(symbol, "kept", len(kept), "earlier events Yahoo left out")
         if symbol not in out["symbols"]:
             out["symbols"][symbol] = record
             out["symbolStatus"][symbol] = {"status": "stale", "checkedAt": now.isoformat(), "lastSuccessfulAt": (previous.get("symbolStatus") or {}).get(symbol, {}).get("lastSuccessfulAt") or (previous.get("symbolStatus") or {}).get(symbol, {}).get("checkedAt") or previous.get("updatedAt")}

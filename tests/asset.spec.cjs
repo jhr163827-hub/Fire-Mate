@@ -329,3 +329,21 @@ test('an extra buy from a pasted fill notice updates quantity, average cost and 
  await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).holdings[0].qty).toBe(10);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_buy_fx_v1')).h)).toBe(1300);
 });
+
+test('a dividend file fetched hours ago is fetched again when the app comes back, so a fixed file shows without a restart',async({page,context})=>{
+ const iso=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);let calls=0;
+ // The first file lacks the newest payout (as Yahoo once sent); later ones have it.
+ await context.route(/\/dividends\.json(?:\?|$)/,route=>{calls++;const ev=[-90,-60,-30].map(n=>({date:iso(n),amount:0.5}));route.fulfill({json:{updatedAt:iso(0),symbols:{JEPQ:{currency:'USD',events:calls===1?ev.slice(0,2):ev}}}})});
+ await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.request().url().includes('dividends.json')?r.fallback():r.abort());
+ await page.clock.install();
+ await page.addInitScript(()=>{if(sessionStorage.getItem('dr'))return;sessionStorage.setItem('dr','1');localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],rec:[],budgets:{},fire:{asset:15000,goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'JEPQ',name:'JEPQ',type:'USD',qty:100,price:55,cost:50}]}))});
+ await page.goto('/index.html');
+ await page.locator('button.bottom-item[data-view="assets"]').click();await page.locator('#fmAssetQuickDividend').click();
+ await expect.poll(()=>calls).toBeGreaterThan(0);const first=calls;
+ // Four hours later the app comes back to the front: the file is fetched again.
+ await page.clock.fastForward('04:00:00');
+ await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
+ await expect.poll(()=>calls).toBeGreaterThan(first);
+ // Right after, another return does not fetch again.
+ const second=calls;await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));await page.waitForTimeout(300);expect(calls).toBe(second);
+});

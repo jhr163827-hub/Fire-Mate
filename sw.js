@@ -15,7 +15,7 @@ self.addEventListener('fetch',event=>{
   return;
  }
  if(url.pathname.includes('/arcade/')){
-  event.respondWith((async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok){const cache=await caches.open(CACHE);await cache.put(req,response.clone())}return response}catch{return await caches.match(req)||Response.error()}})());
+  event.respondWith((async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok){const cache=await caches.open(CACHE);await cache.put(req,response.clone());return response}return await caches.match(req)||response}catch{return await caches.match(req)||Response.error()}})());
   return;
  }
  event.respondWith(fetch(req).catch(()=>caches.match(req)));

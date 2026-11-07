@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.253</title><link rel="stylesheet" href="./app.css?v=3.5.253"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-253">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.254</title><link rel="stylesheet" href="./app.css?v=3.5.254"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-254">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.253 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.254 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -2563,7 +2563,7 @@ $('fmArcadeOpen')?.addEventListener('click',()=>location.assign(new URL('./arcad
 // usual timing, eligibility and validity. Goals get a D-day, stages, a study log (minutes a day) and a link to the official schedule. Stored in firemate_certificates_v1.
 const FM_CERTS='firemate_certificates_v1';let fmCertId=null,fmCertMode='have',fmCertPick=null,fmCat=read('firemate_cert_catalog_v1',null);
 const fmCerts=()=>{const v=read(FM_CERTS,{});return Array.isArray(v?.list)?v.list:[]},fmCertSave=l=>{try{localStorage.setItem(FM_CERTS,JSON.stringify({list:l}));return true}catch{toast('저장하지 못했어요');return false}};
-function fmCatLoad(){fetch('./cert-catalog.json').then(r=>r.ok?r.json():null).then(j=>{if(!j?.list)return;fmCat=j;try{localStorage.setItem('firemate_cert_catalog_v1',JSON.stringify(j))}catch{}fmRenderCerts()}).catch(()=>{})}
+function fmCatLoad(){fetch('./cert-catalog.json').then(r=>r.ok?r.json():null).then(j=>{if(!j?.list)return;fmCat=j;try{localStorage.setItem('firemate_cert_catalog_v1',JSON.stringify(j))}catch{}fmRenderCerts();if($('fmCertQ')?.value.trim())$('fmCertQ').oninput()}).catch(()=>{})}
 // [시험 구성, 보통 시기, 응시 자격, 유효기간, 단계]
 const FM_CERT_GRADE={기술사:['필기(서술형 4교시) → 면접','보통 연 3회','기사 취득 후 실무 4년 등','평생',['필기','면접']],기능장:['필기 → 실기','보통 연 2회','산업기사+실무 5년 또는 기능사+7년','평생',['필기','실기']],기사:['필기(객관식) → 실기','보통 연 3회','관련 학과 4년제 졸업(예정) 또는 산업기사+1년 등','평생',['필기','실기']],산업기사:['필기 → 실기','보통 연 3회','관련 학과 2년제 졸업(예정) 또는 기능사+1년 등','평생',['필기','실기']],기능사:['필기(CBT) → 실기','연 4회 이상','제한 없음','평생',['필기','실기']],
  FE:['CBT 1회 (110문항, 약 6시간)','연중 수시 예약','제한 없음 (공학 학위 권장)','평생',['시험']],PE:['CBT 1회 (80문항, 약 9시간)','연중 수시 예약','FE 합격 + 주(州)별 실무 경력','면허는 주별 갱신 (PDH)',['시험']],국가전문:['1차 → 2차 (종목별)','보통 연 1회','종목별','평생',['1차','2차']],국가공인:['종목별','종목별 공지','대부분 제한 없음','평생',['시험']],민간:['종목별','종목별 공지','제한 없음','종목별',['시험']],해외:['종목별','종목별','종목별','종목별',['시험']],어학:['시험 1회','매달 수시','제한 없음','성적 2년',['시험']],
@@ -3074,7 +3074,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-253',VERSION='3.5.253';
+ const BUILD='fire-mate-v3-5-254',VERSION='3.5.254';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3288,4 +3288,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.253"></script></body></html>
+</style><script src="./js/features.js?v=3.5.254"></script></body></html>

@@ -1,9 +1,7 @@
 name: Refresh news
 on:
+  # Manual only: the hourly schedule was removed after the account review (2026-11), see CLAUDE.md.
   workflow_dispatch:
-  schedule:
-    # Every hour from 06:00 to 23:00 KST (21:00–14:00 UTC).
-    - cron: '23 21-23,0-14 * * *'
 permissions:
   contents: write
 concurrency:

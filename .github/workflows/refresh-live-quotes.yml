@@ -2,9 +2,8 @@ name: Refresh live quotes
 on:
   workflow_dispatch:
   schedule:
-    # Every 30 minutes on weekdays (UTC), plus Saturday early UTC for Friday's after-hours session.
-    - cron: '7,37 * * * 1-5'
-    - cron: '7,37 0-1 * * 6'
+    # Once a day after the US close (21:43 UTC Mon–Fri = 06:43 KST the next morning) — was every 30 minutes before the account review (2026-11).
+    - cron: '43 21 * * 1-5'
 permissions:
   contents: write
 concurrency:

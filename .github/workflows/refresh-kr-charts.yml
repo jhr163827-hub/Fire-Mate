@@ -2,7 +2,8 @@ name: Refresh Korean stock charts
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 */2 * * *'
+    # Once a day after the Korean close (07:17 UTC = 16:17 KST, weekdays) — was every 2 hours before the account review (2026-11).
+    - cron: '17 7 * * 1-5'
 permissions:
   contents: write
 concurrency:

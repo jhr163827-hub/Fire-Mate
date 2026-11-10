@@ -1,5 +1,5 @@
-const CACHE='fire-mate-v3-5-253';
-const ASSETS=['./index.html','./app.css?v=3.5.253','./js/features.js?v=3.5.253','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='fire-mate-v3-5-254';
+const ASSETS=['./index.html','./app.css?v=3.5.254','./js/features.js?v=3.5.254','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const validPage=text=>text.includes("const BUILD='"+CACHE+"'")&&text.includes('id="view-home"')&&text.includes('id="view-assets"')&&text.includes('id="view-fire"')&&text.length>100000;
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})));const page=await cache.match('./index.html');if(!page||!validPage(await page.text())){await caches.delete(CACHE);throw Error('App and worker build mismatch')}})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('fire-mate-v')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})())});
@@ -15,7 +15,7 @@ self.addEventListener('fetch',event=>{
   return;
  }
  if(url.pathname.includes('/arcade/')){
-  event.respondWith((async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok){const cache=await caches.open(CACHE);await cache.put(req,response.clone())}return response}catch{return await caches.match(req)||Response.error()}})());
+  event.respondWith((async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok){const cache=await caches.open(CACHE);await cache.put(req,response.clone());return response}return await caches.match(req)||response}catch{return await caches.match(req)||Response.error()}})());
   return;
  }
  event.respondWith(fetch(req).catch(()=>caches.match(req)));

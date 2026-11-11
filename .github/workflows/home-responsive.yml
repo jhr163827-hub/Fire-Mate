@@ -27,7 +27,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install playwright pillow
-      - run: python -m playwright install --with-deps chromium
+      # System packages come from the Ubuntu mirrors; when they are unreachable the runner image usually has what Chromium needs.
+      - run: python -m playwright install --with-deps chromium || python -m playwright install chromium
       - name: Serve application
         run: |
           python -m http.server 8000 --bind 127.0.0.1 > /tmp/fire-mate-http.log 2>&1 &

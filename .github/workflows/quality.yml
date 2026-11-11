@@ -20,7 +20,8 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package.json') }}
-      - run: npx playwright install --with-deps chromium
+      # System packages come from the Ubuntu mirrors; when they are unreachable the runner image usually has what Chromium needs.
+      - run: npx playwright install --with-deps chromium || npx playwright install chromium
       - run: npm run test:finance
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4

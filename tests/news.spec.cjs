@@ -42,3 +42,17 @@ test('the home-line fold is quiet when nothing changes (it must not re-run every
  const n=await page.evaluate(()=>new Promise(ok=>{let c=0;const o=new MutationObserver(m=>c+=m.length);o.observe(document.getElementById('fmHomeRows'),{attributes:true,subtree:true,childList:true});setTimeout(()=>{o.disconnect();ok(c)},1000)}));
  expect(n).toBeLessThan(30);// a per-frame loop was ~480 a second
 });
+
+test('📰 news comes from the Cloudflare function with the held tickers first, and days-old headlines stay off the home line',async({page})=>{
+ let asked='';
+ await page.route(/fire-mate-627\.pages\.dev\/api\/news/,r=>{asked=r.request().url();r.fulfill({json:{at:ago(0.1),top:[{t:'방금 나온 경제 뉴스',src:'연합뉴스',url:'https://news.google.com/n',at:ago(0.2)}],market:[],symbols:{}},headers:{'access-control-allow-origin':'*'}})});
+ await page.goto('/index.html');
+ await expect(page.locator('#fmHomeNews')).toContainText('방금 나온 경제 뉴스');
+ expect(decodeURIComponent(asked)).toContain('s=QQQ,360750');
+});
+
+test('📰 an old news file shows nothing on home',async({page})=>{
+ await page.route(/news\.json/,r=>r.fulfill({json:{at:ago(80),top:[{t:'사흘 전 뉴스',src:'X',url:'https://news.google.com/o',at:ago(80)}],market:[],symbols:{}}}));
+ await page.goto('/index.html');await page.waitForTimeout(1500);
+ await expect(page.locator('#fmHomeNews')).toBeHidden();
+});

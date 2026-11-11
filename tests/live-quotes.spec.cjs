@@ -56,3 +56,15 @@ test('home shows this month\'s savings against the FIRE plan',async({page})=>{
  await page.reload();
  await expect(page.locator('#fmHomeSaving')).toContainText('이번 달 모은 돈 +₩3,000,000 · FIRE 계획 월 ₩3,000,000 (100%)');
 });
+
+test('live US prices come from the Cloudflare function even when Twelve Data is rate-limited',async({page})=>{
+ let td=0;
+ await page.route(/api\.twelvedata\.com/,r=>{td++;r.abort()});
+ await page.route(/fire-mate-627\.pages\.dev\/api\/quotes/,r=>r.fulfill({json:{updatedAt:iso(Date.now()),live:true,quotes:{JEPQ:{price:57.1,prevClose:56,at:iso(Date.now()-60000)},'IDX-GSPC':{price:6800,prevClose:6700,at:iso(Date.now())}}},headers:{'access-control-allow-origin':'*'}}));
+ await page.evaluate(()=>{window.__fmCfTest=1;localStorage.setItem('firemate_td_key_v1','qa-key');localStorage.setItem('firemate_quote_cooldown_v1',String(Date.now()+600000))});
+ await page.evaluate(()=>window.fmGo('assets'));
+ await page.locator('#refreshStocks').click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')).holdings.find(h=>h.ticker==='JEPQ').price)).toBe(57.1);
+ await expect(page.locator('#assetsLastQuote')).not.toContainText('사용량 제한');
+ expect(td).toBe(0);
+});

@@ -1,0 +1,35 @@
+{
+  "checks": [
+    "Real pointer drag and release slowdown",
+    "First skill choice and resume",
+    "Save reload paused and finance key preserved",
+    "Boss warning rendering and emergency pulse",
+    "320px portrait, large portrait, landscape layout and 44px pulse target",
+    "Loss and clean retry",
+    "Win best-record reward",
+    "Choice save restore and level-three evolution",
+    "Full production first-stage engine through boss victory in browser (accelerated)",
+    "60-enemy / 250-bullet rendering stress fixture",
+    "Actual root service worker cached game and modules for offline resume",
+    "Real-time first stage through boss with mouse drag, choices and pulse"
+  ],
+  "errors": [],
+  "acceleratedRun": {
+    "phase": "won",
+    "time": 95.54999999999586,
+    "hits": 0
+  },
+  "stress": {
+    "enemies": 60,
+    "bullets": 250,
+    "drawMsP95": 1.2999999998137355
+  },
+  "realtime": {
+    "phase": "won",
+    "wallSeconds": 118.615,
+    "firstChoice": 8.016666666666644,
+    "battleSeconds": 97.2833333333291,
+    "hits": 0,
+    "level": 10
+  }
+}

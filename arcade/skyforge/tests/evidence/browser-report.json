@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "Real pointer drag and release slowdown",
+    "First skill choice and resume",
+    "Save reload paused and finance key preserved",
+    "Boss warning rendering and emergency pulse",
+    "320px portrait, large portrait, landscape layout and 44px pulse target",
+    "Loss and clean retry",
+    "Win best-record reward",
+    "Choice save restore and level-three evolution",
+    "Tap equipped weapon to inspect role and upgrades without taking damage",
+    "Full production first-stage engine through boss victory in browser (accelerated)",
+    "Late boss overheating is visible in the HUD",
+    "60-enemy / 250-bullet rendering stress fixture",
+    "Actual root service worker cached game and modules for offline resume"
+  ],
+  "errors": [],
+  "acceleratedRun": {
+    "phase": "won",
+    "time": 95.54999999999586,
+    "hits": 0
+  },
+  "stress": {
+    "enemies": 60,
+    "bullets": 250,
+    "drawMsP95": 1.5
+  }
+}

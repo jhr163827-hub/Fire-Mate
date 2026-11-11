@@ -81,8 +81,9 @@ def main():
         if not name:
             continue
         # "KODEX 200" must not match "KODEX 200선물인버스2X": the name has to end where a word ends.
-        named = re.compile(re.escape(name.replace(" ", "")) + r"(?![0-9A-Za-z가-힣])")
-        items = [n for n in search(f'"{name}" when:7d', 24 * 7, 20) if named.search(n["t"].replace(" ", ""))][:3]
+        # Spaces inside the name may be missing in a headline; a space or punctuation after it is fine.
+        named = re.compile(r"\s*".join(map(re.escape, name.split(" "))) + r"(?![0-9A-Za-z가-힣])")
+        items = [n for n in search(f'"{name}" when:7d', 24 * 7, 20) if named.search(n["t"])][:3]
         if items:
             by_sym[code] = items
         time.sleep(0.5)

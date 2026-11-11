@@ -12,7 +12,7 @@ const tag = (x, n) => { const m = x.match(new RegExp('<' + n + '[^>]*>([\\s\\S]*
 function parse(xml, hours, limit) {
   const now = Date.now(), seen = new Set(), out = [];
   for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
-    let t = tag(m[1], 'title'); const url = tag(m[1], 'link'), src = tag(m[1], 'source'), at = Date.parse(tag(m[1], 'pubDate'));
+    let t = tag(m[1], 'title'); const url = tag(m[1], 'link'), src = tag(m[1], 'source') || tag(m[1], 'News:Source'), at = Date.parse(tag(m[1], 'pubDate'));
     if (src && t.endsWith(' - ' + src)) t = t.slice(0, -src.length - 3).trim();
     const key = t.replace(/\s/g, '');
     if (!t || !url.startsWith('https://') || !at || seen.has(key) || now - at > hours * 36e5) continue;
@@ -20,10 +20,19 @@ function parse(xml, hours, limit) {
   }
   return out.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit);
 }
-async function rss(path, hours, limit) {
-  try { const r = await fetch(RSS + path, {headers: {'User-Agent': 'Mozilla/5.0 (FIRE MATE news)'}}); return r.ok ? parse(await r.text(), hours, limit) : []; } catch { return []; }
+const UA = {'User-Agent': 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/124 Mobile Safari/537.36', 'Accept-Language': 'ko-KR,ko;q=0.9'};
+const errors = [];
+async function get(url, hours, limit) {
+  try {
+    const r = await fetch(url, {headers: UA});
+    if (!r.ok) { errors.push(new URL(url).host + ' ' + r.status); return []; }
+    return parse(await r.text(), hours, limit);
+  } catch (e) { errors.push(new URL(url).host + ' ' + String(e).slice(0, 40)); return []; }
 }
-const search = (q, hours, limit) => rss('/search?q=' + encodeURIComponent(q) + '&' + KO, hours, limit);
+// Google News first; Bing News RSS when Google gives nothing from Cloudflare's servers.
+const bing = (q, hours, limit) => get('https://www.bing.com/news/search?format=rss&setlang=ko&cc=KR&q=' + encodeURIComponent(q.replace(/ when:\d+d/, '')), hours, limit);
+const rss = async (path, hours, limit, alt) => { const l = await get(RSS + path, hours, limit); return l.length || !alt ? l : bing(alt, hours, limit); };
+const search = (q, hours, limit) => rss('/search?q=' + encodeURIComponent(q) + '&' + KO, hours, limit, q);
 
 async function symbolNews(sym) {
   if (/^\d{6}$/.test(sym)) {
@@ -40,19 +49,20 @@ async function symbolNews(sym) {
 }
 
 export async function onRequestGet({request, waitUntil}) {
+  errors.length = 0;
   const url = new URL(request.url);
   const syms = [...new Set((url.searchParams.get('s') || '').toUpperCase().split(',').map(s => s.trim()).filter(s => /^([A-Z]{1,6}|\d{6})$/.test(s)))].sort().slice(0, 12);
   const key = new Request(url.origin + '/api/news?s=' + syms.join(','));
   const cache = caches.default, hit = await cache.match(key);
   if (hit) return hit;
   const [top, market, lists] = await Promise.all([
-    rss('/headlines/section/topic/BUSINESS?' + KO, 24, 15),
+    rss('/headlines/section/topic/BUSINESS?' + KO, 24, 15, '경제'),
     search('증시 OR 코스피 OR 나스닥 when:1d', 24, 10),
     Promise.all(syms.map(symbolNews)),
   ]);
   const symbols = {}; syms.forEach((s, i) => { if (lists[i].length) symbols[s] = lists[i]; });
   const ok = top.length || market.length;
-  const res = new Response(JSON.stringify({at: new Date().toISOString(), top, market, symbols}), {
+  const res = new Response(JSON.stringify({at: new Date().toISOString(), top, market, symbols, ...(errors.length ? {errors: [...new Set(errors)].slice(0, 5)} : {})}), {
     status: ok ? 200 : 502,
     headers: {'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'cache-control': 'public, max-age=' + (ok ? 1800 : 60)},
   });

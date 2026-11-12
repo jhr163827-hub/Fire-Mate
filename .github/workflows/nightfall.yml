@@ -4,10 +4,12 @@ on:
     branches: [main]
     paths:
       - 'arcade/nightfall*'
+      - 'tests/nightfall-*'
       - '.github/workflows/nightfall.yml'
   pull_request:
     paths:
       - 'arcade/nightfall*'
+      - 'tests/nightfall-*'
       - '.github/workflows/nightfall.yml'
   workflow_dispatch:
 permissions:
@@ -23,7 +25,9 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - name: NIGHTFALL Playwright only
-        run: npx playwright test arcade/nightfall.spec.cjs
+        run: |
+          node --test tests/nightfall-*.test.cjs
+          npx playwright test arcade/nightfall.spec.cjs
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

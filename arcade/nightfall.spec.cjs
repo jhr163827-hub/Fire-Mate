@@ -406,3 +406,34 @@ test('Nightfall remaster effects remain stable with 160 enemies',async({page})=>
  expect(snap.enemyCount).toBeLessThanOrEqual(160);
  expect(errors).toEqual([]);
 });
+
+test('Nightfall new loadout, independent casting and checkpoint resume',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(url+'?nightfall_test=1');await page.getByRole('button',{name:'생존 시작',exact:true}).click();
+ const before=await page.evaluate(()=>{const h=window.__nightfallTest;h.invincible();h.setSkill('fire',2);h.configure({enemy:[{x:180,y:0,hp:100000,max:100000,type:'fiend',speed:0,radius:17,hit:0,knockX:0,knockY:0,slow:0}]});h.advance(2);h.save();return h.snapshot()});
+ expect(before.castCounts.arcane).toBeGreaterThan(0);expect(before.castCounts.fire).toBeGreaterThan(0);
+ await expect(page.locator('#loadout')).toContainText('화염 2');
+ await page.reload();await page.getByRole('button',{name:'이어하기',exact:true}).click();
+ await expect(page.locator('#title')).toHaveText('일시정지');
+ const after=await page.evaluate(()=>window.__nightfallTest.snapshot());expect(after.weapons.fire).toBe(2);expect(after.elapsed).toBeGreaterThanOrEqual(before.elapsed);
+ await page.getByRole('button',{name:'계속하기',exact:true}).click();await page.getByRole('button',{name:'일시정지',exact:true}).click();
+ await page.getByRole('button',{name:'이번 도전 정산',exact:true}).click();
+ expect(await page.evaluate(()=>localStorage.getItem('nightfall_run_v1'))).toBeNull();expect(errors).toEqual([]);
+});
+
+test('Nightfall level choice survives reload and excludes full-health recovery',async({page})=>{
+ await page.goto(url+'?nightfall_test=1');await page.getByRole('button',{name:'생존 시작',exact:true}).click();
+ await page.evaluate(()=>{const h=window.__nightfallTest;h.configure({player:{multi:5,rate:.17}});h.upgrade()});
+ await expect(page.locator('#choices')).toContainText('비전 강화');await expect(page.locator('#choices')).not.toContainText('체력 회복');await expect(page.locator('#choices')).not.toContainText('투사체');
+ await page.reload();await page.getByRole('button',{name:'이어하기',exact:true}).click();await expect(page.locator('#title')).toContainText('LEVEL');
+ await page.locator('#choices button').first().click();expect((await page.evaluate(()=>window.__nightfallTest.snapshot())).pendingUpgrade).toBe(false);
+});
+
+test('Nightfall compact HUD and full weapon roster fit mobile portrait',async({browser})=>{
+ for(const width of [320,360,375,390,430]){
+ const context=await browser.newContext({viewport:{width,height:568},isMobile:true,hasTouch:true});const page=await context.newPage();await page.goto(url+'?nightfall_test=1');await page.getByRole('button',{name:'생존 시작',exact:true}).click();
+ await page.evaluate(()=>{const h=window.__nightfallTest;h.invincible();for(const k of Object.keys(h.skills().weapons))h.setSkill(k,5,true);h.advance(.05)});
+ const metrics=await page.evaluate(()=>{const hud=document.querySelector('header').getBoundingClientRect(),xp=document.querySelector('#xp').getBoundingClientRect(),bar=document.querySelector('#loadout').getBoundingClientRect();return {scroll:document.documentElement.scrollWidth,width:innerWidth,headerBottom:hud.bottom,xpTop:xp.top,left:bar.left,right:bar.right,bottom:bar.bottom}});
+ expect(metrics.scroll).toBeLessThanOrEqual(width);expect(metrics.headerBottom).toBeLessThanOrEqual(metrics.xpTop);expect(metrics.left).toBeGreaterThanOrEqual(0);expect(metrics.right).toBeLessThanOrEqual(width);expect(metrics.bottom).toBeLessThan(284);await context.close();
+ }
+});

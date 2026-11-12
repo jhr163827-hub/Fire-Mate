@@ -1,7 +1,8 @@
 const {test,expect}=require('@playwright/test');
 // 🔔 폰 알림: the app writes a daily digest plan to the 'fm-notify-v1' cache; sw.js shows it (no server).
-test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,permissions:['notifications']});
-const day=k=>{const d=new Date();d.setDate(d.getDate()+k);return new Intl.DateTimeFormat('en-CA').format(d)};
+test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,permissions:['notifications'],timezoneId:'Asia/Seoul'});
+// Dates as the browser sees them (the CI config pins a time zone, so the runner's own clock may be on another day).
+const day=k=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul'}).format(new Date(Date.now()+k*864e5));
 const plan=page=>page.evaluate(async()=>{const r=await (await caches.open('fm-notify-v1')).match('./__fm_notify.json');return r?(await r.json()).days:null});
 test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());

@@ -2752,3 +2752,11 @@ html body #view-home #fmHomeRows>.fm-folded{display:none}#view-home #fmHomeRows 
 .fm-hold-paste{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.fm-hold-paste summary{font-weight:700;color:var(--sub);cursor:pointer;padding:6px 0}.fm-hold-paste textarea{width:100%;margin:8px 0;font-size:14px}.fm-hold-paste-prev p{margin:4px 0;font-size:14px}.fm-hold-paste .fm-addbuy-actions{display:flex;gap:8px}
 .fm-div-late{margin:8px 0;padding:8px 10px;border-radius:10px;background:var(--panel2);font-size:13px;color:var(--sub)}
 .fm-push-kinds{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px 52px}.fm-push-kinds[hidden]{display:none}.fm-push-kinds button{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--sub);font-size:13px}.fm-push-kinds button.active{background:var(--green2);color:var(--txt);border-color:transparent}html body #settingsOverlay .fm-set-group #fmHealthOpen[hidden]{display:none}
+html body #settingsOverlay .fm-set-group.fm-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;background:transparent;overflow:visible;border-radius:0}
+html body #settingsOverlay .fm-set-group.fm-tiles .fm-certs{flex-direction:column;align-items:flex-start;gap:10px;padding:16px;border-radius:18px;background:var(--panel);min-height:104px}
+html body #settingsOverlay .fm-set-group.fm-tiles .fm-certs::after{display:none}
+html body #settingsOverlay .fm-set-group.fm-tiles .fm-set-ico{width:40px;height:40px;font-size:22px}
+html body #settingsOverlay .fm-set-group.fm-tiles .fm-certs small{display:block;margin-top:3px;white-space:normal;overflow-wrap:anywhere}
+html body #view-fire .fm-fire-notes>*{font-size:14px;color:var(--txt)}
+html body .fm-cardtax{font-size:14px;line-height:1.6}html body .fm-cardtax p{margin:0 0 8px}
+html body #fmManualUpdate.fm-update-ready{color:var(--green);border-color:var(--green)}

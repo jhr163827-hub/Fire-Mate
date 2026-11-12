@@ -21,6 +21,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      # Read-only look at the live Cloudflare functions (they cannot be reached from the dev sandbox). Never fails the job.
+      - name: Probe live news and quotes functions
+        continue-on-error: true
+        run: |
+          for u in "news?s=SCHD,360750" "quotes?s=SCHD"; do
+            echo "== $u"; curl -sS -m 40 -w '\nHTTP %{http_code} %{content_type}\n' "https://fire-mate-627.pages.dev/api/$u" | cut -c1-900
+          done
       - name: Verify app integrity and version consistency
         run: python3 scripts/check_app.py
       - name: Test asset and FIRE calculations

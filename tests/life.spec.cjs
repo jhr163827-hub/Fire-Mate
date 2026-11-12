@@ -35,6 +35,7 @@ test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다�
 
 test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage files and shows the last night on home',async({page})=>{
  await page.goto('/index.html');
+ await page.evaluate(()=>{document.getElementById('fmHealthOpen').hidden=false});// hidden from settings since v3.5.257 (owner's call)
  await openSettings(page,'fmHealthOpen');
  const y=day(-1),t=day(0),ms=d=>Date.parse(d+'T00:00:00Z');
  // Times are UTC with a +09:00 offset: 14:40Z = 23:40 local, 21:52Z = 06:52 local next morning.

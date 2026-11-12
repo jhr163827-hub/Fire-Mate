@@ -31,3 +31,18 @@ test('수면·걸음 is hidden from settings',async({page})=>{
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmEngOpen')).toBeVisible();await expect(page.locator('#fmHealthOpen')).toBeHidden();
 });
+
+test('FIRE: an example plan offers numbers from my own records once, and applying it saves the plan',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');const tx=[],d=new Date();
+  for(let k=1;k<=3;k++){const m=new Date(d.getFullYear(),d.getMonth()-k,5),ym=m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0');
+   tx.push({id:'e'+k,date:ym+'-05',type:'expense',category:'식비',amount:2000000},{id:'i'+k,date:ym+'-06',type:'transfer',category:'투자',amount:1500000,memo:'키움증권'})}
+  localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx,rec:[],budgets:{},accounts:[],holdings:[],balance:{cash:50000000,fx:1400,debt:0},fire:{asset:5000,goal:65000,monthly:300,rate:7,withdrawal:4}}))});
+ await page.goto('/index.html');await page.evaluate(()=>window.fmGo('fire'));
+ const line=page.locator('#fmFireFit');
+ // 생활비 월 200만 × 12 ÷ 4% = 6억, 투자 평균 월 150만
+ await expect(line).toContainText('목표 6억');await expect(line).toContainText('월 150만');
+ await line.click();await page.locator('#fmAskOk').click();
+ await expect.poll(()=>page.evaluate(()=>{const f=JSON.parse(localStorage.getItem('firemate_smart_v3')).fire;return f.goal+'/'+f.monthly})).toBe('60000/150');
+ await expect(line).toBeHidden();
+ await page.reload();await page.evaluate(()=>window.fmGo('fire'));await expect(page.locator('#fmFireFit')).toBeHidden();
+});

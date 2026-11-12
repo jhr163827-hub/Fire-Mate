@@ -6,7 +6,7 @@ test('settings is one page of grouped rows: 나의 목표 · 돈 관리 · 보�
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const groups=await page.evaluate(()=>[...document.querySelectorAll('#settingsOverlay .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
- expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['돈 관리',['📋월급 주기 계획','fmPushRow','fmPushKinds','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']],['생활',['fmEngOpen','fmHealthOpen','fmJournalOpen']],['재미',['fmArcadeOpen']]]);
+ expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['생활',['fmEngOpen','fmHealthOpen','fmJournalOpen']],['재미',['fmArcadeOpen']],['돈 관리',['📋월급 주기 계획','fmPushRow','fmPushKinds','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']]]);
  // A full page, not a sheet; the lock is a switch.
  const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
  await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);
@@ -228,4 +228,14 @@ test('버킷리스트: add by typing or an idea, sorted by the words, edited wit
  await expect(page.locator('.fm-cele')).toContainText('이뤘어요!');
  await expect(page.locator('.fm-bk-hero strong')).toHaveText('1 / 2');
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_bucket_v1')).list);expect(saved.map(b=>b.cat)).toEqual(['travel','health']);expect(saved.find(b=>b.done).doneAt).toMatch(/^\d{4}-\d\d-\d\d$/);
+});
+
+test('더보기: life features are two-column tiles above the settings rows, and the tab is called 더보기',async({page})=>{
+ await page.goto('/index.html');
+ await expect(page.locator('#settingsBottom')).toHaveText('더보기');
+ await page.locator('#settingsBottom').click();
+ await expect(page.locator('#settingsTitle')).toHaveText('더보기');
+ const a=await page.locator('#fmTodoOpen').boundingBox(),b=await page.locator('#fmCertOpen').boundingBox(),m=await page.locator('#fmPushRow').boundingBox();
+ expect(Math.abs(a.y-b.y)).toBeLessThan(2);expect(b.x).toBeGreaterThan(a.x+a.width-2);expect(m.y).toBeGreaterThan(a.y+a.height);expect(m.width).toBeGreaterThan(a.width*1.8);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });

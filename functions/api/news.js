@@ -34,11 +34,18 @@ async function get(url, hours, limit) {
 }
 // Google News first (it answers 503 to Cloudflare's servers); then Bing News RSS; for the two headline lists, newspaper RSS feeds last.
 const bing = (q, hours, limit) => get('https://www.bing.com/news/search?format=rss&setlang=ko&cc=KR&q=' + encodeURIComponent(q.replace(/ when:\d+d/, '')), hours, limit);
+const MONEY = /금리|환율|증시|코스피|코스닥|나스닥|다우|S&P|주가|주식|증권|채권|국채|물가|인플레|수출|무역|관세|반도체|은행|금융|투자|ETF|펀드|배당|연준|Fed|FOMC|한은|부동산|집값|전세|대출|세금|세제|연말정산|유가|원화|달러|엔화|실적|영업이익|상장|공모|IPO|GDP|성장률|고용|가상자산|비트코인|연금|보험|예금|적금|삼성전자|하이닉스|엔비디아|테슬라|애플|경기|소비|매출/i;
 const PAPERS = {경제: ['https://www.yna.co.kr/rss/economy.xml', 'https://www.hankyung.com/feed/economy'], 증시: ['https://www.yna.co.kr/rss/market.xml', 'https://www.hankyung.com/feed/finance']};
 const rss = async (path, hours, limit, alt) => {
   let l = await get(RSS + path, hours, limit);
   if (!l.length && alt) l = await bing(alt, hours, limit);
-  for (const u of (!l.length && PAPERS[(alt || '').slice(0, 2)]) || []) { if (!l.length) l = (await get(u, hours, limit)).map(n => ({...n, src: n.src || (u.includes('yna') ? '연합뉴스' : '한국경제')})); }
+  for (const u of (!l.length && PAPERS[(alt || '').slice(0, 2)]) || []) {
+    if (l.length) break;
+    // A newspaper's economy feed also carries farm, ministry and people notes: keep money headlines when there are enough of them.
+    const all = (await get(u, hours, 60)).filter(n => !/^\[(동정|인사|부고|게시판)\]|헤드라인\]/.test(n.t)).map(n => ({...n, src: n.src || (u.includes('yna') ? '연합뉴스' : '한국경제')}));
+    const money = all.filter(n => MONEY.test(n.t));
+    l = (money.length >= 3 ? money : all).slice(0, limit);
+  }
   if (!l.length && alt) errors.push('no items: ' + alt.slice(0, 12));
   return l;
 };

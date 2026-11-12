@@ -154,7 +154,7 @@ for(const width of [320,360,390,430]){
    await expect(row).toBeVisible();
    await expect(row).toHaveAttribute('role','button');
    await expect(row).toHaveAttribute('tabindex','0');
-   expect(await row.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+   await expect.poll(()=>row.evaluate(el=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);// the list may be mid-redraw
    for(const action of ['click','Enter','Space']){
     // press() focuses and presses on the same element, even if the list redraws in between.
     if(action==='click')await row.click();else await row.press(action)

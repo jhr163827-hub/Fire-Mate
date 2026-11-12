@@ -12,8 +12,11 @@ const tag = (x, n) => { const m = x.match(new RegExp('<' + n + '[^>]*>([\\s\\S]*
 function parse(xml, hours, limit) {
   const now = Date.now(), seen = new Set(), out = [];
   for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
-    let t = tag(m[1], 'title'); const url = tag(m[1], 'link'), src = tag(m[1], 'source') || tag(m[1], 'News:Source'), at = Date.parse(tag(m[1], 'pubDate'));
+    let t = tag(m[1], 'title'), url = tag(m[1], 'link'); const src = tag(m[1], 'source') || tag(m[1], 'News:Source'), at = Date.parse(tag(m[1], 'pubDate'));
     if (src && t.endsWith(' - ' + src)) t = t.slice(0, -src.length - 3).trim();
+    // Bing wraps the article in a redirect (http://www.bing.com/news/apiclick.aspx?…&url=<article>): use the article itself.
+    try { const u = new URL(url).searchParams.get('url'); if (u) url = u; } catch {}
+    url = url.replace(/^http:\/\//, 'https://');
     const key = t.replace(/\s/g, '');
     if (!t || !url.startsWith('https://') || !at || seen.has(key) || now - at > hours * 36e5) continue;
     seen.add(key); out.push({t, src, url, at: new Date(at).toISOString()});
@@ -29,9 +32,16 @@ async function get(url, hours, limit) {
     return parse(await r.text(), hours, limit);
   } catch (e) { errors.push(new URL(url).host + ' ' + String(e).slice(0, 40)); return []; }
 }
-// Google News first; Bing News RSS when Google gives nothing from Cloudflare's servers.
+// Google News first (it answers 503 to Cloudflare's servers); then Bing News RSS; for the two headline lists, newspaper RSS feeds last.
 const bing = (q, hours, limit) => get('https://www.bing.com/news/search?format=rss&setlang=ko&cc=KR&q=' + encodeURIComponent(q.replace(/ when:\d+d/, '')), hours, limit);
-const rss = async (path, hours, limit, alt) => { const l = await get(RSS + path, hours, limit); return l.length || !alt ? l : bing(alt, hours, limit); };
+const PAPERS = {경제: ['https://www.yna.co.kr/rss/economy.xml', 'https://www.hankyung.com/feed/economy'], 증시: ['https://www.yna.co.kr/rss/market.xml', 'https://www.hankyung.com/feed/finance']};
+const rss = async (path, hours, limit, alt) => {
+  let l = await get(RSS + path, hours, limit);
+  if (!l.length && alt) l = await bing(alt, hours, limit);
+  for (const u of (!l.length && PAPERS[(alt || '').slice(0, 2)]) || []) { if (!l.length) l = (await get(u, hours, limit)).map(n => ({...n, src: n.src || (u.includes('yna') ? '연합뉴스' : '한국경제')})); }
+  if (!l.length && alt) errors.push('no items: ' + alt.slice(0, 12));
+  return l;
+};
 const search = (q, hours, limit) => rss('/search?q=' + encodeURIComponent(q) + '&' + KO, hours, limit, q);
 
 async function symbolNews(sym) {

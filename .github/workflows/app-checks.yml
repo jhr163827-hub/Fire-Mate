@@ -28,6 +28,11 @@ jobs:
           for u in "news?s=SCHD,360750" "quotes?s=SCHD"; do
             echo "== $u"; curl -sS -m 40 -w '\nHTTP %{http_code} %{content_type}\n' "https://fire-mate-627.pages.dev/api/$u" | cut -c1-900
           done
+          # On a work branch, also its preview (Cloudflare needs about a minute to deploy it).
+          if [ "$GITHUB_REF_NAME" != "main" ]; then
+            sleep 80; b=$(echo "$GITHUB_REF_NAME" | tr '/_' '--' | cut -c1-28 | sed 's/-$//')
+            echo "== preview $b"; curl -sS -m 40 -w '\nHTTP %{http_code}\n' "https://$b.fire-mate-627.pages.dev/api/news?s=SCHD,360750&probe=$GITHUB_SHA" | cut -c1-1500
+          fi
       - name: Verify app integrity and version consistency
         run: python3 scripts/check_app.py
       - name: Test asset and FIRE calculations

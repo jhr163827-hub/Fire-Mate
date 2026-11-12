@@ -51,8 +51,9 @@ test('📰 news comes from the Cloudflare function with the held tickers first, 
  expect(decodeURIComponent(asked)).toContain('s=QQQ,360750');
 });
 
-test('📰 an old news file shows nothing on home',async({page})=>{
+test('📰 an old news file is not shown on home; the line says the latest could not be loaded',async({page})=>{
  await page.route(/news\.json/,r=>r.fulfill({json:{at:ago(80),top:[{t:'사흘 전 뉴스',src:'X',url:'https://news.google.com/o',at:ago(80)}],market:[],symbols:{}}}));
- await page.goto('/index.html');await page.waitForTimeout(1500);
- await expect(page.locator('#fmHomeNews')).toBeHidden();
+ await page.goto('/index.html');
+ await expect(page.locator('#fmHomeNews')).toContainText('최신 뉴스를 못 받았어요');await expect(page.locator('#fmHomeNews')).not.toContainText('사흘 전 뉴스');
+ await page.locator('#fmHomeNews').click();await expect(page.locator('#fmNewsOverlay .fm-news-at')).toContainText('⚠️ 최신 뉴스를 못 받았어요');
 });

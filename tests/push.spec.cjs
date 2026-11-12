@@ -6,6 +6,8 @@ const day=k=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul'}).format(new
 const plan=page=>page.evaluate(async()=>{const r=await (await caches.open('fm-notify-v1')).match('./__fm_notify.json');return r?(await r.json()).days:null});
 test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
+ // Headless Chromium always answers 'denied'; the permission prompt itself is the browser's, so stand in for it.
+ await page.addInitScript(()=>{Object.defineProperty(window,'Notification',{configurable:true,value:{permission:'granted',requestPermission:async()=>'granted'}})});
  await page.addInitScript(([d7,d3])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');
   localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true,date:d7}]}));
   localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'t',name:'제주',from:d3,to:d3}]));

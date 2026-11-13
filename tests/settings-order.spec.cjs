@@ -38,7 +38,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await expect(info).toContainText('NCEES (미국)');await expect(info).toContainText('주별 갱신');
  await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('내 자격증 2개');
- await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid Systems기계 · 2024\.10 취득/:'',/일반기계기사기계 · 2021\.06 취득/]);
+ await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · 기계 · 2024\.10 취득/:'',/일반기계기사기사 · 기계 · 2021\.06 취득/]);
  await expect(page.locator('.fm-wallet-head h3')).toHaveText('보유 자격증 2');await expect(page.locator('.fm-cert-stats')).toContainText('2보유');
  // Edit, then delete.
  await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await expect(page.locator('#fmCertDetail')).toBeVisible();await page.locator('#fmCertEditBtn').click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
@@ -154,7 +154,7 @@ test('Mensa and 기술자 등급 are in the search with what they are, and a 기
  await page.locator('#fmCertQ').fill('건설기술인 중급');await page.locator('.fm-cert-hits button',{hasText:'건설기술인 중급'}).click();
  await expect(info).toContainText('시험 없음 · 자격·학력·경력 점수로 등급');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('[data-cert-sug="건설기술인 고급"]')).toBeVisible();
- await expect(page.locator('.fm-cert-row',{hasText:'멘사'}).locator('.fm-cert-ico')).toHaveText('멘사');
+ await expect(page.locator('.fm-cert-row',{hasText:'멘사'}).locator('small b')).toHaveText('멤버십');
 });
 
 test('a certificate keeps a photo or PDF of itself on this phone',async({page})=>{

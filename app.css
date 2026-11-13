@@ -3064,3 +3064,7 @@ html body #fmCertOverlay .fm-cert-sug button{border:0;border-radius:999px;backgr
 html body #fmCertOverlay .fm-cert-none .fm-cert-sug button{background:var(--panel2)}
 #fmTodoOverlay .fm-todo-tm{flex:none;display:grid;place-items:center;width:36px;height:36px;margin-left:auto;border-radius:50%;background:color-mix(in srgb,var(--green) 16%,transparent);font-size:16px;font-weight:400}
 #fmTodoOverlay .fm-todo-tm+i{margin-left:6px}
+html body #view-insights .fm-ins-h{margin:18px 0 8px}
+html body #view-insights #sixChart{height:140px}html body #view-insights #sixChart .fm-six-bar-area{height:96px}
+.fm-fold-more{display:block;width:100%;min-height:40px;margin-top:4px;border:0;border-radius:12px;background:var(--panel2);color:var(--sub);font:inherit;font-size:13px;font-weight:700}
+html body #fmBillsCard .fm-bills-paid>summary{min-height:44px;padding:10px 0;color:var(--sub);font-size:13px;font-weight:700;cursor:pointer}

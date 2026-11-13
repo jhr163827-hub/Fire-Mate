@@ -285,8 +285,10 @@ test('the analysis screen finds monthly bills by itself and shows which are stil
  await page.evaluate(()=>window.fmGo('insights'));
  const card=page.locator('#fmBillsCard');await expect(card).toBeVisible();
  await expect(page.locator('#fmBillsSum')).toHaveText('월 ₩165,580 · 2건 · 남은 ₩69,810');
- await expect(card.locator('.fm-bills-row').first()).toContainText('KT통신요금자동납부₩95,770✓ 1일 나감');
- await expect(card.locator('.fm-bills-row').nth(1)).toContainText('DB손₩69,810');
+ // 아직 안 나간 것이 먼저, 이번 달 나간 것은 접힌 줄 안에
+ await expect(card.locator('.fm-bills-row').first()).toContainText('DB손₩69,810');
+ await expect(card.locator('.fm-bills-paid summary')).toHaveText('✓ 이번 달 나간 것 1건 · ₩95,770');
+ await card.locator('.fm-bills-paid summary').click();await expect(card.locator('.fm-bills-paid .fm-bills-row')).toContainText('KT통신요금자동납부₩95,770✓ 1일 나감');
  await expect(card).not.toContainText('가전');
  await expect(page.locator('#fmBillsSubs')).toBeHidden();
  // The same unpaid bill shows inside the payday plan on home.
@@ -626,7 +628,7 @@ test('the card card shows the 연말정산 25% threshold and when 체크카드 s
  await load(page,seed({tx:[...pay,{id:'c',date:m+'-01',type:'expense',category:'쇼핑',amount:13000000,memo:'백화점',bankExcelKey:key(m+'-01',13000000)}]}));
  await page.evaluate(()=>window.fmGo('insights'));
  const tax=page.locator('#fmCardCard .fm-cardtax p');
- await expect(tax.first()).toHaveText(/^🧾 연말정산 카드 공제 문턱 1,200만.* \(총급여 25% 추정\) · 넘었어요$/);
+ await expect(tax.first()).toHaveText(/^🧾 연말정산 · 문턱 1,200만.* · 넘었어요$/);await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('총급여 25% 추정');
  // 신용 1,300만 − 문턱 1,200만 = 100만 × 15% = 15만 소득공제.
  await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('신용 1,300만 · 체크 0 → 카드 소득공제 약 15만');
  if(n.getMonth()>=9)await expect(page.locator('#fmCardCard .fm-cardtax')).toContainText('💡 남은 결제는 체크카드·현금이 유리(공제 30%, 신용 15%)');

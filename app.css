@@ -2793,28 +2793,27 @@ html body #settingsOverlay small[data-due]{color:var(--green);font-weight:800}
 #fmTodoOverlay .fm-todo-day[hidden]{display:none}
 #fmCertOverlay .fm-cert-undo{justify-self:start;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:12px;font-weight:700}
 /* 🎓 자격증 · 🪣 버킷 · 🎁 위시: premium pass (v3.5.265, owner asked for a richer, more 'real' feel). Same app colours, no skin. */
-/* wallet: each certificate is a card; more than 3 sit in a stack until tapped */
-html body #fmCertOverlay .fm-wallet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:22px 2px 10px}
+/* wallet: one compact line per certificate (a thin field-colour edge), a summary line, and grade filters once there are 5+ */
+html body #fmCertOverlay .fm-wallet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:22px 2px 6px}
 html body #fmCertOverlay .fm-wallet-head h3{margin:0}
-html body #fmCertOverlay .fm-wallet-head button,html body #fmCertOverlay .fm-wallet-more{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700}
-html body #fmCertOverlay .fm-wallet-more{display:block;margin:10px auto 0}
-html body #fmCertOverlay .fm-cert-rows.fm-wallet{display:flex;flex-direction:column;gap:12px;background:none;border-radius:0;overflow:visible}
-html body #fmCertOverlay .fm-wallet .fm-cert-row{position:relative;display:grid;grid-template-columns:1fr auto;grid-template-rows:1fr auto;align-items:start;gap:6px 10px;min-height:148px;padding:20px 20px 16px;border:0;border-radius:20px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#f5f7fb;box-shadow:0 14px 30px -14px #000d,inset 0 1px 0 #ffffff24;overflow:hidden;isolation:isolate}
-html body #fmCertOverlay .fm-wallet .fm-cert-row::before{content:'';position:absolute;inset:0;z-index:-1;background:radial-gradient(90% 70% at 0% 0%,#ffffff1c,transparent 60%),linear-gradient(115deg,transparent 55%,#ffffff0d 56%,transparent 70%)}
-html body #fmCertOverlay .fm-wallet .fm-cert-row:last-child{border:0}
-html body #fmCertOverlay .fm-wallet .fm-cert-ico{grid-column:2;grid-row:1;width:auto;height:auto;background:none;font-size:28px;opacity:.95}
-html body #fmCertOverlay .fm-wallet .fm-cert-ico img{width:56px;height:40px;border-radius:8px;object-fit:cover;box-shadow:0 2px 8px #0006}
-html body #fmCertOverlay .fm-wallet .fm-cert-row>span:nth-child(2){grid-column:1;grid-row:1;min-width:0}
-html body #fmCertOverlay .fm-wallet .fm-cert-row strong{display:block;font-size:19px;font-weight:800;line-height:1.3;letter-spacing:-.02em;color:#fff}
-html body #fmCertOverlay .fm-wallet .fm-cert-row small{display:block;margin-top:6px;font-size:13px;color:#ffffffb8}
-html body #fmCertOverlay .fm-wallet .fm-cert-row em{grid-column:2;grid-row:2;align-self:end;padding:4px 10px;border-radius:999px;background:#0000004d;color:#fff;font-size:12px}
-html body #fmCertOverlay .fm-wallet .fm-wc-yr{grid-column:1;grid-row:2;align-self:end;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.08em;color:#ffffff99}
-html body #fmCertOverlay .fm-wallet.stack{cursor:pointer}
-html body #fmCertOverlay .fm-wallet.stack .fm-cert-row+.fm-cert-row{margin-top:-110px}
-html body #fmCertOverlay .fm-wallet.stack .fm-cert-row{box-shadow:0 -6px 18px -8px #000c,inset 0 1px 0 #ffffff24}
+html body #fmCertOverlay .fm-wallet-head button{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700}
+html body #fmCertOverlay .fm-wallet-sum{display:flex;flex-wrap:wrap;gap:6px 12px;margin:0 2px 10px;font-size:13px;color:var(--sub)}
+html body #fmCertOverlay .fm-wallet-sum b{color:var(--txt)}
+html body #fmCertOverlay .fm-wallet-sum .warn{color:var(--yellow,#e0a84b);font-weight:700}
+html body #fmCertOverlay .fm-wallet-f{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}
+html body #fmCertOverlay .fm-wallet-f button{flex:none;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700;white-space:nowrap}
+html body #fmCertOverlay .fm-wallet-f button[aria-pressed=true]{background:var(--txt);border-color:var(--txt);color:var(--bg)}
+html body #fmCertOverlay .fm-wallet .fm-cert-row{position:relative;min-height:60px;padding:10px 14px 10px 18px}
+html body #fmCertOverlay .fm-wallet .fm-cert-row::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:color-mix(in srgb,var(--c1) 45%,#fff)}
+html body #fmCertOverlay .fm-wallet .fm-cert-ico{width:36px;height:36px;font-size:19px;background:color-mix(in srgb,var(--c1) 35%,transparent)}
+html body #fmCertOverlay .fm-wallet .fm-cert-row strong{font-size:15px}
+html body #fmCertOverlay .fm-wallet .fm-cert-row small{font-size:12px}
+html body #fmCertOverlay .fm-wallet .fm-wc-yr{flex:none;font-style:normal;font-size:12px;font-weight:700;color:var(--sub)}
+html body #fmCertOverlay .fm-wallet .fm-cert-row em~.fm-wc-yr{display:none}
 /* career ladder */
-html body #fmCertOverlay .fm-ladder{display:grid;gap:10px}
-html body #fmCertOverlay .fm-lad{display:grid;gap:12px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+html body #fmCertOverlay .fm-ladder{display:grid;border:1px solid var(--line);border-radius:18px;background:var(--panel);overflow:hidden}
+html body #fmCertOverlay .fm-lad{display:grid;gap:10px;padding:14px 16px}
+html body #fmCertOverlay .fm-lad+.fm-lad{border-top:1px solid var(--line)}
 html body #fmCertOverlay .fm-lad-k{font-weight:800}
 html body #fmCertOverlay .fm-lad-steps{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
 html body #fmCertOverlay .fm-lad-steps i{position:relative;padding-top:20px;font-style:normal;font-size:12px;font-weight:700;text-align:center;color:var(--sub)}
@@ -2863,3 +2862,4 @@ html body #fmWishOverlay .fm-wish-noprice{color:var(--sub);font-weight:600}
 html body #fmWishOverlay .fm-wish-item.skip{opacity:.75}
 html body #fmWishOverlay .fm-wish-item.skip .fm-wish-name>span:first-child{text-decoration:line-through}
 html body #fmWishOverlay .fm-wish-skipbtn{width:100%}
+html body #fmCertOverlay .fm-wallet .fm-cert-row small{white-space:normal;overflow:visible;text-overflow:clip}

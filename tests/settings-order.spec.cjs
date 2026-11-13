@@ -6,7 +6,7 @@ test('settings is one page of grouped rows: 나의 목표 · 돈 관리 · 보�
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const groups=await page.evaluate(()=>[...document.querySelectorAll('#settingsOverlay .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
- expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['생활',['fmEngOpen','fmHealthOpen','fmJournalOpen']],['재미',['fmArcadeOpen']],['돈 관리',['📋월급 주기 계획','fmPushRow','fmPushKinds','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']]]);
+ expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['생활',['fmEngOpen','fmHealthOpen','fmJournalOpen']],['재미',['fmArcadeOpen']],['돈 관리',['📋월급 주기 계획','fmPushRow','fmPushKinds','fmHomeLines']],['보안·데이터',['fmSkinRow','fmLockRow','fmStorage','⚠️데이터 초기화']]]);
  // A full page, not a sheet; the lock is a switch.
  const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
  await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);
@@ -238,4 +238,17 @@ test('더보기: life features are two-column tiles above the settings rows, and
  const a=await page.locator('#fmTodoOpen').boundingBox(),b=await page.locator('#fmCertOpen').boundingBox(),m=await page.locator('#fmPushRow').boundingBox();
  expect(Math.abs(a.y-b.y)).toBeLessThan(2);expect(b.x).toBeGreaterThan(a.x+a.width-2);expect(m.y).toBeGreaterThan(a.y+a.height);expect(m.width).toBeGreaterThan(a.width*1.8);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('🎨 the clean look is on by default and the 더보기 switch goes back to the old look and remembers it',async({page})=>{
+ await page.goto('/index.html');
+ await expect(page.locator('html')).toHaveAttribute('data-skin','clean');
+ await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmSkinOn')).toBeChecked();
+ await page.locator('#fmSkinRow').click();
+ await expect(page.locator('html')).not.toHaveAttribute('data-skin','clean');
+ await page.reload();
+ await expect(page.locator('html')).not.toHaveAttribute('data-skin','clean');
+ await page.locator('#settingsBottom').click();await page.locator('#fmSkinRow').click();
+ await expect(page.locator('html')).toHaveAttribute('data-skin','clean');
 });

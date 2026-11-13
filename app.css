@@ -2766,3 +2766,33 @@ html body .view .card small,html body .view .card .mini,html body .view .card .l
 html body details.fm-cardtax>summary{list-style:none;cursor:pointer;position:relative;padding-right:22px}html body details.fm-cardtax>summary::-webkit-details-marker{display:none}
 html body details.fm-cardtax>summary::after{content:'›';position:absolute;right:4px;top:0;color:var(--sub);transform:rotate(90deg);transition:transform .15s}html body details.fm-cardtax[open]>summary::after{transform:rotate(-90deg)}
 html body details.fm-cardtax>p{padding:8px 10px;margin:0 0 4px;border-radius:10px;background:var(--panel2)}
+/* 🎨 깔끔한 디자인 (html[data-skin=clean], default; 더보기 switch → firemate_skin_v1 'classic' turns it off). Toss-like: blue accent, no borders,
+   one flat card per topic, nested boxes become plain rows with hairlines, big bold numbers, quiet gray text. */
+html[data-skin=clean]{--bg:#101013;--panel:#1c1c21;--panel2:#26262d;--line:#2a2a31;--txt:#f9fafb;--text:#f9fafb;--sub:#9ea6b1;--green:#4a91ff;--green2:#1b2a44;--down:#4a91ff}
+html[data-skin=clean][data-theme=light]{--bg:#f2f4f6;--panel:#fff;--panel2:#f2f4f6;--line:#eef0f3;--txt:#191f28;--text:#191f28;--sub:#5d6875;--green:#2f6fe0;--green2:#e8f3ff;--down:#3182f6}
+html[data-skin=clean] body{font-family:'Pretendard',-apple-system,system-ui,'Noto Sans KR',sans-serif;letter-spacing:-.02em}
+html[data-skin=clean] body .card,html[data-skin=clean] body .hero,html[data-skin=clean] body .fm-fire-hero{border:0;box-shadow:none;border-radius:24px;padding:22px 20px;background:var(--panel)}
+html[data-skin=clean] body .view>*+*{margin-top:12px}
+html[data-skin=clean] body .card h3,html[data-skin=clean] body .cardhead h3{font-size:17px;font-weight:700;letter-spacing:-.03em}
+html[data-skin=clean] body .big,html[data-skin=clean] body #netWorth,html[data-skin=clean] body #fireYears{font-weight:800;letter-spacing:-.04em}
+html[data-skin=clean] body button.secondary,html[data-skin=clean] body .secondary{border:0;background:var(--panel2);border-radius:14px;font-weight:600;box-shadow:none}
+html[data-skin=clean] body button.primary,html[data-skin=clean] body .primary{border:0;border-radius:14px;background:var(--green);color:#fff;font-weight:700;box-shadow:none}
+html[data-skin=clean] body .iconbtn{border:0;background:transparent;box-shadow:none}
+html[data-skin=clean] body header.top{background:var(--bg);border:0;box-shadow:none}
+html[data-skin=clean] body header.top .logo{display:none}
+html[data-skin=clean] body .bottomnav{background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line);box-shadow:none}
+html[data-skin=clean] body .bottomnav .bottom-item.active,html[data-skin=clean] body .bottomnav .bottom-item.active .navicon{color:var(--txt)}
+/* nested gray boxes → plain rows */
+html[data-skin=clean] body #view-fire .fm-fire-notes{background:transparent;gap:0;border-radius:0;margin:6px 0 0}
+html[data-skin=clean] body #view-fire .fm-fire-notes>*{background:transparent;padding:14px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.55}
+html[data-skin=clean] body #view-fire .fm-fire-notes b{color:var(--txt);font-weight:800}
+html[data-skin=clean] body #view-fire .fm-fire-hero{background:var(--panel);color:var(--txt)}
+html[data-skin=clean] body #fmHomeRows{background:var(--panel);border:0;border-radius:24px;gap:0}
+html[data-skin=clean] body #fmHomeRows>*{background:transparent;border:0;border-bottom:1px solid var(--line);padding:16px 20px;font-size:15px}
+html[data-skin=clean] body #fmHomeRows>*:last-child{border-bottom:0}
+html[data-skin=clean] body .fm-fold>summary,html[data-skin=clean] body details.card>summary{padding:4px 0}
+html[data-skin=clean] body .hero-stat,html[data-skin=clean] body #view-assets .fm-quote-hero .hero-stat{background:transparent;border:0;padding:0}
+html[data-skin=clean] body .fm-set-group{border-radius:22px}
+html[data-skin=clean] body #settingsOverlay .fm-set-group.fm-tiles .fm-certs{border-radius:20px}
+html[data-skin=clean] body .progress,html[data-skin=clean] body .bar{border-radius:99px}
+html[data-skin=clean] body .tx{border-color:var(--line)}

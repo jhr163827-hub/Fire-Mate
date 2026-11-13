@@ -78,15 +78,14 @@ test('오늘 할 일 brings you back: 내일 chip, 🔥 streak of finished days,
  await expect.poll(()=>page.evaluate(()=>window.__badge.at(-1))).toBe(0);
 });
 
-test('자격증 timer keeps running after the app closes and stopping records the minutes',async({page})=>{
+test('자격증 has no start-timer button; a timer left running from before still shows and records on stop',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmCertSub')).toHaveText('준비 중 · 오늘 공부 전');
  await page.locator('#fmCertOpen').click();
  await expect(page.locator('#fmCertList .fm-cert-empty')).toHaveCount(0);
- await page.locator('[data-cert-timer]').click();
- await expect(page.locator('[data-cert-timer]')).toContainText('끝내고 기록');
- await page.evaluate(()=>{const t=JSON.parse(localStorage.getItem('firemate_cert_timer_v1'));t.at-=45*6e4;localStorage.setItem('firemate_cert_timer_v1',JSON.stringify(t))});
+ await expect(page.locator('[data-cert-timer]')).toHaveCount(0);
+ await page.evaluate(()=>localStorage.setItem('firemate_cert_timer_v1',JSON.stringify({id:'c',at:Date.now()-45*6e4})));
  await page.reload();await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmCertSub')).toHaveText('⏱ 공부 중 45분');
  await page.locator('#fmCertOpen').click();await page.locator('[data-cert-timer]').click();
@@ -147,12 +146,13 @@ test('자격증 +30분 can be taken back right away',async({page})=>{
  await expect(page.locator('[data-cert-undo]')).toHaveCount(0);
 });
 
-test('자격증 화면: three numbers on top, grade filters once there are 5+, no ladder or résumé copy',async({page})=>{
+test('자격증 화면: three numbers on top, wallet is grouped by kind with tabs, no ladder or résumé copy',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-10'},{id:'b',name:'컴퓨터활용능력 1급',date:'2019-03-02'},{id:'c',name:'TOEIC',date:'2020-01-10'},{id:'d',name:'SQLD',date:'2023-09-01'},{id:'e',name:'컴퓨터활용능력 2급',date:'2018-03-02'}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  await expect(page.locator('.fm-cert-stats')).toContainText('5보유');await expect(page.locator('.fm-wallet-sum')).toContainText('만료 1');
- await page.locator('[data-wf="국가공인"]').click();
- await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(3);
+ await expect(page.locator('.fm-wallet-head h3')).toHaveText('보유 자격증 5');
+ await expect(page.locator('.fm-wallet-sec h4')).toHaveText(['국가기술 1','어학 1','전문·공인 3']);await expect(page.locator('.fm-cert-ico:visible, .fm-gb:visible')).toHaveCount(0);
+ await page.locator('[data-wf="전문·공인"]').click();await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(3);
  await page.locator('[data-wf=""]').click();await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(5);
  await expect(page.locator('.fm-lad, [data-cert-copy]')).toHaveCount(0);
 });
@@ -173,9 +173,9 @@ test('보유 자격증 opens a detail card: number with copy, undated ones are n
  await context.grantPermissions(['clipboard-read','clipboard-write']);
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'2종 보통 운전면허'},{id:'b',name:'일반기계기사'},{id:'c',name:'PE Mechanical: Thermal and Fluid Systems'},{id:'d',name:'TOEIC',date:'2025-01-10'}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
- await expect(page.locator('.fm-wallet .fm-cert-row strong')).toHaveText(['TOEIC','PE Mechanical: Thermal and Fluid Systems','일반기계기사','2종 보통 운전면허']);
- await expect(page.locator('.fm-cert-row',{hasText:'PE Mechanical'}).locator('.fm-cert-ico')).toHaveText('🇺🇸');
- await expect(page.locator('[data-cert-nodate]')).toContainText('취득일 없는 자격증 3개');
+ await expect(page.locator('.fm-wallet .fm-cert-row strong')).toHaveText(['일반기계기사','PE Mechanical: Thermal and Fluid Systems','TOEIC','2종 보통 운전면허']);
+ await expect(page.locator('.fm-cert-row',{hasText:'PE Mechanical'}).locator('small b')).toHaveText('PE');
+ await expect(page.locator('[data-cert-nodate]')).toContainText('취득일 안 넣은 자격증 3개');
  await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();
  const d=page.locator('#fmCertDetail');await expect(d.locator('.fm-cd-card')).toContainText('일반기계기사');await expect(d).toContainText('평생');
  await d.locator('[data-cd-edit]').first().click();await page.fill('#fmCertNo','21-123-4567');await page.fill('#fmCertDate','2021-06-10');await page.locator('#fmCertForm button.primary').click();

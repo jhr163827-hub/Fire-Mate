@@ -222,7 +222,7 @@ test('버킷리스트: add by typing or an idea, sorted by the words, edited wit
  await page.locator('.fm-bk-open',{hasText:'오로라'}).click();
  const y=new Date().getFullYear();await page.locator('#fmBkYear').fill(String(y));await page.locator('#fmBkCost').fill('6000000');await page.locator('#fmBucketEForm button.primary').click();
  await expect(page.locator('#fmBucketSheet')).toBeHidden();
- await expect(page.locator('.fm-bk-hero p')).toContainText('올해 목표 1개 · 남은 것에 필요한 돈 600만원');
+ await expect(page.locator('.fm-bk-hero p')).toContainText('올해 목표 1개 · 남은 버킷 600만원');
  await expect(page.locator('#fmBucketList h3').first()).toHaveText(y+'년 · 올해');
  // Back closes only the sheet.
  await page.locator('.fm-bk-open',{hasText:'마라톤'}).click();await page.goBack();await expect(page.locator('#fmBucketSheet')).toBeHidden();await expect(page.locator('#fmBucketOverlay')).toBeVisible();

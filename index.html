@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.266</title><link rel="stylesheet" href="./app.css?v=3.5.266"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-266">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.267</title><link rel="stylesheet" href="./app.css?v=3.5.267"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-267">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.266 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.267 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -459,7 +459,7 @@ box.querySelectorAll('[data-autolog]').forEach(b=>b.onclick=async()=>{const k=b.
 function bankCategoryRules(){try{const r=JSON.parse(localStorage.getItem(BANK_RULES_KEY)||'{}');return r&&typeof r==='object'?r:{}}catch{return {}}}
 // Merchant names that settle a category on their own (checked when the bank category says 기타).
 const FM_MERCHANT_KEYWORDS=[['통신·구독',['KT','SKT','SK텔레콤','LGU','LG유플러스','통신','알뜰폰','넷플릭스','유튜브','YOUTUBE','NETFLIX','멤버십','구독','디즈니','티빙','웨이브','쿠팡와우','APPLE.COM','구글플레이','GOOGLE']],['카페·간식',['스타벅스','STARBUCKS','투썸','이디야','메가커피','메가MGC','컴포즈','빽다방','폴바셋','커피','카페','베이커리','파리바게뜨','뚜레쥬르','배스킨','던킨']],['식비',['GS25','CU ','씨유','세븐일레븐','이마트24','편의점','이마트','홈플러스','롯데마트','마트','배달의민족','배민','요기요','쿠팡이츠','맥도날드','버거킹','롯데리아','식당','김밥','치킨','피자']],['교통',['택시','카카오T','카카오모빌리티','티머니','코레일','KTX','SRT','지하철','버스','주유','GS칼텍스','S-OIL','SK에너지','현대오일','주차','하이패스','도로공사']],['의료·건강',['약국','병원','의원','치과','한의원','안과','피부과','정형외과','내과']],['문화·취미',['CGV','메가박스','롯데시네마','교보문고','yes24','예스24','알라딘','멜론','지니','스포티파이','헬스','필라테스','PC방','노래']],['주거·관리비',['관리비','월세','전기','가스','수도','한전','도시가스']],['쇼핑',['쿠팡','네이버페이','11번가','G마켓','옥션','무신사','올리브영','다이소','지그재그','SSG','오늘의집','컬리','마켓컬리']],['여행',['호텔','숙박','에어비앤비','야놀자','여기어때','항공','대한항공','아시아나','제주항공','진에어','티웨이']]];
-// 미용·보험·교육·경조사·선물 (added v3.5.266): found by name first. Rows already saved under 쇼핑·기타 are moved once (fmNewCatsOnce),
+// 미용·보험·교육·경조사·선물 (added v3.5.267): found by name first. Rows already saved under 쇼핑·기타 are moved once (fmNewCatsOnce),
 // the old category kept in firemate_newcat_backup_v1 for 자동 변경 기록 → 되돌리기.
 const FM_NEWCAT=[['미용',/미용|헤어(?!드라이|롤|핀|밴드|에센스|오일)|네일샵|네일아트|바버|이발|왁싱|속눈썹|에스테틱/],['보험',/보험|손해|손보|DB손|KB손|(삼성|메리츠|흥국|롯데|한화)화재|현대해상|(한화|교보|삼성|신한|동양|미래에셋|KB|NH|DB|흥국)생명|라이나|메트라이프|AIA/],['교육',/학원|인강|교육|수강/],['경조사·선물',/축의|조의|부의|경조|화환/]];
 function fmNewCat(memo){const m=String(memo||'');return FM_NEWCAT.find(([,re])=>re.test(m))?.[0]||null}
@@ -2633,7 +2633,7 @@ const fmHm=m=>(m>=60?Math.floor(m/60)+'시간'+(m%60?' ':''):'')+(m%60||!m?m%60+
 let fmCertLast=null;
 function fmCertStudy(id,min,undo){const l=fmCerts(),c=l.find(x=>x.id===id),day=localDate(new Date());if(!c)return;fmCertLast=undo||min<=0?null:{id,min,at:Date.now()};c.study={...(c.study||{}),[day]:Math.max(0,((c.study||{})[day]||0)+min)};if(fmCertSave(l)){fmRenderCerts();fmHomeCert();window.fmToast('📚 오늘 '+fmHm(c.study[day]))}}
 // ⏱ Study timer: firemate_cert_timer_v1 {id,at} survives closing the app; stopping records the minutes (up to 12 hours) like +30분.
-const FM_CERT_TIMER='firemate_cert_timer_v1';let fmWalletF='';setInterval(()=>{const t=read(FM_CERT_TIMER,null),e=document.querySelector('[data-cert-tick]');if(t&&e)e.textContent=fmHm(Math.max(1,Math.round((Date.now()-t.at)/6e4)))},2e4);
+const FM_CERT_TIMER='firemate_cert_timer_v1';let fmWalletF='',fmCertMoreOpen=false;setInterval(()=>{const t=read(FM_CERT_TIMER,null),e=document.querySelector('[data-cert-tick]');if(t&&e)e.textContent=fmHm(Math.max(1,Math.round((Date.now()-t.at)/6e4)))},2e4);
 function fmCertGoals(){return fmCerts().filter(c=>c.goal).sort((a,b)=>(fmCertD(a)<0)-(fmCertD(b)<0)||(a.date||'9').localeCompare(b.date||'9'))}
 // 🏠 One home line for the main goal: D-day, today's minutes and +30분 without opening the screen.
 function fmHomeCert(){const el=$('fmHomeCert');if(!el)return;let g=null;try{g=fmCertGoals()[0]}catch{}el.hidden=!g;if(!g)return;const d=fmCertD(g),m=(g.study||{})[localDate(new Date())]||0,s=fmStudyStreak(g.study||{});
@@ -2656,9 +2656,9 @@ if(main){const f=fmCertInfo(main.name),g=FM_CERT_GRADE[f.grade]||FM_CERT_GRADE.�
  +'<div class="fm-cert-add"><span>오늘 <b>'+fmHm(st[today_]||0)+'</b></span>'+'<button type="button" class="primary" data-cert-add="30">+30분</button><button type="button" class="primary" data-cert-add="60">+1시간</button></div>'
  +(fmCertLast?.id===main.id&&Date.now()-fmCertLast.at<15e3?'<button type="button" class="fm-cert-undo" data-cert-undo>방금 '+fmHm(fmCertLast.min)+' 기록 · ↩ 취소</button>':'')
  +(()=>{const tm=read(FM_CERT_TIMER,null),on=tm?.id===main.id;return '<button type="button" class="fm-cert-timer'+(on?' on':'')+'" data-cert-timer>'+(on?'⏹ 끝내고 기록 · <b data-cert-tick>'+fmHm(Math.max(1,Math.round((Date.now()-tm.at)/6e4)))+'</b>':'▶ 공부 시작 (타이머)')+'</button>'})()
- +'<div class="fm-cert-grass" aria-label="최근 12주 공부">'+grass+'</div>'
+ +'<details class="fm-cert-more"'+(fmCertMoreOpen?' open':'')+'><summary>공부 기록 · 단계'+(stage?' <small>'+safe(g[4][Math.min(stage,g[4].length)-1]||'')+' 통과</small>':'')+'</summary><div class="fm-cert-grass" aria-label="최근 12주 공부">'+grass+'</div>'
  +'<div class="fm-cert-stages">'+g[4].map((s,k)=>'<button type="button" data-cert-stage="'+safe(main.id)+'" data-k="'+k+'" class="'+(k<stage?'ok':'')+'">'+(k<stage?'✓':k+1)+' '+s+'</button>').join('')+'</div>'
- +(f.url?'<a class="fm-cert-sched" href="'+safe(f.url)+'" target="_blank" rel="noopener">📅 '+safe(f.org)+' 일정 보기 ↗</a>':'')+'</div>'}
+ +(f.url?'<a class="fm-cert-sched" href="'+safe(f.url)+'" target="_blank" rel="noopener">📅 '+safe(f.org)+' 일정 보기 ↗</a>':'')+'</details></div>'}
 else hero='<div class="fm-cert-today fm-cert-none"><strong>🎯 다음 목표 하나 정하기</strong><small>목표가 있으면 매일 공부 시간과 D-day를 챙겨 줘요</small>'+(sug.length?'<div class="fm-cert-sug">'+sugBtns(3)+'</div>':'<small>위 검색창에서 찾아 \'준비할게요\'를 누르세요</small>')+'</div>';
 const yr=String(new Date().getFullYear()),studyY=all.reduce((t,c)=>t+Object.entries(c.study||{}).reduce((u,[d,m])=>u+(d.startsWith(yr)?m:0),0),0);
 $('fmCertHero').innerHTML=(n||goals.length?'<div class="fm-cert-stats"><div><b>'+n+'</b><span>보유</span></div><div><b>'+goals.length+'</b><span>준비 중</span></div><div><b>'+(studyY>=60?Math.round(studyY/60)+'h':studyY+'m')+'</b><span>올해 공부</span></div></div>':'')+hero;
@@ -2676,6 +2676,7 @@ scope.querySelectorAll('#fmCertHero [data-cert],#fmCertList [data-cert]').forEac
 scope.querySelectorAll('#fmCertHero [data-cert-sug],#fmCertList [data-cert-sug]').forEach(b=>b.onclick=()=>fmCertOpen(null,b.dataset.certSug,'goal'));
 scope.querySelectorAll('#fmCertHero [data-cert-add],#fmCertList [data-cert-add]').forEach(b=>b.onclick=()=>fmCertStudy(b.dataset.id||main.id,+b.dataset.certAdd));
 scope.querySelectorAll('#fmCertHero [data-cert-stage]').forEach(b=>b.onclick=()=>{const l=fmCerts(),c=l.find(x=>x.id===b.dataset.certStage),k=+b.dataset.k;if(!c)return;c.stage=(Number(c.stage)||0)>k?k:k+1;if(fmCertSave(l))fmRenderCerts()});
+const mo=scope.querySelector('.fm-cert-more');if(mo)mo.ontoggle=()=>{fmCertMoreOpen=mo.open};
 const ub=scope.querySelector('[data-cert-undo]');if(ub)ub.onclick=()=>{const x=fmCertLast;if(x)fmCertStudy(x.id,-x.min,1)};
 const tb=scope.querySelector('[data-cert-timer]');if(tb)tb.onclick=()=>{const tm=read(FM_CERT_TIMER,null);if(tm?.id===main.id){const min=Math.min(720,Math.round((Date.now()-tm.at)/6e4));try{localStorage.removeItem(FM_CERT_TIMER)}catch{}if(min<1){window.fmToast('1분도 안 됐어요 · 기록하지 않았어요');fmRenderCerts()}else fmCertStudy(main.id,min)}else{try{localStorage.setItem(FM_CERT_TIMER,JSON.stringify({id:main.id,at:Date.now()}))}catch{}window.fmToast('⏱ 공부 시작! 앱을 닫아도 계속 재요');fmRenderCerts()}};
 const we=scope.querySelector('[data-cert-weekedit]'),wf=scope.querySelector('[data-cert-weekform]');if(we){we.onclick=()=>{wf.hidden=!wf.hidden;if(!wf.hidden)wf.querySelector('input').focus()};wf.onsubmit=e=>{e.preventDefault();const v=Math.round(Number(wf.querySelector('input').value));const l=fmCerts(),c=l.find(x=>x.id===main.id);if(!c||!(v>=1&&v<=100))return;c.week=v;if(fmCertSave(l))fmRenderCerts()}}
@@ -3171,7 +3172,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-266',VERSION='3.5.266';
+ const BUILD='fire-mate-v3-5-267',VERSION='3.5.267';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3385,4 +3386,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.266"></script></body></html>
+</style><script src="./js/features.js?v=3.5.267"></script></body></html>

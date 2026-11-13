@@ -57,7 +57,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await expect(g.locator('.fm-cert-tip')).toContainText('🔥 1일 연속');
  await g.locator('[data-cert-weekedit]').click();await g.locator('[data-cert-weekform] input').fill('5');await g.locator('[data-cert-weekform] button').click();
  await expect(page.locator('.fm-cert-today .fm-cert-week span')).toHaveText('이번 주 1시간 / 5시간');
- await page.locator('.fm-cert-today [data-cert-stage]').first().click();await expect(page.locator('.fm-cert-today .fm-cert-stages button')).toHaveText(['✓ 필기','2 면접']);
+ await page.locator('.fm-cert-more summary').click();await page.locator('.fm-cert-today [data-cert-stage]').first().click();await expect(page.locator('.fm-cert-today .fm-cert-stages button')).toHaveText(['✓ 필기','2 면접']);
  await expect(page.locator('#fmCertSub')).toHaveText('D-23 · 오늘 1시간 · 🔥1일');
  // Typing a name that is not in the catalog adds it as typed.
  await page.locator('#fmCertQ').fill('사내 품질 인증');await page.locator('.fm-cert-hits .own').click();await page.locator('#fmCertForm button.primary').click();

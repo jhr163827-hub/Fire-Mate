@@ -2892,3 +2892,10 @@ html body #fmCertOverlay #fmCertList h3,html body #fmCertOverlay .fm-wallet-head
 html body #fmCertOverlay .fm-wallet-head{margin:22px 0 0}
 html body #fmCertOverlay .fm-wallet-head h3{margin:0 4px 8px}
 html body #fmCertOverlay details.fm-cert-roadf>summary::after{position:static;display:inline;transform:none;border:0;width:auto;height:auto;background:none}
+html body #fmCertOverlay details.fm-cert-more{display:grid;gap:12px;margin:0;padding-top:12px;border-top:1px solid var(--line)}
+html body #fmCertOverlay details.fm-cert-more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:32px;font-size:14px;font-weight:700;color:var(--sub)}
+html body #fmCertOverlay details.fm-cert-more>summary::-webkit-details-marker{display:none}
+html body #fmCertOverlay details.fm-cert-more>summary small{font-size:12px;color:var(--green);font-weight:700}
+html body #fmCertOverlay details.fm-cert-more>summary::after{content:'▾';margin-left:auto;position:static;transform:none;border:0;width:auto;height:auto;background:none}
+html body #fmCertOverlay details.fm-cert-more[open]>summary::after{content:'▴'}
+html body #fmCertOverlay details.fm-cert-more[open]>*+*{margin-top:12px}

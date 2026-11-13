@@ -240,15 +240,20 @@ test('더보기: life features are two-column tiles above the settings rows, and
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 
-test('🎨 the clean look is on by default and the 더보기 switch goes back to the old look and remembers it',async({page})=>{
+test('◼ the new ink look is on by default and the 더보기 디자인 picker switches to clean or the old look and remembers it',async({page})=>{
  await page.goto('/index.html');
- await expect(page.locator('html')).toHaveAttribute('data-skin','clean');
+ const html=page.locator('html');
+ await expect(html).toHaveAttribute('data-skin','clean');await expect(html).toHaveAttribute('data-ink','');
  await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmSkinOn')).toBeChecked();
- await page.locator('#fmSkinRow').click();
- await expect(page.locator('html')).not.toHaveAttribute('data-skin','clean');
+ await expect(page.locator('#fmSkinPick')).toHaveValue('ink');
+ await page.locator('#fmSkinPick').selectOption('classic');
+ await expect(html).not.toHaveAttribute('data-skin','clean');await expect(html).not.toHaveAttribute('data-ink','');
  await page.reload();
- await expect(page.locator('html')).not.toHaveAttribute('data-skin','clean');
- await page.locator('#settingsBottom').click();await page.locator('#fmSkinRow').click();
- await expect(page.locator('html')).toHaveAttribute('data-skin','clean');
+ await expect(html).not.toHaveAttribute('data-skin','clean');
+ await page.locator('#settingsBottom').click();await expect(page.locator('#fmSkinPick')).toHaveValue('classic');
+ await page.locator('#fmSkinPick').selectOption('clean');
+ await expect(html).toHaveAttribute('data-skin','clean');await expect(html).not.toHaveAttribute('data-ink','');
+ await page.reload();await expect(html).toHaveAttribute('data-skin','clean');await expect(html).not.toHaveAttribute('data-ink','');
+ await page.locator('#settingsBottom').click();await page.locator('#fmSkinPick').selectOption('ink');
+ await expect(html).toHaveAttribute('data-ink','');
 });

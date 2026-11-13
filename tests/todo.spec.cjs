@@ -78,15 +78,14 @@ test('오늘 할 일 brings you back: 내일 chip, 🔥 streak of finished days,
  await expect.poll(()=>page.evaluate(()=>window.__badge.at(-1))).toBe(0);
 });
 
-test('자격증 timer keeps running after the app closes and stopping records the minutes',async({page})=>{
+test('자격증 has no start-timer button; a timer left running from before still shows and records on stop',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmCertSub')).toHaveText('준비 중 · 오늘 공부 전');
  await page.locator('#fmCertOpen').click();
  await expect(page.locator('#fmCertList .fm-cert-empty')).toHaveCount(0);
- await page.locator('[data-cert-timer]').click();
- await expect(page.locator('[data-cert-timer]')).toContainText('끝내고 기록');
- await page.evaluate(()=>{const t=JSON.parse(localStorage.getItem('firemate_cert_timer_v1'));t.at-=45*6e4;localStorage.setItem('firemate_cert_timer_v1',JSON.stringify(t))});
+ await expect(page.locator('[data-cert-timer]')).toHaveCount(0);
+ await page.evaluate(()=>localStorage.setItem('firemate_cert_timer_v1',JSON.stringify({id:'c',at:Date.now()-45*6e4})));
  await page.reload();await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmCertSub')).toHaveText('⏱ 공부 중 45분');
  await page.locator('#fmCertOpen').click();await page.locator('[data-cert-timer]').click();

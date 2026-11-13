@@ -2781,3 +2781,14 @@ html body details.fm-cardtax>p{padding:8px 10px;margin:0 0 4px;border-radius:10p
 #fmBucketOverlay .fm-bk-next button{flex:none;min-height:40px;padding:0 14px;border-radius:999px}
 #fmBucketOverlay .fm-bk-open small.fm-bk-step{color:var(--txt);font-weight:600}
 html body #settingsOverlay small[data-due]{color:var(--green);font-weight:800}
+#fmTodoOverlay .fm-todo-done>summary,#fmBucketOverlay .fm-bk-ideas>details>summary{list-style:none;cursor:pointer;margin:16px 4px 8px;font-size:14px;font-weight:800;color:var(--sub)}
+#fmTodoOverlay .fm-todo-done>summary::-webkit-details-marker,#fmBucketOverlay .fm-bk-ideas>details>summary::-webkit-details-marker{display:none}
+#fmTodoOverlay .fm-todo-done>summary::after,#fmBucketOverlay .fm-bk-ideas>details>summary::after{content:' ▾';position:static;display:inline;transform:none;border:0;width:auto;height:auto;background:none}
+#fmTodoOverlay .fm-todo-done[open]>summary::after,#fmBucketOverlay .fm-bk-ideas>details[open]>summary::after{content:' ▴'}
+#fmTodoNext .fm-todo-undo{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 14px;border-radius:14px;background:var(--panel2);font-size:14px}
+#fmTodoNext .fm-todo-undo span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fmTodoNext .fm-todo-undo button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:10px;background:var(--green);color:var(--bg);font-weight:800}
+#fmTodoOverlay .fm-todo-day{display:flex;align-items:center;gap:10px;font-weight:700}
+#fmTodoOverlay .fm-todo-day input{flex:1}
+#fmTodoOverlay .fm-todo-day[hidden]{display:none}
+#fmCertOverlay .fm-cert-undo{justify-self:start;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:12px;font-weight:700}

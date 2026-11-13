@@ -28,9 +28,10 @@ test('📰 hides from home with 홈에 보일 것',async({page})=>{
  await expect(page.locator('#fmHomeNews')).toBeHidden();
 });
 
+// The app re-renders its own home lines later (news, plan…), so they are hidden by a style, not the hidden attribute, which it would reset.
 test('home keeps at most four lines; the rest fold under one line that opens them',async({page})=>{
  await page.goto('/index.html');
- await page.evaluate(()=>{const box=document.getElementById('fmHomeRows');box.querySelectorAll(':scope>*:not(#fmHomeMore)').forEach(e=>e.hidden=true);for(let i=1;i<=6;i++){const b=document.createElement('button');b.className='fm-home-market qa-row';b.textContent='줄 '+i;box.append(b)}});
+ await page.evaluate(()=>{const box=document.getElementById('fmHomeRows');const st=document.createElement('style');st.textContent='#fmHomeRows>:not(.qa-row):not(#fmHomeMore){display:none!important}';document.head.append(st);for(let i=1;i<=6;i++){const b=document.createElement('button');b.className='fm-home-market qa-row';b.textContent='줄 '+i;box.append(b)}});
  const vis=page.locator('#fmHomeRows .qa-row:visible');
  await expect(vis).toHaveCount(3);await expect(page.locator('#fmHomeMore')).toHaveText('＋ 3개 더');
  await page.locator('#fmHomeMore').click();

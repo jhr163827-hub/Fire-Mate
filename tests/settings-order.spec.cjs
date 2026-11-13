@@ -41,8 +41,9 @@ test('certificates are found by search, show their facts, and are added, edited,
  await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · 2024\.10 취득/:'',/일반기계기사기사 · 2021\.06 취득/]);
  await expect(page.locator('.fm-cert-grades i')).toHaveText(['PE 1','기사 1']);await expect(page.locator('.fm-cert-stats')).toContainText('2보유');
  // Edit, then delete.
- await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
- await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await expect(page.locator('#fmCertOrg')).toHaveValue('Q-net');await page.locator('#fmCertCancel').click();
+ await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await expect(page.locator('#fmCertDetail')).toBeVisible();await page.locator('#fmCertEditBtn').click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
+ await expect(page.locator('#fmCertDetail .fm-cd-card')).toContainText('Q-net');await page.locator('[data-cd-back]').click();
+ await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await page.locator('#fmCertEditBtn').click();await expect(page.locator('#fmCertOrg')).toHaveValue('Q-net');await page.locator('#fmCertCancel').click();await page.locator('[data-cd-back]').click();
  // 기사 suggests the same field's 기술사; picking one starts a goal.
  await page.locator('[data-cert-sug="건설기계기술사"]').click();
  await expect(page.locator('[data-cert-mode="goal"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
@@ -61,7 +62,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await expect(page.locator('#fmCertSub')).toHaveText('D-23 · 오늘 1시간 · 🔥1일');
  // Typing a name that is not in the catalog adds it as typed.
  await page.locator('#fmCertQ').fill('사내 품질 인증');await page.locator('.fm-cert-hits .own').click();await page.locator('#fmCertForm button.primary').click();
- await page.locator('.fm-cert-row',{hasText:'사내 품질 인증'}).click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
+ await page.locator('.fm-cert-row',{hasText:'사내 품질 인증'}).click();await page.locator('#fmCertEditBtn').click();await page.locator('#fmCertDel').click();await page.locator('#fmAskOk').click();
  await expect(page.locator('.fm-cert-row')).toHaveCount(2);
  await page.locator('[data-close="fmCertOverlay"]').click();await expect(page.locator('#fmCertOverlay')).toBeHidden();
  await page.locator('#fmStorage>summary').click();
@@ -165,7 +166,7 @@ test('a certificate keeps a photo or PDF of itself on this phone',async({page})=
  await expect(page.locator('#fmCertFileOpen')).toContainText('사진 보기');
  await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('.fm-cert-row .fm-cert-clip')).toHaveCount(1);
- await page.locator('.fm-cert-row').click();await page.locator('#fmCertFileOpen').click();
+ await page.locator('.fm-cert-row').click();await expect(page.locator('#fmCertDetail .fm-cd-img img')).toHaveAttribute('src',/^blob:/);await page.locator('#fmCertEditBtn').click();await page.locator('#fmCertFileOpen').click();
  await expect(page.locator('#fmCertView')).toBeVisible();await expect(page.locator('#fmCertViewImg')).toHaveAttribute('src',/^blob:/);
  await page.locator('#fmCertViewX').click();
  // A PDF replaces it; taking it off asks first.
@@ -203,9 +204,10 @@ test('the phone\'s back closes only the certificate sheet or photo, then the cer
  await page.locator('#fmCertQ').fill('일반기계기사');await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
  await page.locator('#fmCertFileIn').setInputFiles({name:'l.png',mimeType:'image/png',buffer:png});await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertSheet')).toBeHidden();
- await page.locator('.fm-cert-row').click();await page.locator('#fmCertFileOpen').click();await expect(page.locator('#fmCertView')).toBeVisible();
+ await page.locator('.fm-cert-row').click();await page.locator('#fmCertEditBtn').click();await page.locator('#fmCertFileOpen').click();await expect(page.locator('#fmCertView')).toBeVisible();
  await page.goBack();await expect(page.locator('#fmCertView')).toBeHidden();await expect(page.locator('#fmCertSheet')).toBeVisible();
- await page.goBack();await expect(page.locator('#fmCertSheet')).toBeHidden();await expect(page.locator('#fmCertOverlay')).toBeVisible();
+ await page.goBack();await expect(page.locator('#fmCertSheet')).toBeHidden();await expect(page.locator('#fmCertDetail')).toBeVisible();
+ await page.goBack();await expect(page.locator('#fmCertDetail')).toBeHidden();await expect(page.locator('#fmCertOverlay')).toBeVisible();
  await page.goBack();await expect(page.locator('#fmCertOverlay')).toBeHidden();await expect(page.locator('#settingsOverlay')).toBeVisible();
 });
 

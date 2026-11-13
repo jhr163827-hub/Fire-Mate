@@ -147,18 +147,14 @@ test('자격증 +30분 can be taken back right away',async({page})=>{
  await expect(page.locator('[data-cert-undo]')).toHaveCount(0);
 });
 
-test('자격증 지갑 stays compact: a summary line, grade filters once there are 5+, the ladder offers the next rung, résumé copy',async({page,context})=>{
- await context.grantPermissions(['clipboard-read','clipboard-write']);
+test('자격증 화면: three numbers on top, grade filters once there are 5+, no ladder or résumé copy',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-10'},{id:'b',name:'컴퓨터활용능력 1급',date:'2019-03-02'},{id:'c',name:'TOEIC',date:'2020-01-10'},{id:'d',name:'SQLD',date:'2023-09-01'},{id:'e',name:'컴퓨터활용능력 2급',date:'2018-03-02'}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  await expect(page.locator('.fm-cert-stats')).toContainText('5보유');await expect(page.locator('.fm-wallet-sum')).toContainText('만료 임박 1');
  await page.locator('[data-wf="국가공인"]').click();
  await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(3);
  await page.locator('[data-wf=""]').click();await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(5);
- await expect(page.locator('.fm-lad',{hasText:'기계'}).locator('i.on')).toHaveCount(3);
- await expect(page.locator('.fm-lad')).toContainText('다음 단계 · 기계기술사');await expect(page.locator('.fm-lad [data-cert-sug]')).toHaveCount(0);
- await page.locator('[data-cert-copy]').click();
- expect(await page.evaluate(()=>navigator.clipboard.readText())).toContain('2021.06  일반기계기사');
+ await expect(page.locator('.fm-lad, [data-cert-copy]')).toHaveCount(0);
 });
 
 test('버킷 ⭐ 올해 꼭 pins to the top; 위시 안 살래요 counts the money kept',async({page})=>{

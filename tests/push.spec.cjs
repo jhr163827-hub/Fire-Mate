@@ -18,10 +18,11 @@ test('turning 폰 알림 on plans one digest a day: exam D-7 and trip D-3 today,
  await expect(page.locator('#fmPushKinds')).toBeHidden();
  await page.locator('#fmPushOn').check();
  await expect(page.locator('#fmPushKinds')).toBeVisible();
- await expect.poll(async()=>(await plan(page))?.[day(0)]).toEqual(['🎓 정보처리기사 시험 D-7','✈️ 제주 D-3','✅ 오늘 할 일 1개']);
- const p=await plan(page);expect(p[day(6)]).toEqual(['🎓 정보처리기사 시험 D-1']);expect(p[day(7)]).toEqual(['🎓 정보처리기사 시험 날이에요']);expect(p[day(1)]).toBeUndefined();
+ await expect.poll(async()=>(await plan(page))?.[day(0)]).toEqual(['✅ 오늘 할 일 1개','🎓 정보처리기사 시험 D-7','✈️ 제주 D-3']);
+ // To-dos and the study goal come every day now, so there is a reason to open the app each morning.
+ const p=await plan(page);expect(p[day(6)]).toEqual(['✅ 오늘 할 일 1개','🎓 정보처리기사 시험 D-1']);expect(p[day(7)]).toEqual(['✅ 오늘 할 일 1개','🎓 정보처리기사 시험 날이에요']);expect(p[day(1)]).toEqual(['✅ 오늘 할 일 1개','🎓 정보처리기사 D-6 · 오늘 공부 기록하기']);
  await page.locator('[data-push="cert"]').click();
- await expect.poll(async()=>(await plan(page))?.[day(0)]).toEqual(['✈️ 제주 D-3','✅ 오늘 할 일 1개']);
+ await expect.poll(async()=>(await plan(page))?.[day(0)]).toEqual(['✅ 오늘 할 일 1개','✈️ 제주 D-3']);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_push_v1')))).toEqual({on:true,off:{cert:true}});
  await page.locator('#fmPushOn').uncheck();
  await expect.poll(async()=>Object.keys(await plan(page)||{x:1}).length).toBe(0);

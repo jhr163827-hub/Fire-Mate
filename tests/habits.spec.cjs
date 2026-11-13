@@ -54,7 +54,7 @@ test('a newly crossed net-worth line is celebrated once',async({page})=>{
 
 test('home-screen shortcuts are declared and ?action=record opens the entry dialog',async({page})=>{
  const manifest=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'..','manifest.webmanifest'),'utf8'));
- expect(manifest.shortcuts.map(s=>s.url)).toEqual(['./index.html?action=import','./index.html?action=record','./index.html?action=assets']);
+ expect(manifest.shortcuts.map(s=>s.url)).toEqual(['./index.html?action=todo','./index.html?action=import','./index.html?action=record','./index.html?action=assets']);
  await page.goto('/index.html?action=record');
  await expect(page.locator('#entryOverlay')).toHaveClass(/show/);
  expect(new URL(page.url()).search).toBe('');

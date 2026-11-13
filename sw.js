@@ -1,5 +1,5 @@
-const CACHE='fire-mate-v3-5-262';
-const ASSETS=['./index.html','./app.css?v=3.5.262','./js/features.js?v=3.5.262','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='fire-mate-v3-5-263';
+const ASSETS=['./index.html','./app.css?v=3.5.263','./js/features.js?v=3.5.263','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const validPage=text=>text.includes("const BUILD='"+CACHE+"'")&&text.includes('id="view-home"')&&text.includes('id="view-assets"')&&text.includes('id="view-fire"')&&text.length>100000;
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})));const page=await cache.match('./index.html');if(!page||!validPage(await page.text())){await caches.delete(CACHE);throw Error('App and worker build mismatch')}})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('fire-mate-v')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})())});
@@ -27,7 +27,9 @@ async function fmNotify(){const c=await caches.open('fm-notify-v1'),r=await c.ma
  // 💱 The owner's exchange-rate goal: one public quote request (the app's own Cloudflare function), nothing about the owner is sent.
  if(plan.fx>0)try{const q=await (await fetch('https://fire-mate-627.pages.dev/api/quotes?s=')).json(),p=Number(q?.quotes?.['IDX-USDKRW']?.price);if(p>0&&p<=plan.fx)lines.unshift('💱 환율 '+Math.round(p).toLocaleString('ko-KR')+'원 · 목표 '+Math.round(plan.fx).toLocaleString('ko-KR')+'원 아래예요')}catch{}
  if(!lines.length)return;await c.put('./__fm_shown',new Response(d));
- await self.registration.showNotification('FIRE MATE',{body:lines.join('\n'),icon:'./icon-192.png',badge:'./icon-192.png',tag:'fm-daily'})}
+ const todo=lines.join('\n').match(/✅ 오늘 할 일 (\d+)개/);if(todo&&self.navigator.setAppBadge)self.navigator.setAppBadge(+todo[1]).catch(()=>{});
+ await self.registration.showNotification('FIRE MATE',{body:lines.join('\n'),icon:'./icon-192.png',badge:'./icon-192.png',tag:'fm-daily',data:{action:todo?'todo':lines.some(l=>l.startsWith('🎓'))?'study':''}})}
 self.addEventListener('periodicsync',event=>{if(event.tag==='fm-daily')event.waitUntil(fmNotify())});
 self.addEventListener('message',event=>{if(event.data?.type==='FM_NOTIFY_TEST')event.waitUntil(fmNotify())});
-self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil(self.clients.matchAll({type:'window'}).then(l=>l[0]?l[0].focus():self.clients.openWindow('./index.html')))});
+// Tapping the daily note opens the app on 오늘 할 일 (or 자격증) — an open window gets a message, otherwise a new one opens with ?action=.
+self.addEventListener('notificationclick',event=>{event.notification.close();const a=event.notification.data?.action||'';event.waitUntil(self.clients.matchAll({type:'window'}).then(l=>{if(!l[0])return self.clients.openWindow('./index.html'+(a?'?action='+a:''));if(a)l[0].postMessage({type:'FM_OPEN',action:a});return l[0].focus()}))});

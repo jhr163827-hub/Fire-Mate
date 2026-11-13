@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.259</title><link rel="stylesheet" href="./app.css?v=3.5.259"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-259">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090f12"><title>FIRE MATE — 나만의 금융 관리 v3.5.260</title><link rel="stylesheet" href="./app.css?v=3.5.260"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><meta name="firemate-release" content="fire-mate-v3-5-260">
 
 
 
@@ -233,7 +233,7 @@ const box=document.createElement('details');box.className='fm-empty-accounts';bo
 box.append(...rows);holder.append(box);
 }
 // After 7 days without an import the home import button turns primary (the note's class is set by the import panel).
-// Imports before v3.5.259 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
+// Imports before v3.5.260 left the charge whose 결제취소 record came with it; one more import clears it, so ask for it (and run it on its own when Gmail allows).
 const FM_IMPORT_FIX=Date.parse('2026-11-01T06:30:00Z'),fmImportOld=()=>(Date.parse(localStorage.getItem('firemate_last_import_v1')||'')||0)<FM_IMPORT_FIX&&data.tx.some(t=>t.bankExcelKey);
 function fmImportNudge(){const sync=$('fmHomeSync'),due=$('fmHomeSyncNote').classList.contains('due')||fmImportOld();sync.classList.toggle('primary',due);sync.classList.toggle('secondary',!due)}
 // fmAsk(message) → Promise<boolean>: in-app confirm sheet. Cancel, the backdrop and Escape all answer false.
@@ -458,9 +458,9 @@ box.querySelectorAll('[data-autolog]').forEach(b=>b.onclick=async()=>{const k=b.
 function bankCategoryRules(){try{const r=JSON.parse(localStorage.getItem(BANK_RULES_KEY)||'{}');return r&&typeof r==='object'?r:{}}catch{return {}}}
 // Merchant names that settle a category on their own (checked when the bank category says 기타).
 const FM_MERCHANT_KEYWORDS=[['통신·구독',['KT','SKT','SK텔레콤','LGU','LG유플러스','통신','알뜰폰','넷플릭스','유튜브','YOUTUBE','NETFLIX','멤버십','구독','디즈니','티빙','웨이브','쿠팡와우','APPLE.COM','구글플레이','GOOGLE']],['카페·간식',['스타벅스','STARBUCKS','투썸','이디야','메가커피','메가MGC','컴포즈','빽다방','폴바셋','커피','카페','베이커리','파리바게뜨','뚜레쥬르','배스킨','던킨']],['식비',['GS25','CU ','씨유','세븐일레븐','이마트24','편의점','이마트','홈플러스','롯데마트','마트','배달의민족','배민','요기요','쿠팡이츠','맥도날드','버거킹','롯데리아','식당','김밥','치킨','피자']],['교통',['택시','카카오T','카카오모빌리티','티머니','코레일','KTX','SRT','지하철','버스','주유','GS칼텍스','S-OIL','SK에너지','현대오일','주차','하이패스','도로공사']],['의료·건강',['약국','병원','의원','치과','한의원','안과','피부과','정형외과','내과']],['문화·취미',['CGV','메가박스','롯데시네마','교보문고','yes24','예스24','알라딘','멜론','지니','스포티파이','헬스','필라테스','PC방','노래']],['주거·관리비',['관리비','월세','전기','가스','수도','한전','도시가스']],['쇼핑',['쿠팡','네이버페이','11번가','G마켓','옥션','무신사','올리브영','다이소','지그재그','SSG','오늘의집','컬리','마켓컬리']],['여행',['호텔','숙박','에어비앤비','야놀자','여기어때','항공','대한항공','아시아나','제주항공','진에어','티웨이']]];
-// 미용·보험·교육·경조사·선물 (added v3.5.259): found by name first. Rows already saved under 쇼핑·기타 are moved once (fmNewCatsOnce),
+// 미용·보험·교육·경조사·선물 (added v3.5.260): found by name first. Rows already saved under 쇼핑·기타 are moved once (fmNewCatsOnce),
 // the old category kept in firemate_newcat_backup_v1 for 자동 변경 기록 → 되돌리기.
-const FM_NEWCAT=[['미용',/미용|헤어|네일|바버|이발|왁싱|속눈썹|에스테틱/],['보험',/보험|화재|손보|해상|생명|DB손|KB손|메리츠/],['교육',/학원|인강|교육|수강/],['경조사·선물',/축의|조의|부의|경조|화환/]];
+const FM_NEWCAT=[['미용',/미용|헤어(?!드라이|롤|핀|밴드|에센스|오일)|네일샵|네일아트|바버|이발|왁싱|속눈썹|에스테틱/],['보험',/보험|손해|손보|DB손|KB손|(삼성|메리츠|흥국|롯데|한화)화재|현대해상|(한화|교보|삼성|신한|동양|미래에셋|KB|NH|DB|흥국)생명|라이나|메트라이프|AIA/],['교육',/학원|인강|교육|수강/],['경조사·선물',/축의|조의|부의|경조|화환/]];
 function fmNewCat(memo){const m=String(memo||'');return FM_NEWCAT.find(([,re])=>re.test(m))?.[0]||null}
 function fmNewCatsOnce(){try{if(localStorage.getItem('firemate_newcat_v1'))return;const back={};for(const t of data.tx){const c=t.type==='expense'&&/^(쇼핑|기타)$/.test(t.category||'')&&fmNewCat(t.memo);if(c&&t.id){back[t.id]=t.category;t.category=c}}localStorage.setItem('firemate_newcat_v1','1');if(Object.keys(back).length){if(!persist()){for(const t of data.tx)if(back[t.id])t.category=back[t.id];return}localStorage.setItem('firemate_newcat_backup_v1',JSON.stringify(back))}}catch{}}
 fmNewCatsOnce();
@@ -872,10 +872,10 @@ function fmCardTax(){const y=today.slice(0,4),ms=new Set,u={cr:0,ck:0,bus:0,mkt:
  const spent=u.cr+u.ck+u.bus+u.mkt;if(ms.size<3||!spent)return '';const n=new Date(today+'T00:00'),el=n.getMonth()+n.getDate()/new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),gross=sal/ms.size*12/.85,th=Math.round(gross*.25),proj=Math.round(spent/el*12);
  let left=th,ded=0;for(const [v,r] of [[u.cr,.15],[u.ck,.3],[u.bus+u.mkt,.4]]){const use=Math.min(left,v);left-=use;ded+=(v-use)*r}ded=Math.min(Math.round(ded),gross>7e7?25e5:3e6);
  const late=n.getMonth()>=9,c=fmCompactMoney,medTh=Math.round(gross*.03);
- return '<div class="fm-cardtax"><p>🧾 연말정산 카드 공제 문턱 <b>'+c(th)+'</b> (총급여 25% 추정) · '+(spent>=th?'넘었어요':'지금 '+c(spent)+', 연말 예상 '+c(proj))+'</p>'
-  +(late?'<p>💡 '+(spent>=th?'남은 결제는 <b>체크카드·현금</b>이 유리(공제 30%, 신용 15%)':proj>=th?'문턱까지 '+c(th-spent)+' 남음 · 넘은 뒤엔 체크카드·현금이 유리':'올해는 문턱을 못 넘을 것 같아요 · 신용카드 혜택 위주로')+'</p>':'')
+ return '<details class="fm-cardtax"><summary><p>🧾 연말정산 카드 공제 문턱 <b>'+c(th)+'</b> (총급여 25% 추정) · '+(spent>=th?'넘었어요':'지금 '+c(spent)+', 연말 예상 '+c(proj))+'</p>'
+  +(late?'<p>💡 '+(spent>=th?'남은 결제는 <b>체크카드·현금</b>이 유리(공제 30%, 신용 15%)':proj>=th?'문턱까지 '+c(th-spent)+' 남음 · 넘은 뒤엔 체크카드·현금이 유리':'올해는 문턱을 못 넘을 것 같아요 · 신용카드 혜택 위주로')+'</p>':'')+'</summary>'
   +'<p>신용 '+c(u.cr)+' · 체크 '+c(u.ck)+(u.bus?' · 대중교통 '+c(u.bus):'')+(u.mkt?' · 전통시장 '+c(u.mkt):'')+(ded?' → 카드 소득공제 약 <b>'+c(ded)+'</b>':'')+'</p>'
-  +(u.med||u.edu||u.give?'<p>'+[u.med?'의료비 '+c(u.med)+(u.med>medTh?' (3% 넘은 '+c(u.med-medTh)+' 공제)':' (3% '+c(medTh)+' 안 넘음)'):'',u.edu?'교육비 '+c(u.edu):'',u.give?'기부금 '+c(u.give):''].filter(Boolean).join(' · ')+'</p>':'')+'</div>'}
+  +(u.med||u.edu||u.give?'<p>'+[u.med?'의료비 '+c(u.med)+(u.med>medTh?' (3% 넘은 '+c(u.med-medTh)+' 공제)':' (3% '+c(medTh)+' 안 넘음)'):'',u.edu?'교육비 '+c(u.edu):'',u.give?'기부금 '+c(u.give):''].filter(Boolean).join(' · ')+'</p>':'')+'</details>'}
 // 🕒 When each account balance and holding (qty·cost) was last changed: firemate_asset_seen_v1 {sig:{key:value},a:{id:date},h:{id:date}},
 // stamped on every save (first run stamps today). The owner types holdings by hand, so 60+ days untouched shows on the account row.
 function fmAssetStamp(){try{const k='firemate_asset_seen_v1',o=read(k,null)||{sig:{},a:{},h:{}},d=localDate(new Date());let ch=false;const put=(g,id,v)=>{if(o.sig[g+id]!==v){o.sig[g+id]=v;o[g][id]=d;ch=true}};
@@ -3130,7 +3130,7 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 </script><script id="fm-pwa-updates">
 (()=>{
  if(!('serviceWorker' in navigator))return;
- const BUILD='fire-mate-v3-5-259',VERSION='3.5.259';
+ const BUILD='fire-mate-v3-5-260',VERSION='3.5.260';
  let busy=false,available=false,registration=null,lastCheck=0,checking=false;
  const watched=new WeakSet();
  const button=document.createElement('button');
@@ -3344,4 +3344,4 @@ $m('fmMonthlyRecord').addEventListener('click',async()=>{if(!await fmAsk('오늘
 #fmUniformExperimentInputs{padding-top:2px}
 #fmLifeConditions>.stack>.mini{line-height:1.6}
 #view-firecalc #fmPreviewResult{margin-top:4px}
-</style><script src="./js/features.js?v=3.5.259"></script></body></html>
+</style><script src="./js/features.js?v=3.5.260"></script></body></html>

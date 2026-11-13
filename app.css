@@ -2763,3 +2763,6 @@ html body #fmManualUpdate.fm-update-ready{color:var(--green);border-color:var(--
 html body .fm-cardtax p:first-child{font-size:15px;font-weight:700;color:var(--txt)}
 html body #view-fire .fm-fire-notes b{font-weight:800;color:var(--green)}
 html body .view .card small,html body .view .card .mini,html body .view .card .light.small,html body .view .card .muted.small{font-size:13px}
+html body details.fm-cardtax>summary{list-style:none;cursor:pointer;position:relative;padding-right:22px}html body details.fm-cardtax>summary::-webkit-details-marker{display:none}
+html body details.fm-cardtax>summary::after{content:'›';position:absolute;right:4px;top:0;color:var(--sub);transform:rotate(90deg);transition:transform .15s}html body details.fm-cardtax[open]>summary::after{transform:rotate(-90deg)}
+html body details.fm-cardtax>p{padding:8px 10px;margin:0 0 4px;border-radius:10px;background:var(--panel2)}

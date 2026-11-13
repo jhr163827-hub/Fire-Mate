@@ -94,7 +94,7 @@ test('위시리스트 adds items, edits price, saving, link and 꼭, checks them
  await page.locator('#fmWishEForm button.primary').click();await expect(page.locator('#fmWishSheet')).toBeHidden();
  const shoe=page.locator('.fm-wish-item',{hasText:'러닝화'});
  await expect(page.locator('.fm-wish-item').first()).toContainText('러닝화');// 꼭 goes to the top
- await expect(shoe).toContainText('₩150,000 · ₩50,000 모음');await expect(shoe).toContainText('🔥 러닝화 🔗');
+ await expect(shoe.locator('.fm-wish-price')).toContainText('₩150,000₩50,000 모음');await expect(shoe).toContainText('🔥 러닝화 🔗');
  await expect(page.locator('#fmWishHero')).toContainText('₩1,300,000');
  await page.locator('[aria-label="러닝화 샀어요"]').click();
  await expect(page.locator('.fm-wish-sec')).toHaveText('산 것 ✓ · ₩150,000');

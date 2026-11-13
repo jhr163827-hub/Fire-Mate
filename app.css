@@ -2839,9 +2839,6 @@ html body #fmWishOverlay .fm-wish-bar{background:var(--panel2)}
 html body #fmWishOverlay .fm-wish-bar i{background:#ef8fa6}
 html body #fmWishOverlay .fm-wish-kept{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:14px;color:var(--sub)}
 html body #fmWishOverlay .fm-wish-hero .fm-wish-kept b{display:inline;min-height:0;font-size:inherit;font-weight:800;letter-spacing:0;color:var(--green)}
-html body #fmWishOverlay .fm-wish-item{border:1px solid var(--line);background:var(--panel)}
-html body #fmWishOverlay .fm-wish-dot{width:46px;height:46px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 20%,var(--panel)) 80%,transparent 82%),conic-gradient(var(--c) var(--p),var(--line) 0)}
-html body #fmWishOverlay .fm-wish-noprice{color:var(--sub);font-weight:600}
 html body #fmWishOverlay .fm-wish-item.skip{opacity:.75}
 html body #fmWishOverlay .fm-wish-item.skip .fm-wish-name>span:first-child{text-decoration:line-through}
 html body #fmWishOverlay .fm-wish-skipbtn{width:100%}
@@ -2852,3 +2849,18 @@ html body #fmCertOverlay details.fm-cert-roadf>summary::-webkit-details-marker{d
 html body #fmCertOverlay details.fm-cert-roadf>summary small{margin-left:6px;color:var(--sub);font-weight:700}
 html body #fmCertOverlay details.fm-cert-roadf>summary::after{content:' ▾';color:var(--sub)}
 html body #fmCertOverlay details.fm-cert-roadf[open]>summary::after{content:' ▴'}
+/* 🎁 위시 list: one panel of rows — icon from the name, name + one quiet line, price on the right */
+html body #fmWishOverlay .fm-wish-rows{border-radius:20px;background:var(--panel);overflow:hidden}
+html body #fmWishOverlay .fm-wish-rows .fm-wish-item{display:flex;align-items:center;gap:12px;margin:0;padding:12px 16px;border:0;border-radius:0;background:none}
+html body #fmWishOverlay .fm-wish-rows .fm-wish-item+.fm-wish-item{border-top:1px solid var(--line)}
+html body #fmWishOverlay .fm-wish-check{flex:none}
+html body #fmWishOverlay .fm-wish-open{flex:1;display:flex;align-items:center;gap:12px;min-width:0}
+html body #fmWishOverlay .fm-wish-ico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--panel2);font-size:20px}
+html body #fmWishOverlay .fm-wish-name{flex:1;min-width:0}
+html body #fmWishOverlay .fm-wish-name>span:first-child{word-break:keep-all;overflow-wrap:anywhere}
+html body #fmWishOverlay .fm-wish-name small{font-size:12px;font-weight:600;color:var(--sub)}
+html body #fmWishOverlay .fm-wish-name small.ok{color:var(--green)}
+html body #fmWishOverlay .fm-wish-price{flex:none;display:grid;justify-items:end;gap:2px;font-size:15px;font-weight:800;white-space:nowrap}
+html body #fmWishOverlay .fm-wish-price small{font-size:11px;font-weight:600;color:var(--sub)}
+html body #fmWishOverlay .fm-wish-price .fm-wish-noprice{font-size:12px;color:var(--sub);text-decoration:underline dotted}
+html body #fmWishOverlay .fm-wish-item.done .fm-wish-price{color:var(--sub);text-decoration:line-through}

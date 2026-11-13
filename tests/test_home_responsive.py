@@ -54,15 +54,18 @@ class HomeResponsiveTest(unittest.TestCase):
         fold=page.locator('#fmStrategyDetails')
         if not fold.evaluate('(e)=>e.open'): fold.locator(':scope>summary').click()
 
-    def test_light_hero_values_are_dark_on_light_cards(self):
+    def test_light_hero_values_stand_out_on_their_cards(self):
         page = self.browser.new_page(viewport={"width": 320, "height": 720}, is_mobile=True)
         try:
             page.goto(URL, wait_until="domcontentloaded")
             page.evaluate("document.documentElement.dataset.theme='light'")
             for view, value in (("home", "#homeTotalAssets"), ("assets", "#netWorth"), ("fire", "#fireAsset")):
                 page.locator(f'.bottomnav [data-view="{view}"]').click()
-                channels = page.locator(value).evaluate("e => getComputedStyle(e).color.match(/\\d+/g).slice(0,3).map(Number)")
-                self.assertLess(max(channels), 130, f'{view} 핵심 금액은 밝은 카드에서 짙은 색이어야 합니다')
+                ratio = page.locator(value).evaluate("""e => { const rgb=s=>s.match(/\\d+(\\.\\d+)?/g).slice(0,3).map(Number);
+                    const lum=c=>{const [r,g,b]=c.map(v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4});return .2126*r+.7152*g+.0722*b};
+                    let n=e,bg=null;while(n){const c=getComputedStyle(n).backgroundColor;if(c&&!/rgba\\(.*,\\s*0\\)$/.test(c)&&c!=='transparent'){bg=rgb(c);break}n=n.parentElement}
+                    const a=lum(rgb(getComputedStyle(e).color)),b=lum(bg||[255,255,255]);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)}""")
+                self.assertGreater(ratio, 7, f'{view} 핵심 금액은 카드 배경과 대비가 커야 합니다')
         finally:
             page.close()
 

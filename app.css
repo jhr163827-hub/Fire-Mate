@@ -2895,3 +2895,17 @@ html body #settingsOverlay .fm-skin-pick{width:auto;flex:none;min-height:40px;pa
 html[data-skin][data-ink] body #view-home #homeAssetHero,html[data-skin][data-ink] body #view-assets .fm-quote-hero.fm-unified-hero{padding:22px 20px}
 html[data-skin][data-ink] body #view-calendar .fm-ledger-controls{align-items:center}
 @media(max-width:360px){html[data-skin][data-ink] body #view-calendar .fm-ledger-switch button{padding:0 10px}html[data-skin][data-ink] body #view-calendar .fm-ledger-switch{gap:4px}}
+/* ink: hero cards inside 더보기 screens (할 일·영어·버킷·위시·자격증 오늘) use the same slab */
+html[data-skin][data-ink] body .fm-todo-hero,html[data-skin][data-ink] body .fm-bk-hero,html[data-skin][data-ink] body .fm-wish-hero,html[data-skin][data-ink] body .fm-cert-today{--txt:var(--slab-txt);--text:var(--slab-txt);--sub:var(--slab-sub);--line:color-mix(in srgb,var(--slab-txt) 16%,transparent);--panel2:color-mix(in srgb,var(--slab-txt) 9%,transparent);--green:var(--slab-txt);background:var(--slab);color:var(--slab-txt);border:0;border-radius:28px}
+html[data-skin][data-ink][data-theme=light] body :is(.fm-todo-hero,.fm-bk-hero,.fm-wish-hero,.fm-cert-today){--green:#d4ff3f}
+html[data-skin][data-ink] body .fm-wish-hero::before,html[data-skin][data-ink] body .fm-wish-hero::after{display:none}
+html[data-skin][data-ink] body .fm-todo-hero i b{background:var(--slab)}
+html[data-skin][data-ink] body .fm-todo-hero strong{font-size:44px;letter-spacing:-.05em}
+html[data-skin][data-ink] body :is(.fm-bk-rows,.fm-todo-rows,.fm-wish-rows){background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+html[data-skin][data-ink] body :is(.fm-bk-ico,.fm-cert-ico){filter:grayscale(1);border-radius:999px}
+html[data-skin][data-ink] body .fm-bk-check{border-color:var(--sub)}
+html[data-skin][data-ink] body #fmCertOverlay .fm-cert-today:not(.fm-cert-none),html[data-skin][data-ink] body #fmBucketOverlay .fm-bk-hero,html[data-skin][data-ink] body #fmWishOverlay .fm-wish-hero{background:var(--slab);color:var(--slab-txt)}
+html[data-skin][data-ink] body #fmCertOverlay .fm-cert-none{--txt:#f3f2ec;--sub:#8f8d86;background:var(--panel);color:var(--txt)}
+html[data-skin][data-ink][data-theme=light] body #fmCertOverlay .fm-cert-none{--txt:#121212;--sub:#5f5c54}
+html[data-skin][data-ink] body #fmBucketOverlay .fm-bk-hero :is(small,p),html[data-skin][data-ink] body #fmCertOverlay .fm-cert-today :is(small,p){color:var(--slab-sub)}
+html[data-skin][data-ink] body #fmCertOverlay .fm-cert-today button:not(.fm-cert-thead){background:var(--slab-txt);color:var(--slab);border:0;border-radius:999px}

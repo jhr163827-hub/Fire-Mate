@@ -38,11 +38,11 @@ test('certificates are found by search, show their facts, and are added, edited,
  await expect(info).toContainText('NCEES (미국)');await expect(info).toContainText('주별 갱신');
  await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('내 자격증 2개');
- await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · NCEES \(미국\) · 2024\.10 취득/:'',/일반기계기사기사 · 한국산업인력공단 \(Q-net\) · 2021\.06 취득/]);
- await expect(page.locator('.fm-cert-grades i')).toHaveText(['보유 2','PE 1','기사 1']);
+ await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · 2024\.10 취득/:'',/일반기계기사기사 · 2021\.06 취득/]);
+ await expect(page.locator('.fm-cert-grades i')).toHaveText(['PE 1','기사 1']);await expect(page.locator('.fm-cert-stats')).toContainText('2보유');
  // Edit, then delete.
  await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
- await expect(page.locator('.fm-cert-row',{hasText:'일반기계기사'})).toContainText('기사 · Q-net');
+ await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await expect(page.locator('#fmCertOrg')).toHaveValue('Q-net');await page.locator('#fmCertCancel').click();
  // 기사 suggests the same field's 기술사; picking one starts a goal.
  await page.locator('[data-cert-sug="건설기계기술사"]').click();
  await expect(page.locator('[data-cert-mode="goal"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('#fmCertDateLbl')).toHaveText('시험일');
@@ -73,7 +73,7 @@ test('certificates are found by search, show their facts, and are added, edited,
 test('names typed before the catalog still get their grade and issuer, and language scores show when they expire',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-01'},{id:'b',name:'미국 기술사',date:'2024-10-20'},{id:'c',name:'TOEIC',date:'2020-01-05'}]})));
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
- await expect(page.locator('.fm-cert-row',{hasText:'미국 기술사'})).toContainText('PE · NCEES (미국)');
+ await expect(page.locator('.fm-cert-row',{hasText:'미국 기술사'})).toContainText('PE · 2024.10 취득');
  await expect(page.locator('.fm-cert-row',{hasText:'TOEIC'}).locator('em')).toHaveText('만료');
 });
 

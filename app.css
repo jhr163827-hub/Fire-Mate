@@ -2796,34 +2796,9 @@ html body #settingsOverlay small[data-due]{color:var(--green);font-weight:800}
 /* wallet: the plain list, a summary line, grade filters once there are 5+; 지나온 길 folds */
 html body #fmCertOverlay .fm-wallet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:22px 2px 6px}
 html body #fmCertOverlay .fm-wallet-head h3{margin:0}
-html body #fmCertOverlay .fm-wallet-head button{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700}
-html body #fmCertOverlay .fm-wallet-sum{display:flex;flex-wrap:wrap;gap:6px 12px;margin:0 2px 10px;font-size:13px;color:var(--sub)}
-html body #fmCertOverlay .fm-wallet-sum b{color:var(--txt)}
-html body #fmCertOverlay .fm-wallet-sum .warn{color:var(--yellow,#e0a84b);font-weight:700}
 html body #fmCertOverlay .fm-wallet-f{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}
 html body #fmCertOverlay .fm-wallet-f button{flex:none;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700;white-space:nowrap}
 html body #fmCertOverlay .fm-wallet-f button[aria-pressed=true]{background:var(--txt);border-color:var(--txt);color:var(--bg)}
-/* career ladder */
-html body #fmCertOverlay .fm-ladder{display:grid;border:1px solid var(--line);border-radius:18px;background:var(--panel);overflow:hidden}
-html body #fmCertOverlay .fm-lad{display:grid;gap:10px;padding:14px 16px}
-html body #fmCertOverlay .fm-lad+.fm-lad{border-top:1px solid var(--line)}
-html body #fmCertOverlay .fm-lad-k{font-weight:800}
-html body #fmCertOverlay .fm-lad-steps{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
-html body #fmCertOverlay .fm-lad-steps i{position:relative;padding-top:20px;font-style:normal;font-size:12px;font-weight:700;text-align:center;color:var(--sub)}
-html body #fmCertOverlay .fm-lad-steps i::before{content:'';position:absolute;top:2px;left:50%;z-index:1;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--panel2);border:2px solid var(--line)}
-html body #fmCertOverlay .fm-lad-steps i::after{content:'';position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--line)}
-html body #fmCertOverlay .fm-lad-steps i:first-child::after{display:none}
-html body #fmCertOverlay .fm-lad-steps i.on{color:var(--txt)}
-html body #fmCertOverlay .fm-lad-steps i.on::before{background:var(--green);border-color:var(--green)}
-html body #fmCertOverlay .fm-lad-steps i.on::after,html body #fmCertOverlay .fm-lad-steps i.nx::after{background:var(--green)}
-html body #fmCertOverlay .fm-lad-steps i.nx{color:var(--green)}
-html body #fmCertOverlay .fm-lad-steps i.nx::before{border-color:var(--green);border-style:dashed}
-html body #fmCertOverlay .fm-lad button{justify-self:start;min-height:40px;padding:0 14px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--green);font-weight:800}
-html body #fmCertOverlay .fm-lad small{color:var(--sub);font-weight:700}
-html body #fmCertOverlay .fm-cert-prof{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-html body #fmCertOverlay .fm-cert-prof b{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.04em}
-html body #fmCertOverlay .fm-cert-prof span{display:grid;gap:2px;font-weight:800}
-html body #fmCertOverlay .fm-cert-prof small{font-size:13px;font-weight:600;color:var(--sub)}
 /* bucket: a ring for what's done; ⭐ 올해 꼭 rows first */
 html body #fmBucketOverlay .fm-bk-hero{position:relative;padding:22px 112px 20px 22px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(120% 100% at 100% 0%,#e6b45029,transparent 62%),var(--panel)}
 html body #fmBucketOverlay .fm-bk-hero .progress{display:none}
@@ -2864,3 +2839,56 @@ html body #fmWishOverlay .fm-wish-price{flex:none;display:grid;justify-items:end
 html body #fmWishOverlay .fm-wish-price small{font-size:11px;font-weight:600;color:var(--sub)}
 html body #fmWishOverlay .fm-wish-price .fm-wish-noprice{font-size:12px;color:var(--sub);text-decoration:underline dotted}
 html body #fmWishOverlay .fm-wish-item.done .fm-wish-price{color:var(--sub);text-decoration:line-through}
+html body #fmCertOverlay .fm-wallet-sum{margin:0 2px 10px;padding:0;border:0}
+html body #fmCertOverlay .fm-wallet-sum i.warn{color:var(--yellow,#e0a84b)}
+/* 🎓 자격증 v3.5.266: a three-number strip, short rows, and a detail sheet laid out like a settings page */
+html body #fmCertOverlay .fm-cert-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-bottom:12px;padding:16px 0;border-radius:20px;background:var(--panel)}
+html body #fmCertOverlay .fm-cert-stats div{display:grid;justify-items:center;gap:2px}
+html body #fmCertOverlay .fm-cert-stats div+div{border-left:1px solid var(--line)}
+html body #fmCertOverlay .fm-cert-stats b{font-size:24px;font-weight:800;letter-spacing:-.03em}
+html body #fmCertOverlay .fm-cert-stats span{font-size:12px;font-weight:600;color:var(--sub)}
+html body #fmCertOverlay .fm-cert-none{gap:10px;padding:16px}
+html body #fmCertOverlay .fm-cert-none strong{font-size:16px}
+html body #fmCertOverlay .fm-cert-none .fm-cert-sug{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
+html body #fmCertOverlay .fm-cert-none .fm-cert-sug button{flex:none;white-space:nowrap;border-style:solid;border-radius:999px}
+html body #fmCertOverlay .fm-wallet .fm-cert-row{min-height:64px;padding:10px 14px}
+html body #fmCertOverlay .fm-wallet .fm-cert-ico{flex:none;width:40px;height:40px;border-radius:12px;background:var(--panel2);font-size:20px}
+html body #fmCertOverlay .fm-wallet .fm-cert-row>span:nth-child(2){flex:1;min-width:0}
+html body #fmCertOverlay .fm-wallet .fm-cert-row strong{font-size:15px;font-weight:700}
+html body #fmCertOverlay .fm-wallet .fm-cert-row small{display:block;margin-top:2px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #fmCertOverlay .fm-wallet .fm-cert-row:not(:has(em))::after{content:'›';flex:none;color:var(--sub);font-size:20px}
+/* sheet */
+html body #fmCertOverlay .fm-cert-sheet{padding:26px 18px 0;border-radius:28px 28px 0 0}
+html body #fmCertOverlay .fm-cert-sheet::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
+html body #fmCertOverlay #fmCertForm{position:relative;display:block}
+html body #fmCertOverlay .fm-cs-x{position:absolute;top:-6px;right:-4px;z-index:2;display:grid;place-items:center;width:36px;height:36px;min-height:0;padding:0;border:0;border-radius:50%;background:var(--panel2);color:var(--sub);font-size:15px}
+html body #fmCertOverlay .fm-cs-hero{display:flex;align-items:center;gap:14px;padding:0 40px 18px 0}
+html body #fmCertOverlay .fm-cs-hero .fm-cert-ico{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--panel2);font-size:28px}
+html body #fmCertOverlay #fmCertInfo .fm-cs-hero h3{margin:0 0 6px;font-size:20px;font-weight:800;line-height:1.3;word-break:keep-all}
+html body #fmCertOverlay .fm-cs-hero .fm-cert-tags{flex-wrap:wrap}
+html body #fmCertOverlay .fm-cs-hero .fm-cert-tags i{border-radius:999px;padding:3px 10px}
+html body #fmCertOverlay .fm-cs-hero .fm-cert-tags i.ok{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+html body #fmCertOverlay .fm-cs-hero .fm-cert-tags i.goal{background:color-mix(in srgb,#e0a84b 18%,transparent);color:#e0a84b}
+html body #fmCertOverlay #fmCertInfo dl.fm-cs-facts{display:block;margin:0;border-radius:16px;background:color-mix(in srgb,var(--txt) 4%,transparent);overflow:hidden}
+html body #fmCertOverlay .fm-cs-facts div{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:12px 14px}
+html body #fmCertOverlay .fm-cs-facts div+div{border-top:1px solid var(--line)}
+html body #fmCertOverlay .fm-cs-facts dt{flex:none;font-size:13px;color:var(--sub)}
+html body #fmCertOverlay .fm-cs-facts dd{margin:0;text-align:right;font-size:14px;font-weight:600;line-height:1.45;word-break:keep-all}
+html body #fmCertOverlay .fm-cs-note{margin:8px 4px 0;font-size:12px;color:var(--sub)}
+html body #fmCertOverlay .fm-cs-h{margin:22px 4px 8px;font-size:13px;font-weight:800;color:var(--sub)}
+html body #fmCertOverlay .fm-cs-list{margin-top:10px;border-radius:16px;background:color-mix(in srgb,var(--txt) 4%,transparent);overflow:hidden}
+html body #fmCertOverlay .fm-cs-list .fm-cert-datelbl{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:0 6px 0 14px}
+html body #fmCertOverlay .fm-cs-list .fm-cert-datelbl+.fm-cert-datelbl:not([hidden]){border-top:1px solid var(--line)}
+html body #fmCertOverlay .fm-cs-list .fm-cert-datelbl[hidden]{display:none}
+html body #fmCertOverlay .fm-cs-list .fm-cert-datelbl>span{flex:none;font-size:14px;color:var(--sub)}
+html body #fmCertOverlay .fm-cs-list input{flex:1;min-width:0;min-height:44px;border:0;background:transparent;text-align:right;font-size:15px;color:var(--txt)}
+html body #fmCertOverlay .fm-cert-sheet .fm-cert-file{margin-top:10px}
+html body #fmCertOverlay .fm-cert-sheet .fm-cert-attach{width:100%;min-height:52px;border:1px dashed var(--line);border-radius:16px;background:transparent;color:var(--sub);font-weight:700}
+html body #fmCertOverlay .fm-cs-foot{position:sticky;bottom:0;display:flex;align-items:center;gap:10px;margin-top:16px;padding:12px 0 max(14px,env(safe-area-inset-bottom));background:var(--panel)}
+html body #fmCertOverlay .fm-cs-del{flex:none;min-height:52px;padding:0 14px;border:0;background:none;color:var(--red);font-weight:700}
+html body #fmCertOverlay .fm-cs-del[hidden]{display:none}
+html body #fmCertOverlay .fm-cs-foot .primary{flex:1;min-height:52px;border-radius:16px;font-size:16px}
+html body #fmCertOverlay #fmCertList h3,html body #fmCertOverlay .fm-wallet-head h3,html body #fmCertOverlay details.fm-cert-roadf>summary{margin:22px 4px 8px;font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--sub)}
+html body #fmCertOverlay .fm-wallet-head{margin:22px 0 0}
+html body #fmCertOverlay .fm-wallet-head h3{margin:0 4px 8px}
+html body #fmCertOverlay details.fm-cert-roadf>summary::after{position:static;display:inline;transform:none;border:0;width:auto;height:auto;background:none}

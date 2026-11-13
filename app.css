@@ -2935,3 +2935,23 @@ html body #fmCertOverlay details.fm-cs-exam>summary::after{content:'▾';margin-
 html body #fmCertOverlay details.fm-cs-exam[open]>summary::after{content:'▴'}
 html body #fmCertOverlay .fm-wallet-sum i.bad{color:var(--red)}
 html body #fmCertOverlay .fm-cert-first .fm-cert-sug{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
+/* 🎓 grade badges instead of field emoji (v3.5.269) */
+html body #fmCertOverlay .fm-cert-ico:has(.fm-gb),html body #fmCertOverlay .fm-cd-ico:has(.fm-gb){background:none}
+html body #fmCertOverlay .fm-gb{display:grid;place-items:center;width:100%;height:100%;border-radius:12px;font-size:12px;font-weight:800;letter-spacing:-.03em;color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent)}
+html body #fmCertOverlay .fm-cd-ico .fm-gb,html body #fmCertOverlay .fm-cs-hero .fm-gb{border-radius:14px;font-size:14px}
+html body #fmCertOverlay .fm-gb.g-top{--c:#e0a84b}
+html body #fmCertOverlay .fm-gb.g-mid{--c:var(--green)}
+html body #fmCertOverlay .fm-gb.g-low{--c:#5b9cf0}
+html body #fmCertOverlay .fm-gb.g-pub{--c:#a68cf0}
+html body #fmCertOverlay .fm-gb.g-lang{--c:#4fc3c7}
+html body #fmCertOverlay .fm-gb.g-etc{--c:var(--sub)}
+html[data-theme=light] body #fmCertOverlay .fm-gb.g-top{--c:#a8711a}
+html[data-theme=light] body #fmCertOverlay .fm-gb.g-low{--c:#2f6fd0}
+html[data-theme=light] body #fmCertOverlay .fm-gb.g-pub{--c:#7652d6}
+html[data-theme=light] body #fmCertOverlay .fm-gb.g-lang{--c:#1b8a8e}
+/* today card: the timer is the one main button; +30분·+1시간 are quiet */
+html body #fmCertOverlay .fm-cert-add .fm-cert-addbtn{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--txt);font-size:13px;font-weight:700;box-shadow:none}
+html body #fmCertOverlay .fm-cert-timer.primary{background:var(--green);border-color:var(--green);color:var(--bg)}
+/* search: soft fade under the sticky box so cut cards don't peek */
+html body #fmCertOverlay .fm-cert-search{box-shadow:none}
+html body #fmCertOverlay .fm-cert-search::after{content:'';position:absolute;left:-4px;right:-4px;top:100%;height:22px;background:linear-gradient(var(--bg),color-mix(in srgb,var(--bg) 0%,transparent));pointer-events:none}

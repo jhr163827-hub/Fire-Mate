@@ -81,7 +81,7 @@ test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어
  await page.setViewportSize({width:390,height:844});
  await page.fill('#fmJnName','오사카');await page.selectOption('#fmJnPlace','JP');await page.fill('#fmJnFrom',day(-3));await page.fill('#fmJnTo',day(-2));await page.click('#fmJnAdd button');
  await expect(box.locator('path[data-place="JP"]')).toHaveClass(/been/);
- const trip=box.locator('.fm-jn-trip');await expect(trip).toContainText('오사카');await expect(trip).toContainText('₩47,000');await expect(trip.locator('.fm-jn-noimg')).toHaveText('🇯🇵');
+ const trip=box.locator('.fm-jn-trip');await expect(trip).toContainText('오사카');await expect(trip).toContainText('₩47,000');await expect(trip.locator('b')).toContainText('🇯🇵 오사카');await expect(trip.locator('.fm-jn-noimg')).toHaveCount(0);
  await trip.click();
  await expect(page.locator('#fmJnHead')).toHaveText('오사카');
  await expect(box.locator('.fm-jn-hero')).toContainText('₩47,000');
@@ -108,6 +108,7 @@ test('✈️ an upcoming trip has a checklist and sits at the top of the journal
  await page.goto('/index.html');
  await expect(page.locator('#fmHomeTrip')).toHaveCount(0);
  await openSettings(page,'fmJournalOpen');
+ await expect(page.locator('.fm-jn-next')).toHaveCount(0);await page.locator('[data-area=world]').click();
  const line=page.locator('.fm-jn-next');await expect(line).toContainText('다낭 D-10');await expect(line).toContainText('준비 0/7');
  await line.click();
  await expect(page.locator('#fmJnHead')).toHaveText('다낭');

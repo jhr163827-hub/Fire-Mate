@@ -214,7 +214,7 @@ test('버킷리스트: add by typing or an idea, sorted by the words, edited wit
  await expect(page.locator('#fmBucketSub')).toHaveText('해 보고 싶은 걸 적어 두세요');
  await page.locator('#fmBucketOpen').click();await expect(page.locator('#fmBucketOverlay')).toBeVisible();
  await page.locator('#fmBucketName').fill('아이슬란드 오로라 여행');await page.locator('#fmBucketForm button').click();
- await page.locator('[data-bk-idea="풀코스 마라톤 완주"]').click();
+ await page.locator('#fmBucketIdeas summary').click();await page.locator('[data-bk-idea="풀코스 마라톤 완주"]').click();
  await expect(page.locator('.fm-bk-row .fm-bk-ico')).toHaveText(['✈️','💪']);
  // Edit: target year and cost; the hero counts this year and the money.
  await page.locator('.fm-bk-open',{hasText:'오로라'}).click();

@@ -108,3 +108,41 @@ test('버킷 다음 한 걸음 goes to 오늘 할 일 and ticking it counts a st
  const b=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_bucket_v1')).list[0]);
  expect(b.walked).toBe(1);expect(b.step).toBeUndefined();expect(b.saved).toBe(1000000);
 });
+
+test('할 일 understands 내일·매일·요일 words, edits the day, and a deleted line can be brought back',async({page})=>{
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
+ const box=page.locator('#fmTodoOverlay'),list=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_todo_v1')).list);
+ await page.fill('#fmTodoIn','내일 장보기');await page.press('#fmTodoIn','Enter');
+ await page.fill('#fmTodoIn','매일 스트레칭');await page.press('#fmTodoIn','Enter');
+ await page.fill('#fmTodoIn','세금 서류');await page.press('#fmTodoIn','Enter');
+ let l=await list();
+ expect(l.find(t=>t.text==='장보기').day).toBe(day(1));expect(l.find(t=>t.text==='스트레칭').repeat).toBe(true);
+ await expect(page.locator('#fmTodoIn')).toBeFocused();
+ // the sheet moves a line to any day
+ await box.getByRole('button',{name:'세금 서류',exact:true}).click();await page.fill('#fmTodoEDay',day(3));await page.locator('#fmTodoEForm button.primary').click();
+ expect((await list()).find(t=>t.text==='세금 서류').day).toBe(day(3));
+ // delete → 되돌리기
+ await box.locator('.fm-todo-text',{hasText:'스트레칭'}).click();await page.click('#fmTodoEDel');
+ await expect(box.locator('.fm-todo-undo')).toContainText('스트레칭 지웠어요');
+ await box.locator('[data-todo-undo]').click();
+ expect((await list()).find(t=>t.text==='스트레칭').repeat).toBe(true);
+ // a finished line does not say "N일째"
+ await page.evaluate(d=>localStorage.setItem('firemate_todo_v1',JSON.stringify({list:[{id:'x',text:'세탁소',day:d,done:true,doneAt:new Date().toISOString().slice(0,10)}]})),day(-3));
+ await page.reload();await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
+ await expect(box.locator('.fm-todo-row.done i.old')).toHaveCount(0);
+});
+
+test('자격증 search finds Korean nicknames like 토익·정처기·운전면허',async({page})=>{
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ for(const [q,name] of [['토익','TOEIC'],['정처기','정보처리기사'],['오픽','OPIc'],['운전면허','1종 보통 운전면허']]){await page.fill('#fmCertQ',q);await expect(page.locator('.fm-cert-hits button',{hasText:name}).first()).toBeVisible()}
+});
+
+test('자격증 +30분 can be taken back right away',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))});
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.locator('.fm-cert-today [data-cert-add="30"]').click();
+ await expect(page.locator('.fm-cert-today .fm-cert-add b')).toHaveText('30분');
+ await page.locator('[data-cert-undo]').click();
+ await expect(page.locator('.fm-cert-today .fm-cert-add b')).toHaveText('0분');
+ await expect(page.locator('[data-cert-undo]')).toHaveCount(0);
+});

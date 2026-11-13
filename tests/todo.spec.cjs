@@ -22,7 +22,8 @@ test('오늘 할 일: add, carry over, daily repeat, check off and celebrate, pu
  await box.getByRole('button',{name:'세금 서류',exact:true}).click();
  await page.click('#fmTodoETomorrow');
  await expect(page.locator('#fmTodoSheet')).toBeHidden();
- await expect(box.locator('.fm-todo-row')).toHaveCount(2);
+ await expect(box.locator('h3',{hasText:'📅 내일 1'})).toBeVisible();
+ await expect(box.locator('.fm-todo-rows').first().locator('.fm-todo-row')).toHaveCount(2);
  await box.locator('[data-todo-check="a"]').click();
  await box.locator('[data-todo-check="b"]').click();
  await expect(page.locator('#fmTodoHero')).toContainText('100%');
@@ -52,4 +53,58 @@ test('the morning popup is about money only: no to-dos, English, sleep or trips'
  const pop=page.locator('.fm-brief-pop');
  await expect(pop).toContainText('💾');
  for(const t of ['오늘 할 일','어젯밤','다낭'])await expect(pop).not.toContainText(t);
+});
+
+test('오늘 할 일 brings you back: 내일 chip, 🔥 streak of finished days, the app-icon number and a study to-do that records study time',async({page})=>{
+ await page.addInitScript(([y,y2])=>{window.__badge=[];navigator.setAppBadge=async n=>{window.__badge.push(n)};navigator.clearAppBadge=async()=>{window.__badge.push(0)};if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');
+  localStorage.setItem('firemate_todo_v1',JSON.stringify({list:[{id:'a',text:'운동',day:y,repeat:true}],days:{[y]:[1,1],[y2]:[2,2]}}));
+  localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))},[day(-1),day(-2)]);
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmTodoSub')).toHaveText('1개 남음 · 🔥2일');
+ await expect.poll(()=>page.evaluate(()=>window.__badge.at(-1))).toBe(1);
+ await page.locator('#fmTodoOpen').click();const box=page.locator('#fmTodoOverlay');
+ await expect(page.locator('#fmTodoHero')).toContainText('🔥 2일 연속 다 했어요');
+ // 내일 chip puts a line under 📅 내일, not into today
+ await page.locator('#fmTodoTmr').click();await page.fill('#fmTodoIn','장보기');await page.press('#fmTodoIn','Enter');
+ await expect(box.locator('h3',{hasText:'📅 내일 1'})).toBeVisible();
+ expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_todo_v1')).list)).find(t=>t.text==='장보기').day).toBe(day(1));
+ // the study goal offers a to-do; ticking it adds an hour to the certificate's study log
+ await box.locator('[data-todo-sugg="cert"]').click();
+ const study=box.locator('.fm-todo-row',{hasText:'정보처리기사 공부 1시간'});await expect(study).toHaveCount(1);
+ await study.locator('.fm-todo-check').click();
+ await expect.poll(()=>page.evaluate(d=>JSON.parse(localStorage.getItem('firemate_certificates_v1')).list[0].study?.[d],day(0))).toBe(60);
+ await box.locator('[data-todo-check="a"]').click();
+ await expect(page.locator('#fmTodoHero')).toContainText('🔥 3일 연속');
+ await expect.poll(()=>page.evaluate(()=>window.__badge.at(-1))).toBe(0);
+});
+
+test('자격증 timer keeps running after the app closes and stopping records the minutes',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))});
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmCertSub')).toHaveText('준비 중 · 오늘 공부 전');
+ await page.locator('#fmCertOpen').click();
+ await expect(page.locator('#fmCertList .fm-cert-empty')).toHaveCount(0);
+ await page.locator('[data-cert-timer]').click();
+ await expect(page.locator('[data-cert-timer]')).toContainText('끝내고 기록');
+ await page.evaluate(()=>{const t=JSON.parse(localStorage.getItem('firemate_cert_timer_v1'));t.at-=45*6e4;localStorage.setItem('firemate_cert_timer_v1',JSON.stringify(t))});
+ await page.reload();await page.locator('#settingsBottom').click();
+ await expect(page.locator('#fmCertSub')).toHaveText('⏱ 공부 중 45분');
+ await page.locator('#fmCertOpen').click();await page.locator('[data-cert-timer]').click();
+ await expect(page.locator('.fm-cert-today .fm-cert-add span')).toHaveText('오늘 45분');
+ expect(await page.evaluate(()=>localStorage.getItem('firemate_cert_timer_v1'))).toBeNull();
+});
+
+test('버킷 다음 한 걸음 goes to 오늘 할 일 and ticking it counts a step',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_bucket_v1',JSON.stringify({list:[{id:'b',name:'오로라 보기',cat:'travel',cost:4000000,at:1}]}))});
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmBucketOpen').click();
+ const box=page.locator('#fmBucketOverlay');
+ await expect(box.locator('.fm-bk-next')).toContainText('첫 걸음을 적어 보세요');
+ await box.locator('[data-bk-edit="b"]').click();await page.fill('#fmBkStep','항공권 가격 알아보기');await page.fill('#fmBkSaved','1000000');await page.locator('#fmBucketEForm button.primary').click();
+ await expect(box.locator('.fm-bk-next strong')).toHaveText('항공권 가격 알아보기');
+ await expect(box.locator('[data-bk-edit="b"] small').first()).toContainText('모은 돈 25%');
+ await box.locator('[data-bk-todo="b"]').click();
+ await box.locator('[data-close]').first().click();await page.locator('#fmTodoOpen').click();
+ const row=page.locator('#fmTodoOverlay .fm-todo-row',{hasText:'항공권 가격 알아보기'});await row.locator('.fm-todo-check').click();
+ const b=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_bucket_v1')).list[0]);
+ expect(b.walked).toBe(1);expect(b.step).toBeUndefined();expect(b.saved).toBe(1000000);
 });

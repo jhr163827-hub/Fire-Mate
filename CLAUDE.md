@@ -4,6 +4,7 @@
 
 ## 담당
 - 금융 앱(`index.html`, `app.css`, `sw.js`)과 레스토랑 게임(`arcade/restaurant*`): Claude
+- ⏱️ 공부 타이머 앱(`study/`): Claude
 - NIGHTFALL(`arcade/nightfall*`, `.github/workflows/nightfall.yml`, `tests/nightfall-*`): ChatGPT 담당 — **수정 금지**
 
 ## 진행 방식
@@ -109,6 +110,9 @@ python3 -m http.server 4180 &   # 이후 Playwright(tests/*.spec.cjs)와
 FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'test_home_responsive.py'
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
+
+## ⏱️ 공부 타이머 (`study/`, v3.5.270)
+사용자가 "자격증 탭에서 타이머는 빼고 공부 타이머 앱을 따로" 요청. FIRE MATE와 따로 설치되는 PWA(`study/manifest.webmanifest`, 자체 `study/sw.js` 범위 `/study/` — 루트 `sw.js`는 건드리지 않음, 아이콘 `study/icon-*.png`). 같은 사이트라 localStorage 공유: `firemate_study_v1` {subjects:[{id,name,color,cert}],log:[{id,sub,start(ms),min}],goal(분, 기본 180),dayStart(시, 기본 5 — 이 시각 전은 전날),run:{sub,start,at,acc}|null,hide:[자격증 id]}(FIRE MATE 백업 extras 맨 앞). FIRE MATE의 준비 중 자격증(`goal`)은 과목으로 자동 추가(지우면 `hide`에 남아 다시 안 생김), 연결된 과목을 끝내면 `firemate_certificates_v1`의 그 자격증 `study[날]`에 분을 더하고 기록을 지우면 뺀다. 화면: 타이머(오늘 합계·목표 막대·🔥 연속·과목 ▶) → 집중 화면(큰 시계, 일시정지·끝내기, ⌄로 내리기, Wake Lock, 시각은 타임스탬프라 앱을 닫아도 계속) / 기록(이번 주·7일 평균·연속, 최근 7일 막대, 이번 주 과목별, 16주 잔디, 오늘 기록 ✕ 두 번 눌러 지우기) / 설정(하루 목표·하루 시작 시각·과목 이름·색·자격증 연결·삭제). 1분 미만은 기록 안 함. 서버·순위 없음. FIRE MATE 더보기 → 생활 `⏱️ 공부 타이머`(`#fmStudyOpen`, 줄 `#fmStudySub`). 테스트 `tests/study.spec.cjs`.
 
 ## 레스토랑
 `arcade/restaurant.html` + `restaurant-engine.js` / `restaurant-room.js` / `restaurant-room.css`. 버전별 기록은 `RESTAURANT_STATUS.md`. 예전 테스트는 `__restaurantClassicGuests`로 고전 규칙에서 돈다.

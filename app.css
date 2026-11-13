@@ -2889,7 +2889,7 @@ html body #fmCertOverlay .fm-cs-del{flex:none;min-height:52px;padding:0 14px;bor
 html body #fmCertOverlay .fm-cs-del[hidden]{display:none}
 html body #fmCertOverlay .fm-cs-foot .primary{flex:1;min-height:52px;border-radius:16px;font-size:16px}
 html body #fmCertOverlay #fmCertList h3,html body #fmCertOverlay .fm-wallet-head h3,html body #fmCertOverlay details.fm-cert-roadf>summary{margin:22px 4px 8px;font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--sub)}
-html body #fmCertOverlay .fm-wallet-head{margin:22px 0 0}
+html body #fmCertOverlay .fm-wallet-head{margin:22px 0 0;align-items:flex-end}html body #fmCertOverlay #fmCertList .fm-wallet-head h3{margin:0 4px 8px}
 html body #fmCertOverlay .fm-wallet-head h3{margin:0 4px 8px}
 html body #fmCertOverlay details.fm-cert-roadf>summary::after{position:static;display:inline;transform:none;border:0;width:auto;height:auto;background:none}
 html body #fmCertOverlay details.fm-cert-more{display:grid;gap:12px;margin:0;padding-top:12px;border-top:1px solid var(--line)}
@@ -2924,7 +2924,7 @@ html body #fmCertOverlay .fm-cd-add.wide{width:100%;min-height:52px;border-style
 html body #fmCertOverlay .fm-cd-img{position:relative;display:block;width:100%;padding:0;border:0;border-radius:16px;overflow:hidden;background:var(--panel)}
 html body #fmCertOverlay .fm-cd-img img{display:block;width:100%;max-height:260px;object-fit:cover}
 html body #fmCertOverlay .fm-cd-img span{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:#000a;color:#fff;font-size:12px;font-weight:700}
-html body #fmCertOverlay .fm-wallet-nodate{display:block;width:100%;margin:0 0 10px;min-height:44px;padding:0 14px;border:1px dashed color-mix(in srgb,var(--green) 40%,var(--line));border-radius:14px;background:transparent;color:var(--green);font-weight:700;text-align:left}
+html body #fmCertOverlay .fm-wallet-nodate{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;padding:0 18px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--sub);font-size:13px;font-weight:600;text-align:left}html body #fmCertOverlay .fm-wallet-nodate b{color:var(--txt);font-weight:700}html body #fmCertOverlay .fm-wallet-head h3 b{margin-left:4px;color:var(--txt)}html body #fmCertOverlay .fm-wallet-head .fm-wallet-sum{margin:0 4px 8px;font-size:12px;font-weight:700}html body #fmCertOverlay .fm-wallet-sum i{font-style:normal;margin-left:8px}
 html body #fmCertOverlay .fm-cert-search{box-shadow:0 12px 10px -8px var(--bg)}
 html body #fmCertOverlay .fm-cert-none .fm-cert-sug button{min-height:38px;padding:0 12px;font-size:13px}
 html body #fmCertOverlay .fm-cert-view{z-index:6}

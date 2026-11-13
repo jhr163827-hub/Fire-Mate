@@ -39,7 +39,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('내 자격증 2개');
  await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid Systems기계 · 2024\.10 취득/:'',/일반기계기사기계 · 2021\.06 취득/]);
- await expect(page.locator('.fm-cert-grades i')).toHaveText(['PE 1','기사 1']);await expect(page.locator('.fm-cert-stats')).toContainText('2보유');
+ await expect(page.locator('.fm-wallet-head h3')).toHaveText('보유 자격증 2');await expect(page.locator('.fm-cert-stats')).toContainText('2보유');
  // Edit, then delete.
  await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await expect(page.locator('#fmCertDetail')).toBeVisible();await page.locator('#fmCertEditBtn').click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertDetail .fm-cd-card')).toContainText('Q-net');await page.locator('[data-cd-back]').click();

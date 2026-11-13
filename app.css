@@ -2928,3 +2928,10 @@ html body #fmCertOverlay .fm-wallet-nodate{display:block;width:100%;margin:0 0 1
 html body #fmCertOverlay .fm-cert-search{box-shadow:0 12px 10px -8px var(--bg)}
 html body #fmCertOverlay .fm-cert-none .fm-cert-sug button{min-height:38px;padding:0 12px;font-size:13px}
 html body #fmCertOverlay .fm-cert-view{z-index:6}
+html body #fmCertOverlay details.fm-cs-exam{margin-top:10px}
+html body #fmCertOverlay details.fm-cs-exam>summary{list-style:none;cursor:pointer;display:flex;align-items:center;min-height:40px;padding:0 4px;font-size:13px;font-weight:700;color:var(--sub)}
+html body #fmCertOverlay details.fm-cs-exam>summary::-webkit-details-marker{display:none}
+html body #fmCertOverlay details.fm-cs-exam>summary::after{content:'▾';margin-left:auto;position:static;transform:none;border:0;width:auto;height:auto;background:none}
+html body #fmCertOverlay details.fm-cs-exam[open]>summary::after{content:'▴'}
+html body #fmCertOverlay .fm-wallet-sum i.bad{color:var(--red)}
+html body #fmCertOverlay .fm-cert-first .fm-cert-sug{flex-wrap:wrap;overflow:visible;margin:0;padding:0}

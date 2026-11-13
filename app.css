@@ -2792,3 +2792,75 @@ html body #settingsOverlay small[data-due]{color:var(--green);font-weight:800}
 #fmTodoOverlay .fm-todo-day input{flex:1}
 #fmTodoOverlay .fm-todo-day[hidden]{display:none}
 #fmCertOverlay .fm-cert-undo{justify-self:start;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:12px;font-weight:700}
+/* 🎓 자격증 · 🪣 버킷 · 🎁 위시: premium pass (v3.5.265, owner asked for a richer, more 'real' feel). Same app colours, no skin. */
+/* wallet: the plain list, a summary line, grade filters once there are 5+; 지나온 길 folds */
+html body #fmCertOverlay .fm-wallet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:22px 2px 6px}
+html body #fmCertOverlay .fm-wallet-head h3{margin:0}
+html body #fmCertOverlay .fm-wallet-head button{min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700}
+html body #fmCertOverlay .fm-wallet-sum{display:flex;flex-wrap:wrap;gap:6px 12px;margin:0 2px 10px;font-size:13px;color:var(--sub)}
+html body #fmCertOverlay .fm-wallet-sum b{color:var(--txt)}
+html body #fmCertOverlay .fm-wallet-sum .warn{color:var(--yellow,#e0a84b);font-weight:700}
+html body #fmCertOverlay .fm-wallet-f{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}
+html body #fmCertOverlay .fm-wallet-f button{flex:none;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--sub);font-size:13px;font-weight:700;white-space:nowrap}
+html body #fmCertOverlay .fm-wallet-f button[aria-pressed=true]{background:var(--txt);border-color:var(--txt);color:var(--bg)}
+/* career ladder */
+html body #fmCertOverlay .fm-ladder{display:grid;border:1px solid var(--line);border-radius:18px;background:var(--panel);overflow:hidden}
+html body #fmCertOverlay .fm-lad{display:grid;gap:10px;padding:14px 16px}
+html body #fmCertOverlay .fm-lad+.fm-lad{border-top:1px solid var(--line)}
+html body #fmCertOverlay .fm-lad-k{font-weight:800}
+html body #fmCertOverlay .fm-lad-steps{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+html body #fmCertOverlay .fm-lad-steps i{position:relative;padding-top:20px;font-style:normal;font-size:12px;font-weight:700;text-align:center;color:var(--sub)}
+html body #fmCertOverlay .fm-lad-steps i::before{content:'';position:absolute;top:2px;left:50%;z-index:1;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--panel2);border:2px solid var(--line)}
+html body #fmCertOverlay .fm-lad-steps i::after{content:'';position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--line)}
+html body #fmCertOverlay .fm-lad-steps i:first-child::after{display:none}
+html body #fmCertOverlay .fm-lad-steps i.on{color:var(--txt)}
+html body #fmCertOverlay .fm-lad-steps i.on::before{background:var(--green);border-color:var(--green)}
+html body #fmCertOverlay .fm-lad-steps i.on::after,html body #fmCertOverlay .fm-lad-steps i.nx::after{background:var(--green)}
+html body #fmCertOverlay .fm-lad-steps i.nx{color:var(--green)}
+html body #fmCertOverlay .fm-lad-steps i.nx::before{border-color:var(--green);border-style:dashed}
+html body #fmCertOverlay .fm-lad button{justify-self:start;min-height:40px;padding:0 14px;border:1px solid color-mix(in srgb,var(--green) 45%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--green);font-weight:800}
+html body #fmCertOverlay .fm-lad small{color:var(--sub);font-weight:700}
+html body #fmCertOverlay .fm-cert-prof{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+html body #fmCertOverlay .fm-cert-prof b{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.04em}
+html body #fmCertOverlay .fm-cert-prof span{display:grid;gap:2px;font-weight:800}
+html body #fmCertOverlay .fm-cert-prof small{font-size:13px;font-weight:600;color:var(--sub)}
+/* bucket: a ring for what's done; ⭐ 올해 꼭 rows first */
+html body #fmBucketOverlay .fm-bk-hero{position:relative;padding:22px 112px 20px 22px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(120% 100% at 100% 0%,#e6b45029,transparent 62%),var(--panel)}
+html body #fmBucketOverlay .fm-bk-hero .progress{display:none}
+html body #fmBucketOverlay .fm-bk-ring{position:absolute;top:20px;right:20px;display:grid;place-items:center;width:76px;height:76px;border-radius:50%;background:conic-gradient(#e6b450 calc(var(--p)*1%),var(--panel2) 0)}
+html body #fmBucketOverlay .fm-bk-ring b{display:grid;place-items:center;width:62px;height:62px;border-radius:50%;background:var(--panel);font-size:15px;font-weight:800;font-style:normal}
+html body #fmBucketOverlay .fm-bk-hero .fm-bk-next{margin-right:-90px}
+html body #fmBucketOverlay .fm-bk-row.done .fm-bk-check{background:#e6b450;border-color:#e6b450;color:#1b1406}
+/* wishlist: calmer header, a 30-day ring around each item, 참은 돈 */
+html body #fmWishOverlay .fm-wish-hero{color:var(--txt);background:radial-gradient(120% 100% at 100% 0%,#ef8fa62b,transparent 60%),var(--panel);border:1px solid var(--line);box-shadow:none}
+html body #fmWishOverlay .fm-wish-hero small,html body #fmWishOverlay .fm-wish-hero em{color:var(--sub);opacity:1}
+html body #fmWishOverlay .fm-wish-hero b{font-size:32px}
+html body #fmWishOverlay .fm-wish-bar{background:var(--panel2)}
+html body #fmWishOverlay .fm-wish-bar i{background:#ef8fa6}
+html body #fmWishOverlay .fm-wish-kept{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:14px;color:var(--sub)}
+html body #fmWishOverlay .fm-wish-hero .fm-wish-kept b{display:inline;min-height:0;font-size:inherit;font-weight:800;letter-spacing:0;color:var(--green)}
+html body #fmWishOverlay .fm-wish-item.skip{opacity:.75}
+html body #fmWishOverlay .fm-wish-item.skip .fm-wish-name>span:first-child{text-decoration:line-through}
+html body #fmWishOverlay .fm-wish-skipbtn{width:100%}
+html body #fmBucketOverlay .fm-bk-pin{margin-left:6px;font-style:normal;font-size:11px;font-weight:800;color:#e6b450;white-space:nowrap}
+html body #fmBucketOverlay .fm-bk-row.done .fm-bk-check{background:#e6b450;border-color:#e6b450;color:#1b1406}
+html body #fmCertOverlay details.fm-cert-roadf>summary{list-style:none;cursor:pointer;margin:22px 2px 8px;font-size:16px;font-weight:800}
+html body #fmCertOverlay details.fm-cert-roadf>summary::-webkit-details-marker{display:none}
+html body #fmCertOverlay details.fm-cert-roadf>summary small{margin-left:6px;color:var(--sub);font-weight:700}
+html body #fmCertOverlay details.fm-cert-roadf>summary::after{content:' ▾';color:var(--sub)}
+html body #fmCertOverlay details.fm-cert-roadf[open]>summary::after{content:' ▴'}
+/* 🎁 위시 list: one panel of rows — icon from the name, name + one quiet line, price on the right */
+html body #fmWishOverlay .fm-wish-rows{border-radius:20px;background:var(--panel);overflow:hidden}
+html body #fmWishOverlay .fm-wish-rows .fm-wish-item{display:flex;align-items:center;gap:12px;margin:0;padding:12px 16px;border:0;border-radius:0;background:none}
+html body #fmWishOverlay .fm-wish-rows .fm-wish-item+.fm-wish-item{border-top:1px solid var(--line)}
+html body #fmWishOverlay .fm-wish-check{flex:none}
+html body #fmWishOverlay .fm-wish-open{flex:1;display:flex;align-items:center;gap:12px;min-width:0}
+html body #fmWishOverlay .fm-wish-ico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--panel2);font-size:20px}
+html body #fmWishOverlay .fm-wish-name{flex:1;min-width:0}
+html body #fmWishOverlay .fm-wish-name>span:first-child{word-break:keep-all;overflow-wrap:anywhere}
+html body #fmWishOverlay .fm-wish-name small{font-size:12px;font-weight:600;color:var(--sub)}
+html body #fmWishOverlay .fm-wish-name small.ok{color:var(--green)}
+html body #fmWishOverlay .fm-wish-price{flex:none;display:grid;justify-items:end;gap:2px;font-size:15px;font-weight:800;white-space:nowrap}
+html body #fmWishOverlay .fm-wish-price small{font-size:11px;font-weight:600;color:var(--sub)}
+html body #fmWishOverlay .fm-wish-price .fm-wish-noprice{font-size:12px;color:var(--sub);text-decoration:underline dotted}
+html body #fmWishOverlay .fm-wish-item.done .fm-wish-price{color:var(--sub);text-decoration:line-through}

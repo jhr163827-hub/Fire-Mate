@@ -146,3 +146,29 @@ test('자격증 +30분 can be taken back right away',async({page})=>{
  await expect(page.locator('.fm-cert-today .fm-cert-add b')).toHaveText('0분');
  await expect(page.locator('[data-cert-undo]')).toHaveCount(0);
 });
+
+test('자격증 지갑 stays compact: a summary line, grade filters once there are 5+, the ladder offers the next rung, résumé copy',async({page,context})=>{
+ await context.grantPermissions(['clipboard-read','clipboard-write']);
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-10'},{id:'b',name:'컴퓨터활용능력 1급',date:'2019-03-02'},{id:'c',name:'TOEIC',date:'2020-01-10'},{id:'d',name:'SQLD',date:'2023-09-01'},{id:'e',name:'컴퓨터활용능력 2급',date:'2018-03-02'}]}))});
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await expect(page.locator('.fm-wallet-sum')).toContainText('보유 5');await expect(page.locator('.fm-wallet-sum')).toContainText('만료 임박 1');
+ await page.locator('[data-wf="국가공인"]').click();
+ await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(3);
+ await page.locator('[data-wf=""]').click();await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(5);
+ await expect(page.locator('.fm-lad',{hasText:'기계'}).locator('i.on')).toHaveCount(3);
+ await expect(page.locator('.fm-lad [data-cert-sug]')).toContainText('기계기술사');
+ await page.locator('[data-cert-copy]').click();
+ expect(await page.evaluate(()=>navigator.clipboard.readText())).toContain('2021.06  일반기계기사');
+});
+
+test('버킷 ⭐ 올해 꼭 pins to the top; 위시 안 살래요 counts the money kept',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_bucket_v1',JSON.stringify({list:[{id:'1',name:'마라톤',cat:'health',at:1},{id:'2',name:'기술사 합격',cat:'learn',at:1}]}));localStorage.setItem('firemate_wishlist_v1',JSON.stringify({list:[{id:'w',name:'퀘스트',price:1200000,at:Date.now()}]}))});
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmBucketOpen').click();
+ await page.locator('[data-bk-edit="2"]').click();await page.locator('#fmBkPin').check();await page.locator('#fmBucketEForm button.primary').click();
+ await expect(page.locator('.fm-bk-row').first()).toContainText('기술사 합격');await expect(page.locator('.fm-bk-row .fm-bk-pin')).toHaveCount(1);
+ await page.locator('#fmBucketOverlay [data-close]').first().click();await page.locator('#fmWishOpen').click();
+ await page.locator('[data-wish-edit="w"]').click();await page.locator('#fmWishESkip').click();
+ await expect(page.locator('.fm-wish-kept')).toContainText('₩1,200,000');
+ await expect(page.locator('.fm-wish-sec.skip')).toContainText('참은 것');
+ await expect(page.locator('#fmWishSub')).toContainText('참음');
+});

@@ -151,12 +151,12 @@ test('자격증 지갑 stays compact: a summary line, grade filters once there a
  await context.grantPermissions(['clipboard-read','clipboard-write']);
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-10'},{id:'b',name:'컴퓨터활용능력 1급',date:'2019-03-02'},{id:'c',name:'TOEIC',date:'2020-01-10'},{id:'d',name:'SQLD',date:'2023-09-01'},{id:'e',name:'컴퓨터활용능력 2급',date:'2018-03-02'}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
- await expect(page.locator('.fm-wallet-sum')).toContainText('보유 5');await expect(page.locator('.fm-wallet-sum')).toContainText('만료 임박 1');
+ await expect(page.locator('.fm-cert-stats')).toContainText('5보유');await expect(page.locator('.fm-wallet-sum')).toContainText('만료 임박 1');
  await page.locator('[data-wf="국가공인"]').click();
  await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(3);
  await page.locator('[data-wf=""]').click();await expect(page.locator('.fm-wallet .fm-cert-row')).toHaveCount(5);
  await expect(page.locator('.fm-lad',{hasText:'기계'}).locator('i.on')).toHaveCount(3);
- await expect(page.locator('.fm-lad [data-cert-sug]')).toContainText('기계기술사');
+ await expect(page.locator('.fm-lad')).toContainText('다음 단계 · 기계기술사');await expect(page.locator('.fm-lad [data-cert-sug]')).toHaveCount(0);
  await page.locator('[data-cert-copy]').click();
  expect(await page.evaluate(()=>navigator.clipboard.readText())).toContain('2021.06  일반기계기사');
 });

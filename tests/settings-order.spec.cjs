@@ -39,7 +39,7 @@ test('certificates are found by search, show their facts, and are added, edited,
  await page.locator('#fmCertDate').fill('2024-10-20');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('#fmCertTitle')).toHaveText('내 자격증 2개');
  await expect(page.locator('.fm-cert-row')).toHaveText(['🇺🇸'.length?/PE Mechanical: Thermal and Fluid SystemsPE · NCEES \(미국\) · 2024\.10 취득/:'',/일반기계기사기사 · 한국산업인력공단 \(Q-net\) · 2021\.06 취득/]);
- await expect(page.locator('.fm-cert-grades i')).toHaveText(['보유 2','PE 1','기사 1']);
+ await expect(page.locator('.fm-cert-grades i')).toHaveText(['PE 1','기사 1']);await expect(page.locator('.fm-cert-stats')).toContainText('2보유');
  // Edit, then delete.
  await page.locator('.fm-cert-row',{hasText:'일반기계기사'}).click();await page.locator('#fmCertOrg').fill('Q-net');await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('.fm-cert-row',{hasText:'일반기계기사'})).toContainText('기사 · Q-net');

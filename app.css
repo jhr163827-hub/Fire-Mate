@@ -2078,7 +2078,7 @@ html,body{overscroll-behavior-y:contain}
 #view-assets #toggleAccountOrder,#view-assets #fmBalanceRowEdit{min-height:44px;padding:0 4px;border:0;background:none;color:var(--green);font-size:13px;font-weight:800}
 /* ===== Skin v4: one look for every screen. Same markup and layout; colors, type and surfaces only.
    Type: 30 amount · 17 title · 15 body · 13 secondary. One accent (green), red = up/plus, blue = down/minus. ===== */
-:root{--bg:#0f1013;--panel:#1b1d22;--panel2:#25282e;--line:#2d3138;--txt:#f2f4f6;--text:#f2f4f6;--sub:#8d96a1;--green:#3dd598;--green2:#163b2e;--red:#ff5c6a;--up:#ff5c6a;--down:#5a9bff;--yellow:#f5b544}
+:root{--bg:#0f1013;--panel:#1b1d22;--panel2:#25282e;--line:#2d3138;--txt:#f2f4f6;--text:#f2f4f6;--sub:#9ba4af;--green:#3dd598;--green2:#163b2e;--red:#ff5c6a;--up:#ff5c6a;--down:#5a9bff;--yellow:#f5b544}
 html[data-theme=light]{--bg:#f2f4f6;--panel:#fff;--panel2:#f2f4f6;--line:#e5e8eb;--txt:#191f28;--text:#191f28;--sub:#5f6b78;--green:#007a4b;--green2:#e3f6ed;--red:#f04452;--up:#f04452;--down:#3182f6;--yellow:#c77800}
 html body{background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 /* Header: the screen name is the title; brand and controls stay small. */
@@ -2760,3 +2760,6 @@ html body #settingsOverlay .fm-set-group.fm-tiles .fm-certs small{display:block;
 html body #view-fire .fm-fire-notes>*{font-size:14px;color:var(--txt)}
 html body .fm-cardtax{font-size:14px;line-height:1.6}html body .fm-cardtax p{margin:0 0 8px}
 html body #fmManualUpdate.fm-update-ready{color:var(--green);border-color:var(--green)}
+html body .fm-cardtax p:first-child{font-size:15px;font-weight:700;color:var(--txt)}
+html body #view-fire .fm-fire-notes b{font-weight:800;color:var(--green)}
+html body .view .card small,html body .view .card .mini,html body .view .card .light.small,html body .view .card .muted.small{font-size:13px}

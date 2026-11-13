@@ -46,3 +46,20 @@ test('FIRE: an example plan offers numbers from my own records once, and applyin
  await expect(line).toBeHidden();
  await page.reload();await page.evaluate(()=>window.fmGo('fire'));await expect(page.locator('#fmFireFit')).toBeHidden();
 });
+
+test('미용·보험 are categories: saved 기타/쇼핑 rows move by name once, with undo in 자동 변경 기록',async({page})=>{
+ await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},accounts:[],holdings:[],tx:[
+  {id:'a',date:'2026-10-05',type:'expense',category:'기타',amount:69810,memo:'DB손17210'},{id:'b',date:'2026-10-06',type:'expense',category:'쇼핑',amount:25000,memo:'S.F헤어'},
+  {id:'c',date:'2026-10-07',type:'expense',category:'식비',amount:9000,memo:'헤어진 뒤 술집'},{id:'d',date:'2026-10-08',type:'expense',category:'쇼핑',amount:30000,memo:'쿠팡'}]}))});
+ await page.goto('/index.html');
+ const cats=()=>page.evaluate(()=>Object.fromEntries(JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.map(t=>[t.id,t.category])));
+ expect(await cats()).toEqual({a:'보험',b:'미용',c:'식비',d:'쇼핑'});
+ await page.evaluate(()=>window.fmOpenEntry());
+ expect(await page.locator('#entryCat option').allTextContents()).toEqual(expect.arrayContaining(['미용','보험','교육','경조사·선물']));
+ await page.reload();
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage > summary').click();await page.locator('#fmAutoLog>summary').click();
+ const row=page.locator('#fmAutoLogList p',{hasText:'미용·보험·교육·경조사'});await expect(row).toContainText('2건');
+ await row.locator('button').click();await page.locator('#fmAskOk').click();
+ await expect.poll(cats).toEqual({a:'기타',b:'쇼핑',c:'식비',d:'쇼핑'});
+ await page.reload();expect(await cats()).toEqual({a:'기타',b:'쇼핑',c:'식비',d:'쇼핑'});
+});

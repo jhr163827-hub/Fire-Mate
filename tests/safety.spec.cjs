@@ -91,7 +91,7 @@ test('imported spending under 기타 is classified by merchant name on its own, 
  await page.goto('/index.html');
  const cats=async()=>Object.fromEntries((await saved(page)).tx.map(t=>[t.id,t.category]));
  // A raw bank label becomes an app category; a category the user picked (여행) stays.
- expect(await cats()).toEqual({g:'식비',k:'통신·구독',m:'기타',r:'쇼핑',c:'여행'});
+ expect(await cats()).toEqual({g:'식비',k:'통신·구독',m:'기타',r:'미용',c:'여행'});// 미용 is its own category since v3.5.259
  await page.evaluate(()=>window.fmGo('insights'));
  await expect(page.locator('#fmAutoCatNote')).toContainText('3건을 자동 분류했어요');
  await page.locator('#fmAutoCatUndo').click();

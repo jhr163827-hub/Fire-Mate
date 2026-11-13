@@ -1,5 +1,5 @@
-const CACHE='fire-mate-v3-5-258';
-const ASSETS=['./index.html','./app.css?v=3.5.258','./js/features.js?v=3.5.258','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='fire-mate-v3-5-259';
+const ASSETS=['./index.html','./app.css?v=3.5.259','./js/features.js?v=3.5.259','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const validPage=text=>text.includes("const BUILD='"+CACHE+"'")&&text.includes('id="view-home"')&&text.includes('id="view-assets"')&&text.includes('id="view-fire"')&&text.length>100000;
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})));const page=await cache.match('./index.html');if(!page||!validPage(await page.text())){await caches.delete(CACHE);throw Error('App and worker build mismatch')}})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('fire-mate-v')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})())});
@@ -22,8 +22,11 @@ self.addEventListener('fetch',event=>{
 });
 // 🔔 Daily digest written by the app into the 'fm-notify-v1' cache ({days:{'YYYY-MM-DD':[lines]}}); shown once a day between 07 and 23 KST
 // when the browser wakes this worker (periodic background sync). Nothing is fetched and nothing leaves the phone.
-async function fmNotify(){const c=await caches.open('fm-notify-v1'),r=await c.match('./__fm_notify.json');if(!r)return;const k=new Date(Date.now()+9*36e5),d=k.toISOString().slice(0,10),h=k.getUTCHours(),lines=(await r.json()).days?.[d],s=await c.match('./__fm_shown');
- if(!lines?.length||h<7||h>=23||s&&await s.text()===d)return;await c.put('./__fm_shown',new Response(d));
+async function fmNotify(){const c=await caches.open('fm-notify-v1'),r=await c.match('./__fm_notify.json');if(!r)return;const k=new Date(Date.now()+9*36e5),d=k.toISOString().slice(0,10),h=k.getUTCHours(),plan=await r.json(),lines=[...(plan.days?.[d]||[])],s=await c.match('./__fm_shown');
+ if(h<7||h>=23||s&&await s.text()===d)return;
+ // 💱 The owner's exchange-rate goal: one public quote request (the app's own Cloudflare function), nothing about the owner is sent.
+ if(plan.fx>0)try{const q=await (await fetch('https://fire-mate-627.pages.dev/api/quotes?s=')).json(),p=Number(q?.quotes?.['IDX-USDKRW']?.price);if(p>0&&p<=plan.fx)lines.unshift('💱 환율 '+Math.round(p).toLocaleString('ko-KR')+'원 · 목표 '+Math.round(plan.fx).toLocaleString('ko-KR')+'원 아래예요')}catch{}
+ if(!lines.length)return;await c.put('./__fm_shown',new Response(d));
  await self.registration.showNotification('FIRE MATE',{body:lines.join('\n'),icon:'./icon-192.png',badge:'./icon-192.png',tag:'fm-daily'})}
 self.addEventListener('periodicsync',event=>{if(event.tag==='fm-daily')event.waitUntil(fmNotify())});
 self.addEventListener('message',event=>{if(event.data?.type==='FM_NOTIFY_TEST')event.waitUntil(fmNotify())});

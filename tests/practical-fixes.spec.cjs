@@ -31,7 +31,7 @@ test('backup nudge appears for unbacked data, backs up, and snoozes without touc
  await open(page,longTimeUser);
  const nudge=page.locator('.fm-backup-nudge');
  await expect(nudge).toBeVisible();
- await expect(page.locator('#fmBackupNudgeText')).toContainText('아직 백업한 적이 없어요');
+ await expect(page.locator('#fmBackupNudgeText')).toContainText('아직 안 했어요');await page.locator('.fm-backup-fold summary').click();
  const before=await page.evaluate(()=>localStorage.getItem('firemate_smart_v3'));
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#fmBackupNow').click()]);
  expect(download.suggestedFilename()).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}-\d{4}\.json$/);
@@ -43,7 +43,7 @@ test('backup nudge appears for unbacked data, backs up, and snoozes without touc
 
 test('old backups remind again after 30 days and "7일 뒤에" survives reload',async({page})=>{
  await open(page,longTimeUser,{firemate_last_backup_v1:new Date(Date.now()-40*DAY).toISOString()});
- await expect(page.locator('#fmBackupNudgeText')).toContainText('마지막 백업이 40일 전이에요');
+ await expect(page.locator('#fmBackupNudgeText')).toContainText('마지막 40일 전');await page.locator('.fm-backup-fold summary').click();
  await page.locator('#fmBackupLater').click();
  await expect(page.locator('.fm-backup-nudge')).toBeHidden();
  await page.reload();
@@ -80,7 +80,7 @@ test('secondary text and selected tabs meet 4.5:1 contrast in both themes',async
 test('mail backup shares a validated .txt file and restore accepts it',async({page})=>{
  await page.addInitScript(()=>{window.__shared=[];navigator.canShare=d=>Array.isArray(d?.files)&&d.files.every(f=>f.name.endsWith('.txt'));navigator.share=async d=>{window.__shared.push({title:d.title,name:d.files[0].name,type:d.files[0].type,text:await d.files[0].text()})}});
  await open(page,longTimeUser);
- await page.locator('#fmBackupNow').click();
+ await page.locator('.fm-backup-fold summary').click();await page.locator('#fmBackupNow').click();
  await expect.poll(()=>page.evaluate(()=>window.__shared.length)).toBe(1);
  const shared=await page.evaluate(()=>window.__shared[0]);
  expect(shared.name).toMatch(/^firemate-backup-\d{4}-\d{2}-\d{2}-\d{4}\.txt$/);

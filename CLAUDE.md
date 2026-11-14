@@ -110,6 +110,13 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
 
+## v3.5.277 지도 이름 깨짐·건별 되돌리기·음력 기념일
+- 🏷️ 지도 지역 이름: `<text>`는 늘 `font-size=11`, 위치·크기는 `transform="translate(x y) scale(k)"`(`t._x`/`t._y`). 예전처럼 viewBox 단위의 아주 작은 font-size를 쓰면 안드로이드 크롬(최소 글꼴 크기)에서 글자가 겹쳐 `똥`처럼 깨졌음(사용자 스크린샷, 대구 동 지도). 화면 가장자리에서 잘릴 이름은 숨김.
+- 🧾 자동 변경 기록(`fmAutoLog`): 줄마다 `전부 되돌리기` + 접힌 `건별로 보기`의 ↩(`fmAutoOne(k,id)`: 카드대금·중복 결제·가게 자동 분류·새 분류·없어진 거래). 한 건만 원래대로 하고 백업 목록에서 빼며, 분류는 `firemate_autocat_skip_v1`, 없어진 거래는 `import_gone_off`, 중복은 `import_deleted`에서 키를 빼 다시 자동으로 안 바뀜. 저장이 실패하면 메모리도 원래대로.
+- 🌙 음력 기념일: `lunar:true`면 날짜의 월·일을 음력으로 보고 `fmLunarNext`가 브라우저 `Intl` 중국 달력(`en-u-ca-chinese`, 윤달 `Nbis`는 건너뜀, 30일 없는 해는 29일)으로 다음 양력 날짜를 찾음(오늘부터 400일, `var fmLunarMemo` 캐시 — 폰 알림 계획이 먼저 불러도 되게 var). 추가할 때 이름에 `음력`을 넣으면 음력으로(이름에서 뺌), 시트 `🌙 음력` 스위치. 줄은 `음력 8/15 → 9월 15일 (수)`.
+- 배당 `입금 확인`은 여전히 안 만듦(증권사 배당이 가계부에 안 들어옴 — 추정·예정만).
+- 테스트 `tests/fixes-277.spec.cjs`.
+
 ## v3.5.276 콘텐츠·자산 달성 보상·목표자금·받을 돈·물건·프로젝트·돌아보기, 내 바로가기·시작 화면·통합 검색, 여행 정산
 - 모두 `#fmLifeOverlay` 틀(`fmLifeSheet`)·백업 extras·더보기 찾기(`FM_MORE`)에 들어감. 사진은 IndexedDB `content:`·`reward:`·`item:` 키 + 사진 ZIP(`fmFileLabel`·되살리기 정규식).
 - 🎬 콘텐츠 보관함 `firemate_content_v1`(재미): 제목만(링크면 주소로 저장 후 시트), 종류 추정 `fmCtGuess`, 상태 볼 것/보는 중/완료/중단, 드라마 회차·책 쪽·진행 메모, 별점·한 줄 감상, `걸리는 시간(분)`은 적은 것만 — `🎲 오늘 뭐 볼까`는 시간 안 적은 건 따로 보여 주고 추정하지 않음, `▶ 이어서`(보는 중 최근 + `+1화`/`+10쪽`/열기), 위시 연결(기존 고르기 또는 새로 담기), 가계부 지출 연결(`fmTxPick`, id만).

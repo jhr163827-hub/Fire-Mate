@@ -41,5 +41,5 @@ test('연결은 백업에 포함되고, 중복 연결·한도 초과·저장 실
 });
 test('숫자 기준과 오래된 시장 자료 시각 표시',async({page})=>{
  await expect(page.locator('.fm-number-basis')).toContainText('입출금·시세·환율');
- await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({json:{updatedAt:'2020-01-01T00:00:00Z',quotes:{'IDX-USDKRW':{price:1400,prevClose:1390,at:'2020-01-01T00:00:00Z'}}}}));await page.reload();await expect(page.locator('#fmHomeMarket')).toContainText('오래된 자료');
+ await page.route('**/chart-data/live-quotes.json*',r=>r.fulfill({json:{updatedAt:'2020-01-01T00:00:00Z',quotes:{'IDX-USDKRW':{price:1400,prevClose:1390,at:'2020-01-01T00:00:00Z'}}}}));await page.reload();await expect(page.locator('#fmHomeMarket')).toContainText('오래된 자료');
 });

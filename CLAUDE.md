@@ -13,7 +13,7 @@
 - 보고할 때 "확인함"과 "실기기 미확인"을 나눠서 쓴다.
 
 ## 지켜야 할 것
-- **FIRE MATE의 홈·오늘 알림은 금융만**(v3.5.227 사용자 결정). 할 일·자격증·버킷·위시·영어·수면·여행은 설정 안에서만 관리하고 홈 줄·오늘 알림·`홈에 보일 것`에 넣지 않는다(설정 줄의 작은 글자 `#fm…Sub`로 상태만). 홈 `#fmHomeRows`는 보이는 줄이 4개를 넘으면 3개만 두고 `＋ N개 더`(`#fmHomeMore`, `fmHomeRowsFold`)로 접는다.
+- **FIRE MATE의 홈·오늘 알림은 금융만**(v3.5.227 사용자 결정, 예외: v3.5.275 사용자가 켠 경우에만 홈 맨 아래 생활 바로가기 4개). 할 일·자격증·버킷·위시·영어·수면·여행은 설정 안에서만 관리하고 홈 줄·오늘 알림·`홈에 보일 것`에 넣지 않는다(설정 줄의 작은 글자 `#fm…Sub`로 상태만). 홈 `#fmHomeRows`는 보이는 줄이 4개를 넘으면 3개만 두고 `＋ N개 더`(`#fmHomeMore`, `fmHomeRowsFold`)로 접는다.
 - 금융 데이터, localStorage 키 이름, 계산식, PWA 업데이트 구조(`fm-pwa-updates`, `sw.js`)는 바꾸지 않는다. 키를 새로 만들 땐 `firemate_<이름>_v1` 형식의 별도 키로.
 - 기존 기능을 임의로 지우지 않는다.
 - 비밀번호·이메일·토큰·API 키를 코드, 테스트, PR에 넣지 않는다. 테스트용 ZIP 비밀번호는 가짜 값 `qa-zip-pass`만 쓴다. 백업 `extras`에도 비밀값은 넣지 않는다.
@@ -109,6 +109,13 @@ python3 -m http.server 4180 &   # 이후 Playwright(tests/*.spec.cjs)와
 FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'test_home_responsive.py'
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
+
+## v3.5.275 더보기 개편·생활 도구 (사용자 확정 방향: 금융 홈 유지, 생활은 더보기)
+- 더보기 순서: 맨 위 `#fmMoreQ` 기능 찾기(이름·별칭, `FM_MORE`·`FM_MORE_SET`, 설정 줄은 펼치고 스크롤) → `#fmMoreFav` 즐겨찾기(`firemate_more_v1` {fav:[버튼 id],home}, `편집` 시트 `#fmMoreSheet`에서 추가·▲▼·빼기) → `#fmMoreAll`: 타일 `목표`(버킷·위시) · `공부`(자격증·공부 타이머·영어) · `일상`(할 일·메모·장보기·기념일·선물·구독·고정비) · `여행`(여행 일지·가고 싶은 장소·준비물 체크리스트) · `재미` → 줄 `앱 설정`(월급 주기 계획 `#fmSetPlan`·폰 알림·홈에 보일 것) · `보안` · `백업·복원`(`#fmStorage`·`#fmResetSet`). 타일은 한 줄 높이(아이콘·이름·상태), 상태 없을 때 소개 문구는 쓰지 않음.
+- 홈 생활 바로가기 `#fmHomeLife`: 즐겨찾기 편집의 `🏠 홈에 바로가기`를 켰을 때만, 즐겨찾기 앞 4개, 홈 맨 아래(금융 카드 다음). **기본은 꺼짐** — 홈·오늘 알림이 금융 중심인 규칙의 유일한 예외(사용자 요청).
+- 생활 도구 한 화면 틀 `#fmLifeOverlay`(`fmLifeOpen(kind)`, 시트 `fmLifeSheet(제목,html,save,del)` — 위 ✕, 아래 빨간 `삭제`(fmAsk) + `저장`, `fmLayerOpen`이라 휴대폰 뒤로 가기는 시트만, 저장 실패면 시트 유지): 📝 메모 `firemate_memo_v1`(📌 고정, 6개부터 찾기, 시트의 `✅ 할 일로`(첫 줄, `fmTodoParse`)·`🛒 장보기로`(줄마다)), 🛒 장보기 `firemate_shop_v1`({list,freq}: 쉼표·줄로 여러 개, `N개` 수량, 체크→담은 것, 두 번 이상 산 것은 `＋ 자주 사는 것` 칩, `🧾 장 본 돈 가계부에 적기`→식비 거래 기록 창), 🎂 기념일·선물 `firemate_anniv_v1`(매년/한 번, 2/29→평년 2/28, D-day 순, 결혼·연애·입사 `N주년`, 선물 아이디어·준 해·`위시로`, 폰 알림 life에 D-7·D-1·당일; 음력 없음), 💚 가고 싶은 장소 = **발자국 `firemate_travel_spots_v1`의 want 줄 그대로**(따로 저장 안 함, 위치 없는 줄은 지도 점·`이 근처` 안 그림), 이름에서 도시·나라 자동(`fmPlaceGuess`, 시트에서 바꿈), `✈️ 여행 계획하기`(여행 추가 칸에 이름·도시 채움 `fmJnPre`, 여행에 `spot` id)·`✓ 다녀왔어요`(발자국으로), 🧳 체크리스트 `firemate_checklist_v1`(템플릿 칩, `↺ 다시 쓰기`(체크만 풀고 `runs`+1), `✈️ 여행에 넣기`(다가오는 여행 `items`에 없는 것만), `✏️ 수정`은 한 줄에 하나). 🔁 구독·고정비 칸은 따로 저장하지 않고 소비 분석 돈 흐름의 `#fmBillsCard`로(`fmIsSub`).
+- 수정 창 통일: 할 일·위시·발자국 시트도 위 ✕ + 아래 `삭제`/`저장`(`.fm-bk-shead`·`.fm-bk-foot`·`.fm-bk-del`은 전역), 위시 시트도 `fmLayerOpen`.
+- 새 키 5개는 백업 extras(`FM_BACKUP_NAMES`에 이름). 테스트 `tests/life-tools.spec.cjs`, 폰 알림 기념일은 `tests/push.spec.cjs`.
 
 ## v3.5.274 백업·복원과 데이터 정확성 (점검 보고서 `docs/AUDIT_2026-11.md`)
 - **백업 extras는 객체·배열 모두**(`fmBackupExtras` → {extras,bad}). 예전엔 배열을 버려 여행(`firemate_trips_v1`)·발자국·홈 표시 설정·매수 기록·뱅샐 추가 계좌가 빠졌음. `FM_BACKUP_EXTRAS`에 사용자 설정·결정·자동 변경 이력(리밸런싱·해외주식 판 수익·적립식·import_deleted/gone/gone_off·autocat_skip/undo·dup/cardbill/newcat/bs 백업·split·split_skip·asset_seen·alert_seen·hold_paste·cert_timer), `FM_BACKUP_FLAGS`에 글자 표시와 이미 한 1회성 정리 표시(cancelfix·dupfix·taxifix·cardbill_fix·newcat·xfer_fix3 — 빠지면 새 폰에서 정리가 다시 돔). 토큰·키·비밀번호·잠금·이 폰 상태·캐시는 일부러 뺀다. 새 백업은 `extrasKeys`도 저장: 그 목록에 있는데 값이 없으면 복원 때 지우고(백업 그 상태 그대로), `extrasKeys` 없는 예전 백업은 들고 온 것만 덮고 나머지는 이 폰 것을 두며 그렇게 알림.

@@ -65,3 +65,11 @@ test('미용·보험 are categories: saved 기타/쇼핑 rows move by name once,
  await expect.poll(cats).toEqual({a:'기타',b:'쇼핑',c:'식비',d:'쇼핑',e:'쇼핑',f:'기타'});
  await page.reload();expect(await cats()).toEqual({a:'기타',b:'쇼핑',c:'식비',d:'쇼핑',e:'쇼핑',f:'기타'});
 });
+
+test('🎂 기념일도 폰 알림에: D-7·D-1은 선물 준비, 당일은 오늘 (생활 알림을 끄면 빠짐)',async({page})=>{
+ await page.addInitScript(d=>{if(!localStorage.getItem('firemate_anniv_v1'))localStorage.setItem('firemate_anniv_v1',JSON.stringify({list:[{id:'a',name:'엄마 생신',date:'1960'+d.slice(4),yearly:true}]}))},day(7));
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmPushOn').check();
+ await expect.poll(async()=>(await plan(page))?.[day(0)]).toContain('🎂 엄마 생신 D-7 · 선물 준비');
+ const p=await plan(page);expect(p[day(6)]).toContain('🎂 엄마 생신 D-1 · 선물 준비');expect(p[day(7)]).toContain('🎂 엄마 생신 오늘');expect(p[day(3)]||[]).not.toContain('🎂 엄마 생신 D-4 · 선물 준비');
+ await page.locator('[data-push="life"]').click();await expect.poll(async()=>JSON.stringify(await plan(page))).not.toContain('엄마 생신');
+});

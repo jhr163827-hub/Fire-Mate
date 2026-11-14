@@ -419,7 +419,9 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('#fmAssetQuickAnalysis').click()
             milestone=page.locator('#view-assets .fm-milestone-details')
             self.assertEqual(milestone.count(),1)
-            # Open by default, under the growth chart, with the next goal first.
+            # Folded (v3.5.273) under the growth chart; the closed row shows the next goal, opening shows the badges.
+            self.assertIn('다음',page.locator('#fmMilestoneSummary').inner_text())
+            milestone.locator('summary').click()
             self.assertTrue(page.locator('#assetBadges').is_visible())
             self.assertIn('다음 목표',page.locator('#assetBadges').inner_text())
             self.assertGreater(milestone.bounding_box()['y'],page.locator('#assetGrowthChart').bounding_box()['y'])

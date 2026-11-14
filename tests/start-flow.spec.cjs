@@ -38,7 +38,7 @@ test('FIRE says how much more a month brings the date a year closer',async({page
 test('backups are suggested weekly',async({page})=>{
  await page.addInitScript(d=>{localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},tx:[{id:'t',date:d,type:'expense',category:'식비',amount:9000}]}));localStorage.setItem('firemate_last_backup_v1',new Date(Date.now()-8*86400000).toISOString())},ago(20));
  await page.goto('/index.html');
- await expect(page.locator('#fmBackupNudgeText')).toContainText('이번 주 백업할까요? 마지막 백업이 8일 전이에요');
+ await expect(page.locator('#fmBackupNudgeText')).toContainText('마지막 8일 전');
 });
 
 test('cash, debt, budgets or FIRE settings alone are not mistaken for a first visit',async({page})=>{

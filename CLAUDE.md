@@ -110,6 +110,13 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
 
+## v3.5.273 자산 분석·홈 백업·배당 안내·FIRE 설명 짧게 (사용자 "1~4 다")
+- 자산 → 분석: 자산 성장 그래프만 펼쳐 두고, 월별 수익·뱅크샐러드 기준·건강검진·리밸런싱·해외주식 양도세·보험·환율 효과·마일스톤은 모두 접힌 `details.card.fm-fold`(닫힌 줄 오른쪽 핵심 숫자: `#fmPlSum` 이번 달 손익·`#fmBsSum` 평가·차이 종목 수·`#fmHealthSum` 🔴🟡🟢 수·`#fmRebalSum` 지금 비중·`#fmUsTaxSum` 수익·남은 비과세·`#fmFxSum` 환율로/주가로·`#fmMilestoneSummary`). 실제 데이터 사본으로 2,826px → 1,400px. 카드 안을 누르는 테스트는 summary를 먼저 연다.
+- 홈 백업 알림(`.fm-backup-nudge`, features.js)은 접힌 한 줄 `💾 데이터 백업 · 아직 안 했어요 / 마지막 N일 전`, 펼치면 드라이브·파일로 저장·7일 뒤에.
+- 배당 `#fmDivLate`는 한 줄 `⏳ JEPQ 배당 아직 안 들어옴 (예상치로 표시)` · `배당 자료 N일 전`.
+- FIRE 설명 줄: 배당·제안 줄은 그대로, `#fmFireSave`·`#fmFireReal`은 접힌 `💪 저축률 · 📊 실제 수익률`(`.fm-fire-more`). **`fmFireBold`는 `.fm-fire-notes p`만, 바뀔 때만 innerHTML을 씀** — `>*`로 details까지 다시 쓰면 MutationObserver가 무한 반복해 앱이 멈췄음.
+- 공부 타이머로 끝낸 할 일 자동 체크(`fmTodoByTimer(cert, 공부한 날)`)는 타이머의 날(새벽 5시 전은 전날)로 분을 본다(자정~5시에 체크가 안 되던 버그).
+
 ## v3.5.272 소비 분석 짧게 (사용자 "너무 길어 스크롤")
 - 요약: 지출 비중은 위 4개만, 나머지는 `＋ N개 더`(`fmFoldKids(el,n)` — 다시 그려도 펼침 유지, 다른 긴 목록에도 씀), 6개월 막대 높이 낮춤(`#view-insights #sixChart` 140px, 막대 96px), 제목 여백 줄임(`.fm-ins-h`).
 - 돈 흐름: 고정비는 아직 안 나간 것만 보이고 이번 달 나간 것은 접힌 `✓ 이번 달 나간 것 N건 · 합계`(`.fm-bills-paid`, 다 나갔으면 펼침). 연말정산 접힌 줄은 한 줄 `🧾 연말정산 · 문턱 N · 연말 예상 N`, 25% 설명·💡는 펼쳐야 보임.

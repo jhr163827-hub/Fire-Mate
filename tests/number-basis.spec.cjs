@@ -247,7 +247,7 @@ test('환율 효과 splits US holdings into 주가 and 환율 using the rate eac
  await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
  const card=page.locator('#fmFxCard');
  await expect(card).toContainText('추정');
- await card.locator('summary').click();
+ await card.locator('summary').first().click();await card.locator('summary').nth(1).click();
  await card.locator('[data-buyfx="q"]').fill('1300');await card.locator('[data-buyfx="q"]').blur();
  await expect(card.locator('.fm-fx-split')).toContainText('📈 주가로+₩5,520,000');
  await expect(card.locator('.fm-fx-split')).toContainText('💱 환율로+₩640,000');
@@ -682,7 +682,7 @@ test('with debt the health check asks its interest rate and says whether to repa
  await load(page,seed({balance:{fx:1400,cash:10000000,other:0,debt:20000000}}));
  await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickAnalysis').click();
  const box=page.locator('#fmDebtForm');
- await expect(box).toContainText('대출 이자율을 넣으면');
+ await expect(box).toContainText('대출 이자율을 넣으면');await page.locator('#fmHealthCard summary').click();
  await page.locator('#fmDebtRate').fill('6.5');await box.locator('button').click();
  await expect(page.locator('#fmDebtForm p')).toHaveText('💳 대출 이자 6.5% (연 130만원) vs 계획 수익률 7% → 남는 돈은 갚기 먼저');
  await page.locator('#fmDebtRate').fill('3');await page.locator('#fmDebtForm button').click();

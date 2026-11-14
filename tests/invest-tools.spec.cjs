@@ -13,7 +13,7 @@ test('rebalancing shows the mix, saves a target and spends this month on what is
  await analysis(page);
  // QQQ 10×700×1400 = 980만, 삼성 100만, 현금 100만 → 83% · 8% · 8%
  const card=page.locator('#fmRebalCard');
- await expect(card).toBeVisible();await expect(card).toContainText('83%');
+ await expect(card).toBeVisible();await expect(card).toContainText('83%');await card.locator('summary').first().click();
  // The card redraws when quotes and the 1-year rate land, so type and save until it sticks.
  await expect(async()=>{await card.locator('[data-rebal="us"]').fill('60');await card.locator('[data-rebal="kr"]').fill('30');await card.locator('[data-rebal="cash"]').fill('10');await card.locator('#fmRebalForm button').click();
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_rebal_v1')))).toEqual({us:60,kr:30,cash:10})}).toPass({timeout:15000});
@@ -26,7 +26,7 @@ test('rebalancing shows the mix, saves a target and spends this month on what is
 
 test('US capital gains: gain in won from the buy rate, what is left of the 2.5M exemption, and how many shares to sell and buy back',async({page})=>{
  await analysis(page);
- const card=page.locator('#fmUsTaxCard');await expect(card).toBeVisible();
+ const card=page.locator('#fmUsTaxCard');await expect(card).toBeVisible();await card.locator('summary').first().click();
  // 주당 700×1400 − 400×1300 = 46만 원, 10주 = 460만 원 → 다 팔면 (460−250)×22% = 46.2만
  await expect(card).toContainText('+460만원');await expect(card).toContainText('약 46.2만원');
  // 250만 ÷ 46만 = 5주(230만)

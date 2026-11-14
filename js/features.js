@@ -270,7 +270,7 @@ try{
   };
   // Backup nudge: only once there is data worth losing, and never for brand-new profiles.
   const nudge=document.createElement('section');nudge.className='card fm-backup-nudge';nudge.hidden=true;nudge.setAttribute('aria-labelledby','fmBackupNudgeTitle');
-  nudge.innerHTML='<h3 id="fmBackupNudgeTitle">데이터를 백업해 두세요</h3><p id="fmBackupNudgeText"></p><button type="button" class="primary" id="fmBackupDrive"></button><div class="fm-backup-nudge-actions"><button type="button" class="secondary" id="fmBackupNow">파일로 저장</button><button type="button" class="secondary" id="fmBackupLater">7일 뒤에</button></div>';
+  nudge.innerHTML='<details class="fm-backup-fold"><summary><span id="fmBackupNudgeTitle">💾 데이터 백업</span><small id="fmBackupNudgeText"></small></summary><button type="button" class="primary" id="fmBackupDrive"></button><div class="fm-backup-nudge-actions"><button type="button" class="secondary" id="fmBackupNow">파일로 저장</button><button type="button" class="secondary" id="fmBackupLater">7일 뒤에</button></div></details>';
   (home.querySelector('.fm-onboarding')||home.querySelector('.home-shortcuts')||home.lastElementChild).after(nudge);
   const status=document.createElement('div');status.id='fmBackupStatus';status.className='mini';status.setAttribute('aria-live','polite');
   ($('exportShare')||$('export'))?.after(status);
@@ -282,7 +282,7 @@ try{
    const start=firstDay(d),due=last!==null?daysSince(last)>=7:start!==null&&daysSince(start)>=3;
    nudge.hidden=!(hasData(d)&&due&&!(snooze!==null&&snooze>Date.now()));
    const drive=localStorage.getItem('firemate_drive_backup_v1')==='1';$('fmBackupDrive').textContent=drive?'드라이브에 백업하기':'☁️ 드라이브 자동 백업 켜기';
-   if(!nudge.hidden)$('fmBackupNudgeText').textContent=(last===null?'아직 백업한 적이 없어요.':'이번 주 백업할까요? 마지막 백업이 '+daysSince(last)+'일 전이에요.')+(drive?'':' 자동 백업을 켜 두면 신경 쓸 일이 없어요.');
+   if(!nudge.hidden)$('fmBackupNudgeText').textContent=last===null?'아직 안 했어요':'마지막 '+daysSince(last)+'일 전';
   };
   const sync=()=>{const d=saved();syncQuote(d);syncBackup(d)};
   // Drive first: one tap turns on (or runs) the Drive backup; "파일로 저장" keeps the share-sheet/download path.

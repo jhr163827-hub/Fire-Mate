@@ -44,7 +44,7 @@ test('a won average for a US stock is not taken as dollars',async({page})=>{
 test('the dividend tab says when a held stock\'s dividend is late in the feed',async({page})=>{
  await page.goto('/index.html');await page.evaluate(()=>window.fmGo('assets'));await page.locator('#fmAssetQuickDividend').click();
  // JEPQ: 10/1 다음은 11/1쯤 → 11/6에도 없음. SCHD는 12월이라 아직.
- await expect(page.locator('#fmDivLate')).toContainText('JEPQ 11월 1일쯤 배당이 아직 자료에 없어요');
+ await expect(page.locator('#fmDivLate')).toContainText('JEPQ 배당 아직 안 들어옴');
  await expect(page.locator('#fmDivLate')).not.toContainText('SCHD');
 });
 

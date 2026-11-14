@@ -95,8 +95,9 @@ test('🔗 내 바로가기 링크·🚪 시작 화면·🔍 통합 검색',asyn
  await page.locator('.fm-more-chips [data-more-go]').click();expect(await page.evaluate(()=>window.__opened)).toEqual(['https://mail.example.com']);
  await page.fill('#fmMoreQ','출장');await expect(page.locator('#fmMoreHits [data-sr]')).toHaveText([/출장 보고서/,/출장 택시/]);
  await page.locator('[data-sr="tx"]').click();await expect(page.locator('#entryOverlay')).toBeVisible();await expect(page.locator('#entryTitle')).toHaveText('거래 수정');
- await page.goBack();await page.locator('#settingsBottom').click();await page.fill('#fmMoreQ','SCHD');await page.locator('[data-sr="hold"]').click();await expect(page.locator('#view-assets')).toHaveClass(/active/);
- await page.locator('#settingsBottom').click();await page.fill('#fmMoreQ','');await page.selectOption('#fmStartSel','fire');await expect(page.locator('#fmStartSub')).toHaveText('FIRE');
+ await page.goBack();await page.locator('#settingsBottom').click();await page.fill('#fmMoreQ','');await page.selectOption('#fmStartSel','fire');await expect(page.locator('#fmStartSub')).toHaveText('FIRE');
+ // The holding detail is full screen (no bottom bar), so it comes last.
+ await page.fill('#fmMoreQ','SCHD');await page.locator('[data-sr="hold"]').click();await expect(page.locator('#view-assets')).toHaveClass(/active/);await expect(page.locator('#fmAccountDetail')).toBeVisible();
  const p2=await page.context().newPage();await p2.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());await p2.goto('/index.html');await expect(p2.locator('#view-fire')).toHaveClass(/active/);
  await p2.reload();await p2.waitForTimeout(500);await expect(p2.locator('#view-fire')).toHaveClass(/active/);
  expect(await st(page,'firemate_more_v1')).toMatchObject({start:'fire',links:[{name:'메일',url:'https://mail.example.com'}]});

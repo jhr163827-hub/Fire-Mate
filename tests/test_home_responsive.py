@@ -121,7 +121,7 @@ class HomeResponsiveTest(unittest.TestCase):
             page.locator('#entryAmount').fill('1700000')
             page.locator('#saveEntry').click()
             page.locator('.bottomnav [data-view="home"]').click()
-            self.assertEqual(page.locator('#heroLeftLabel').inner_text(), '초과 금액')
+            self.assertEqual(page.locator('#heroLeftLabel').inner_text(), '이번 달 초과 금액')
             self.assertEqual(page.locator('#heroLeft').inner_text(), '₩200,000')
             self.assertEqual(page.locator('#heroUsage').inner_text(), '113.3%')
             page.locator('.bottomnav [data-view="calendar"]').click()

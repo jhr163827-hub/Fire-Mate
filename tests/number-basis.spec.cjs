@@ -126,7 +126,7 @@ test('home plan follows the payday cycle and checks investing, 청약, bills and
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  const x=(id,type,amount,memo,category='계좌 이체')=>({id,date:'2026-10-26',type,category,amount,memo});
  await load(page,seed({tx:[x('a','transfer',2000000,'NH투자증권'),x('b','transfer',1000000,'삼성증권'),x('c','transfer',30000,'762907**47 ,2609-117회차'),x('d','expense',100000,'삼성화재 보험료','기타'),x('e','expense',70000,'SKT 통신요금','통신·구독'),x('f','transfer',400000,'세이프박스에 보관'),x('g','expense',500000,'김밥천국','식비'),{id:'old',date:'2026-10-22',type:'expense',category:'식비',amount:900000,memo:'지난 주기'}]}));
- await expect(page.locator('#fmHomePlanSum')).toHaveText('📋 월급 주기 계획 4/5 · 생활비 30만원 남음');
+ await expect(page.locator('#fmHomePlanSum')).toHaveText('📋 월급 주기 계획 4/5 · 급여일까지 생활비 30만원 남음');
  await page.locator('#fmHomePlanSum').click();
  const rows=page.locator('#fmHomePlanRows');
  await expect(rows.locator('summary.ok, div.ok')).toHaveCount(5);// 투자 300만, 청약, 보험, 핸드폰 + 생활비 under plan; 비상금 40/50 not yet
@@ -719,7 +719,7 @@ test('the asset hero names its bases: today\'s % is of the shown total, 투자 �
  await load(page,seed({balance:{fx:1000,cash:8000000,other:0,debt:0},accounts:[{id:'a',name:'증권',kind:'investment',amount:0,fire:true}],holdings:[{id:'h',accountId:'a',ticker:'111111',name:'종목',type:'KRW',qty:10,price:200000,cost:100000,dayChangePct:-50,dayChangeAt:at,quoteAt:at}]}));
  await page.evaluate(()=>window.fmGo('assets'));
  // Total ₩10,000,000 after a −₩2,000,000 day: −16.67% of yesterday's ₩12,000,000 (not −50% of the stock).
- await expect(page.locator('#fmTodayPL')).toHaveText('오늘 시세 변동−₩2,000,000 (-16.67%)');
+ await expect(page.locator('#fmTodayPL')).toHaveText('보유 종목 시세 변동−₩2,000,000 (-16.67%)');
  await expect(page.locator('#investReturnPct')).toHaveText('+100.00%');
  await expect(page.locator('.fm-unified-hero')).toContainText('투자 수익률');
 });

@@ -1,5 +1,6 @@
 const {test,expect}=require('@playwright/test');
-test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+const fs=require('node:fs');
+test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
 test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
  await page.addInitScript(()=>{if(sessionStorage.qa)return;sessionStorage.qa='1';
@@ -27,11 +28,12 @@ test('연결된 버킷은 배정액을 읽고 수동 금액은 보존, 배정 �
  await page.locator('#fmBucketEForm button.primary').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_bucket_v1).list[0].saved)).toBe(100000);
  await page.locator('#fmBucketOverlay [data-close]').click();await page.locator('#fmAllocOpen').click();await page.locator('[data-al="a"]').click();await page.locator('#fmAlA').fill('2500000');await page.locator('#fmLifeForm .primary').click();
- expect(await page.evaluate(()=>fmBucketSaved(fmBuckets()[0]))).toBe(2500000);
- await page.locator('[data-al="a"]').click();await page.locator('#fmAl_bucket').selectOption('');await page.locator('#fmLifeForm .primary').click();expect(await page.evaluate(()=>fmBucketSaved(fmBuckets()[0]))).toBe(100000);
+ await page.locator('#fmLifeOverlay [data-close]').click();await page.locator('#fmBucketOpen').click();await page.locator('[data-bk-edit="b"]').click();await expect(page.locator('#fmBkSaved')).toHaveValue('2,500,000');await page.locator('#fmBucketEForm button.primary').click();await page.locator('#fmBucketOverlay [data-close]').click();await page.locator('#fmAllocOpen').click();
+ await page.locator('[data-al="a"]').click();await page.locator('#fmAl_bucket').selectOption('');await page.locator('#fmLifeForm .primary').click();await page.locator('#fmLifeOverlay [data-close]').click();await page.locator('#fmBucketOpen').click();await page.locator('[data-bk-edit="b"]').click();await expect(page.locator('#fmBkSaved')).toHaveValue('100,000');await expect(page.locator('#fmBkSaved')).not.toHaveAttribute('readonly','');
 });
 test('연결은 백업에 포함되고, 중복 연결·한도 초과·저장 실패는 기존 배정을 보존',async({page})=>{
- expect(await page.evaluate(()=>fmBackupExtras().extras.firemate_alloc_v1.list[0])).toMatchObject({bucket:'b',trip:'t',reward:'r'});
+ const [dl]=await Promise.all([page.waitForEvent('download'),page.evaluate(()=>document.getElementById('export').click())]);
+ expect(JSON.parse(fs.readFileSync(await dl.path(),'utf8')).extras.firemate_alloc_v1.list[0]).toMatchObject({bucket:'b',trip:'t',reward:'r'});
  await page.evaluate(()=>{const v=JSON.parse(localStorage.firemate_alloc_v1);v.list.push({id:'a2',name:'다른 돈',amt:1});localStorage.firemate_alloc_v1=JSON.stringify(v)});
  await page.locator('#settingsBottom').click();await page.locator('#fmAllocOpen').click();await page.locator('[data-al="a2"]').click();await page.locator('#fmAl_bucket').selectOption('b');await page.locator('#fmLifeForm .primary').click();await expect(page.locator('#fmLifeSheet')).toBeVisible();expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_alloc_v1).list[1].bucket)).toBeUndefined();
  await page.locator('#fmAl_bucket').selectOption('');await page.locator('#fmAlA').fill('999999999999');await page.locator('#fmLifeForm .primary').click();expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_alloc_v1).list[1].amt)).toBe(1);
@@ -39,5 +41,5 @@ test('연결은 백업에 포함되고, 중복 연결·한도 초과·저장 실
 });
 test('숫자 기준과 오래된 시장 자료 시각 표시',async({page})=>{
  await expect(page.locator('.fm-number-basis')).toContainText('입출금·시세·환율');
- await page.evaluate(()=>{fmLive={quotes:{'IDX-USDKRW':{price:1400,at:'2020-01-01T00:00:00Z'}}};fmRenderHomeMarket()});await expect(page.locator('#fmHomeMarket')).toContainText('오래된 자료');
+ await page.route('**/chart-data/live-quotes.json',r=>r.fulfill({json:{updatedAt:'2020-01-01T00:00:00Z',quotes:{'IDX-USDKRW':{price:1400,prevClose:1390,at:'2020-01-01T00:00:00Z'}}}}));await page.reload();await expect(page.locator('#fmHomeMarket')).toContainText('오래된 자료');
 });

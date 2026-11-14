@@ -13,7 +13,7 @@
 - 보고할 때 "확인함"과 "실기기 미확인"을 나눠서 쓴다.
 
 ## 지켜야 할 것
-- **FIRE MATE의 홈·오늘 알림은 금융만**(v3.5.227 사용자 결정). 할 일·자격증·버킷·위시·영어·수면·여행은 설정 안에서만 관리하고 홈 줄·오늘 알림·`홈에 보일 것`에 넣지 않는다(설정 줄의 작은 글자 `#fm…Sub`로 상태만). 홈 `#fmHomeRows`는 보이는 줄이 4개를 넘으면 3개만 두고 `＋ N개 더`(`#fmHomeMore`, `fmHomeRowsFold`)로 접는다.
+- **FIRE MATE의 홈·오늘 알림은 금융만**(v3.5.227 사용자 결정, 예외: v3.5.275 사용자가 켠 경우에만 홈 맨 아래 생활 바로가기 4개). 할 일·자격증·버킷·위시·영어·수면·여행은 설정 안에서만 관리하고 홈 줄·오늘 알림·`홈에 보일 것`에 넣지 않는다(설정 줄의 작은 글자 `#fm…Sub`로 상태만). 홈 `#fmHomeRows`는 보이는 줄이 4개를 넘으면 3개만 두고 `＋ N개 더`(`#fmHomeMore`, `fmHomeRowsFold`)로 접는다.
 - 금융 데이터, localStorage 키 이름, 계산식, PWA 업데이트 구조(`fm-pwa-updates`, `sw.js`)는 바꾸지 않는다. 키를 새로 만들 땐 `firemate_<이름>_v1` 형식의 별도 키로.
 - 기존 기능을 임의로 지우지 않는다.
 - 비밀번호·이메일·토큰·API 키를 코드, 테스트, PR에 넣지 않는다. 테스트용 ZIP 비밀번호는 가짜 값 `qa-zip-pass`만 쓴다. 백업 `extras`에도 비밀값은 넣지 않는다.
@@ -109,6 +109,42 @@ python3 -m http.server 4180 &   # 이후 Playwright(tests/*.spec.cjs)와
 FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'test_home_responsive.py'
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
+
+## v3.5.276 콘텐츠·자산 달성 보상·목표자금·받을 돈·물건·프로젝트·돌아보기, 내 바로가기·시작 화면·통합 검색, 여행 정산
+- 모두 `#fmLifeOverlay` 틀(`fmLifeSheet`)·백업 extras·더보기 찾기(`FM_MORE`)에 들어감. 사진은 IndexedDB `content:`·`reward:`·`item:` 키 + 사진 ZIP(`fmFileLabel`·되살리기 정규식).
+- 🎬 콘텐츠 보관함 `firemate_content_v1`(재미): 제목만(링크면 주소로 저장 후 시트), 종류 추정 `fmCtGuess`, 상태 볼 것/보는 중/완료/중단, 드라마 회차·책 쪽·진행 메모, 별점·한 줄 감상, `걸리는 시간(분)`은 적은 것만 — `🎲 오늘 뭐 볼까`는 시간 안 적은 건 따로 보여 주고 추정하지 않음, `▶ 이어서`(보는 중 최근 + `+1화`/`+10쪽`/열기), 위시 연결(기존 고르기 또는 새로 담기), 가계부 지출 연결(`fmTxPick`, id만).
+- 🏆 자산 달성 보상 `firemate_reward_v1`{basis,list}(목표): 기준은 `netAsset()`(기본) 또는 `fireLiquid()` 그대로(보상 돈을 자산에 더하지 않음). `fmRwCheck`(시작 2.5초 뒤·화면 열 때): 처음 닿으면 `hitAt`, 축하는 목표 금액당 한 번(`cele=goal`, `fmCele`), 내려가도 `hitAt` 유지·`지금 N%` 따로, 날짜 칸을 비우면 기록 지움. 보상 받은 날 `doneAt` 별도. 위시·버킷은 기존 항목 고르기만(자동 생성 없음).
+- 🎯 목표자금 `firemate_alloc_v1`: `순자산 − FIRE 운용자산`(FIRE 포함 끈 돈)만 나눔, 합계가 넘으면 저장 거부, 자산이 줄어 넘치면 ⚠️. 새 자산 아님.
+- 💵 받을 돈·환불 `firemate_owed_v1`(일상): 부분 수령, 입금 거래 연결(한 입금은 한 곳만), 다 받으면 `doneAt`, 수입·자산은 안 바뀜.
+- 📦 내 물건 `firemate_items_v1`(일상): 구매일·가격·보증(개월)·교체 주기·`오늘 교체했어요` 기록·영수증 사진·지출 연결, 산 위시 칩, 보증 60일 안·교체할 때는 `챙길 것`.
+- 🧩 취미 프로젝트 `firemate_project_v1`: 할 일·메모에 `proj` id만(같은 데이터), 진행=완료 수, 지우면 연결만 풂.
+- 🗓️ 돌아보기(목표, 저장 안 함): 월간·연간, 기록 있는 영역만(돈·공부·자격증·할 일·여행·콘텐츠·보상·버킷).
+- 🔗 내 바로가기(`firemate_more_v1.links` [{id:'L…',name,url}], 즐겨찾기 줄 이름도 `내 바로가기`): 링크 추가·✏️ 수정·빼기·▲▼. 🚪 시작 화면(`start`, 앱 설정 `#fmStartSel`): 이 탭에서 처음 열 때 한 번(`sessionStorage fm-started`), `?action` 우선, 기본 홈.
+- 🔍 통합 검색(`fmFindData`, 두 글자부터): 종목·할 일·여행·콘텐츠·메모·거래(최근 8) → 상세 열기(`fmFindGo`).
+- ✈️ 여행 거래·정산(여행 화면 접힌 `🧾 거래 N건 · 정산`): `tr.ex`(뺀 거래)·`tr.inc`(넣은 거래)·`backCo`/`backMate` → `fmTripCost`의 `back`·`mine`(내 부담), `💵 받을 돈으로 기록`(같은 여행·종류면 금액만 갱신).
+- 장소 시트 `💑 데이트 후보`(`date`) + `🎲 골라 줘`, 체크리스트 템플릿 `출장 준비`.
+- 고친 불안정 테스트: 레스토랑 legacy stock 테스트는 시계를 멈춘 뒤 시작, 환율 효과 카드의 `종목별 산 환율` 접힘은 다시 그려도 열린 상태 유지.
+- 테스트 `tests/life-tools2.spec.cjs`.
+
+## v3.5.275 더보기 개편·생활 도구 (사용자 확정 방향: 금융 홈 유지, 생활은 더보기)
+- 더보기 순서: 맨 위 `#fmMoreQ` 기능 찾기(이름·별칭, `FM_MORE`·`FM_MORE_SET`, 설정 줄은 펼치고 스크롤) → `#fmMoreFav` 즐겨찾기(`firemate_more_v1` {fav:[버튼 id],home}, `편집` 시트 `#fmMoreSheet`에서 추가·▲▼·빼기) → `#fmMoreAll`: 타일 `목표`(버킷·위시) · `공부`(자격증·공부 타이머·영어) · `일상`(할 일·메모·장보기·기념일·선물·구독·고정비) · `여행`(여행 일지·가고 싶은 장소·준비물 체크리스트) · `재미` → 줄 `앱 설정`(월급 주기 계획 `#fmSetPlan`·폰 알림·홈에 보일 것) · `보안` · `백업·복원`(`#fmStorage`·`#fmResetSet`). 타일은 한 줄 높이(아이콘·이름·상태), 상태 없을 때 소개 문구는 쓰지 않음.
+- 홈 생활 바로가기 `#fmHomeLife`: 즐겨찾기 편집의 `🏠 홈에 바로가기`를 켰을 때만, 즐겨찾기 앞 4개, 홈 맨 아래(금융 카드 다음). **기본은 꺼짐** — 홈·오늘 알림이 금융 중심인 규칙의 유일한 예외(사용자 요청).
+- 생활 도구 한 화면 틀 `#fmLifeOverlay`(`fmLifeOpen(kind)`, 시트 `fmLifeSheet(제목,html,save,del)` — 위 ✕, 아래 빨간 `삭제`(fmAsk) + `저장`, `fmLayerOpen`이라 휴대폰 뒤로 가기는 시트만, 저장 실패면 시트 유지): 📝 메모 `firemate_memo_v1`(📌 고정, 6개부터 찾기, 시트의 `✅ 할 일로`(첫 줄, `fmTodoParse`)·`🛒 장보기로`(줄마다)), 🛒 장보기 `firemate_shop_v1`({list,freq}: 쉼표·줄로 여러 개, `N개` 수량, 체크→담은 것, 두 번 이상 산 것은 `＋ 자주 사는 것` 칩, `🧾 장 본 돈 가계부에 적기`→식비 거래 기록 창), 🎂 기념일·선물 `firemate_anniv_v1`(매년/한 번, 2/29→평년 2/28, D-day 순, 결혼·연애·입사 `N주년`, 선물 아이디어·준 해·`위시로`, 폰 알림 life에 D-7·D-1·당일; 음력 없음), 💚 가고 싶은 장소 = **발자국 `firemate_travel_spots_v1`의 want 줄 그대로**(따로 저장 안 함, 위치 없는 줄은 지도 점·`이 근처` 안 그림), 이름에서 도시·나라 자동(`fmPlaceGuess`, 시트에서 바꿈), `✈️ 여행 계획하기`(여행 추가 칸에 이름·도시 채움 `fmJnPre`, 여행에 `spot` id)·`✓ 다녀왔어요`(발자국으로), 🧳 체크리스트 `firemate_checklist_v1`(템플릿 칩, `↺ 다시 쓰기`(체크만 풀고 `runs`+1), `✈️ 여행에 넣기`(다가오는 여행 `items`에 없는 것만), `✏️ 수정`은 한 줄에 하나). 🔁 구독·고정비 칸은 따로 저장하지 않고 소비 분석 돈 흐름의 `#fmBillsCard`로(`fmIsSub`).
+- 수정 창 통일: 할 일·위시·발자국 시트도 위 ✕ + 아래 `삭제`/`저장`(`.fm-bk-shead`·`.fm-bk-foot`·`.fm-bk-del`은 전역), 위시 시트도 `fmLayerOpen`.
+- 새 키 5개는 백업 extras(`FM_BACKUP_NAMES`에 이름). 테스트 `tests/life-tools.spec.cjs`, 폰 알림 기념일은 `tests/push.spec.cjs`.
+
+## v3.5.274 백업·복원과 데이터 정확성 (점검 보고서 `docs/AUDIT_2026-11.md`)
+- **백업 extras는 객체·배열 모두**(`fmBackupExtras` → {extras,bad}). 예전엔 배열을 버려 여행(`firemate_trips_v1`)·발자국·홈 표시 설정·매수 기록·뱅샐 추가 계좌가 빠졌음. `FM_BACKUP_EXTRAS`에 사용자 설정·결정·자동 변경 이력(리밸런싱·해외주식 판 수익·적립식·import_deleted/gone/gone_off·autocat_skip/undo·dup/cardbill/newcat/bs 백업·split·split_skip·asset_seen·alert_seen·hold_paste·cert_timer), `FM_BACKUP_FLAGS`에 글자 표시와 이미 한 1회성 정리 표시(cancelfix·dupfix·taxifix·cardbill_fix·newcat·xfer_fix3 — 빠지면 새 폰에서 정리가 다시 돔). 토큰·키·비밀번호·잠금·이 폰 상태·캐시는 일부러 뺀다. 새 백업은 `extrasKeys`도 저장: 그 목록에 있는데 값이 없으면 복원 때 지우고(백업 그 상태 그대로), `extrasKeys` 없는 예전 백업은 들고 온 것만 덮고 나머지는 이 폰 것을 두며 그렇게 알림.
+- **복원은 전부 아니면 원래대로**: `fmStorageSnapshot`(본 데이터·`firemate_tx_archive_v1`·모든 extras·flags) → persist → `fmRestoreExtras(plan)`, 하나라도 실패하면 `fmStorageRollback`하고 `복원 실패 … 기존 데이터는 그대로예요`. 크기 제한 없음, 모양이 틀린 항목은 확인 창과 결과 창에 이름(`FM_BACKUP_NAMES`). 결과 창에 항목별 개수, 확인을 누르면 앱을 다시 연다. 드라이브 복원도 같은 경로.
+- 사진 ZIP: `fmFileLabel`은 `fmCerts()`(예전 `{list}`를 배열처럼 돌려 자격증이 있으면 ZIP 실패)·여행·**버킷 사진** 포함. 되살리기는 ZIP의 파일을 모두 키 그대로 넣고(데이터 백업보다 먼저 복원해도 됨) 연결 안 된 수를 알려 줌.
+- 드라이브 상태: 켜짐인데 성공이 없으면 `켜짐 · 아직 성공한 백업 없음`, 3일 넘으면 `⚠️ 드라이브 N일째 백업 안 됨`.
+- `fmFireDays`는 계산할 수 없으면(계획 없음·100년 안 도달) **NaN**(예전 0 → "영향 없음"으로 보였음). 살까 말까는 `FIRE 계획을 넣으면 알려 줘요`/`목표까지 너무 멀어 계산 못 해요`, 10년 줄은 `지난 10년 S&P500처럼 10년 오르면`과 `과거 수익률이라 앞으로를 보장하지 않아요`.
+- 여행 경비의 떠나기 전 항공·숙소 결제는 결제 뒤 가장 먼저 떠나는 여행 하나에만(두 여행 중복 합산 막음).
+- 공부 타이머: 실행 중 `run.segs`에 공부 구간을 쌓고(일시정지 구간 제외) 끝낼 때 `fmStSplit`으로 하루 시작 시각마다 잘라 날별 기록·자격증 분, 12시간 넘게 켜져 있었으면 `처음 12시간만 기록`/`전부 기록`을 물음, 기록 탭의 `N분 ✎`(`fmStFixSheet`)로 고치면 연결된 자격증도 같은 차이만큼. `fmStStart`/`fmStStop`은 async.
+- 더치페이: 소비 분석 돈 흐름의 확인 목록에 건마다 원래→내 몫과 `정산 아님`(그 짝만 원래대로 + `firemate_split_skip_v1`에 넣어 다시 안 묶음, 백업 포함), `전부 되돌리기`는 그대로.
+- 폰 알림 줄은 실제 등록 결과(`periodicSync.getTags`)로: `하루 한 번쯤 · 시각은 폰이 정해요` / `⚠️ 폰이 자동 알림을 허락하지 않았어요` / `앱을 열 때만`.
+- 앱 잠금 줄: `… · 화면만 잠가요(저장된 데이터 암호화는 아님)`.
+- 테스트 `tests/backup-restore.spec.cjs`(빈 폰 왕복·저장 실패 전체 되돌리기·예전/새 형식·망가진 파일, zip.js는 같은 API의 가짜로).
 
 ## v3.5.273 자산 분석·홈 백업·배당 안내·FIRE 설명 짧게 (사용자 "1~4 다")
 - 자산 → 분석: 자산 성장 그래프만 펼쳐 두고, 월별 수익·뱅크샐러드 기준·건강검진·리밸런싱·해외주식 양도세·보험·환율 효과·마일스톤은 모두 접힌 `details.card.fm-fold`(닫힌 줄 오른쪽 핵심 숫자: `#fmPlSum` 이번 달 손익·`#fmBsSum` 평가·차이 종목 수·`#fmHealthSum` 🔴🟡🟢 수·`#fmRebalSum` 지금 비중·`#fmUsTaxSum` 수익·남은 비과세·`#fmFxSum` 환율로/주가로·`#fmMilestoneSummary`). 실제 데이터 사본으로 2,826px → 1,400px. 카드 안을 누르는 테스트는 summary를 먼저 연다.

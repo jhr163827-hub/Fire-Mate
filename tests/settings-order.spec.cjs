@@ -2,11 +2,11 @@ const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
-test('settings is one page of grouped rows: 나의 목표 · 돈 관리 · 보안·데이터 · 재미, without mail, quote or export sections',async({page})=>{
+test('더보기 is one page: 목표 · 공부 · 일상 · 여행 · 재미 tiles, then 앱 설정 · 보안 · 백업·복원 rows, without mail, quote or export sections',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- const groups=await page.evaluate(()=>[...document.querySelectorAll('#settingsOverlay .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
- expect(groups).toEqual([['나의 목표',['fmTodoOpen','fmCertOpen','fmBucketOpen','fmWishOpen']],['생활',['fmEngOpen','fmStudyOpen','fmHealthOpen','fmJournalOpen']],['재미',['fmArcadeOpen']],['돈 관리',['📋월급 주기 계획','fmPushRow','fmPushKinds','fmHomeLines']],['보안·데이터',['fmLockRow','fmStorage','⚠️데이터 초기화']]]);
+ const groups=await page.evaluate(()=>[...document.querySelectorAll('#fmMoreAll .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
+ expect(groups).toEqual([['목표',['fmBucketOpen','fmWishOpen','fmRewardOpen','fmAllocOpen','fmReviewOpen']],['공부',['fmCertOpen','fmStudyOpen','fmEngOpen']],['일상',['fmTodoOpen','fmMemoOpen','fmShopOpen','fmAnnivOpen','fmSubsOpen','fmOwedOpen','fmItemsOpen','fmProjOpen','fmHealthOpen']],['여행',['fmJournalOpen','fmPlaceOpen','fmCheckOpen']],['재미',['fmContentOpen','fmArcadeOpen']],['앱 설정',['fmSetPlan','fmPushRow','fmPushKinds','fmHomeLines','fmStartRow']],['보안',['fmLockRow']],['백업·복원',['fmStorage','fmResetSet']]]);
  // A full page, not a sheet; the lock is a switch.
  const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
  await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);
@@ -81,7 +81,7 @@ test('names typed before the catalog still get their grade and issuer, and langu
 test('위시리스트 adds items, edits price, saving, link and 꼭, checks them off, deletes after asking, and survives reload',async({page})=>{
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmWishSub')).toHaveText('갖고 싶은 걸 적어 두세요');
+ await expect(page.locator('#fmWishSub')).toHaveText('');
  await page.locator('#fmWishOpen').click();
  await page.locator('#fmWishName').fill('아이패드');await page.locator('#fmWishPrice').fill('1200000');await expect(page.locator('#fmWishPrice')).toHaveValue('1,200,000');await page.locator('#fmWishForm button').click();
  await page.locator('#fmWishName').fill('러닝화');await page.locator('#fmWishForm button').click();
@@ -134,7 +134,7 @@ test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({p
   CredentialsContainer.prototype.get=async o=>{if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmLockSub')).toHaveText('지문·Face ID');
+ await expect(page.locator('#fmLockSub')).toHaveText('지문·Face ID · 화면만 잠가요(저장된 데이터 암호화는 아님)');
  await page.locator('#fmLockOn').check();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
  await page.reload();
@@ -213,7 +213,7 @@ test('the phone\'s back closes only the certificate sheet or photo, then the cer
 
 test('버킷리스트: add by typing or an idea, sorted by the words, edited with year and cost, and checked off with a moment',async({page})=>{
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmBucketSub')).toHaveText('해 보고 싶은 걸 적어 두세요');
+ await expect(page.locator('#fmBucketSub')).toHaveText('');
  await page.locator('#fmBucketOpen').click();await expect(page.locator('#fmBucketOverlay')).toBeVisible();
  await page.locator('#fmBucketName').fill('아이슬란드 오로라 여행');await page.locator('#fmBucketForm button').click();
  await page.locator('#fmBucketIdeas summary').click();await page.locator('[data-bk-idea="풀코스 마라톤 완주"]').click();
@@ -237,7 +237,7 @@ test('더보기: life features are two-column tiles above the settings rows, and
  await expect(page.locator('#settingsBottom')).toHaveText('더보기');
  await page.locator('#settingsBottom').click();
  await expect(page.locator('#settingsTitle')).toHaveText('더보기');
- const a=await page.locator('#fmTodoOpen').boundingBox(),b=await page.locator('#fmCertOpen').boundingBox(),m=await page.locator('#fmPushRow').boundingBox();
+ const a=await page.locator('#fmBucketOpen').boundingBox(),b=await page.locator('#fmWishOpen').boundingBox(),m=await page.locator('#fmPushRow').boundingBox();
  expect(Math.abs(a.y-b.y)).toBeLessThan(2);expect(b.x).toBeGreaterThan(a.x+a.width-2);expect(m.y).toBeGreaterThan(a.y+a.height);expect(m.width).toBeGreaterThan(a.width*1.8);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });

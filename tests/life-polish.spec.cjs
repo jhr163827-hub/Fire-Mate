@@ -69,3 +69,20 @@ test('🪣 버킷: 매달 모을 돈, 여행 일지에 계획하기 → 다녀�
  await page.locator('[data-bkdone]').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_bucket_v1')).list[0].done)).toBe(true);
 });
+
+test('🤔 살까 말까: FIRE 계획이 없으면 "영향 없음"이 아니라 계획을 넣으라고 하고, 과거 수익률은 보장이 아니라고 적음',async({page})=>{
+ await seed(page,`localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],favorites:[],budgets:{},tx:[],fire:{goal:0,monthly:0,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[],holdings:[]}))`,[]);
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmWishOpen').click();
+ await page.fill('#fmBuyIn','1000000');await page.locator('#fmBuyForm button').first().click();
+ const out=page.locator('#fmBuyOut');await expect(out).toBeVisible();
+ await expect(out).not.toContainText('영향 거의 없음');await expect(out).not.toContainText('안 늦어져요');
+ await expect(out).toContainText('보장하지 않아요');await expect(out).toContainText('처럼 10년 오르면');
+});
+
+test('✈️ 떠나기 전 항공권 결제는 가장 가까운 다음 여행 하나에만 들어감(두 여행에 두 번 안 셈)',async({page})=>{
+ await seed(page,`localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],favorites:[],budgets:{},tx:[{id:'f',type:'expense',date:'2026-08-01',amount:300000,memo:'대한항공',category:'여행'}],fire:{goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[],holdings:[]}));
+ localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'부산',area:'kr',place:'26',from:'2026-08-10',to:'2026-08-12'},{id:'b',name:'강릉',area:'kr',place:'51150',from:'2026-08-25',to:'2026-08-26'}]))`,[]);
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();await page.locator('[data-area=kr]').click();
+ await expect(page.locator('.fm-jn-trip',{hasText:'부산'})).toContainText('₩300,000');
+ await expect(page.locator('.fm-jn-trip',{hasText:'강릉'})).not.toContainText('₩300,000');
+});

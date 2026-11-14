@@ -183,3 +183,9 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 
 ## 레스토랑
 `arcade/restaurant.html` + `restaurant-engine.js` / `restaurant-room.js` / `restaurant-room.css`. 버전별 기록은 `RESTAURANT_STATUS.md`. 예전 테스트는 `__restaurantClassicGuests`로 고전 규칙에서 돈다.
+
+## v3.5.279 숫자 기준·목표자금 연결·이어하기 (사용자 승인)
+- 순자산 전일/이전 기록 차이 이름에 순자산 표시, 접힌 숫자 기준 설명. 시장 줄은 표시 자료의 가장 오래된 시각과 72시간 초과 표시. 월 예산과 급여 주기 생활비 구분. 금융 계산식 변경 없음.
+- 목표자금 `firemate_alloc_v1.list`에 선택 `bucket`/`trip`/`reward` id. 각 목표는 배정 한 곳에만 연결; 세 화면은 같은 배정액을 읽음(자산 추가·지출 자동 차감 없음). 버킷 모은 돈은 연결 시 읽기 전용, 원래 `saved`는 보존해 해제/삭제 시 돌아옴. 한도·중복·저장 실패 방어. 기존 extras 백업에 포함.
+- 사용자가 홈 금융 카드 아래 이어하기를 승인: `#fmHomeResume`, 실행/일시정지 공부·최근 진행 콘텐츠·미완료 할 일이 있는 프로젝트 최대 3개. 데이터 없으면 숨김. `firemate_more_v1.resume:false`로 끄며 더보기 → 내 바로가기 편집에서 다시 켬. 홈에 생활 기능을 추가하지 않는 이전 규칙의 이 범위 예외.
+- 테스트: `tests/linked-goals-resume.spec.cjs`. 코드 상한은 기능 구현에 필요한 실제 크기만 조정.

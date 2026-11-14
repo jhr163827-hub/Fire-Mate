@@ -79,6 +79,6 @@ assert.ok(html.includes("const months=target>0?estimate(principal/10000,target/1
 assert.ok(html.includes("const monthsToGoal=estimate(initial,goal,monthly,rate)"),'forecast uses common estimator');
 assert.ok(html.includes("const monthlyNetIncome=fmDividendRows.reduce"),'cashflow includes net dividend estimate');
 assert.ok(html.includes("const crashNetMonthly=crashMonthly*(1-taxRate/100)"),'retirement stress uses after-tax assumption');
-assert.ok(html.includes("$('heroLeftLabel').textContent=budgetState.remaining<0&&budget?'초과 금액':'남은 예산'"),'overspent budget has an explicit label');
+assert.ok(html.includes("$('heroLeftLabel').textContent=budgetState.remaining<0&&budget?'이번 달 초과 금액':'이번 달 남은 예산'"),'overspent budget has an explicit label');
 assert.ok(html.includes('function fmMonthlyBudgetState(m){'),'home and ledger derive budget from the same source');
 console.log('PASS: FIRE estimate edge cases, cross-view consistency guards, net cashflow and budget label');

@@ -3082,3 +3082,5 @@ html body #view-fire .fm-fire-notes>.fm-fire-more{padding:0}
 html body #view-fire .fm-fire-more>summary{padding:12px 14px;font-size:13px}
 html body #view-fire .fm-fire-more .fm-fire-div{margin:0;padding:4px 14px 12px}
 html body #view-home section.fm-backup-nudge{padding:0}html body #view-home .fm-backup-nudge .fm-backup-fold>summary{min-height:60px;padding:0 20px}
+#fmStudyOverlay .fm-st-fix{min-height:40px;padding:0 6px;border:0;background:none;color:var(--txt);font:inherit;font-weight:700;font-variant-numeric:tabular-nums}
+.fm-split-note details>summary{cursor:pointer;color:var(--sub)}.fm-split-note .fm-split-row{display:flex;align-items:center;gap:8px;margin:8px 0 0;font-size:13px}.fm-split-row>span{flex:1;min-width:0}.fm-split-row small{display:block;color:var(--sub)}.fm-split-row button{flex:none;min-height:36px;padding:0 10px;font-size:12px}

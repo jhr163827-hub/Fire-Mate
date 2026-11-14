@@ -430,7 +430,7 @@ test('살까 말까 shows a price against FIRE days, this month\'s budget and te
  await expect(out).toContainText('₩300,000을 쓰면');
  await expect(out).toContainText(/⏳ FIRE\+\d+일 늦어져요/);
  await expect(out).toContainText('🧾 이번 달 예산사도 ₩700,000 남아요');
- await expect(out).toContainText(/📈 (S&P500|투자)에 10년 두면약 ₩[\d,]+/);
+ await expect(out).toContainText(/📈 (지난 10년 S&P500|FIRE 계획 수익률)처럼 10년 오르면약 ₩[\d,]+/);
 });
 
 test('the money health check grades 비상금, leverage, dollar share, the biggest holding and debt',async({page})=>{
@@ -466,9 +466,26 @@ test('money a friend sends back for a shared meal lowers that payment to my shar
  expect(saved.tx.find(t=>t.id==='e').splitFrom).toBe(40000);expect(saved.tx.find(t=>t.id==='x').category).toBe('정산');
  await page.evaluate(()=>window.fmGo('insights'));
  await expect(page.locator('#fmSplitNote')).toContainText('🤝 더치페이로 돌려받은 1건(₩10,000)은 내 몫만 지출로 셌어요');
+ await page.locator('#fmSplitNote summary').click();await expect(page.locator('#fmSplitNote .fm-split-row')).toContainText('고깃집');
  await page.locator('#fmSplitUndo').click();
  await expect.poll(async()=>(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx.find(t=>t.id==='e').amount).toBe(40000);
  expect(await page.evaluate(()=>localStorage.getItem('firemate_split_off_v1'))).toBe('1');
+});
+
+test('더치페이 추정은 건마다 "정산 아님"으로 돌리고 다시 안 묶음; 1/n에서 10원 넘게 다른 정상 이체는 묶지 않음',async({page})=>{
+ const n=new Date();n.setHours(0,0,0,0);let s=payOf(n.getFullYear(),n.getMonth());if(s>n)s=payOf(n.getFullYear(),n.getMonth()-1);const ps=payOf(s.getFullYear(),s.getMonth()-1),d=k=>{const x=new Date(ps);x.setDate(x.getDate()+k);return ymd(x)};
+ const k1=[d(3),'12:00','transfer','이체','','홍길동',10000,'카카오페이 머니'].join('|'),k2=[d(3),'13:00','transfer','이체','','김철수',10020,'토스페이'].join('|');
+ await page.addInitScript(([a,b])=>{if(sessionStorage.getItem('sp'))return;sessionStorage.setItem('sp','1');localStorage.setItem('firemate_xfer_dir_v1',JSON.stringify({[a]:1,[b]:1}))},[k1,k2]);
+ await load(page,seed({tx:[{id:'i',date:d(0),type:'income',category:'급여',amount:3000000,memo:'급여'},{id:'e',date:d(2),type:'expense',category:'식비',amount:40000,memo:'고깃집'},{id:'e2',date:d(2),type:'expense',category:'식비',amount:40000,memo:'횟집'},{id:'x',date:d(3),type:'transfer',category:'계좌 이체',amount:10000,memo:'홍길동',bankExcelKey:k1},{id:'y',date:d(3),type:'transfer',category:'계좌 이체',amount:10020,memo:'김철수',bankExcelKey:k2}]}));
+ const tx=()=>page.evaluate(()=>Object.fromEntries(JSON.parse(localStorage.getItem('firemate_smart_v3')).tx.map(t=>[t.id,[t.amount,t.category]])));
+ await expect.poll(async()=>(await tx()).e?.[0]).toBe(30000);
+ // 10,020 is not 1/n of 40,000 within 10원: the second meal and that transfer stay as they were.
+ expect((await tx()).e2).toEqual([40000,'식비']);expect((await tx()).y).toEqual([10020,'계좌 이체']);
+ await page.evaluate(()=>window.fmGo('insights'));await page.locator('#fmSplitNote summary').click();
+ await page.locator('[data-split-no="x"]').click();
+ await expect.poll(async()=>(await tx()).e).toEqual([40000,'식비']);expect((await tx()).x).toEqual([10000,'계좌 이체']);
+ await page.reload();await page.waitForTimeout(800);
+ expect((await tx()).e).toEqual([40000,'식비']);expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_split_skip_v1')))).toEqual(['x']);
 });
 
 test('the edit sheet shows how often and how much I spent at that shop this year',async({page})=>{

@@ -27,7 +27,7 @@ test('backups carry category budgets, merchant rules, health inputs and fixed-co
  await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const text=require('fs').readFileSync(await download.path(),'utf8');const backup=JSON.parse(text);
- expect(Object.keys(backup.extras).sort()).toEqual(['firemate_category_budgets_v1','firemate_category_rules_v1','firemate_fixed_costs_v1','firemate_health_calc_v1']);
+ expect(Object.keys(backup.extras)).toEqual(expect.arrayContaining(['firemate_category_budgets_v1','firemate_category_rules_v1','firemate_fixed_costs_v1','firemate_health_calc_v1']));expect(Object.keys(backup.extras).every(k=>!/token|td_key|zip_pwd|_pin_|_lock_/.test(k))).toBe(true);
  expect(text).not.toContain('secret');
  await page.evaluate(()=>{for(const k of ['firemate_category_budgets_v1','firemate_category_rules_v1','firemate_health_calc_v1','firemate_fixed_costs_v1'])localStorage.removeItem(k)});
  await page.locator('#importFile').setInputFiles({name:'b.json',mimeType:'application/json',buffer:Buffer.from(text)});

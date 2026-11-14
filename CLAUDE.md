@@ -110,6 +110,19 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
 
+## v3.5.274 백업·복원과 데이터 정확성 (점검 보고서 `docs/AUDIT_2026-11.md`)
+- **백업 extras는 객체·배열 모두**(`fmBackupExtras` → {extras,bad}). 예전엔 배열을 버려 여행(`firemate_trips_v1`)·발자국·홈 표시 설정·매수 기록·뱅샐 추가 계좌가 빠졌음. `FM_BACKUP_EXTRAS`에 사용자 설정·결정·자동 변경 이력(리밸런싱·해외주식 판 수익·적립식·import_deleted/gone/gone_off·autocat_skip/undo·dup/cardbill/newcat/bs 백업·split·split_skip·asset_seen·alert_seen·hold_paste·cert_timer), `FM_BACKUP_FLAGS`에 글자 표시와 이미 한 1회성 정리 표시(cancelfix·dupfix·taxifix·cardbill_fix·newcat·xfer_fix3 — 빠지면 새 폰에서 정리가 다시 돔). 토큰·키·비밀번호·잠금·이 폰 상태·캐시는 일부러 뺀다. 새 백업은 `extrasKeys`도 저장: 그 목록에 있는데 값이 없으면 복원 때 지우고(백업 그 상태 그대로), `extrasKeys` 없는 예전 백업은 들고 온 것만 덮고 나머지는 이 폰 것을 두며 그렇게 알림.
+- **복원은 전부 아니면 원래대로**: `fmStorageSnapshot`(본 데이터·`firemate_tx_archive_v1`·모든 extras·flags) → persist → `fmRestoreExtras(plan)`, 하나라도 실패하면 `fmStorageRollback`하고 `복원 실패 … 기존 데이터는 그대로예요`. 크기 제한 없음, 모양이 틀린 항목은 확인 창과 결과 창에 이름(`FM_BACKUP_NAMES`). 결과 창에 항목별 개수, 확인을 누르면 앱을 다시 연다. 드라이브 복원도 같은 경로.
+- 사진 ZIP: `fmFileLabel`은 `fmCerts()`(예전 `{list}`를 배열처럼 돌려 자격증이 있으면 ZIP 실패)·여행·**버킷 사진** 포함. 되살리기는 ZIP의 파일을 모두 키 그대로 넣고(데이터 백업보다 먼저 복원해도 됨) 연결 안 된 수를 알려 줌.
+- 드라이브 상태: 켜짐인데 성공이 없으면 `켜짐 · 아직 성공한 백업 없음`, 3일 넘으면 `⚠️ 드라이브 N일째 백업 안 됨`.
+- `fmFireDays`는 계산할 수 없으면(계획 없음·100년 안 도달) **NaN**(예전 0 → "영향 없음"으로 보였음). 살까 말까는 `FIRE 계획을 넣으면 알려 줘요`/`목표까지 너무 멀어 계산 못 해요`, 10년 줄은 `지난 10년 S&P500처럼 10년 오르면`과 `과거 수익률이라 앞으로를 보장하지 않아요`.
+- 여행 경비의 떠나기 전 항공·숙소 결제는 결제 뒤 가장 먼저 떠나는 여행 하나에만(두 여행 중복 합산 막음).
+- 공부 타이머: 실행 중 `run.segs`에 공부 구간을 쌓고(일시정지 구간 제외) 끝낼 때 `fmStSplit`으로 하루 시작 시각마다 잘라 날별 기록·자격증 분, 12시간 넘게 켜져 있었으면 `처음 12시간만 기록`/`전부 기록`을 물음, 기록 탭의 `N분 ✎`(`fmStFixSheet`)로 고치면 연결된 자격증도 같은 차이만큼. `fmStStart`/`fmStStop`은 async.
+- 더치페이: 소비 분석 돈 흐름의 확인 목록에 건마다 원래→내 몫과 `정산 아님`(그 짝만 원래대로 + `firemate_split_skip_v1`에 넣어 다시 안 묶음, 백업 포함), `전부 되돌리기`는 그대로.
+- 폰 알림 줄은 실제 등록 결과(`periodicSync.getTags`)로: `하루 한 번쯤 · 시각은 폰이 정해요` / `⚠️ 폰이 자동 알림을 허락하지 않았어요` / `앱을 열 때만`.
+- 앱 잠금 줄: `… · 화면만 잠가요(저장된 데이터 암호화는 아님)`.
+- 테스트 `tests/backup-restore.spec.cjs`(빈 폰 왕복·저장 실패 전체 되돌리기·예전/새 형식·망가진 파일, zip.js는 같은 API의 가짜로).
+
 ## v3.5.273 자산 분석·홈 백업·배당 안내·FIRE 설명 짧게 (사용자 "1~4 다")
 - 자산 → 분석: 자산 성장 그래프만 펼쳐 두고, 월별 수익·뱅크샐러드 기준·건강검진·리밸런싱·해외주식 양도세·보험·환율 효과·마일스톤은 모두 접힌 `details.card.fm-fold`(닫힌 줄 오른쪽 핵심 숫자: `#fmPlSum` 이번 달 손익·`#fmBsSum` 평가·차이 종목 수·`#fmHealthSum` 🔴🟡🟢 수·`#fmRebalSum` 지금 비중·`#fmUsTaxSum` 수익·남은 비과세·`#fmFxSum` 환율로/주가로·`#fmMilestoneSummary`). 실제 데이터 사본으로 2,826px → 1,400px. 카드 안을 누르는 테스트는 summary를 먼저 연다.
 - 홈 백업 알림(`.fm-backup-nudge`, features.js)은 접힌 한 줄 `💾 데이터 백업 · 아직 안 했어요 / 마지막 N일 전`, 펼치면 드라이브·파일로 저장·7일 뒤에.

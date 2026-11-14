@@ -134,7 +134,7 @@ test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({p
   CredentialsContainer.prototype.get=async o=>{if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmLockSub')).toHaveText('지문·Face ID');
+ await expect(page.locator('#fmLockSub')).toHaveText('지문·Face ID · 화면만 잠가요(저장된 데이터 암호화는 아님)');
  await page.locator('#fmLockOn').check();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
  await page.reload();

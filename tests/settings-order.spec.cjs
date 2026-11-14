@@ -6,7 +6,7 @@ test('더보기 is one page: 목표 · 공부 · 일상 · 여행 · 재미 tile
  await page.goto('/index.html');
  await page.locator('#settingsBottom').click();
  const groups=await page.evaluate(()=>[...document.querySelectorAll('#fmMoreAll .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
- expect(groups).toEqual([['목표',['fmBucketOpen','fmWishOpen']],['공부',['fmCertOpen','fmStudyOpen','fmEngOpen']],['일상',['fmTodoOpen','fmMemoOpen','fmShopOpen','fmAnnivOpen','fmSubsOpen','fmHealthOpen']],['여행',['fmJournalOpen','fmPlaceOpen','fmCheckOpen']],['재미',['fmArcadeOpen']],['앱 설정',['fmSetPlan','fmPushRow','fmPushKinds','fmHomeLines']],['보안',['fmLockRow']],['백업·복원',['fmStorage','fmResetSet']]]);
+ expect(groups).toEqual([['목표',['fmBucketOpen','fmWishOpen','fmRewardOpen','fmAllocOpen','fmReviewOpen']],['공부',['fmCertOpen','fmStudyOpen','fmEngOpen']],['일상',['fmTodoOpen','fmMemoOpen','fmShopOpen','fmAnnivOpen','fmSubsOpen','fmOwedOpen','fmItemsOpen','fmProjOpen','fmHealthOpen']],['여행',['fmJournalOpen','fmPlaceOpen','fmCheckOpen']],['재미',['fmContentOpen','fmArcadeOpen']],['앱 설정',['fmSetPlan','fmPushRow','fmPushKinds','fmHomeLines','fmStartRow']],['보안',['fmLockRow']],['백업·복원',['fmStorage','fmResetSet']]]);
  // A full page, not a sheet; the lock is a switch.
  const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
  await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);

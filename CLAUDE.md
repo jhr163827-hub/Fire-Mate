@@ -110,6 +110,12 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 ```
 커밋 전 `node_modules`, `test-results`, `tests/__pycache__`, `package-lock.json`을 지운다.
 
+## v3.5.278 할 일 제안·돌아보기 스토리·콘텐츠 위키 검색 (사용자 "2 3 4 ㄱ")
+- ✅ 할 일 제안 칩(`#fmTodoNext`, `data-todo-sugg="link"`): 7일 안 기념일(올해 준 선물이 없을 때) `🎁 이름 선물 준비 (D-N)`, 예정일이 내일까지인 받을 돈 `💵 이름 입금 확인 · 남은 N원`. 누르면 할 일에 `anniv`/`owed` id가 붙고(글자에서 D-N은 뺌), 기념일은 14일·받을 돈은 3일 안에 같은 id 할 일이 있으면 다시 안 뜸.
+- 🗓️ 돌아보기 계산은 `fmReviewSecs(시작,끝)` 하나로: 돌아보기 화면 `🎬 스토리로 보기`(`#fmRvStory`)와 홈 월간 결산 스토리(돈 카드 뒤에 지난달 공부·할 일·여행·콘텐츠·보상·버킷 카드, 기록 있는 것만)가 같이 씀.
+- 🔍 콘텐츠 시트 제목 옆 `🔍 찾기`(`fmCtWiki`, 누를 때만): 한국어 위키백과 검색 API(`origin=*`, 키 없음, 보내는 건 제목뿐) 6개 → 고르면 제목·종류(설명 글자로)·링크(비었을 때)·대표 그림(IndexedDB `content:<id>`)을 채우고 저장은 시트 버튼. 실패·오프라인이면 아무것도 안 바꿈, `출처: 위키백과`.
+- 테스트 `tests/fixes-278.spec.cjs`.
+
 ## v3.5.277 지도 이름 깨짐·건별 되돌리기·음력 기념일
 - 🏷️ 지도 지역 이름: `<text>`는 늘 `font-size=11`, 위치·크기는 `transform="translate(x y) scale(k)"`(`t._x`/`t._y`). 예전처럼 viewBox 단위의 아주 작은 font-size를 쓰면 안드로이드 크롬(최소 글꼴 크기)에서 글자가 겹쳐 `똥`처럼 깨졌음(사용자 스크린샷, 대구 동 지도). 화면 가장자리에서 잘릴 이름은 숨김.
 - 🧾 자동 변경 기록(`fmAutoLog`): 줄마다 `전부 되돌리기` + 접힌 `건별로 보기`의 ↩(`fmAutoOne(k,id)`: 카드대금·중복 결제·가게 자동 분류·새 분류·없어진 거래). 한 건만 원래대로 하고 백업 목록에서 빼며, 분류는 `firemate_autocat_skip_v1`, 없어진 거래는 `import_gone_off`, 중복은 `import_deleted`에서 키를 빼 다시 자동으로 안 바뀜. 저장이 실패하면 메모리도 원래대로.

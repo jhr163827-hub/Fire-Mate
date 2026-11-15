@@ -3175,3 +3175,7 @@ html body #settingsOverlay #fmStartSel{flex:0 0 auto;max-width:46%;min-height:40
 .fm-goal-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.fm-goal-filters button{width:auto;margin:0;padding:8px 10px;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--sub);border-radius:20px}.fm-goal-filters [aria-pressed=true]{color:var(--green);border-color:var(--green)}
 #fmMoreAll{gap:10px}#fmMoreSettings{margin-top:6px}#fmMoreFav:empty{display:none}
 html body #settingsOverlay .fm-settings-header>[data-close]{margin-left:0}
+
+html body #settingsOverlay .fm-settings-header #fmMoreSettingsOpen{margin-left:auto}
+html body #settingsOverlay .fm-more-space>summary:after{content:'⌄';position:static;display:block;border:0;width:auto;height:auto;background:none;transform:none;margin-left:auto;color:var(--sub)}
+html body #settingsOverlay .fm-more-space[open]>summary:after{content:'⌃'}

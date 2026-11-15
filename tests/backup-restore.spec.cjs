@@ -67,7 +67,7 @@ test('백업 → 빈 폰 복원: 여행·발자국·홈 설정(배열)·할 일�
  expect(JSON.parse(await b.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).tx).toEqual(SEED.firemate_smart_v3.tx);
  expect(await readFiles(b)).toEqual({'bucket:b1':'BUCK',c1:'CERT','trip:t1:p1':'TRIP'});
  // The restored records still point at each other: trip ↔ bucket, cert ↔ study subject ↔ to-do.
- await b.locator('#settingsBottom').click();await b.locator('#fmJournalOpen').click();await b.locator('.fm-jn-trip',{hasText:'제주'}).click();
+ await b.locator('#settingsBottom').click();await expandMore(b);await b.locator('#fmJournalOpen').click();await b.locator('.fm-jn-trip',{hasText:'제주'}).click();
  await expect(b.locator('#fmJnHead')).toHaveText('제주');
  await b.goBack();await b.evaluate(()=>document.querySelectorAll('.modalbg.show').forEach(e=>{if(e.id!=='settingsOverlay')e.classList.remove('show')}));
  await b.locator('#fmStudyOpen').click();await expect(b.locator('#fmStudyBody .fm-st-sub',{hasText:'정보처리기사'})).toContainText('🎓 자격증과 연결');

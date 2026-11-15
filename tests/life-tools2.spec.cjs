@@ -140,7 +140,7 @@ test('🗓️ 돌아보기: 기록이 있는 영역만 보이고 없는 영역�
  await seed(page,`localStorage.setItem('firemate_smart_v3',a[0]);localStorage.setItem('firemate_content_v1',JSON.stringify({list:[{id:'c',title:'듄',kind:'movie',status:'done',rating:5,doneAt:a[1]}]}))`,[base({tx:[{id:'e',type:'expense',date:day(0),amount:12000,memo:'점심',category:'식비'}]}),day(0)]);
  await more(page);await findMore(page,'#fmReviewOpen');
  await expect(page.locator('.fm-rv-row b')).toHaveText(['돈','콘텐츠']);await expect(page.locator('.fm-rv-row').nth(1)).toContainText('최고: 듄 ★5');
- await page.locator('[data-rv-step="-1"]').click();await expect(page.locator('.fm-life-empty')).toHaveText('이 기간의 기록이 없어요');
+ await page.locator('[data-rv-step="-1"]').click();await expect(page.locator('#fmLifeBody .fm-life-empty')).toHaveText('이 기간의 기록이 없어요');
  await page.locator('[data-rv-y="true"]').click();await expect(page.locator('.fm-rv-row b')).toHaveText(['돈','콘텐츠']);
 });
 

@@ -371,8 +371,8 @@ try{
    toPanel();
    const settings=$('settingsOverlay');
    if(!settings?.classList.contains('show'))$('settingsBottom')?.click();
-   const group=panel.closest('details.fm-settings-group'),fold=$('fmLedgerImport');
-   if(group)group.open=true;if(fold)fold.open=true;if($('fmStorage'))$('fmStorage').open=true;
+   const q=$('fmMoreQ');if(q){q.value='';q.dispatchEvent(new Event('input'))}
+   for(let el=panel.parentElement;el;el=el.parentElement)if(el.tagName==='DETAILS')el.open=true;
    panel.scrollIntoView({block:'start'});
    if(start&&!gmail.disabled)gmail.click();
   };

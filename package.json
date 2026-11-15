@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "test:e2e": "playwright test",
-    "test:finance": "node --test tests/finance.test.cjs",
+    "test:finance": "node --test tests/finance.test.cjs tests/future-model.test.cjs",
     "test": "npm run test:finance && npm run test:e2e"
   },
   "devDependencies": {

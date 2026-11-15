@@ -38,7 +38,7 @@ test('⏱️ 공부 타이머: 과목 추가·삭제(삭제한 자격증 과목�
  await page.locator('[data-st-tab="s"]').click();await page.locator('[data-st-edit]').first().click();
  await page.locator('[data-st-rm]').click();await page.locator('#fmAskOk').click();
  await page.reload();await open(page);await expect(page.locator('#fmStudyBody .fm-st-sub strong')).toHaveText(['수학']);
- expect(await page.evaluate(async()=>(await (await fetch('/index.html')).text()).includes("FM_BACKUP_EXTRAS=['firemate_study_v1'"))).toBe(true);
+ expect(await page.evaluate(async()=>(await (await fetch('/index.html')).text()).match(/FM_BACKUP_EXTRAS=\[([^\]]+)\]/)?.[1].includes("'firemate_study_v1'"))).toBe(true);
  await page.goto('/index.html?action=study');await expect(page.locator('#fmStudyOverlay')).toBeVisible();
 });
 

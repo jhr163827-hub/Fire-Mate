@@ -1,9 +1,10 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const day=n=>{const d=new Date(Date.now()+n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const seed=(page,fn,arg)=>page.addInitScript(([f,a])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');new Function('a',f)(a)},[fn,arg]);
-const more=async page=>{await page.goto('/index.html');await page.locator('#settingsBottom').click()};
+const more=async page=>{await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page)};
 const st=(page,k)=>page.evaluate(k=>JSON.parse(localStorage.getItem(k)||'null'),k);
 
 test('📝 메모: 적기 → 수정·고정 → 할 일로·장보기로(누를 때만) → 휴대폰 뒤로 가기는 시트만 닫음 → 삭제는 확인 후, 새로고침해도 남음',async({page})=>{
@@ -18,7 +19,7 @@ test('📝 메모: 적기 → 수정·고정 → 할 일로·장보기로(누를
  await page.goBack();await expect(page.locator('#fmLifeSheet')).toBeHidden();await expect(page.locator('#fmLifeOverlay')).toBeVisible();
  await page.locator('[data-memo]').click();await page.fill('#fmMemoT','고친 메모');await page.locator('#fmMemoPin').check();await page.locator('#fmLifeForm .primary').click();
  await expect(page.locator('[data-memo]')).toContainText('📌 고친 메모');
- await page.reload();await page.locator('#settingsBottom').click();await expect(page.locator('#fmMemoSub')).toHaveText('1개');await page.locator('#fmMemoOpen').click();
+ await page.reload();await page.locator('#settingsBottom').click();await expandMore(page);await expect(page.locator('#fmMemoSub')).toHaveText('1개');await page.locator('#fmMemoOpen').click();
  await page.locator('[data-memo]').click();await page.locator('[data-life-del]').click();await page.locator('#fmAskCancel').click();
  expect((await st(page,'firemate_memo_v1')).list).toHaveLength(1);
  await page.locator('[data-life-del]').click();await page.locator('#fmAskOk').click();
@@ -86,7 +87,7 @@ test('⭐ 더보기: 기능 찾기, 즐겨찾기 고르기·순서 바꾸기, �
  await page.goBack();await expect(page.locator('#fmMoreSheet')).toBeHidden();await expect(page.locator('#settingsOverlay')).toBeVisible();
  await expect(page.locator('.fm-more-chips [data-more-go]')).toHaveText(['🛒장보기','📝메모','✅할 일','🎂기념일·선물','🧳준비물 체크리스트']);
  await page.locator('#settingsOverlay [data-close]').click();await expect(page.locator('#fmHomeLife')).toBeHidden();
- await page.locator('#settingsBottom').click();await page.locator('#fmMoreEdit').click();await page.locator('#fmMoreHome').check();await page.locator('#fmMoreDone').click();await page.locator('#settingsOverlay [data-close]').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmMoreEdit').click();await page.locator('#fmMoreHome').check();await page.locator('#fmMoreDone').click();await page.locator('#settingsOverlay [data-close]').click();
  await expect(page.locator('#fmHomeLife button')).toHaveCount(4);
  const y=await page.evaluate(()=>[document.getElementById('homeAssetHero').getBoundingClientRect().top,document.getElementById('fmHomeLife').getBoundingClientRect().top]);expect(y[1]).toBeGreaterThan(y[0]);
  await page.locator('#fmHomeLife button').first().click();await expect(page.locator('#fmLifeOverlay')).toBeVisible();await expect(page.locator('#fmLifeHead')).toHaveText('장보기');

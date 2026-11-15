@@ -1,3 +1,4 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 // Backup → empty phone → restore: every record outside the main data (lists that are arrays too), the user's decisions,
 // photos in the ZIP, all-or-nothing restore when storage fails, and older backup files.
 const {test,expect}=require('@playwright/test');
@@ -29,7 +30,7 @@ const FLAGS={firemate_split_off_v1:'1',firemate_newcat_v1:'1',firemate_cancelfix
 const seed=(page,s,f)=>page.addInitScript(([s,f])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');for(const [k,v] of Object.entries(s))localStorage.setItem(k,JSON.stringify(v));for(const [k,v] of Object.entries(f||{}))localStorage.setItem(k,v)},[s,f]);
 const putFiles=page=>page.evaluate(()=>new Promise((ok,no)=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs','readwrite'),s=t.objectStore('certs');s.put(new Blob(['CERT'],{type:'image/jpeg'}),'c1');s.put(new Blob(['TRIP'],{type:'image/jpeg'}),'trip:t1:p1');s.put(new Blob(['BUCK'],{type:'image/jpeg'}),'bucket:b1');t.oncomplete=()=>{r.result.close();ok()};t.onerror=()=>no(t.error)}}));
 const readFiles=page=>page.evaluate(()=>new Promise(ok=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs'),s=t.objectStore('certs'),out={};s.openCursor().onsuccess=async e=>{const c=e.target.result;if(c){out[c.key]=c.value;c.continue()}else{const o={};for(const [k,v] of Object.entries(out))o[k]=await v.text();r.result.close();ok(o)}}}}));
-const openStorage=async page=>{await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click()};
+const openStorage=async page=>{await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmStorage>summary').click()};
 const dump=(page,keys)=>page.evaluate(keys=>Object.fromEntries(keys.map(k=>[k,localStorage.getItem(k)])),keys);
 
 test('백업 → 빈 폰 복원: 여행·발자국·홈 설정(배열)·할 일·자격증·버킷·공부·영어·설정·결정 기록, 사진 ZIP까지 연결 그대로',async({browser})=>{

@@ -1,3 +1,4 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
@@ -170,7 +171,7 @@ test('the payday plan is edited in settings, not on home; 세이프박스 deposi
  await page.clock.setFixedTime(new Date(2026,9,28,9,0));
  await load(page,seed({tx:[{id:'a',date:'2026-10-26',type:'transfer',category:'계좌 이체',amount:100000,memo:'세이프박스에 보관'}]}));
  await expect(page.locator('#fmHomePlan input')).toHaveCount(0);
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await page.locator('.fm-set-plan summary').click();
  await page.locator('[data-plan="safe"]').fill('10');await page.locator('[data-plan="safe"]').blur();
  await page.locator('[data-plan="pay"]').fill('10');await page.locator('[data-plan="pay"]').blur();
@@ -583,7 +584,7 @@ test('data storage shows how full it is and one place to undo what the app chang
  const d=new Date().toISOString().slice(0,10);
  await page.addInitScript(d=>localStorage.setItem('firemate_dup_backup_v1',JSON.stringify([{id:'dup1',date:d,type:'expense',category:'식비',amount:7000,memo:'김밥'}])),d);
  await load(page,seed({tx:[{id:'a',date:d,type:'expense',category:'식비',amount:7000,memo:'김밥'}]}));
- await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmStorage>summary').click();
  await expect(page.locator('#fmStorageUse')).toContainText(/저장 공간 \d+% 사용/);
  await page.locator('#fmAutoLog>summary').click();
  await expect(page.locator('#fmAutoLogList')).toContainText('🧹 두 번 찍힌 같은 결제 정리1건');
@@ -613,7 +614,7 @@ test('old transactions are packed into a compressed archive and come back after 
  await page.reload();
  expect(await page.evaluate(()=>window.fmLiveData().tx.map(t=>t.id).sort())).toEqual(['last','now','old1']);
  expect(await page.evaluate(()=>window.fmLiveData().tx.find(t=>t.id==='old1').memo)).toBe('김밥 한 줄');
- await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmStorage>summary').click();
  await expect(page.locator('#fmStorageUse')).toContainText('오래된 거래 1건은 압축해 보관 중');
 });
 
@@ -677,7 +678,7 @@ test('errors on the phone are kept, shown in 내 데이터 보관 and carried in
  await page.evaluate(()=>{setTimeout(()=>{throw new Error('qa boom')});setTimeout(()=>{throw new Error('qa boom')},10)});
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_errlog_v1')||'null')?.list?.[0]?.n)).toBe(2);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_errlog_v1')).list[0].msg)).toContain('qa boom');
- await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmStorage>summary').click();
  await expect(page.locator('#fmStorageUse')).toContainText('🐞 최근 오류 1가지');
  const [dl]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const backup=JSON.parse(require('fs').readFileSync(await dl.path(),'utf8'));

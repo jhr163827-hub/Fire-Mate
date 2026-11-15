@@ -1,3 +1,4 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const day=n=>{const d=new Date(Date.now()+n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -5,7 +6,7 @@ test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],accounts:[],holdings:[]}))});
 });
-const openSettings=async(page,id)=>{await page.locator('#settingsBottom').click();await page.locator('#'+id).click()};
+const openSettings=async(page,id)=>{await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#'+id).click()};
 
 test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다시 comes back today, goal and home line',async({page})=>{
  await page.goto('/index.html');
@@ -157,7 +158,7 @@ test('📸 photos and PDFs on this phone are counted and saved as one ZIP that p
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'t',name:'제주',from:'2026-07-10',to:'2026-07-11',photos:['trip:t:1']}]))});
  await page.goto('/index.html');
  await page.evaluate(()=>new Promise((ok,no)=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs','readwrite');t.objectStore('certs').put(new Blob(['jpg-bytes'],{type:'image/jpeg'}),'trip:t:1');t.oncomplete=()=>{r.result.close();ok()};t.onerror=no}}));
- await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmStorage>summary').click();
  await expect(page.locator('#fmPhotoKeepN')).toHaveText('📸 사진·파일 1개는 이 폰에만 있어요');
  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#fmPhotoSave')]);
  expect(dl.suggestedFilename()).toMatch(/^firemate-photos-\d{4}-\d\d-\d\d\.zip$/);
@@ -185,7 +186,7 @@ test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the
   const ctx=await browser.newContext({viewport:{width:390,height:844},geolocation:geo,permissions:['geolocation']}),page=await ctx.newPage();
   let asked=null;await page.route(/nominatim/,r=>{const u=r.request().url();if(u.includes('zoom=6'))asked=u;r.fulfill({json:{address:{country_code:'jp',state:'Osaka Prefecture'}}})});
   await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*nominatim)/,r=>r.abort());
-  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+  await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmJournalOpen').click();
   await page.click('#fmJnHere');
   // The spot sheet opens: name, 누구랑, memo. Closing it keeps the 발자국.
   await expect(page.locator('.fm-jn-sheethead')).toContainText('위치 인증!');await page.click('#fmSpotX');
@@ -198,7 +199,7 @@ test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the
 });
 
 test('🗾 a country with a region map opens it from its name card, and marking a region marks the country',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmJournalOpen').click();
  await page.locator('[data-area=world]').click();await page.fill('#fmJnFind','이탈리아');await page.locator('#fmJnHits [data-hit]').first().click();
  await page.locator('[data-country=IT]').click();
  await expect(page.locator('#fmJnHead')).toHaveText('🇮🇹 이탈리아');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(20);
@@ -209,7 +210,7 @@ test('🗾 a country with a region map opens it from its name card, and marking 
 });
 
 test('🔍 the travel map zooms with ＋/−, pinch and wheel, pans by dragging, and a drag is not a tap',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmJournalOpen').click();
  await page.locator('[data-area=world]').click();
  const map=page.locator('.fm-jn-map'),vb=async()=>(await map.getAttribute('viewBox')).split(' ').map(Number);
  const full=await vb();expect(full[2]).toBe(1000);
@@ -235,7 +236,7 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
  let posted='';await page.route(/overpass-api/,r=>r.fulfill({status:429,body:'busy'}));
  await page.route(/overpass\.private\.coffee/,r=>{posted=r.request().postData()||'';r.fulfill({json:{elements:[{type:'node',lat:35.2405,lon:128.6922,tags:{tourism:'attraction',name:'창원의집'}},{type:'way',center:{lat:35.1, lon:128.55},tags:{tourism:'viewpoint',name:'저도 비치로드',wikidata:'Q1'}}]}})});
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*(nominatim|overpass))/,r=>r.abort());
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmJournalOpen').click();
  await page.click('#fmJnHere');
  const sheet=page.locator('#fmJnSheet');await expect(sheet).toBeVisible();await expect(page.locator('#fmSpotName')).toHaveValue('용지호수공원');
  await expect(sheet.locator('.fm-jn-sheethead small')).toContainText('성산구 상남동');
@@ -270,7 +271,7 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
 
 test('a trip remembers 누구랑 and the 누구랑 filter narrows the trip list',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'혼자 경주',from:'2026-05-01',to:'2026-05-02',area:'kr',with:'solo'}]));localStorage.setItem('firemate_travel_spots_v1',JSON.stringify([{id:'s',lat:35.83,lon:129.22,d:'2026-05-01',area:'kr',place:'47130',name:'첨성대',dong:'',with:'solo'},{id:'t',lat:35.22,lon:128.68,d:'2026-06-01',area:'kr',place:'4812',name:'용지호수',dong:'',with:'couple'}]))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmJournalOpen').click();
  await page.locator('#fmJnNew').click();await page.fill('#fmJnName','둘이 부산');await page.fill('#fmJnFrom','2026-07-01');await page.selectOption('#fmJnWithIn','couple');await page.locator('#fmJnAdd button.primary').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_trips_v1')).find(t=>t.name==='둘이 부산').with)).toBe('couple');
  await expect(page.locator('.fm-jn-trip')).toHaveCount(2);await expect(page.locator('.fm-jn-trip').first()).toContainText('💑 둘이 부산');
@@ -280,7 +281,7 @@ test('a trip remembers 누구랑 and the 누구랑 filter narrows the trip list'
 
 test('🏷️ place names show once zoomed in, at a steady size, and fit inside their place',async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmJournalOpen').click();
  const shown=()=>page.locator('.fm-jn-labels text').evaluateAll(ts=>ts.filter(t=>t.style.display!=='none').map(t=>[t.textContent,Math.round(t.getBoundingClientRect().height)]));
  await expect(page.locator('.fm-jn-map path[data-place]').first()).toBeAttached();
  expect(await shown()).toEqual([]);

@@ -1,12 +1,14 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
-test('더보기 is one page: 목표 · 공부 · 일상 · 여행 · 재미 tiles, then 앱 설정 · 보안 · 백업·복원 rows, without mail, quote or export sections',async({page})=>{
+test('더보기 groups existing tools into five spaces and separate settings without removing backup controls',async({page})=>{
  await page.goto('/index.html');
- await page.locator('#settingsBottom').click();
- const groups=await page.evaluate(()=>[...document.querySelectorAll('#fmMoreAll .fm-set-h')].map(h=>[h.textContent,[...h.nextElementSibling.children].map(e=>e.id||e.querySelector(':scope>summary')?.textContent.trim())]));
- expect(groups).toEqual([['목표',['fmBucketOpen','fmWishOpen','fmRewardOpen','fmAllocOpen','fmRehearsalOpen','fmLifeMapOpen','fmTimeOpen','fmReviewOpen']],['공부',['fmCertOpen','fmStudyOpen','fmEngOpen']],['일상',['fmTodoOpen','fmMemoOpen','fmShopOpen','fmAnnivOpen','fmSubsOpen','fmOwedOpen','fmItemsOpen','fmProjOpen','fmHealthOpen']],['여행',['fmJournalOpen','fmPlaceOpen','fmCheckOpen']],['재미',['fmContentOpen','fmArcadeOpen']],['앱 설정',['fmSetPlan','fmPushRow','fmPushKinds','fmHomeLines','fmStartRow']],['보안',['fmLockRow']],['백업·복원',['fmStorage','fmResetSet']]]);
+ await page.locator('#settingsBottom').click();await expandMore(page);
+ const groups=await page.locator('#fmMoreAll > details > summary strong').allTextContents();
+ expect(groups).toEqual(['목표·하고 싶은 것','공부','일상','여행','취미','앱 설정']);
+ expect(await page.locator('#fmMoreAll #fmRehearsalOpen,#fmMoreAll #fmTimeOpen').count()).toBe(0);
  // A full page, not a sheet; the lock is a switch.
  const box=await page.locator('#settingsOverlay .modal').boundingBox();expect(box.height).toBeGreaterThan(800);
  await expect(page.locator('#fmLockOn')).toHaveClass(/fm-switch/);
@@ -22,7 +24,7 @@ test('더보기 is one page: 목표 · 공부 · 일상 · 여행 · 재미 tile
 
 test('certificates are found by search, show their facts, and are added, edited, deleted and backed up',async({page})=>{
  await page.goto('/index.html');
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await page.locator('#fmCertOpen').click();
  await expect(page.locator('#fmCertOverlay')).toBeVisible();
  // Typing part of a name finds it in the catalog.
@@ -73,14 +75,14 @@ test('certificates are found by search, show their facts, and are added, edited,
 
 test('names typed before the catalog still get their grade and issuer, and language scores show when they expire',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-01'},{id:'b',name:'미국 기술사',date:'2024-10-20'},{id:'c',name:'TOEIC',date:'2020-01-05'}]})));
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmCertOpen').click();
  await expect(page.locator('.fm-cert-row',{hasText:'미국 기술사'})).toContainText('2024.10 취득');
  await expect(page.locator('.fm-cert-row',{hasText:'TOEIC'}).locator('em')).toHaveText('만료');
 });
 
 test('위시리스트 adds items, edits price, saving, link and 꼭, checks them off, deletes after asking, and survives reload',async({page})=>{
  await page.goto('/index.html');
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await expect(page.locator('#fmWishSub')).toHaveText('');
  await page.locator('#fmWishOpen').click();
  await page.locator('#fmWishName').fill('아이패드');await page.locator('#fmWishPrice').fill('1200000');await expect(page.locator('#fmWishPrice')).toHaveValue('1,200,000');await page.locator('#fmWishForm button').click();
@@ -110,7 +112,7 @@ test('앱 잠금 is a 6-digit PIN on the app\'s own keypad (no browser sheet sho
  const dialogs=[];page.on('dialog',d=>{dialogs.push(d.message());d.dismiss()});
  await page.goto('/index.html');
  const type=async pin=>{for(const k of pin)await page.locator('#fmPinPad [data-k="'+k+'"]').click()};
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await page.locator('#fmLockOn').check();
  await expect(page.locator('#fmLockTitle')).toHaveText('새 비밀번호 6자리');await type('135790');
  await expect(page.locator('#fmLockTitle')).toHaveText('한 번 더 입력해 주세요');await type('135790');
@@ -122,7 +124,7 @@ test('앱 잠금 is a 6-digit PIN on the app\'s own keypad (no browser sheet sho
  await type('111111');await expect(page.locator('#fmLockTitle')).toHaveText('비밀번호가 달라요');
  await type('135790');await expect(page.locator('#fmLock')).toBeHidden();await expect(page.locator('.app')).toBeVisible();
  // Turning it off asks for the PIN once.
- await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();await type('135790');
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmLockOn').uncheck();await type('135790');
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_pin_v1'))).toBeNull();
  await expect(page.locator('#fmLockOn')).not.toBeChecked();
  expect(dialogs).toEqual([]);
@@ -133,7 +135,7 @@ test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({p
   CredentialsContainer.prototype.create=async()=>({rawId:new Uint8Array([7,7,7]).buffer});
   CredentialsContainer.prototype.get=async o=>{if(!window.__pass)throw new DOMException('cancelled','NotAllowedError');return {rawId:o.publicKey.allowCredentials[0].id}}});
  await page.goto('/index.html');
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await expect(page.locator('#fmLockSub')).toHaveText('지문·Face ID · 화면만 잠가요(저장된 데이터 암호화는 아님)');
  await page.locator('#fmLockOn').check();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBe('BwcH');
@@ -141,12 +143,12 @@ test('on a phone with 지문·Face ID the lock uses it, with no keypad',async({p
  await expect(page.locator('#fmLockGo')).toHaveText('지문으로 열기');await expect(page.locator('#fmPinPad')).toBeHidden();await expect(page.locator('.app')).toBeHidden();
  await page.evaluate(()=>{window.__pass=true});await page.locator('#fmLockGo').click();
  await expect(page.locator('#fmLock')).toBeHidden();await expect(page.locator('.app')).toBeVisible();
- await page.locator('#settingsBottom').click();await page.locator('#fmLockOn').uncheck();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmLockOn').uncheck();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('firemate_lock_v1'))).toBeNull();
 });
 
 test('Mensa and 기술자 등급 are in the search with what they are, and a 기술자 grade suggests the next one',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmCertOpen').click();
  await page.locator('#fmCertQ').fill('멘사');await page.locator('.fm-cert-hits button',{hasText:'멘사 (Mensa) 회원'}).click();
  const info=page.locator('#fmCertInfo');await expect(info).toContainText('멘사코리아 ↗');await expect(info).toContainText('지능검사 (상위 2%)');
  await page.locator('#fmCertForm button.primary').click();
@@ -159,7 +161,7 @@ test('Mensa and 기술자 등급 are in the search with what they are, and a 기
 
 test('a certificate keeps a photo or PDF of itself on this phone',async({page})=>{
  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR42mP8z8DwnxEJMDKgAhwmAQBSRgP7PwEQXgAAAABJRU5ErkJggg==','base64');
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmCertOpen').click();
  await page.locator('#fmCertQ').fill('일반기계기사');await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
  // Picked before saving: kept with the new entry.
  await page.locator('#fmCertFileIn').setInputFiles({name:'license.png',mimeType:'image/png',buffer:png});
@@ -184,7 +186,7 @@ test('certificates live in settings only (no home line or morning notice), and p
  await page.waitForTimeout(400);
  await expect(page.locator('#fmHomeCert')).toHaveCount(0);
  expect(await page.locator('.fm-brief-pop').count()?await page.locator('.fm-brief-pop').textContent():'').not.toContain('건설기계기술사');
- await page.locator('#settingsBottom').click();await page.locator('#fmHomeLines>summary').click();await expect(page.locator('[data-home-line="cert"]')).toHaveCount(0);
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmHomeLines>summary').click();await expect(page.locator('[data-home-line="cert"]')).toHaveCount(0);
  await page.locator('#fmCertOpen').click();
  await page.locator('.fm-cert-thead').click();await page.locator('[data-cert-mode="have"]').click();await page.locator('#fmCertForm button.primary').click();
  await expect(page.locator('.fm-cele')).toContainText('합격 축하해요!');
@@ -193,7 +195,7 @@ test('certificates live in settings only (no home line or morning notice), and p
 
 test('the phone\'s back closes only the certificate sheet or photo, then the certificate screen',async({page})=>{
  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR42mP8z8DwnxEJMDKgAhwmAQBSRgP7PwEQXgAAAABJRU5ErkJggg==','base64');
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmCertOpen').click();
  await page.locator('#fmCertQ').fill('일반기계기사');await page.locator('.fm-cert-hits button',{hasText:'일반기계기사'}).click();
  await expect(page.locator('#fmCertSheet')).toBeVisible();
  // 취득 has no 접수 마감; 준비 has.
@@ -212,7 +214,7 @@ test('the phone\'s back closes only the certificate sheet or photo, then the cer
 });
 
 test('버킷리스트: add by typing or an idea, sorted by the words, edited with year and cost, and checked off with a moment',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);
  await expect(page.locator('#fmBucketSub')).toHaveText('');
  await page.locator('#fmBucketOpen').click();await expect(page.locator('#fmBucketOverlay')).toBeVisible();
  await page.locator('#fmBucketName').fill('아이슬란드 오로라 여행');await page.locator('#fmBucketForm button').click();
@@ -235,7 +237,7 @@ test('버킷리스트: add by typing or an idea, sorted by the words, edited wit
 test('더보기: life features are two-column tiles above the settings rows, and the tab is called 더보기',async({page})=>{
  await page.goto('/index.html');
  await expect(page.locator('#settingsBottom')).toHaveText('더보기');
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await expect(page.locator('#settingsTitle')).toHaveText('더보기');
  const a=await page.locator('#fmBucketOpen').boundingBox(),b=await page.locator('#fmWishOpen').boundingBox(),m=await page.locator('#fmPushRow').boundingBox();
  expect(Math.abs(a.y-b.y)).toBeLessThan(2);expect(b.x).toBeGreaterThan(a.x+a.width-2);expect(m.y).toBeGreaterThan(a.y+a.height);expect(m.width).toBeGreaterThan(a.width*1.8);

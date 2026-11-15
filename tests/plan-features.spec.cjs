@@ -41,7 +41,7 @@ test('asset analysis shows growth, monthly P&L, the money health check, then the
  await page.locator('#fmAssetQuickAnalysis').click();
  const cards=page.locator('#fmAssetAnalysisView > .card:not([hidden]), #fmAssetAnalysisView > .fm-as-group > .card:not([hidden])');// 환율 효과 appears only with US holdings
  await expect(cards).toHaveCount(4);
- await expect(cards.nth(0)).toContainText('내 자산 성장');
+ await expect(cards.nth(0)).toContainText('자산 기록');
  await expect(cards.nth(1)).toContainText('월별 수익');
  await expect(cards.nth(2)).toContainText('내 돈 건강검진');
  await expect(cards.nth(3)).toContainText('자산 마일스톤');

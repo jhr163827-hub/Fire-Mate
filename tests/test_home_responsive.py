@@ -1541,6 +1541,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     groups=page.locator('#settingsOverlay .fm-settings-group:not([hidden])')
                     self.assertEqual(groups.count(),1)
                     self.assertFalse(groups.nth(0).evaluate('(el)=>el.open'))
+                    page.locator('#fmMoreSettingsOpen').click()
                     page.locator('#fmStorage>summary').click()
                     self.assertTrue(page.locator('#export').is_visible())
                     with page.expect_download() as download_info:

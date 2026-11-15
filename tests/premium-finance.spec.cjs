@@ -1,3 +1,4 @@
+const {expandMore}=require('./more-navigation.cjs');
 const { test, expect } = require("@playwright/test");
 // The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
 test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json*',r=>r.fulfill({status:404,body:''}));await page.route('https://polling.finance.naver.com/**',r=>r.abort())});
@@ -260,7 +261,7 @@ test("selected-day transactions are reachable, calendar returns and backup remai
   await expect(page.locator("#dayTx")).toContainText("12,345");
   await page.locator("#fmBackToCalendar").click();
   await expect(page.locator('#cal [aria-pressed="true"]')).toBeFocused();
-  await page.locator("#settingsBottom").click();
+  await page.locator("#settingsBottom").click();await expandMore(page);
   await expect(page.locator(".fm-device-storage #export")).toBeHidden();
   await page.locator("#fmStorage>summary").click();
   await expect(page.locator(".fm-device-storage #export")).toBeVisible();
@@ -294,7 +295,7 @@ test("browser back closes financial dialogs before changing the underlying scree
     localStorage.getItem("firemate_smart_v3"),
   );
   await page.locator('.bottomnav [data-view="assets"]').click();
-  await page.locator("#settingsBottom").click();
+  await page.locator("#settingsBottom").click();await expandMore(page);
   await page.goBack();
   await expect(page.locator("#settingsOverlay")).not.toHaveClass(/show/);
   await expect(page.locator("#view-assets")).toBeVisible();

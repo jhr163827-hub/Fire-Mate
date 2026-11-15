@@ -1,3 +1,4 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return ds(d)};
@@ -73,7 +74,7 @@ test('tiny interest credits stay saved but are left out of the ledger until the 
  await expect(page.locator('#dayTx [data-edit]')).toHaveCount(1);
  await expect(page.locator('#selectedTitle')).toContainText('1건');
  expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_smart_v3')))).tx).toHaveLength(3);
- await page.locator('#settingsBottom').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);
  await page.evaluate(()=>window.fmOpenImport());
  // Unchecking reloads the app; wait for that new load, not the one already finished.
  await Promise.all([page.waitForEvent('load'),page.locator('#fmHideTinyIncome input').uncheck()]);

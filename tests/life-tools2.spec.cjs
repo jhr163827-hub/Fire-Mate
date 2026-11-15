@@ -1,10 +1,11 @@
+const {expandMore,findMore}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,route=>route.abort())});
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const day=n=>{const d=new Date(Date.now()+n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const base=(o={})=>JSON.stringify({theme:'dark',rec:[],favorites:[],budgets:{},tx:[],fire:{goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[],holdings:[],...o});
 const seed=(page,fn,arg)=>page.addInitScript(([f,a])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');new Function('a',f)(a)},[fn,arg]);
-const more=async page=>{await page.goto('/index.html');await page.locator('#settingsBottom').click()};
+const more=async page=>{await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page)};
 const st=(page,k)=>page.evaluate(k=>JSON.parse(localStorage.getItem(k)||'null'),k);
 
 test('🎬 콘텐츠 보관함: 제목만 저장, 종류 추정, 회차·별점·지출 연결, 이어서 보기 +1화, 오늘 뭐 볼까는 적은 시간만 쓰고 모르면 따로, 삭제',async({page})=>{
@@ -21,7 +22,7 @@ test('🎬 콘텐츠 보관함: 제목만 저장, 종류 추정, 회차·별점�
  await page.locator('#fmCtToday').click();await page.locator('[data-m="90"]').click();
  await expect(page.locator('#fmCtPickBox .fm-life-rows [data-ct-go]')).toHaveText([/오징어/]);await expect(page.locator('#fmCtPickBox')).toContainText('시간을 안 적은 것 1개');
  await page.goBack();await expect(page.locator('#fmLifeSheet')).toBeHidden();
- await page.reload();await page.locator('#settingsBottom').click();await expect(page.locator('#fmContentSub')).toHaveText('보는 중 1');await page.locator('#fmContentOpen').click();
+ await page.reload();await page.locator('#settingsBottom').click();await expandMore(page);await expect(page.locator('#fmContentSub')).toHaveText('보는 중 1');await page.locator('#fmContentOpen').click();
  await page.locator('[data-ct-stat="doing"]').click();await expect(page.locator('#fmCtList [data-ct]')).toHaveCount(1);
  await page.locator('#fmCtList [data-ct]').click();await page.locator('[data-life-del]').click();await page.locator('#fmAskOk').click();
  expect((await st(page,'firemate_content_v1')).list).toHaveLength(1);expect((await st(page,'firemate_smart_v3')).tx).toHaveLength(1);
@@ -38,12 +39,12 @@ test('🏆 자산 달성 보상: 처음 닿은 날 기록·축하는 한 번, �
  expect((await st(page,'firemate_wishlist_v1')).list).toHaveLength(1);
  // Assets fall: the record stays, today's progress shows separately; then back up: no second celebration.
  await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.balance.cash=180000000;localStorage.setItem('firemate_smart_v3',JSON.stringify(d));const r=JSON.parse(localStorage.getItem('firemate_reward_v1'));r.list[0].hitAt='2026-01-02';localStorage.setItem('firemate_reward_v1',JSON.stringify(r))});
- await page.reload();await page.locator('#settingsBottom').click();await page.locator('#fmRewardOpen').click();
+ await page.reload();await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmRewardOpen').click();
  await expect(page.locator('[data-rw]').first()).toContainText('26.01.02 달성 · 지금 90%');
  await page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('firemate_smart_v3'));d.balance.cash=260000000;localStorage.setItem('firemate_smart_v3',JSON.stringify(d))});
  await page.reload();await page.waitForTimeout(3000);await expect(page.locator('.fm-cele')).toHaveCount(0);
  expect((await st(page,'firemate_reward_v1')).list[0].hitAt).toBe('2026-01-02');
- await page.locator('#settingsBottom').click();await page.locator('#fmRewardOpen').click();
+ await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmRewardOpen').click();
  await page.locator('[data-rw]').first().click();await page.selectOption('#fmRwW','w');await page.locator('#fmRwGot').click();await page.locator('#fmLifeForm .primary').click();
  l=(await st(page,'firemate_reward_v1')).list;expect(l[0]).toMatchObject({wish:'w',doneAt:day(0),hitAt:'2026-01-02'});expect((await st(page,'firemate_wishlist_v1')).list).toHaveLength(1);
  await page.locator('[data-rw-basis="fire"]').click();await expect(page.locator('.fm-life-prog small').first()).toContainText('FIRE 운용자산');
@@ -95,7 +96,7 @@ test('🔗 내 바로가기 링크·🚪 시작 화면·🔍 통합 검색',asyn
  await page.locator('.fm-more-chips [data-more-go]').click();expect(await page.evaluate(()=>window.__opened)).toEqual(['https://mail.example.com']);
  await page.fill('#fmMoreQ','출장');await expect(page.locator('#fmMoreHits [data-sr]')).toHaveText([/출장 보고서/,/출장 택시/]);
  await page.locator('[data-sr="tx"]').click();await expect(page.locator('#entryOverlay')).toBeVisible();await expect(page.locator('#entryTitle')).toHaveText('거래 수정');
- await page.goBack();await page.locator('#settingsBottom').click();await page.fill('#fmMoreQ','');await page.selectOption('#fmStartSel','fire');await expect(page.locator('#fmStartSub')).toHaveText('FIRE');
+ await page.goBack();await page.locator('#settingsBottom').click();await expandMore(page);await page.fill('#fmMoreQ','');await page.selectOption('#fmStartSel','fire');await expect(page.locator('#fmStartSub')).toHaveText('FIRE');
  // The holding detail is full screen (no bottom bar), so it comes last.
  await page.fill('#fmMoreQ','SCHD');await page.locator('[data-sr="hold"]').click();await expect(page.locator('#view-assets')).toHaveClass(/active/);await expect(page.locator('#fmAccountDetail')).toBeVisible();
  const p2=await page.context().newPage();await p2.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());await p2.goto('/index.html');await expect(p2.locator('#view-fire')).toHaveClass(/active/);
@@ -137,9 +138,9 @@ test('📦 내 물건: 산 위시에서 한 번에, 보증 60일 안·교체할 
 
 test('🗓️ 돌아보기: 기록이 있는 영역만 보이고 없는 영역은 아예 안 나옴',async({page})=>{
  await seed(page,`localStorage.setItem('firemate_smart_v3',a[0]);localStorage.setItem('firemate_content_v1',JSON.stringify({list:[{id:'c',title:'듄',kind:'movie',status:'done',rating:5,doneAt:a[1]}]}))`,[base({tx:[{id:'e',type:'expense',date:day(0),amount:12000,memo:'점심',category:'식비'}]}),day(0)]);
- await more(page);await page.locator('#fmReviewOpen').click();
+ await more(page);await findMore(page,'#fmReviewOpen');
  await expect(page.locator('.fm-rv-row b')).toHaveText(['돈','콘텐츠']);await expect(page.locator('.fm-rv-row').nth(1)).toContainText('최고: 듄 ★5');
- await page.locator('[data-rv-step="-1"]').click();await expect(page.locator('.fm-life-empty')).toHaveText('이 기간의 기록이 없어요');
+ await page.locator('[data-rv-step="-1"]').click();await expect(page.locator('#fmLifeBody .fm-life-empty')).toHaveText('이 기간의 기록이 없어요');
  await page.locator('[data-rv-y="true"]').click();await expect(page.locator('.fm-rv-row b')).toHaveText(['돈','콘텐츠']);
 });
 

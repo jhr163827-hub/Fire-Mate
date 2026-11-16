@@ -371,6 +371,7 @@ try{
    toPanel();
    const settings=$('settingsOverlay');
    if(!settings?.classList.contains('show'))$('settingsBottom')?.click();
+   window.fmOpenSettingsSpace?.();
    const q=$('fmMoreQ');if(q){q.value='';q.dispatchEvent(new Event('input'))}
    for(let el=panel.parentElement;el;el=el.parentElement)if(el.tagName==='DETAILS')el.open=true;
    panel.scrollIntoView({block:'start'});

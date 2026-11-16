@@ -1,4 +1,4 @@
-const {expandMore,findMore}=require('./more-navigation.cjs');
+const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const path=require('path');
 const XLSX=require('xlsx');
@@ -71,7 +71,7 @@ test('older imports can be tidied in one confirmed step without touching amounts
   {id:'b',date:ago(2),type:'income',category:'기타 수입',amount:3000000,memo:'회사',bankExcelKey:key('급여','회사',3000000,'income')},
   {id:'c',date:ago(2),type:'expense',category:'식비',amount:9000,memo:'직접'}]});
  await page.goto('/index.html');
- await page.locator('#settingsBottom').click();await expandMore(page);
+ await page.locator('#settingsBottom').click();
  const btn=page.locator('#fmTidyCategories');
  // The raw bank label 편의점 is already fixed on load; the income row still waits for the confirmed tidy.
  expect((await saved(page)).tx.find(t=>t.id==='a').category).toBe('식비');
@@ -310,7 +310,7 @@ test('balances and accounts changed by the BankSalad sheet before are put back o
  let d=await saved(page);expect(d.accounts.filter(a=>!a.id.startsWith('legacy-')).map(a=>[a.id,a.amount])).toEqual([['s',1000000]]);
  expect(await page.evaluate(()=>[localStorage.getItem('firemate_bs_backup_v1'),localStorage.getItem('firemate_bs_added_v1')])).toEqual([null,null]);
  await page.reload();expect((await saved(page)).balance.cash).toBe(500000);
- await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmStorage>summary').click();await page.locator('#fmAutoLog>summary').click();
+ await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmStorage>summary').click();await page.locator('#fmAutoLog>summary').click();
  await expect(page.locator('#fmAutoLogList')).toContainText('↩️ 뱅크샐러드가 바꾼 잔고·계좌 원래대로');
  await page.locator('[data-autolog="bsrev"]').click();await page.locator('#fmAskOk').click();
  await expect.poll(async()=>(await saved(page)).balance.cash).toBe(3879561);

@@ -1,4 +1,4 @@
-const {expandMore,findMore}=require('./more-navigation.cjs');
+const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const day=n=>{const d=new Date(Date.now()+n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -9,7 +9,7 @@ const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42
 test('✅ 할 일 제안: 7일 안 기념일은 선물 준비, 예정일이 된 받을 돈은 입금 확인 — 누르면 연결된 할 일이 되고 칩은 사라짐',async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
  await seed(page,`localStorage.setItem('firemate_anniv_v1',JSON.stringify({list:[{id:'a',name:'엄마 생신',date:'1960'+a[0].slice(4),yearly:true},{id:'b',name:'친구 생일',date:'1990'+a[1].slice(4),yearly:true}]}));localStorage.setItem('firemate_owed_v1',JSON.stringify({list:[{id:'o',name:'출장비',kind:'출장 정산',amt:500000,due:a[2],got:[{id:'g',amt:200000,date:a[2]}]},{id:'p',name:'환불',kind:'환불',amt:30000,due:a[3],got:[]}]}))`,[day(5),day(20),day(0),day(10)]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmTodoOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmTodoOpen');
  const chips=page.locator('[data-todo-sugg="link"]');await expect(chips).toHaveText([/엄마 생신 선물 준비 \(D-5\)/,/출장비 입금 확인 · 남은/]);
  await chips.first().click();
  const t=(await st(page,'firemate_todo_v1')).list.find(x=>x.anniv);expect(t).toMatchObject({anniv:'a',text:'🎁 엄마 생신 선물 준비',day:day(0)});
@@ -26,14 +26,14 @@ test('🎬 돌아보기는 스토리로도 보고, 홈 월간 결산 스토리�
  const cards=page.locator('.fm-story .fm-story-card');await expect(cards.last()).toContainText('콘텐츠');await expect(cards.last()).toContainText('최고: 듄 ★5');
  await expect(page.locator('.fm-story')).not.toContainText('여행');
  await page.locator('.fm-story-x').click();
- await page.locator('#settingsBottom').click();await expandMore(page);await findMore(page,'#fmReviewOpen');await page.locator('[data-rv-step="-1"]').click();
+ await page.locator('#settingsBottom').click();await findMore(page,'#fmReviewOpen');await page.locator('[data-rv-step="-1"]').click();
  await page.locator('#fmRvStory').click();await expect(page.locator('.fm-story .fm-story-card')).toHaveCount(2);
 });
 
 test('🔍 콘텐츠 제목을 위키백과에서 찾아 제목·종류·링크·그림을 채우고, 실패하면 아무것도 안 바꿈',async({page})=>{
  let calls=0;
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>{const u=r.request().url();if(u.startsWith('https://ko.wikipedia.org/w/api.php')){calls++;if(calls>1)return r.abort();return r.fulfill({contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({query:{pages:{'1':{index:1,title:'오징어 게임',description:'대한민국의 텔레비전 드라마',thumbnail:{source:'https://upload.wikimedia.org/x.png'}},'2':{index:2,title:'오징어 게임 (게임)',description:'놀이'}}}})})}if(u.startsWith('https://upload.wikimedia.org/'))return r.fulfill({contentType:'image/png',headers:{'access-control-allow-origin':'*'},body:PNG});return r.abort()});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmContentOpen').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmContentOpen');
  await page.fill('#fmCtIn','오징어');await page.press('#fmCtIn','Enter');await page.locator('[data-ct]').click();
  await page.locator('#fmCtWiki').click();await expect(page.locator('[data-wk]')).toHaveCount(2);await page.locator('[data-wk="0"]').click();
  await expect(page.locator('#fmCtT')).toHaveValue('오징어 게임');await expect(page.locator('#fmCtK')).toHaveValue('drama');await expect(page.locator('#fmCtL')).toHaveValue(/ko\.wikipedia\.org\/wiki\//);

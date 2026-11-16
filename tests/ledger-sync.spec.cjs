@@ -1,4 +1,4 @@
-const {expandMore,findMore}=require('./more-navigation.cjs');
+const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const path=require('path');
 const XLSX=require('xlsx');
@@ -34,7 +34,7 @@ test('the 뱅크샐러드 importer lives in settings, the ledger keeps its calen
  const firstDay=await page.locator('#view-calendar [data-date]').first().boundingBox(),nav=await page.locator('.bottomnav').boundingBox();
  expect(firstDay.y+firstDay.height).toBeLessThan(nav.y);
  // Settings hold the one copy, folded until needed.
- await page.locator('#settingsBottom').click();await expandMore(page);
+ await page.locator('#settingsBottom').click();
  await expect(page.locator('#settingsOverlay #fmLedgerImportMount #fmLedgerSync')).toHaveCount(1);
  await expect(page.locator('#bankGmailImport')).toBeHidden();
  await page.locator('#settingsOverlay [data-close]').first().click();
@@ -45,7 +45,7 @@ test('the 뱅크샐러드 importer lives in settings, the ledger keeps its calen
  await expect(page.locator('#settingsOverlay')).not.toHaveClass(/show/);
  await expect(page.locator('#view-home #fmHomeImport #bankGmailStatus')).not.toBeEmpty();
  // Opening settings brings the live status back into the panel.
- await page.locator('#settingsBottom').click();await expandMore(page);
+ await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmLedgerSync #bankGmailStatus')).toHaveCount(1);
  await expect(page.locator('#fmHomeImport #bankGmailStatus')).toHaveCount(0);
  await expect(page.locator('#fmSyncStatus')).toHaveText('아직 가져온 내역이 없어요');

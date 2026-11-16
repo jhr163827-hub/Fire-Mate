@@ -21,7 +21,7 @@ test('이어하기는 실제 진행 중 항목 3개, 상세 이동·숨기기·�
  await page.locator('[data-resume="content"]').click();await expect(page.locator('#fmLifeSheet')).toBeVisible();await expect(page.locator('#fmCtT')).toHaveValue('보던 책');
  await page.locator('[data-life-x]').click();await page.locator('#fmLifeOverlay [data-close]').click();
  await page.locator('#fmResumeHide').click();await expect(page.locator('#fmHomeResume')).toBeHidden();await page.reload();await expect(page.locator('#fmHomeResume')).toBeHidden();
- await page.locator('#settingsBottom').click();await page.locator('#fmMoreEdit').click();await page.locator('#fmResumeOn').check();await page.locator('#fmMoreDone').click();await page.locator('#settingsOverlay [data-close]').click();await expect(cards).toHaveCount(3);
+ await page.locator('#settingsBottom').click();await page.locator('#fmMoreEdit').click();await page.locator('#fmResumeOn').check();await page.locator('#fmMoreDone').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').click();await expect(cards).toHaveCount(3);
 });
 test('연결된 버킷은 배정액을 읽고 수동 금액은 보존, 배정 변경·연결 해제 반영',async({page})=>{
  await page.locator('#settingsBottom').click();await openTool(page,'#fmBucketOpen');await page.locator('[data-bk-edit="b"]').click();

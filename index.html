@@ -315,9 +315,11 @@ if(id==='settingsOverlay'&&!on&&$('fmSpaceOverlay').classList.contains('show'))m
 const overlay=$(id),wasOpen=overlay.classList.contains('show');
 overlay.classList.toggle('show',on);
 if(on&&!wasOpen){
+if(id!=='fmSpaceOverlay'&&$('fmSpaceOverlay').classList.contains('show')){overlay.fmReturnFocus=document.activeElement;overlay.querySelector('button,input,select,[tabindex]')?.focus()}
 fmDialogStack=fmDialogStack.filter(x=>x!==id);fmDialogStack.push(id);
 if(!fromHistory)try{const state={...(history.state||fmNavState()),fmDialog:id};if(fmDialogPendingClose){fmDialogPendingClose=null;history.replaceState(state,'',location.href)}else history.pushState(state,'',location.href)}catch{}
 }else if(!on&&wasOpen){
+if(overlay.fmReturnFocus?.isConnected&&$('fmSpaceOverlay').classList.contains('show'))overlay.fmReturnFocus.focus();
 fmDialogStack=fmDialogStack.filter(x=>x!==id);
 if(!fromHistory&&history.state?.fmDialog===id){fmDialogPendingClose=id;queueMicrotask(()=>{if(fmDialogPendingClose!==id)return;fmDialogPendingClose=null;fmDialogClosing++;history.back()})}
 }

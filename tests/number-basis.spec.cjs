@@ -172,7 +172,7 @@ test('the payday plan is edited in settings, not on home; 세이프박스 deposi
  await load(page,seed({tx:[{id:'a',date:'2026-10-26',type:'transfer',category:'계좌 이체',amount:100000,memo:'세이프박스에 보관'}]}));
  await expect(page.locator('#fmHomePlan input')).toHaveCount(0);
  await page.locator('#settingsBottom').click();
- await page.locator('.fm-set-plan summary').click();
+ await openSettings(page);await page.locator('.fm-set-plan summary').click();
  await page.locator('[data-plan="safe"]').fill('10');await page.locator('[data-plan="safe"]').blur();
  await page.locator('[data-plan="pay"]').fill('10');await page.locator('[data-plan="pay"]').blur();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_month_plan_v1')))).toMatchObject({safe:10,pay:10});

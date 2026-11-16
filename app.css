@@ -3182,18 +3182,18 @@ html body :is(#settingsOverlay,#fmSpaceOverlay) .fm-more-space[open]>summary:aft
 
 /* Dedicated category destinations, using the existing theme. */
 #fmSpaceOverlay{z-index:40}
-#fmSpaceOverlay [data-space-page][hidden],#fmMoreAll [data-space-open][hidden]{display:none}
+html body #fmSpaceOverlay [data-space-page][hidden],#fmMoreAll [data-space-open][hidden]{display:none}
 #fmMoreAll .fm-space-entry{display:flex;align-items:center;gap:14px;width:100%;min-height:80px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--txt);text-align:left}
 .fm-space-entry>span:nth-child(2){flex:1;min-width:0}.fm-space-entry strong{display:block;font-size:16px;line-height:1.4}.fm-space-entry small{display:block;margin-top:5px;font-size:13px;color:var(--sub);line-height:1.4}.fm-space-entry>.fm-set-ico{font-size:24px}
-#fmSpaceOverlay .fm-settings-header{position:sticky;top:0;background:var(--bg);z-index:2;padding-bottom:12px}
-#fmSpaceOverlay .fm-settings-header h2{font-size:20px}
-#fmSpaceOverlay .fm-set-group.fm-tiles{grid-template-columns:1fr}
-#fmSpaceOverlay .fm-set-group.fm-tiles .fm-certs{min-height:76px;padding:14px 16px}
-#fmSpaceOverlay .fm-set-group.fm-tiles .fm-certs strong{font-size:16px}
-#fmSpaceOverlay .fm-set-group.fm-tiles .fm-certs small{font-size:13px}
-#fmSpaceOverlay #fmGoalOverview{padding:0}
-#fmSpaceOverlay .fm-goal-filters button{min-height:44px;font-size:13px}
-#fmSpaceOverlay .fm-organize-manage{padding:12px 0}
-#fmSpaceOverlay .fm-organize-manage>summary{min-height:44px;display:flex;align-items:center;font-size:14px}
+html body #fmSpaceOverlay .fm-settings-header{position:sticky;top:0;background:var(--bg);z-index:2;padding-bottom:12px}
+html body #fmSpaceOverlay .fm-settings-header h2{font-size:20px}
+html body #fmSpaceOverlay .fm-set-group.fm-tiles{grid-template-columns:1fr}
+html body #fmSpaceOverlay .fm-set-group.fm-tiles .fm-certs{min-height:76px;padding:14px 16px}
+html body #fmSpaceOverlay .fm-set-group.fm-tiles .fm-certs strong{font-size:16px}
+html body #fmSpaceOverlay .fm-set-group.fm-tiles .fm-certs small{font-size:13px}
+html body #fmSpaceOverlay #fmGoalOverview{padding:0}
+html body #fmSpaceOverlay .fm-goal-filters button{min-height:44px;font-size:13px}
+html body #fmSpaceOverlay .fm-organize-manage{padding:0 14px;margin-top:16px}
+html body #fmSpaceOverlay .fm-organize-manage>summary{min-height:44px;display:flex;align-items:center;font-size:14px}
 
 html body #fmSpaceOverlay .modal{background:var(--bg)}

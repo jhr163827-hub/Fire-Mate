@@ -41,3 +41,26 @@ test('browser back returns feature → space → More, with focus and records pr
  await page.goBack();await expect(page.locator('#fmSpaceOverlay')).toBeHidden();await expect(page.locator('[data-space-open=daily]')).toBeFocused();
  await page.locator('[data-space-open=daily]').click();await page.locator('#fmTodoOpen').click();await expect(page.locator('#fmTodoList')).toContainText('별도 공간 확인');
 });
+
+test('all destinations fit mobile and tablet in dark and light themes',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ for(const theme of ['dark','light']){
+  if(theme==='light')await page.locator('#theme').click();
+  await page.locator('#settingsBottom').click();
+  for(const width of [320,390,768]){
+   await page.setViewportSize({width,height:844});
+   for(const kind of ['goals','study','daily','travel','hobby']){
+    await page.locator('[data-space-open='+kind+']').click();
+    const panel=page.locator('#fmSpaceOverlay .modal');
+    expect(await panel.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+    await expect(page.locator('[data-space-page]:visible')).toHaveCount(1);
+    for(const b of await page.locator('#fmSpaceOverlay [data-space-page]:visible .fm-certs').all()){
+     const r=await b.boundingBox();if(r){expect(r.height).toBeGreaterThanOrEqual(44);expect(r.width).toBeLessThanOrEqual(width)}
+    }
+    await page.locator('#fmSpaceOverlay [data-close]').click();
+   }
+  }
+  await page.locator('#settingsOverlay [data-close]').click();
+ }
+ expect(errors).toEqual([]);
+});

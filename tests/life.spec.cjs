@@ -30,7 +30,7 @@ test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다�
  await expect(box.locator('.fm-eng-card small')).toContainText('남은 4개');// accurate (due) + 3 new
  expect(await page.evaluate(()=>localStorage.getItem('firemate_english_words_v1')!==null)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
- await box.locator('[data-close]').click();await page.locator('#settingsOverlay [data-close]').first().click();
+ await box.locator('[data-close]').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
  await expect(page.locator('#fmHomeEng')).toHaveCount(0);await expect(page.locator('#fmEngSub')).toHaveText('외운 단어 0개 · 🔥 1일');
 });
 
@@ -51,7 +51,7 @@ test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage 
  await expect(page.locator('#fmHealthHero')).toContainText('7시간 12분');
  await expect(page.locator('#fmHealthHero')).toContainText('23:40 → 06:52');
  await expect(page.locator('#fmHealthBody .fm-hl-bars')).toHaveCount(2);
- await page.locator('#fmHealthOverlay [data-close]').click();await page.locator('#settingsOverlay [data-close]').first().click();
+ await page.locator('#fmHealthOverlay [data-close]').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
  await expect(page.locator('#fmHomeHealth')).toHaveCount(0);await expect(page.locator('#fmHealthSub')).toHaveText('지난 수면 7시간 12분');
 });
 

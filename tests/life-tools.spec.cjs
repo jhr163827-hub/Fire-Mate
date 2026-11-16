@@ -86,8 +86,8 @@ test('⭐ 더보기: 기능 찾기, 즐겨찾기 고르기·순서 바꾸기, �
  await page.locator('[data-mv="1,-1"]').click();
  await page.goBack();await expect(page.locator('#fmMoreSheet')).toBeHidden();await expect(page.locator('#settingsOverlay')).toBeVisible();
  await expect(page.locator('.fm-more-chips [data-more-go]')).toHaveText(['🛒장보기','📝메모','✅할 일','🎂기념일·선물','🧳준비물 체크리스트']);
- await page.locator('#settingsOverlay [data-close]').click();await expect(page.locator('#fmHomeLife')).toBeHidden();
- await page.locator('#settingsBottom').click();await page.locator('#fmMoreEdit').click();await page.locator('#fmMoreHome').check();await page.locator('#fmMoreDone').click();await page.locator('#settingsOverlay [data-close]').click();
+ await moreRoot(page);await page.locator('#settingsOverlay [data-close]').click();await expect(page.locator('#fmHomeLife')).toBeHidden();
+ await page.locator('#settingsBottom').click();await page.locator('#fmMoreEdit').click();await page.locator('#fmMoreHome').check();await page.locator('#fmMoreDone').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').click();
  await expect(page.locator('#fmHomeLife button')).toHaveCount(4);
  const y=await page.evaluate(()=>[document.getElementById('homeAssetHero').getBoundingClientRect().top,document.getElementById('fmHomeLife').getBoundingClientRect().top]);expect(y[1]).toBeGreaterThan(y[0]);
  await page.locator('#fmHomeLife button').first().click();await expect(page.locator('#fmLifeOverlay')).toBeVisible();await expect(page.locator('#fmLifeHead')).toHaveText('장보기');

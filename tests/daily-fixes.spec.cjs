@@ -26,7 +26,7 @@ test('imports map 뱅크샐러드 분류 to app categories and learn a merchant 
  const cat=async memo=>(await saved(page)).tx.find(t=>t.memo===memo).category;
  expect([await cat('GS25'),await cat('다이소'),await cat('회사'),await cat('이자'),await cat('무언가')]).toEqual(['식비','쇼핑','급여','배당·이자','기타']);
  // Re-categorise one imported merchant by hand; the next import of that merchant follows it.
- await page.locator('#settingsOverlay [data-close]').first().click();
+ await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
  await page.evaluate(()=>window.fmGo('calendar'));await page.locator('#fmModeList').click();
  await page.locator('#fmLedgerAllTx .tx',{hasText:'다이소'}).locator('[data-edit]').click();
  await page.locator('#entryCat').selectOption('주거·관리비');await page.locator('#saveEntry').click();
@@ -48,7 +48,7 @@ test('money sent to my own account is a transfer, not spending, and one fix teac
  // Money moved to an exchange or brokerage is investing, not spending.
  expect(await type('업비트 입금')).toEqual(['transfer']);
  // One 마이뱅크 row switched to 이체 by hand moves every 마이뱅크 row and the next import.
- await page.locator('#settingsOverlay [data-close]').first().click();
+ await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
  await page.evaluate(()=>window.fmGo('calendar'));await page.locator('#fmModeList').click();
  await page.locator('#fmLedgerAllTx .tx',{hasText:'마이뱅크'}).first().locator('[data-edit]').click();
  await page.locator('#entryTypes button[data-type="transfer"]').click();await page.locator('#saveEntry').click();

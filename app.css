@@ -3181,7 +3181,7 @@ html body :is(#settingsOverlay,#fmSpaceOverlay) .fm-more-space>summary:after{con
 html body :is(#settingsOverlay,#fmSpaceOverlay) .fm-more-space[open]>summary:after{content:'⌃'}
 
 /* Dedicated category destinations, using the existing theme. */
-#fmSpaceOverlay{z-index:10}
+#fmSpaceOverlay{z-index:40}
 #fmSpaceOverlay [data-space-page][hidden],#fmMoreAll [data-space-open][hidden]{display:none}
 #fmMoreAll .fm-space-entry{display:flex;align-items:center;gap:14px;width:100%;min-height:80px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--txt);text-align:left}
 .fm-space-entry>span:nth-child(2){flex:1;min-width:0}.fm-space-entry strong{display:block;font-size:16px;line-height:1.4}.fm-space-entry small{display:block;margin-top:5px;font-size:13px;color:var(--sub);line-height:1.4}.fm-space-entry>.fm-set-ico{font-size:24px}

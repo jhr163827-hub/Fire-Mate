@@ -31,7 +31,7 @@ test('turning 폰 알림 on plans one digest a day: exam D-7 and trip D-3 today,
 });
 test('수면·걸음 is hidden from settings',async({page})=>{
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmEngOpen')).toBeVisible();await expect(page.locator('#fmHealthOpen')).toBeHidden();
+ await page.locator('[data-space-open=study]').click();await expect(page.locator('#fmEngOpen')).toBeVisible();await expect(page.locator('#fmHealthOpen')).toBeHidden();
 });
 
 test('FIRE: an example plan offers numbers from my own records once, and applying it saves the plan',async({page})=>{

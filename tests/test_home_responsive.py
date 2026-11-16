@@ -1538,7 +1538,7 @@ class HomeResponsiveTest(unittest.TestCase):
                     self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),width+2)
                     self.assertLessEqual(dialog.bounding_box()['width'],width+1)
                     # Theme lives in the header; settings keep one visible fold (데이터 초기화), closed.
-                    groups=page.locator('#settingsOverlay .fm-settings-group:not([hidden])')
+                    groups=page.locator('#fmSpaceOverlay .fm-settings-group:not([hidden])')
                     self.assertEqual(groups.count(),1)
                     self.assertFalse(groups.nth(0).evaluate('(el)=>el.open'))
                     page.locator('#fmMoreSettingsOpen').click()
@@ -1547,6 +1547,8 @@ class HomeResponsiveTest(unittest.TestCase):
                     with page.expect_download() as download_info:
                         page.locator('#export').click()
                     self.assertTrue(download_info.value.suggested_filename.startswith('firemate-backup-'))
+                    page.keyboard.press('Escape')
+                    self.assertFalse(page.locator('#fmSpaceOverlay').is_visible())
                     page.keyboard.press('Escape')
                     self.assertFalse(dialog.is_visible())
                     self.assertEqual(trigger.get_attribute('aria-expanded'),'false')

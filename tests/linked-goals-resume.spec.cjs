@@ -1,4 +1,4 @@
-const {expandMore,findMore}=require('./more-navigation.cjs');
+const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const fs=require('node:fs');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
@@ -21,22 +21,22 @@ test('이어하기는 실제 진행 중 항목 3개, 상세 이동·숨기기·�
  await page.locator('[data-resume="content"]').click();await expect(page.locator('#fmLifeSheet')).toBeVisible();await expect(page.locator('#fmCtT')).toHaveValue('보던 책');
  await page.locator('[data-life-x]').click();await page.locator('#fmLifeOverlay [data-close]').click();
  await page.locator('#fmResumeHide').click();await expect(page.locator('#fmHomeResume')).toBeHidden();await page.reload();await expect(page.locator('#fmHomeResume')).toBeHidden();
- await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmMoreEdit').click();await page.locator('#fmResumeOn').check();await page.locator('#fmMoreDone').click();await page.locator('#settingsOverlay [data-close]').click();await expect(cards).toHaveCount(3);
+ await page.locator('#settingsBottom').click();await page.locator('#fmMoreEdit').click();await page.locator('#fmResumeOn').check();await page.locator('#fmMoreDone').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').click();await expect(cards).toHaveCount(3);
 });
 test('연결된 버킷은 배정액을 읽고 수동 금액은 보존, 배정 변경·연결 해제 반영',async({page})=>{
- await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmBucketOpen').click();await page.locator('[data-bk-edit="b"]').click();
+ await page.locator('#settingsBottom').click();await openTool(page,'#fmBucketOpen');await page.locator('[data-bk-edit="b"]').click();
  await expect(page.locator('#fmBkSaved')).toHaveValue('2,000,000');await expect(page.locator('#fmBkSaved')).toHaveAttribute('readonly','');
  await page.locator('#fmBucketEForm button.primary').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_bucket_v1).list[0].saved)).toBe(100000);
- await page.locator('#fmBucketOverlay [data-close]').click();await page.locator('#fmAllocOpen').click();await page.locator('[data-al="a"]').click();await page.locator('#fmAlA').fill('2500000');await page.locator('#fmLifeForm .primary').click();
- await page.locator('#fmLifeOverlay [data-close]').click();await page.locator('#fmBucketOpen').click();await page.locator('[data-bk-edit="b"]').click();await expect(page.locator('#fmBkSaved')).toHaveValue('2,500,000');await page.locator('#fmBucketEForm button.primary').click();await page.locator('#fmBucketOverlay [data-close]').click();await page.locator('#fmAllocOpen').click();
- await page.locator('[data-al="a"]').click();await page.locator('#fmAl_bucket').selectOption('');await page.locator('#fmLifeForm .primary').click();await page.locator('#fmLifeOverlay [data-close]').click();await page.locator('#fmBucketOpen').click();await page.locator('[data-bk-edit="b"]').click();await expect(page.locator('#fmBkSaved')).toHaveValue('100,000');await expect(page.locator('#fmBkSaved')).not.toHaveAttribute('readonly','');
+ await page.locator('#fmBucketOverlay [data-close]').click();await openTool(page,'#fmAllocOpen');await page.locator('[data-al="a"]').click();await page.locator('#fmAlA').fill('2500000');await page.locator('#fmLifeForm .primary').click();
+ await page.locator('#fmLifeOverlay [data-close]').click();await openTool(page,'#fmBucketOpen');await page.locator('[data-bk-edit="b"]').click();await expect(page.locator('#fmBkSaved')).toHaveValue('2,500,000');await page.locator('#fmBucketEForm button.primary').click();await page.locator('#fmBucketOverlay [data-close]').click();await openTool(page,'#fmAllocOpen');
+ await page.locator('[data-al="a"]').click();await page.locator('#fmAl_bucket').selectOption('');await page.locator('#fmLifeForm .primary').click();await page.locator('#fmLifeOverlay [data-close]').click();await openTool(page,'#fmBucketOpen');await page.locator('[data-bk-edit="b"]').click();await expect(page.locator('#fmBkSaved')).toHaveValue('100,000');await expect(page.locator('#fmBkSaved')).not.toHaveAttribute('readonly','');
 });
 test('연결은 백업에 포함되고, 중복 연결·한도 초과·저장 실패는 기존 배정을 보존',async({page})=>{
  const [dl]=await Promise.all([page.waitForEvent('download'),page.evaluate(()=>document.getElementById('export').click())]);
  expect(JSON.parse(fs.readFileSync(await dl.path(),'utf8')).extras.firemate_alloc_v1.list[0]).toMatchObject({bucket:'b',trip:'t',reward:'r'});
  await page.evaluate(()=>{const v=JSON.parse(localStorage.firemate_alloc_v1);v.list.push({id:'a2',name:'다른 돈',amt:1});localStorage.firemate_alloc_v1=JSON.stringify(v)});
- await page.locator('#settingsBottom').click();await expandMore(page);await page.locator('#fmAllocOpen').click();await page.locator('[data-al="a2"]').click();await page.locator('#fmAl_bucket').selectOption('b');await page.locator('#fmLifeForm .primary').click();await expect(page.locator('#fmLifeSheet')).toBeVisible();expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_alloc_v1).list[1].bucket)).toBeUndefined();
+ await page.locator('#settingsBottom').click();await openTool(page,'#fmAllocOpen');await page.locator('[data-al="a2"]').click();await page.locator('#fmAl_bucket').selectOption('b');await page.locator('#fmLifeForm .primary').click();await expect(page.locator('#fmLifeSheet')).toBeVisible();expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_alloc_v1).list[1].bucket)).toBeUndefined();
  await page.locator('#fmAl_bucket').selectOption('');await page.locator('#fmAlA').fill('999999999999');await page.locator('#fmLifeForm .primary').click();expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_alloc_v1).list[1].amt)).toBe(1);
  await page.locator('#fmAlA').fill('200');await page.evaluate(()=>{const orig=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='firemate_alloc_v1')throw new Error('quota');return orig.call(this,k,v)}});await page.locator('#fmLifeForm .primary').click();expect(await page.evaluate(()=>JSON.parse(localStorage.firemate_alloc_v1).list[1].amt)).toBe(1);
 });

@@ -108,7 +108,7 @@ test('📸 새 데이터·사진은 백업과 사진 ZIP에 들어감',async({pa
  const src=await page.evaluate(async()=>await (await fetch('/index.html')).text());
  const ex=src.slice(src.indexOf('FM_BACKUP_EXTRAS='),src.indexOf('FM_BACKUP_FLAGS='));
  for(const k of ['firemate_content_v1','firemate_reward_v1','firemate_alloc_v1','firemate_owed_v1'])expect(ex).toContain(k);
- expect(src).toContain("/^(trip:|bucket:|content:|reward:|item:|[\\w-]+$)/");expect(src).toContain("m[c.photo]='콘텐츠/'+c.title");
+ expect(src).toContain("/^(trip:|bucket:|content:|reward:|item:|speak:|[\\w-]+$)/");expect(src).toContain("m[c.photo]='콘텐츠/'+c.title");
 });
 
 test('🧩 취미 프로젝트: 할 일·메모를 묶고 완료 수로 진행, 할 일 화면에도 같은 할 일, 지우면 할 일은 남고 연결만 풀림',async({page})=>{

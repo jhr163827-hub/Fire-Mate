@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 // Backup → empty phone → restore: every record outside the main data (lists that are arrays too), the user's decisions,
 // photos in the ZIP, all-or-nothing restore when storage fails, and older backup files.
 const {test,expect}=require('@playwright/test');
@@ -30,7 +29,7 @@ const FLAGS={firemate_split_off_v1:'1',firemate_newcat_v1:'1',firemate_cancelfix
 const seed=(page,s,f)=>page.addInitScript(([s,f])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');for(const [k,v] of Object.entries(s))localStorage.setItem(k,JSON.stringify(v));for(const [k,v] of Object.entries(f||{}))localStorage.setItem(k,v)},[s,f]);
 const putFiles=page=>page.evaluate(()=>new Promise((ok,no)=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs','readwrite'),s=t.objectStore('certs');s.put(new Blob(['CERT'],{type:'image/jpeg'}),'c1');s.put(new Blob(['TRIP'],{type:'image/jpeg'}),'trip:t1:p1');s.put(new Blob(['BUCK'],{type:'image/jpeg'}),'bucket:b1');t.oncomplete=()=>{r.result.close();ok()};t.onerror=()=>no(t.error)}}));
 const readFiles=page=>page.evaluate(()=>new Promise(ok=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs'),s=t.objectStore('certs'),out={};s.openCursor().onsuccess=async e=>{const c=e.target.result;if(c){out[c.key]=c.value;c.continue()}else{const o={};for(const [k,v] of Object.entries(out))o[k]=await v.text();r.result.close();ok(o)}}}}));
-const openStorage=async page=>{await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmStorage>summary').click()};
+const openStorage=async page=>{await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click()};
 const dump=(page,keys)=>page.evaluate(keys=>Object.fromEntries(keys.map(k=>[k,localStorage.getItem(k)])),keys);
 
 test('백업 → 빈 폰 복원: 여행·발자국·홈 설정(배열)·할 일·자격증·버킷·공부·영어·설정·결정 기록, 사진 ZIP까지 연결 그대로',async({browser})=>{
@@ -67,10 +66,10 @@ test('백업 → 빈 폰 복원: 여행·발자국·홈 설정(배열)·할 일�
  expect(JSON.parse(await b.evaluate(()=>localStorage.getItem('firemate_smart_v3'))).tx).toEqual(SEED.firemate_smart_v3.tx);
  expect(await readFiles(b)).toEqual({'bucket:b1':'BUCK',c1:'CERT','trip:t1:p1':'TRIP'});
  // The restored records still point at each other: trip ↔ bucket, cert ↔ study subject ↔ to-do.
- await b.locator('#settingsBottom').click();await openTool(b,'#fmJournalOpen');await b.locator('.fm-jn-trip',{hasText:'제주'}).click();
+ await b.locator('#settingsBottom').click();await b.locator('#fmJournalOpen').click();await b.locator('.fm-jn-trip',{hasText:'제주'}).click();
  await expect(b.locator('#fmJnHead')).toHaveText('제주');
  await b.goBack();await b.evaluate(()=>document.querySelectorAll('.modalbg.show').forEach(e=>{if(e.id!=='settingsOverlay')e.classList.remove('show')}));
- await openTool(b,'#fmStudyOpen');await expect(b.locator('#fmStudyBody .fm-st-sub',{hasText:'정보처리기사'})).toContainText('🎓 자격증과 연결');
+ await b.locator('#fmStudyOpen').click();await expect(b.locator('#fmStudyBody .fm-st-sub',{hasText:'정보처리기사'})).toContainText('🎓 자격증과 연결');
 });
 
 test('복원 중 저장이 실패하면 전부 원래대로: 본 데이터·할 일·여행이 하나도 안 바뀌고 실패를 알려 줌',async({browser})=>{

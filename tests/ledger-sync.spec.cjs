@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const path=require('path');
 const XLSX=require('xlsx');
@@ -35,9 +34,9 @@ test('the 뱅크샐러드 importer lives in settings, the ledger keeps its calen
  expect(firstDay.y+firstDay.height).toBeLessThan(nav.y);
  // Settings hold the one copy, folded until needed.
  await page.locator('#settingsBottom').click();
- await expect(page.locator('#fmSpaceOverlay #fmLedgerImportMount #fmLedgerSync')).toHaveCount(1);
+ await expect(page.locator('#settingsOverlay #fmLedgerImportMount #fmLedgerSync')).toHaveCount(1);
  await expect(page.locator('#bankGmailImport')).toBeHidden();
- await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
+ await page.locator('#settingsOverlay [data-close]').first().click();
  // The home button imports right there: progress shows under the home buttons, settings stay closed.
  await page.evaluate(()=>window.fmGo('home'));
  await page.locator('#fmHomeSync').click();

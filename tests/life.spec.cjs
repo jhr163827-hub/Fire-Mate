@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const day=n=>{const d=new Date(Date.now()+n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -6,11 +5,11 @@ test.beforeEach(async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx:[],accounts:[],holdings:[]}))});
 });
-const openLife=async(page,id)=>{await page.locator('#settingsBottom').click();await openTool(page,'#'+id)};
+const openSettings=async(page,id)=>{await page.locator('#settingsBottom').click();await page.locator('#'+id).click()};
 
 test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다시 comes back today, goal and home line',async({page})=>{
  await page.goto('/index.html');
- await openLife(page,'fmEngOpen');
+ await openSettings(page,'fmEngOpen');
  const box=page.locator('#fmEngOverlay');
  await box.locator('[data-mode=card]').click();
  await expect(box.locator('.fm-eng-card strong')).toHaveText('accomplish');
@@ -30,14 +29,14 @@ test('📖 영어 공부: new words, reveal, 알아요 schedules a review, 다�
  await expect(box.locator('.fm-eng-card small')).toContainText('남은 4개');// accurate (due) + 3 new
  expect(await page.evaluate(()=>localStorage.getItem('firemate_english_words_v1')!==null)).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
- await box.locator('[data-close]').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
+ await box.locator('[data-close]').click();await page.locator('#settingsOverlay [data-close]').first().click();
  await expect(page.locator('#fmHomeEng')).toHaveCount(0);await expect(page.locator('#fmEngSub')).toHaveText('외운 단어 0개 · 🔥 1일');
 });
 
 test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage files and shows the last night on home',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>{document.getElementById('fmHealthOpen').hidden=false});// hidden from settings since v3.5.257 (owner's call)
- await openLife(page,'fmHealthOpen');
+ await openSettings(page,'fmHealthOpen');
  const y=day(-1),t=day(0),ms=d=>Date.parse(d+'T00:00:00Z');
  // Times are UTC with a +09:00 offset: 14:40Z = 23:40 local, 21:52Z = 06:52 local next morning.
  const sleep='com.samsung.shealth.sleep,6315003,3\ncom.samsung.health.sleep.start_time,com.samsung.health.sleep.end_time,com.samsung.health.sleep.time_offset,extra_data\n'+y+' 14:40:00.000,'+y+' 21:52:00.000,UTC+0900,"a,b"\n'+y+' 05:00:00.000,'+y+' 05:10:00.000,UTC+0900,\n';
@@ -51,14 +50,14 @@ test('😴 수면·걸음 reads Samsung Health sleep and step CSVs, skips stage 
  await expect(page.locator('#fmHealthHero')).toContainText('7시간 12분');
  await expect(page.locator('#fmHealthHero')).toContainText('23:40 → 06:52');
  await expect(page.locator('#fmHealthBody .fm-hl-bars')).toHaveCount(2);
- await page.locator('#fmHealthOverlay [data-close]').click();await moreRoot(page);await page.locator('#settingsOverlay [data-close]').first().click();
+ await page.locator('#fmHealthOverlay [data-close]').click();await page.locator('#settingsOverlay [data-close]').first().click();
  await expect(page.locator('#fmHomeHealth')).toHaveCount(0);await expect(page.locator('#fmHealthSub')).toHaveText('지난 수면 7시간 12분');
 });
 
 test('✈️ 여행 일지: 국내/해외 maps mark 가 봤어요·가고 싶어요, a trip gets a place, checklist, budget, rating, notes and photos, and shows on home',async({page})=>{
  await page.addInitScript(([a,b])=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',accounts:[],holdings:[],tx:[{id:'x1',date:a,type:'expense',category:'식비',amount:32000,memo:'라멘'},{id:'x2',date:b,type:'expense',category:'교통',amount:15000,memo:'JR'}]}))},[day(-3),day(-2)]);
  await page.goto('/index.html');
- await openLife(page,'fmJournalOpen');
+ await openSettings(page,'fmJournalOpen');
  const box=page.locator('#fmJournalOverlay');
  // 국내 is cities (시·군·구, 광역시 as one): find 강릉, mark it, then 가고 싶어요, then clear.
  await expect(box.locator('.fm-jn-map path[data-place]')).toHaveCount(161);
@@ -108,7 +107,7 @@ test('✈️ an upcoming trip has a checklist and sits at the top of the journal
  await page.addInitScript(([a,b,c])=>{if(sessionStorage.getItem('qa2'))return;sessionStorage.setItem('qa2','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'s',name:'다낭',area:'world',place:'VN',from:a,to:b}]))},[day(10),day(13)]);
  await page.goto('/index.html');
  await expect(page.locator('#fmHomeTrip')).toHaveCount(0);
- await openLife(page,'fmJournalOpen');
+ await openSettings(page,'fmJournalOpen');
  await expect(page.locator('.fm-jn-next')).toHaveCount(0);await page.locator('[data-area=world]').click();
  const line=page.locator('.fm-jn-next');await expect(line).toContainText('다낭 D-10');await expect(line).toContainText('준비 0/7');
  await line.click();
@@ -123,7 +122,7 @@ test('✈️ an upcoming trip has a checklist and sits at the top of the journal
 
 test('📖 퀴즈 picks the meaning out of four; my own words come first and can be removed',async({page})=>{
  await page.goto('/index.html');
- await openLife(page,'fmEngOpen');
+ await openSettings(page,'fmEngOpen');
  const box=page.locator('#fmEngOverlay');
  await expect(box.locator('[data-mode=quiz]')).toHaveAttribute('aria-pressed','true');
  await expect(box.locator('.fm-eng-card strong')).toHaveText('accomplish');
@@ -143,7 +142,7 @@ test('📖 퀴즈 picks the meaning out of four; my own words come first and can
  await page.fill('#fmEngW','hydraulic');await page.fill('#fmEngM','유압의');await page.fill('#fmEngX','Check the hydraulic pressure.');await page.click('#fmEngAdd button');
  await expect(box.locator('#fmEngMineSum')).toHaveText('＋ 내 단어 1개');
  s=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_english_v1')));expect(s.mine).toEqual([['hydraulic','유압의','Check the hydraulic pressure.']]);
- await box.locator('[data-close]').click();await openTool(page,'#fmEngOpen');
+ await box.locator('[data-close]').click();await page.locator('#fmEngOpen').click();
  await expect(box.locator('.fm-eng-card strong')).toHaveText('accurate');// due review first
  await opts.filter({hasText:'정확한'}).click();await page.click('#fmEngNext');
  await expect(box.locator('.fm-eng-card strong')).toHaveText('hydraulic');await expect(box.locator('.fm-eng-card small')).toContainText('내 단어');
@@ -158,7 +157,7 @@ test('📸 photos and PDFs on this phone are counted and saved as one ZIP that p
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'t',name:'제주',from:'2026-07-10',to:'2026-07-11',photos:['trip:t:1']}]))});
  await page.goto('/index.html');
  await page.evaluate(()=>new Promise((ok,no)=>{const r=indexedDB.open('firemate_files_v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('certs');r.onsuccess=()=>{const t=r.result.transaction('certs','readwrite');t.objectStore('certs').put(new Blob(['jpg-bytes'],{type:'image/jpeg'}),'trip:t:1');t.oncomplete=()=>{r.result.close();ok()};t.onerror=no}}));
- await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
  await expect(page.locator('#fmPhotoKeepN')).toHaveText('📸 사진·파일 1개는 이 폰에만 있어요');
  const [dl]=await Promise.all([page.waitForEvent('download'),page.click('#fmPhotoSave')]);
  expect(dl.suggestedFilename()).toMatch(/^firemate-photos-\d{4}-\d\d-\d\d\.zip$/);
@@ -172,7 +171,7 @@ test('📸 photos and PDFs on this phone are counted and saved as one ZIP that p
 
 test('✈️ marks and trips from the province map move to the city map once (광역시 kept, whole 도 dropped)',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa4'))return;sessionStorage.setItem('qa4','1');localStorage.setItem('firemate_travel_map_v1',JSON.stringify({kr:{seoul:1,gyeonggi:1,busan:2},world:{}}));localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'부산 바다',area:'kr',place:'busan',from:'2026-03-01',to:'2026-03-02'},{id:'b',name:'제주',area:'kr',place:'jeju',from:'2026-07-10',to:'2026-07-12'}]))});
- await page.goto('/index.html');await openLife(page,'fmJournalOpen');
+ await page.goto('/index.html');await openSettings(page,'fmJournalOpen');
  await expect(page.locator('.fm-jn-map path[data-place="26"]')).toHaveClass(/been/);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_travel_map_v1')).kr)).toEqual({'11':1,'26':2});
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_trips_v1')).map(t=>t.place))).toEqual(['26','jeju']);
@@ -186,7 +185,7 @@ test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the
   const ctx=await browser.newContext({viewport:{width:390,height:844},geolocation:geo,permissions:['geolocation']}),page=await ctx.newPage();
   let asked=null;await page.route(/nominatim/,r=>{const u=r.request().url();if(u.includes('zoom=6'))asked=u;r.fulfill({json:{address:{country_code:'jp',state:'Osaka Prefecture'}}})});
   await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*nominatim)/,r=>r.abort());
-  await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
   await page.click('#fmJnHere');
   // The spot sheet opens: name, 누구랑, memo. Closing it keeps the 발자국.
   await expect(page.locator('.fm-jn-sheethead')).toContainText('위치 인증!');await page.click('#fmSpotX');
@@ -199,7 +198,7 @@ test('📍 여기 왔어요 colours the city in Korea (offline) and, abroad, the
 });
 
 test('🗾 a country with a region map opens it from its name card, and marking a region marks the country',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.locator('[data-area=world]').click();await page.fill('#fmJnFind','이탈리아');await page.locator('#fmJnHits [data-hit]').first().click();
  await page.locator('[data-country=IT]').click();
  await expect(page.locator('#fmJnHead')).toHaveText('🇮🇹 이탈리아');await expect(page.locator('.fm-jn-map path[data-place]')).toHaveCount(20);
@@ -210,7 +209,7 @@ test('🗾 a country with a region map opens it from its name card, and marking 
 });
 
 test('🔍 the travel map zooms with ＋/−, pinch and wheel, pans by dragging, and a drag is not a tap',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.locator('[data-area=world]').click();
  const map=page.locator('.fm-jn-map'),vb=async()=>(await map.getAttribute('viewBox')).split(' ').map(Number);
  const full=await vb();expect(full[2]).toBe(1000);
@@ -236,7 +235,7 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
  let posted='';await page.route(/overpass-api/,r=>r.fulfill({status:429,body:'busy'}));
  await page.route(/overpass\.private\.coffee/,r=>{posted=r.request().postData()||'';r.fulfill({json:{elements:[{type:'node',lat:35.2405,lon:128.6922,tags:{tourism:'attraction',name:'창원의집'}},{type:'way',center:{lat:35.1, lon:128.55},tags:{tourism:'viewpoint',name:'저도 비치로드',wikidata:'Q1'}}]}})});
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)(?!.*(nominatim|overpass))/,r=>r.abort());
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.click('#fmJnHere');
  const sheet=page.locator('#fmJnSheet');await expect(sheet).toBeVisible();await expect(page.locator('#fmSpotName')).toHaveValue('용지호수공원');
  await expect(sheet.locator('.fm-jn-sheethead small')).toContainText('성산구 상남동');
@@ -271,7 +270,7 @@ test('🏙️ a city split into 구 opens a 구 map; 📍 leaves a named 발자�
 
 test('a trip remembers 누구랑 and the 누구랑 filter narrows the trip list',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa3'))return;sessionStorage.setItem('qa3','1');localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'혼자 경주',from:'2026-05-01',to:'2026-05-02',area:'kr',with:'solo'}]));localStorage.setItem('firemate_travel_spots_v1',JSON.stringify([{id:'s',lat:35.83,lon:129.22,d:'2026-05-01',area:'kr',place:'47130',name:'첨성대',dong:'',with:'solo'},{id:'t',lat:35.22,lon:128.68,d:'2026-06-01',area:'kr',place:'4812',name:'용지호수',dong:'',with:'couple'}]))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.locator('#fmJnNew').click();await page.fill('#fmJnName','둘이 부산');await page.fill('#fmJnFrom','2026-07-01');await page.selectOption('#fmJnWithIn','couple');await page.locator('#fmJnAdd button.primary').click();
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_trips_v1')).find(t=>t.name==='둘이 부산').with)).toBe('couple');
  await expect(page.locator('.fm-jn-trip')).toHaveCount(2);await expect(page.locator('.fm-jn-trip').first()).toContainText('💑 둘이 부산');
@@ -281,7 +280,7 @@ test('a trip remembers 누구랑 and the 누구랑 filter narrows the trip list'
 
 test('🏷️ place names show once zoomed in, at a steady size, and fit inside their place',async({page})=>{
  await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort());
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  const shown=()=>page.locator('.fm-jn-labels text').evaluateAll(ts=>ts.filter(t=>t.style.display!=='none').map(t=>[t.textContent,Math.round(t.getBoundingClientRect().height)]));
  await expect(page.locator('.fm-jn-map path[data-place]').first()).toBeAttached();
  expect(await shown()).toEqual([]);

@@ -1,4 +1,3 @@
-const {openSettings:openSettingsPage,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 
@@ -19,7 +18,7 @@ const fakeGoogle=async(page,{disabled=false,garbled=false}={})=>{
  return drive;
 };
 const seed={theme:'dark',rec:[],budgets:{},tx:[{id:'t1',date:'2026-10-01',type:'expense',category:'식비',amount:9000,memo:'점심'}]};
-const openSettings=async page=>{await openSettingsPage(page);await expect(page.locator('#fmDriveOn')).toBeAttached();await page.locator('#fmStorage').evaluate(d=>d.open=true)};
+const openSettings=async page=>{await page.locator('#settingsBottom').click();await expect(page.locator('#fmDriveOn')).toBeAttached();await page.locator('#fmStorage').evaluate(d=>d.open=true)};
 
 test('turning Drive backup on saves a backup there; later backups replace it and carry no token',async({page})=>{
  const drive=await fakeGoogle(page);

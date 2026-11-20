@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const { test, expect } = require("@playwright/test");
 // The scheduled backup quote file is live on GitHub; keep these fixtures' prices fixed.
 test.beforeEach(async({page})=>{await page.route('**/chart-data/live-quotes.json*',r=>r.fulfill({status:404,body:''}));await page.route('https://polling.finance.naver.com/**',r=>r.abort())});
@@ -263,7 +262,7 @@ test("selected-day transactions are reachable, calendar returns and backup remai
   await expect(page.locator('#cal [aria-pressed="true"]')).toBeFocused();
   await page.locator("#settingsBottom").click();
   await expect(page.locator(".fm-device-storage #export")).toBeHidden();
-  await openSettings(page);await page.locator("#fmStorage>summary").click();
+  await page.locator("#fmStorage>summary").click();
   await expect(page.locator(".fm-device-storage #export")).toBeVisible();
   const downloaded = page.waitForEvent("download");
   await page.locator("#export").click();

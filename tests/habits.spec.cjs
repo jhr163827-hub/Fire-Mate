@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const ds=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return ds(d)};

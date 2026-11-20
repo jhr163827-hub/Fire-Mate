@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 // 🔔 폰 알림: the app writes a daily digest plan to the 'fm-notify-v1' cache; sw.js shows it (no server).
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,permissions:['notifications'],timezoneId:'Asia/Seoul'});
@@ -17,7 +16,7 @@ test.beforeEach(async({page})=>{
 test('turning 폰 알림 on plans one digest a day: exam D-7 and trip D-3 today, to-dos ride along, and chips switch kinds off',async({page})=>{
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmPushKinds')).toBeHidden();
- await openSettings(page);await page.locator('#fmPushOn').check();
+ await page.locator('#fmPushOn').check();
  await expect(page.locator('#fmPushKinds')).toBeVisible();
  await expect.poll(async()=>(await plan(page))?.[day(0)]).toEqual(['✅ 오늘 할 일 1개','🎓 정보처리기사 시험 D-7','✈️ 제주 D-3']);
  // To-dos and the study goal come every day now, so there is a reason to open the app each morning.
@@ -25,13 +24,13 @@ test('turning 폰 알림 on plans one digest a day: exam D-7 and trip D-3 today,
  await page.locator('[data-push="cert"]').click();
  await expect.poll(async()=>(await plan(page))?.[day(0)]).toEqual(['✅ 오늘 할 일 1개','✈️ 제주 D-3']);
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_push_v1')))).toEqual({on:true,off:{cert:true}});
- await openSettings(page);await page.locator('#fmPushOn').uncheck();
+ await page.locator('#fmPushOn').uncheck();
  await expect.poll(async()=>Object.keys(await plan(page)||{x:1}).length).toBe(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 test('수면·걸음 is hidden from settings',async({page})=>{
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
- await page.locator('[data-space-open=study]').click();await expect(page.locator('#fmEngOpen')).toBeVisible();await expect(page.locator('#fmHealthOpen')).toBeHidden();
+ await expect(page.locator('#fmEngOpen')).toBeVisible();await expect(page.locator('#fmHealthOpen')).toBeHidden();
 });
 
 test('FIRE: an example plan offers numbers from my own records once, and applying it saves the plan',async({page})=>{
@@ -60,7 +59,7 @@ test('미용·보험 are categories: saved 기타/쇼핑 rows move by name once,
  await page.evaluate(()=>window.fmOpenEntry());
  expect(await page.locator('#entryCat option').allTextContents()).toEqual(expect.arrayContaining(['미용','보험','교육','경조사·선물']));
  await page.reload();
- await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmStorage > summary').click();await page.locator('#fmAutoLog>summary').click();
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage > summary').click();await page.locator('#fmAutoLog>summary').click();
  const row=page.locator('#fmAutoLogList p',{hasText:'미용·보험·교육·경조사'});await expect(row).toContainText('2건');
  await row.locator('button').click();await page.locator('#fmAskOk').click();
  await expect.poll(cats).toEqual({a:'기타',b:'쇼핑',c:'식비',d:'쇼핑',e:'쇼핑',f:'기타'});
@@ -69,7 +68,7 @@ test('미용·보험 are categories: saved 기타/쇼핑 rows move by name once,
 
 test('🎂 기념일도 폰 알림에: D-7·D-1은 선물 준비, 당일은 오늘 (생활 알림을 끄면 빠짐)',async({page})=>{
  await page.addInitScript(d=>{if(!localStorage.getItem('firemate_anniv_v1'))localStorage.setItem('firemate_anniv_v1',JSON.stringify({list:[{id:'a',name:'엄마 생신',date:'1960'+d.slice(4),yearly:true}]}))},day(7));
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmPushOn').check();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmPushOn').check();
  await expect.poll(async()=>(await plan(page))?.[day(0)]).toContain('🎂 엄마 생신 D-7 · 선물 준비');
  const p=await plan(page);expect(p[day(6)]).toContain('🎂 엄마 생신 D-1 · 선물 준비');expect(p[day(7)]).toContain('🎂 엄마 생신 오늘');expect(p[day(3)]||[]).not.toContain('🎂 엄마 생신 D-4 · 선물 준비');
  await page.locator('[data-push="life"]').click();await expect.poll(async()=>JSON.stringify(await plan(page))).not.toContain('엄마 생신');

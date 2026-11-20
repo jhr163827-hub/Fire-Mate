@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 const monthAgo=n=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-n);return ym(d)};
@@ -25,7 +24,7 @@ test('the app asks the browser to keep its storage and says so in settings',asyn
 test('backups carry category budgets, merchant rules, health inputs and fixed-cost marks; restore brings them back',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>{localStorage.setItem('firemate_category_budgets_v1',JSON.stringify({'식비':300000}));localStorage.setItem('firemate_category_rules_v1',JSON.stringify({'expense|다이소':'쇼핑'}));localStorage.setItem('firemate_health_calc_v1',JSON.stringify({finance:'3000'}));localStorage.setItem('firemate_fixed_costs_v1',JSON.stringify({'넷플릭스':true}));localStorage.setItem('firemate_gmail_token_v1',JSON.stringify({token:'secret',exp:1}))});
- await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const text=require('fs').readFileSync(await download.path(),'utf8');const backup=JSON.parse(text);
  expect(Object.keys(backup.extras)).toEqual(expect.arrayContaining(['firemate_category_budgets_v1','firemate_category_rules_v1','firemate_fixed_costs_v1','firemate_health_calc_v1']));expect(Object.keys(backup.extras).every(k=>!/token|td_key|zip_pwd|_pin_|_lock_/.test(k))).toBe(true);
@@ -40,7 +39,7 @@ test('backups carry category budgets, merchant rules, health inputs and fixed-co
 test('backups also carry the small-income and auto-add switches',async({page})=>{
  await page.goto('/index.html');
  await page.evaluate(()=>{localStorage.setItem('firemate_hide_small_income_v1','0');localStorage.setItem('firemate_import_auto_v1','1')});
- await page.locator('#settingsBottom').click();await openSettings(page);await page.locator('#fmStorage>summary').click();
+ await page.locator('#settingsBottom').click();await page.locator('#fmStorage>summary').click();
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
  const text=require('fs').readFileSync(await download.path(),'utf8');
  expect(JSON.parse(text).extras).toMatchObject({firemate_hide_small_income_v1:'0',firemate_import_auto_v1:'1'});

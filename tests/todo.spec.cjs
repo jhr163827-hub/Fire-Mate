@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 test.beforeEach(async({page})=>{await page.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort())});
@@ -10,7 +9,7 @@ test('오늘 할 일: add, carry over, daily repeat, check off and celebrate, pu
  await expect(page.locator('#fmHomeTodo')).toHaveCount(0);
  await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmTodoSub')).toHaveText('2개 남음');
- await openTool(page,'#fmTodoOpen');
+ await page.locator('#fmTodoOpen').click();
  const box=page.locator('#fmTodoOverlay');
  await expect(box.locator('.fm-todo-row')).toHaveCount(2);
  await expect(box.locator('.fm-todo-text i.old')).toHaveText('2일째');
@@ -63,7 +62,7 @@ test('오늘 할 일 brings you back: 내일 chip, 🔥 streak of finished days,
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmTodoSub')).toHaveText('1개 남음 · 🔥2일');
  await expect.poll(()=>page.evaluate(()=>window.__badge.at(-1))).toBe(1);
- await openTool(page,'#fmTodoOpen');const box=page.locator('#fmTodoOverlay');
+ await page.locator('#fmTodoOpen').click();const box=page.locator('#fmTodoOverlay');
  await expect(page.locator('#fmTodoHero')).toContainText('🔥 2일 연속 다 했어요');
  // 내일 chip puts a line under 📅 내일, not into today
  await page.locator('#fmTodoTmr').click();await page.fill('#fmTodoIn','장보기');await page.press('#fmTodoIn','Enter');
@@ -83,34 +82,34 @@ test('자격증 has no start-timer button; a timer left running from before stil
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmCertSub')).toHaveText('준비 중 · 오늘 공부 전');
- await openTool(page,'#fmCertOpen');
+ await page.locator('#fmCertOpen').click();
  await expect(page.locator('#fmCertList .fm-cert-empty')).toHaveCount(0);
  await expect(page.locator('[data-cert-timer]')).toHaveCount(0);
  await page.evaluate(()=>localStorage.setItem('firemate_cert_timer_v1',JSON.stringify({id:'c',at:Date.now()-45*6e4})));
  await page.reload();await page.locator('#settingsBottom').click();
  await expect(page.locator('#fmCertSub')).toHaveText('⏱ 공부 중 45분');
- await openTool(page,'#fmCertOpen');await page.locator('[data-cert-timer]').click();
+ await page.locator('#fmCertOpen').click();await page.locator('[data-cert-timer]').click();
  await expect(page.locator('.fm-cert-today .fm-cert-add span')).toHaveText('오늘 45분');
  expect(await page.evaluate(()=>localStorage.getItem('firemate_cert_timer_v1'))).toBeNull();
 });
 
 test('버킷 다음 한 걸음 goes to 오늘 할 일 and ticking it counts a step',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_bucket_v1',JSON.stringify({list:[{id:'b',name:'오로라 보기',cat:'travel',cost:4000000,at:1}]}))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmBucketOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmBucketOpen').click();
  const box=page.locator('#fmBucketOverlay');
  await expect(box.locator('.fm-bk-next')).toContainText('첫 걸음을 적어 보세요');
  await box.locator('[data-bk-edit="b"]').click();await page.fill('#fmBkStep','항공권 가격 알아보기');await page.fill('#fmBkSaved','1000000');await page.locator('#fmBucketEForm button.primary').click();
  await expect(box.locator('.fm-bk-next strong')).toHaveText('항공권 가격 알아보기');
  await expect(box.locator('[data-bk-edit="b"] small').first()).toContainText('모은 돈 25%');
  await box.locator('[data-bk-todo="b"]').click();
- await box.locator('[data-close]').first().click();await openTool(page,'#fmTodoOpen');
+ await box.locator('[data-close]').first().click();await page.locator('#fmTodoOpen').click();
  const row=page.locator('#fmTodoOverlay .fm-todo-row',{hasText:'항공권 가격 알아보기'});await row.locator('.fm-todo-check').click();
  const b=await page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_bucket_v1')).list[0]);
  expect(b.walked).toBe(1);expect(b.step).toBeUndefined();expect(b.saved).toBe(1000000);
 });
 
 test('할 일 understands 내일·매일·요일 words, edits the day, and a deleted line can be brought back',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmTodoOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
  const box=page.locator('#fmTodoOverlay'),list=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('firemate_todo_v1')).list);
  await page.fill('#fmTodoIn','내일 장보기');await page.press('#fmTodoIn','Enter');
  await page.fill('#fmTodoIn','매일 스트레칭');await page.press('#fmTodoIn','Enter');
@@ -128,18 +127,18 @@ test('할 일 understands 내일·매일·요일 words, edits the day, and a del
  expect((await list()).find(t=>t.text==='스트레칭').repeat).toBe(true);
  // a finished line does not say "N일째"
  await page.evaluate(d=>localStorage.setItem('firemate_todo_v1',JSON.stringify({list:[{id:'x',text:'세탁소',day:d,done:true,doneAt:new Date().toISOString().slice(0,10)}]})),day(-3));
- await page.reload();await page.locator('#settingsBottom').click();await openTool(page,'#fmTodoOpen');
+ await page.reload();await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
  await expect(box.locator('.fm-todo-row.done i.old')).toHaveCount(0);
 });
 
 test('자격증 search finds Korean nicknames like 토익·정처기·운전면허',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmCertOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  for(const [q,name] of [['토익','TOEIC'],['정처기','정보처리기사'],['오픽','OPIc'],['운전면허','1종 보통 운전면허']]){await page.fill('#fmCertQ',q);await expect(page.locator('.fm-cert-hits button',{hasText:name}).first()).toBeVisible()}
 });
 
 test('자격증 +30분 can be taken back right away',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'c',name:'정보처리기사',goal:true}]}))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmCertOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  await page.locator('.fm-cert-today [data-cert-add="30"]').click();
  await expect(page.locator('.fm-cert-today .fm-cert-add b')).toHaveText('30분');
  await page.locator('[data-cert-undo]').click();
@@ -149,7 +148,7 @@ test('자격증 +30분 can be taken back right away',async({page})=>{
 
 test('자격증 화면: three numbers on top, wallet is grouped by kind with tabs, no ladder or résumé copy',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'일반기계기사',date:'2021-06-10'},{id:'b',name:'컴퓨터활용능력 1급',date:'2019-03-02'},{id:'c',name:'TOEIC',date:'2020-01-10'},{id:'d',name:'SQLD',date:'2023-09-01'},{id:'e',name:'컴퓨터활용능력 2급',date:'2018-03-02'}]}))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmCertOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  await expect(page.locator('.fm-cert-stats')).toContainText('5보유');await expect(page.locator('.fm-wallet-sum')).toContainText('만료 1');
  await expect(page.locator('.fm-wallet-head h3')).toHaveText('보유 자격증 5');
  await expect(page.locator('.fm-wallet-sec h4')).toHaveText(['국가기술 1','어학 1','전문·공인 3']);await expect(page.locator('.fm-cert-ico:visible, .fm-gb:visible')).toHaveCount(0);
@@ -160,10 +159,10 @@ test('자격증 화면: three numbers on top, wallet is grouped by kind with tab
 
 test('버킷 ⭐ 올해 꼭 pins to the top; 위시 안 살래요 counts the money kept',async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_bucket_v1',JSON.stringify({list:[{id:'1',name:'마라톤',cat:'health',at:1},{id:'2',name:'기술사 합격',cat:'learn',at:1}]}));localStorage.setItem('firemate_wishlist_v1',JSON.stringify({list:[{id:'w',name:'퀘스트',price:1200000,at:Date.now()}]}))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmBucketOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmBucketOpen').click();
  await page.locator('[data-bk-edit="2"]').click();await page.locator('#fmBkPin').check();await page.locator('#fmBucketEForm button.primary').click();
  await expect(page.locator('.fm-bk-row').first()).toContainText('기술사 합격');await expect(page.locator('.fm-bk-row .fm-bk-pin')).toHaveCount(1);
- await page.locator('#fmBucketOverlay [data-close]').first().click();await openTool(page,'#fmWishOpen');
+ await page.locator('#fmBucketOverlay [data-close]').first().click();await page.locator('#fmWishOpen').click();
  await page.locator('[data-wish-edit="w"]').click();await page.locator('#fmWishESkip').click();
  await expect(page.locator('.fm-wish-kept')).toContainText('₩1,200,000');
  await expect(page.locator('.fm-wish-sec.skip')).toContainText('참은 것');
@@ -173,7 +172,7 @@ test('버킷 ⭐ 올해 꼭 pins to the top; 위시 안 살래요 counts the mon
 test('보유 자격증 opens a detail card: number with copy, undated ones are nudged and sorted by grade, 수정 edits',async({page,context})=>{
  await context.grantPermissions(['clipboard-read','clipboard-write']);
  await page.addInitScript(()=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'a',name:'2종 보통 운전면허'},{id:'b',name:'일반기계기사'},{id:'c',name:'PE Mechanical: Thermal and Fluid Systems'},{id:'d',name:'TOEIC',date:'2025-01-10'}]}))});
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmCertOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  await expect(page.locator('.fm-wallet .fm-cert-row strong')).toHaveText(['일반기계기사','PE Mechanical: Thermal and Fluid Systems','TOEIC','2종 보통 운전면허']);
  await expect(page.locator('.fm-cert-row',{hasText:'PE Mechanical'}).locator('small b')).toHaveText('PE');
  await expect(page.locator('[data-cert-nodate]')).toContainText('취득일 안 넣은 자격증 3개');
@@ -187,14 +186,14 @@ test('보유 자격증 opens a detail card: number with copy, undated ones are n
 });
 
 test('자격증 점검: empty screen offers common ones, passing a timed goal stops its timer, unknown names show no generic facts',async({page})=>{
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmCertOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmCertOpen').click();
  await expect(page.locator('.fm-cert-first')).toContainText('내 자격증을 넣어 보세요');await expect(page.locator('.fm-cert-empty')).toHaveCount(0);
  await page.locator('[data-cert-pick="TOEIC"]').click();await expect(page.locator('[data-cert-mode="have"]')).toHaveAttribute('aria-pressed','true');await page.locator('#fmCertCancel').click();
  await page.fill('#fmCertQ','사내 교육 수료');await page.locator('.fm-cert-hits .own').click();
  await expect(page.locator('#fmCertInfo')).toContainText('목록에 없는 자격증');await expect(page.locator('#fmCertInfo .fm-cs-facts')).toHaveCount(0);await page.locator('#fmCertCancel').click();
  await page.evaluate(()=>{localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'g',name:'정보처리기사',goal:true}]}));localStorage.setItem('firemate_cert_timer_v1',JSON.stringify({id:'g',at:Date.now()-6e5}))});
  await page.reload();await page.locator('#settingsBottom').click();await expect(page.locator('#fmCertSub')).toContainText('공부 중');
- await openTool(page,'#fmCertOpen');await expect(page.locator('.fm-cert-stats')).toContainText('올해 공부');
+ await page.locator('#fmCertOpen').click();await expect(page.locator('.fm-cert-stats')).toContainText('올해 공부');
  await page.locator('.fm-cert-today .fm-cert-thead').click();await page.click('[data-cert-mode="have"]');await page.locator('#fmCertForm button.primary').click();
  expect(await page.evaluate(()=>localStorage.getItem('firemate_cert_timer_v1'))).toBeNull();
  await expect(page.locator('#fmCertSub')).not.toContainText('공부 중');

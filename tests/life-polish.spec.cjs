@@ -1,11 +1,10 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');
 const day=n=>{const d=new Date(Date.now()+n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const seed=(page,fn,arg)=>page.addInitScript(([f,a])=>{if(sessionStorage.getItem('qa'))return;sessionStorage.setItem('qa','1');new Function('a',f)(a)},[fn,arg]);
 
 test('✅ 할 일: 매주·매달·평일 반복을 알아듣고, 다른 날 반복은 접힌 묶음에; 순서는 오늘 → 내일 → 완료',async({page})=>{
  await seed(page,`localStorage.setItem('firemate_todo_v1',JSON.stringify({list:[{id:'c',text:'세탁소',day:a[0],done:true,doneAt:a[0]},{id:'d',text:'장보기',day:a[1]}]}))`,[day(0),day(1)]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmTodoOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
  const wd='일월화수목금토'[new Date().getDay()],other='일월화수목금토'[(new Date().getDay()+3)%7];
  await page.fill('#fmTodoIn','매주 '+wd+' 헬스');await page.press('#fmTodoIn','Enter');
  await page.fill('#fmTodoIn','매주 '+other+'요일 분리수거');await page.press('#fmTodoIn','Enter');
@@ -25,12 +24,12 @@ test('✅ 할 일: 매주·매달·평일 반복을 알아듣고, 다른 날 반
 
 test('✅ 할 일: 공부 할 일의 ⏱는 공부 타이머를 그 자격증 과목으로 시작하고, 1시간 채우면 할 일도 끝(분은 한 번만)',async({page})=>{
  await seed(page,`localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'g',name:'정보처리기사',goal:true}]}))`,[]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmTodoOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
  await page.locator('[data-todo-sugg=cert]').click();
  await page.locator('[data-todo-timer]').click();
  await expect(page.locator('#fmStudyOverlay')).toBeVisible();await expect(page.locator('#fmStudyFocus')).toBeVisible();await expect(page.locator('#fmStudyFSub')).toHaveText('정보처리기사');
  await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('firemate_study_v1'));s.run.start-=61*6e4;s.run.at-=61*6e4;localStorage.setItem('firemate_study_v1',JSON.stringify(s))});
- await page.reload();await page.locator('#settingsBottom').click();await openTool(page,'#fmStudyOpen');await page.locator('#fmStudyStop').click();
+ await page.reload();await page.locator('#settingsBottom').click();await page.locator('#fmStudyOpen').click();await page.locator('#fmStudyStop').click();
  const v=await page.evaluate(()=>({t:JSON.parse(localStorage.getItem('firemate_todo_v1')).list[0],c:JSON.parse(localStorage.getItem('firemate_certificates_v1')).list[0].study}));
  expect(v.t.done).toBe(true);expect(Object.values(v.c)).toEqual([61]);
 });
@@ -39,7 +38,7 @@ test('✈️ 여행: 쓴 돈을 항공·숙소·교통으로 나누고(떠나기
  await seed(page,`const tx=[{id:'x1',type:'expense',date:'2026-06-25',amount:320000,memo:'제주항공',category:'여행'},{id:'x2',type:'expense',date:'2026-07-20',amount:450000,memo:'신라호텔 제주',category:'여행'},{id:'x3',type:'expense',date:'2026-07-21',amount:86000,memo:'롯데렌터카',category:'교통'},{id:'y1',type:'expense',date:a[0],amount:18000,memo:'택시',category:'교통'}];
  localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',tx,rec:[],budgets:{},fire:{goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[],holdings:[]}));
  localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'t1',name:'제주',area:'kr',place:'50110',from:'2026-07-20',to:'2026-07-23',budget:1000000},{id:'t2',name:'오사카',area:'world',place:'JP',from:a[2],to:a[2]},{id:'t3',name:'부산',area:'kr',place:'26',from:a[0],to:a[1],budget:300000},{id:'t4',name:'강릉',area:'kr',place:'51150',from:'2026-03-01',to:'2026-03-02'}]))`,[day(0),day(2),day(20)]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
  await page.locator('[data-area=kr]').click();
  await expect(page.locator('.fm-jn-next')).toContainText('부산');
  await expect(page.locator('.fm-jn-trip',{hasText:'강릉'})).not.toContainText('₩0');
@@ -57,7 +56,7 @@ test('✈️ 여행: 쓴 돈을 항공·숙소·교통으로 나누고(떠나기
 test('🪣 버킷: 매달 모을 돈, 여행 일지에 계획하기 → 다녀오면 이뤘어요 체크, 시트는 삭제·저장 두 버튼',async({page})=>{
  const yr=new Date().getFullYear()+1;
  await seed(page,`localStorage.setItem('firemate_bucket_v1',JSON.stringify({list:[{id:'1',name:'오로라 보기',cat:'travel',year:a[0],cost:4000000,saved:1000000,at:1}]}))`,[yr]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmBucketOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmBucketOpen').click();
  await expect(page.locator('.fm-bk-row')).toContainText('월 ');
  await page.locator('[data-bk-edit="1"]').click();
  await expect(page.locator('.fm-bk-calc')).toContainText(yr+'년까지 매달');
@@ -73,7 +72,7 @@ test('🪣 버킷: 매달 모을 돈, 여행 일지에 계획하기 → 다녀�
 
 test('🤔 살까 말까: FIRE 계획이 없으면 "영향 없음"이 아니라 계획을 넣으라고 하고, 과거 수익률은 보장이 아니라고 적음',async({page})=>{
  await seed(page,`localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],favorites:[],budgets:{},tx:[],fire:{goal:0,monthly:0,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[],holdings:[]}))`,[]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmWishOpen');
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmWishOpen').click();
  await page.fill('#fmBuyIn','1000000');await page.locator('#fmBuyForm button').first().click();
  const out=page.locator('#fmBuyOut');await expect(out).toBeVisible();
  await expect(out).not.toContainText('영향 거의 없음');await expect(out).not.toContainText('안 늦어져요');
@@ -83,7 +82,7 @@ test('🤔 살까 말까: FIRE 계획이 없으면 "영향 없음"이 아니라 
 test('✈️ 떠나기 전 항공권 결제는 가장 가까운 다음 여행 하나에만 들어감(두 여행에 두 번 안 셈)',async({page})=>{
  await seed(page,`localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],favorites:[],budgets:{},tx:[{id:'f',type:'expense',date:'2026-08-01',amount:300000,memo:'대한항공',category:'여행'}],fire:{goal:65000,monthly:300,rate:7,withdrawal:4},balance:{fx:1400,cash:0,other:0,debt:0},accounts:[],holdings:[]}));
  localStorage.setItem('firemate_trips_v1',JSON.stringify([{id:'a',name:'부산',area:'kr',place:'26',from:'2026-08-10',to:'2026-08-12'},{id:'b',name:'강릉',area:'kr',place:'51150',from:'2026-08-25',to:'2026-08-26'}]))`,[]);
- await page.goto('/index.html');await page.locator('#settingsBottom').click();await openTool(page,'#fmJournalOpen');await page.locator('[data-area=kr]').click();
+ await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();await page.locator('[data-area=kr]').click();
  await expect(page.locator('.fm-jn-trip',{hasText:'부산'})).toContainText('₩300,000');
  await expect(page.locator('.fm-jn-trip',{hasText:'강릉'})).not.toContainText('₩300,000');
 });

@@ -1,4 +1,3 @@
-const {openSettings,openTool,findMore,moreRoot}=require('./more-navigation.cjs');
 const {test,expect}=require('@playwright/test');const fs=require('node:fs');
 test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
 const key='firemate_future_v1';
@@ -8,7 +7,7 @@ test.beforeEach(async({page})=>{
  await page.addInitScript(()=>{if(sessionStorage.futureQA)return;sessionStorage.futureQA='1';localStorage.setItem('firemate_onboarding_v1','dismissed');localStorage.setItem('firemate_smart_v3',JSON.stringify({theme:'dark',rec:[],budgets:{},tx:[],fire:{goal:2000,monthly:100,rate:0,withdrawal:4},retirement:{items:[],monthly:100,yield:0,priceChange:0,crash:30},balance:{fx:1400,cash:12000000,other:0,debt:0},accounts:[],holdings:[],snapshots:[{month:'2025-01',amount:3000000}],dailySnapshots:[]}));localStorage.setItem('firemate_bucket_v1',JSON.stringify({list:[{id:'b',name:'스위스 여행',cost:2000000,year:2027}]}));});
  await page.goto('/index.html');await page.locator('#settingsBottom').click();
 });
-async function open(page,id){await findMore(page,id);await expect(page.locator('#fmLifeOverlay')).toBeVisible();if(id==='#fmRehearsalOpen')await page.locator('#fmFutureConditions summary').click()}
+async function open(page,id){await page.locator(id).click();await expect(page.locator('#fmLifeOverlay')).toBeVisible();if(id==='#fmRehearsalOpen')await page.locator('#fmFutureConditions summary').click()}
 async function state(page,k){return page.evaluate(k=>JSON.parse(localStorage.getItem(k)||'null'),k)}
 test('retirement preview: no mutation until save; distribution is not a second return; mobile fits',async({page})=>{
  await open(page,'#fmRehearsalOpen');await page.fill('#ff_years','2');await page.fill('#ff_spend','100');await page.fill('#ff_yield','0');await page.fill('#ff_inflation','0');await page.fill('#ff_cash','1200');await expect(page.locator('#ffResult')).toContainText('2027-11');expect(await state(page,key)).toBeNull();
@@ -29,9 +28,9 @@ test('time machine preserves historical unknowns, captures holdings and plan wit
  await page.reload();await page.locator('#settingsBottom').click();await open(page,'#fmTimeOpen');await expect(page.locator('.fm-time-memo')).toContainText('매수 이유');const snap=(await state(page,'firemate_time_v1')).list[0];expect(snap.net).toBe(12000000);expect(snap.goal.goal).toBe(2000);expect(snap.holdings).toEqual([]);
 });
 test('settings and snapshot storage failure preserve prior data, backup includes both new stores',async({page})=>{
- await open(page,'#fmRehearsalOpen');await page.locator('#fmFutureForm button[type=submit]').click();const previous=await state(page,key);await findMore(page,'#fmTimeOpen');const snap=await state(page,'firemate_time_v1');
+ await open(page,'#fmRehearsalOpen');await page.locator('#fmFutureForm button[type=submit]').click();const previous=await state(page,key);await page.locator('[data-future-go=timemachine]').first().click();const snap=await state(page,'firemate_time_v1');
  await page.evaluate(()=>{const orig=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(['firemate_future_v1','firemate_time_v1'].includes(k))throw new Error('quota');return orig.call(this,k,v)}});
- await page.locator('#fmTimeNow').click();expect(await state(page,'firemate_time_v1')).toEqual(snap);await findMore(page,'#fmRehearsalOpen');await page.locator('#fmFutureConditions summary').click();await page.fill('#ff_spend','200');await page.locator('#fmFutureForm button[type=submit]').click();expect(await state(page,key)).toEqual(previous);
+ await page.locator('#fmTimeNow').click();expect(await state(page,'firemate_time_v1')).toEqual(snap);await page.locator('[data-future-go=rehearsal]').first().click();await page.locator('#fmFutureConditions summary').click();await page.fill('#ff_spend','200');await page.locator('#fmFutureForm button[type=submit]').click();expect(await state(page,key)).toEqual(previous);
  const [dl]=await Promise.all([page.waitForEvent('download'),page.evaluate(()=>document.getElementById('export').click())]);const b=JSON.parse(fs.readFileSync(await dl.path(),'utf8'));expect(b.extras.firemate_future_v1).toEqual(previous);expect(b.extras.firemate_time_v1).toEqual(snap);
 });
 test('new month freezes previous portfolio and notes; current capture never changes older records',async({page})=>{

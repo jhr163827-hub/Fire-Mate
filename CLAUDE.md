@@ -226,3 +226,5 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 - 📱 앱 설정 `폰에서 확인`(`#fmDeviceOpen`, 생활 도구 틀 `device`): 링크 미리보기·공유 메뉴(공유로 열리면 자동 ✅)·마이크·받아쓰기·폰 알림(시험 알림)·지문·지도 오프라인·저장 공간을 눌러 확인, 결과는 `firemate_device_v1`(백업 안 함).
 - 살까 말까의 예상 수익률 0%가 7%로 바뀌던 것 고침. 자격증 상세를 목록(cert-catalog)이 늦게 받아진 뒤에 열었으면 받은 뒤 다시 그림(`#fmCertDetail[data-cert]`, 유효기간 줄이 가끔 빠지던 것).
 - 테스트 `tests/audit-286.spec.cjs`.
+- ⏱️ 2차(같은 PR): `sw.js` 앱 열기는 여전히 네트워크 먼저지만, 저장된 페이지가 있으면 **3초 안에 못 받을 때 저장된 페이지로 연다**(다운로드는 뒤에서 끝까지 받아 다음에 열 때 씀, `event.waitUntil`). 업데이트 안내(`fm-pwa-updates`)·`validPage` 검사는 그대로. `vendor/`도 `arcade/`처럼 받은 것을 캐시에 넣어 오프라인 가져오기에 씀. 테스트 `tests/sw-fallback.test.cjs`(test:finance).
+- 생활 기능 나눠 불러오기는 **하지 않음**: 앱 전체가 메인 스크립트 한 클로저(약 75만 자)를 공유하고, CPU 6배 느리게(저가 폰)도 첫 화면 준비가 약 0.9초라 나눠도 0.2초 안팎 — 위험에 비해 이득이 작음(2026-11-28 측정).

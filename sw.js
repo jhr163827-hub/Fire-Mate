@@ -11,10 +11,14 @@ self.addEventListener('fetch',event=>{
  const req=event.request,url=new URL(req.url);
  if(req.method!=='GET'||url.origin!==self.location.origin)return;
  if((req.mode==='navigate'||url.pathname.endsWith('/index.html')) && (url.pathname===new URL('./',self.registration.scope).pathname || url.pathname===new URL('./index.html',self.registration.scope).pathname)){
-  event.respondWith((async()=>{const cache=await caches.open(CACHE);try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok&&validPage(await response.clone().text())){await cache.put('./index.html',response.clone());return response}}catch{}return await cache.match('./index.html')||Response.error()})());
+  // Network first, but a slow network (subway, weak signal) no longer holds the app: after 3 s the saved page opens and the download
+  // keeps going in the background, so the next open has it (the update prompt in fm-pwa-updates is unchanged).
+  const net=(async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok&&validPage(await response.clone().text())){await (await caches.open(CACHE)).put('./index.html',response.clone());return response}}catch{}return null})();
+  event.waitUntil(net);
+  event.respondWith((async()=>{const cached=await (await caches.open(CACHE)).match('./index.html');if(!cached)return await net||Response.error();const first=await Promise.race([net,new Promise(r=>setTimeout(()=>r(null),3000))]);return first||cached})());
   return;
  }
- if(url.pathname.includes('/arcade/')){
+ if(url.pathname.includes('/arcade/')||url.pathname.includes('/vendor/')){
   event.respondWith((async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok){const cache=await caches.open(CACHE);await cache.put(req,response.clone());return response}return await caches.match(req)||response}catch{return await caches.match(req)||Response.error()}})());
   return;
  }

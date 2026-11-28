@@ -3186,8 +3186,10 @@ html body #settingsOverlay #fmStartSel{flex:0 0 auto;max-width:46%;min-height:40
 .fm-shop-sheet #fmShopVisit{display:flex;flex-direction:column;gap:8px}
 .fm-shop-sheet #fmShopVisit[hidden]{display:none}
 .fm-shop-sheet .fm-jn-with{margin:0}
-.fm-shop-rate{display:flex;gap:4px}
-.fm-shop-rate button{width:auto;margin:0;padding:2px 6px;background:none;border:0;font-size:26px;color:#ffc107;line-height:1}
+.fm-shop-rate{display:flex;align-items:center;gap:10px}
+.fm-shop-stars{--r:0%;font-size:28px;letter-spacing:2px;line-height:1;background:linear-gradient(90deg,#ffc107 var(--r),var(--line) var(--r));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fm-shop-rate b{font-size:18px;color:var(--txt)}
+.fm-shop-range{width:100%;accent-color:#ffc107;margin:0}
 .fm-shop-vs{display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-radius:14px;background:var(--panel)}
 .fm-shop-v{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
 .fm-shop-v b{color:#ffc107;font-weight:400}
@@ -3203,3 +3205,15 @@ html body #settingsOverlay #fmStartSel{flex:0 0 auto;max-width:46%;min-height:40
 .fm-dev .fm-life-main{cursor:default}
 .fm-dev-go{width:auto;margin:0;padding:6px 14px;font-size:13px;border-radius:999px;flex:none}
 .fm-dev-st{font-size:13px}
+.fm-jn-acts{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;margin:8px 0 2px}
+.fm-jn-acts button{min-height:44px;margin:0;border:0;border-radius:14px;background:var(--panel);color:var(--txt);font-size:14px;font-weight:700}
+.fm-jn-seg{grid-template-columns:repeat(auto-fit,minmax(0,1fr));margin:12px 0 4px}
+.fm-jn-sec[hidden]{display:none}
+.fm-shop-photos{display:flex;gap:8px;overflow-x:auto;padding:2px 0}
+.fm-shop-ph{flex:none;width:72px;height:72px;margin:0;padding:0;border:0;border-radius:12px;overflow:hidden;background:var(--panel);display:grid;place-items:center;color:var(--sub);font-size:22px;cursor:pointer}
+.fm-shop-ph img{width:100%;height:100%;object-fit:cover}
+.fm-shop-ph.add{flex-direction:column;align-content:center;gap:0;line-height:1.1}
+.fm-shop-ph.add small{font-size:11px}
+.fm-shop-thumb{width:34px;height:34px;border-radius:9px;overflow:hidden;flex:none}
+.fm-shop-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.fm-shop-sheet>*{flex-shrink:0}

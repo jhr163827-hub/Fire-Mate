@@ -216,3 +216,15 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 - 안드로이드: `manifest.webmanifest`의 `share_target`(GET `title·text·url`) → 앱이 열리면 여행 일지 + 가게 추가 창이 채워져 열림(아이폰은 붙여넣기). 통합 검색·더보기 찾기에도 가게.
 - 함께 고침: 습관 자동 체크가 공부 타이머 하루 시작 0시를 5시로 읽던 것(`+dayStart||5`).
 - 테스트 `tests/shops.spec.cjs`, 함수는 `tests/place-fn.test.cjs`(test:finance).
+
+## v3.5.286 점검 1차 (사용자 "전체 점검 → 다 ㄱ")
+- 📦 엑셀(xlsx 0.18.5)·ZIP(zip.js 2.7.62) 도구는 CDN 대신 저장소 `vendor/`의 파일(npm 원본 그대로, 라이선스 동봉)을 쓴다. 외부 CDN 스크립트를 다시 넣지 말 것.
+- 🗺️ 지도 파일(`maps-dong/*`·`maps-kr-gu.json`·`maps-c-*`·국내·해외)은 `fmMapGet`: 네트워크 먼저, 받은 것은 Cache `fm-maps-v1`에 넣어 한 번 본 지도는 오프라인에서도 열림(`sw.js`는 `fire-mate-v*`만 지움).
+- 🔗 저장된 링크를 `href`로 쓸 때는 `fmHttp`(http·https만, 아니면 `#`) — 백업에서 들어온 `javascript:` 링크 막기.
+- 💚 가고 싶은 장소 화면(국내)에 가게 기록의 `가고 싶은 가게`(누르면 여행 일지 가게 창).
+- 📈 더보기 `자주 여는 것`: 도구를 연 시각을 이 폰에만(`firemate_more_use_v1` {id:[시각]} 20개, 백업 안 함) 세어 30일에 3번 넘게 연 것 중 바로가기에 없는 것 3개 + `＋ 바로가기에 넣기`.
+- 📱 앱 설정 `폰에서 확인`(`#fmDeviceOpen`, 생활 도구 틀 `device`): 링크 미리보기·공유 메뉴(공유로 열리면 자동 ✅)·마이크·받아쓰기·폰 알림(시험 알림)·지문·지도 오프라인·저장 공간을 눌러 확인, 결과는 `firemate_device_v1`(백업 안 함).
+- 살까 말까의 예상 수익률 0%가 7%로 바뀌던 것 고침. 자격증 상세를 목록(cert-catalog)이 늦게 받아진 뒤에 열었으면 받은 뒤 다시 그림(`#fmCertDetail[data-cert]`, 유효기간 줄이 가끔 빠지던 것).
+- 테스트 `tests/audit-286.spec.cjs`.
+- ⏱️ 2차(같은 PR): `sw.js` 앱 열기는 여전히 네트워크 먼저지만, 저장된 페이지가 있으면 **3초 안에 못 받을 때 저장된 페이지로 연다**(다운로드는 뒤에서 끝까지 받아 다음에 열 때 씀, `event.waitUntil`). 업데이트 안내(`fm-pwa-updates`)·`validPage` 검사는 그대로. `vendor/`도 `arcade/`처럼 받은 것을 캐시에 넣어 오프라인 가져오기에 씀. 테스트 `tests/sw-fallback.test.cjs`(test:finance).
+- 생활 기능 나눠 불러오기는 **하지 않음**: 앱 전체가 메인 스크립트 한 클로저(약 75만 자)를 공유하고, CPU 6배 느리게(저가 폰)도 첫 화면 준비가 약 0.9초라 나눠도 0.2초 안팎 — 위험에 비해 이득이 작음(2026-11-28 측정).

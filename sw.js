@@ -1,5 +1,5 @@
-const CACHE='fire-mate-v3-5-285';
-const ASSETS=['./index.html','./app.css?v=3.5.285','./js/features.js?v=3.5.285','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='fire-mate-v3-5-286';
+const ASSETS=['./index.html','./app.css?v=3.5.286','./js/features.js?v=3.5.286','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const validPage=text=>text.includes("const BUILD='"+CACHE+"'")&&text.includes('id="view-home"')&&text.includes('id="view-assets"')&&text.includes('id="view-fire"')&&text.length>100000;
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})));const page=await cache.match('./index.html');if(!page||!validPage(await page.text())){await caches.delete(CACHE);throw Error('App and worker build mismatch')}})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('fire-mate-v')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})())});
@@ -11,10 +11,14 @@ self.addEventListener('fetch',event=>{
  const req=event.request,url=new URL(req.url);
  if(req.method!=='GET'||url.origin!==self.location.origin)return;
  if((req.mode==='navigate'||url.pathname.endsWith('/index.html')) && (url.pathname===new URL('./',self.registration.scope).pathname || url.pathname===new URL('./index.html',self.registration.scope).pathname)){
-  event.respondWith((async()=>{const cache=await caches.open(CACHE);try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok&&validPage(await response.clone().text())){await cache.put('./index.html',response.clone());return response}}catch{}return await cache.match('./index.html')||Response.error()})());
+  // Network first, but a slow network (subway, weak signal) no longer holds the app: after 3 s the saved page opens and the download
+  // keeps going in the background, so the next open has it (the update prompt in fm-pwa-updates is unchanged).
+  const net=(async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok&&validPage(await response.clone().text())){await (await caches.open(CACHE)).put('./index.html',response.clone());return response}}catch{}return null})();
+  event.waitUntil(net);
+  event.respondWith((async()=>{const cached=await (await caches.open(CACHE)).match('./index.html');if(!cached)return await net||Response.error();const first=await Promise.race([net,new Promise(r=>setTimeout(()=>r(null),3000))]);return first||cached})());
   return;
  }
- if(url.pathname.includes('/arcade/')){
+ if(url.pathname.includes('/arcade/')||url.pathname.includes('/vendor/')){
   event.respondWith((async()=>{try{const response=await fetch(new Request(req,{cache:'no-store'}));if(response.ok){const cache=await caches.open(CACHE);await cache.put(req,response.clone());return response}return await caches.match(req)||response}catch{return await caches.match(req)||Response.error()}})());
   return;
  }

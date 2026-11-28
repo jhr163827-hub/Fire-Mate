@@ -206,3 +206,13 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 - 🌱 습관(더보기 → 일상 `#fmHabitOpen`, `firemate_habit_v1` {list:[{id,name,type:'daily'|'week'|'count',n,link,min,at}],log:{날:{id:횟수}}(400일),moved}, 백업 extras): 입력 `주 3회` → 주 N회, `물 8잔`(N>1 + 잔·번·회·개·쪽·분·층·km) → 하루 N번(누를 때마다 +1, 채운 뒤 누르면 0), 나머지 매일(`fmHbParse`). 🔥 연속(주 N회는 주 단위), 이번 주 7칸 점, 시트에 12주 잔디·이번 달 %. 자동 체크 `link`: `speak`(그날 말하기 연습 기록) 또는 공부 타이머 과목 id + `min`분(하루 시작 시각 반영). `🔁 매일 할 일을 습관으로`(`#fmHbMove`, fmAsk 후 매일 반복 할 일을 옮김). 다 하면 `fmCele`. 폰 알림 life에 `🌱 오늘 습관 N개 남음`, 돌아보기에 평균 달성률. 홈에는 안 넣음.
 - 🗣️ 말하기 연습(더보기 → 공부 `#fmSpeakOpen`, `firemate_speak_v1` {list:[{id,day,at,topic,frame,sec,checks:[4],text,filler,cpm,audio}](500개),stt}, 백업 extras): 주제 카드(회사·면접·일상·설득, 날마다 바뀜 + `다른 주제`), 틀 PREP·STAR·3가지 단계, 녹음(`MediaRecorder`, 녹음은 IndexedDB `speak:<id>`에 이 폰에만 — 사진 ZIP에 `말하기/` 포함), 마이크가 안 되면 시간만. **📝 받아쓰기는 스위치(`stt`)를 켰을 때만** 브라우저 음성 인식(ko-KR) — 크롬은 소리를 Google로 보내 글자로 바꿈(스위치 설명에 적음). 끝내면 음·어 같은 군말 수(`FM_SP_FILL`, 글자에 표시)·분당 글자, 점검 4가지(결론 먼저·이유·예시·군말 적게, 군말 2번 이하면 자동 체크) 저장. 기록을 누르면 다시 듣기·점검 수정·지우기(녹음도). 점수·AI 평가 없음.
 - 테스트 `tests/habit-speak.spec.cjs`.
+
+## v3.5.285 🍽️ 가게 기록 (여행 일지, 사용자 "링크로 · API 키 없이 · 같은 가게 다른 날도")
+- `firemate_travel_shops_v1` {list:[{id,name,addr,url,src:'naver'|'kakao',pid,kind:'food|cafe|bar|play|etc',place,gu,dong,dongc,want,at,visits:[{d,with,rate,memo}]}]}(2000개, 백업 extras). 발자국(`firemate_travel_spots_v1`)과 따로, 국내만.
+- 여행 일지 국내 지도 아래 `🍽️ 가게 N곳` + `＋ 가게`(`fmShopBlock`·`fmShopSheet`). 붙여넣기 칸(`#fmShopPaste`)에 네이버지도·카카오맵 공유 글이나 링크 → `fmStoreParse`(링크 정규식, `[태그]` 뺀 첫 줄이 이름, `시·도 + 시·군·구`(또는 `로·길 번지`)로 시작하는 줄이 주소). 이름이나 주소가 비면 Cloudflare 함수 `functions/api/place.js`(`/api/place?u=`, 키 없음, 링크 미리보기처럼 og 태그 + 카카오 장소 정보, 네이버·카카오 지도 주소만 따라감 — 매 리다이렉트 확인, 하루 캐시)로 채움(테스트는 `__fmPlaceTest`일 때만). 못 읽은 칸은 직접.
+- 주소 → `fmShopWhere`: 시·도·시군구로 `maps-kr` 키, 구가 나뉜 도시는 구, 주소에 동·읍·면·가가 있으면 행정동 지도에서 동(가락동↔가락1동). 저장하면 그 시·구·동을 가 봤어요로 칠함(`fmShopMark`, 가고 싶어요면 비어 있을 때만 2). 지우거나 바꿔도 칠한 건 그대로.
+- 종류는 이름(·카카오 분류)으로 추정(`fmShopGuess`, 못 고르면 맛집), 칩으로 바꿈. 방문: 날짜(기본 오늘)·누구랑(`FM_JN_WITH`)·별점·한 줄 메모. **같은 가게(pid, 같은 링크, 또는 이름+주소 앞 3단어)를 또 넣으면** `이미 있어요 · N번 갔어요 → 방문 추가 / 따로 저장`, 같은 날은 `그날은 이미 기록했어요`. 가고 싶어요로 다시 넣으면 기존 가게를 엶.
+- 지도 핀은 실제 위치가 아니라 그 시·구·동 도형 가운데의 노란 점(`fmShopPins`, `.fm-jn-dot.shop`, 누르면 그 곳 선택). 지도에서 곳을 고르면 목록이 `여기서 간 가게`로 걸러짐, 종류 칩(`fmShopK`)·누구랑 칩도 적용. 줄의 ↗는 원본 링크 새 창, 줄을 누르면 시트(방문 목록·지우기, `지도 앱에서 열기`, `방문 추가`/`다녀왔어요`, 삭제).
+- 안드로이드: `manifest.webmanifest`의 `share_target`(GET `title·text·url`) → 앱이 열리면 여행 일지 + 가게 추가 창이 채워져 열림(아이폰은 붙여넣기). 통합 검색·더보기 찾기에도 가게.
+- 함께 고침: 습관 자동 체크가 공부 타이머 하루 시작 0시를 5시로 읽던 것(`+dayStart||5`).
+- 테스트 `tests/shops.spec.cjs`, 함수는 `tests/place-fn.test.cjs`(test:finance).

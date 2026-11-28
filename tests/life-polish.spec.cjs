@@ -23,7 +23,8 @@ test('✅ 할 일: 매주·매달·평일 반복을 알아듣고, 다른 날 반
 });
 
 test('✅ 할 일: 공부 할 일의 ⏱는 공부 타이머를 그 자격증 과목으로 시작하고, 1시간 채우면 할 일도 끝(분은 한 번만)',async({page})=>{
- await seed(page,`localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'g',name:'정보처리기사',goal:true}]}))`,[]);
+ // The day boundary (dayStart) is put 12 hours away from now so the 61 minutes below never cross it (CI at 05:59 UTC split them).
+ await seed(page,`localStorage.setItem('firemate_certificates_v1',JSON.stringify({list:[{id:'g',name:'정보처리기사',goal:true}]}));localStorage.setItem('firemate_study_v1',JSON.stringify({dayStart:(new Date().getHours()+12)%24}))`,[]);
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmTodoOpen').click();
  await page.locator('[data-todo-sugg=cert]').click();
  await page.locator('[data-todo-timer]').click();

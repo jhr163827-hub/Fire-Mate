@@ -12,13 +12,13 @@ test('🍽️ 네이버지도 공유 글 → 이름·주소·링크·동네(연�
  await page.fill('#fmShopPaste',NAVER);
  await expect(page.locator('#fmShopName')).toHaveValue('연남 손칼국수');await expect(page.locator('#fmShopAddr')).toHaveValue('서울 마포구 연남동 224-1');
  await expect(page.locator('#fmShopWhere')).toHaveText('📍 마포구 연남동');await expect(page.locator('[data-kind="food"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('#fmShopSheet [data-w="couple"]').click();await page.locator('[data-rate="4"]').click();await page.fill('#fmShopMemo','면이 쫄깃');await page.fill('#fmShopDate',day(-3));
+ await page.locator('#fmShopSheet [data-w="couple"]').click();await page.fill('#fmShopRate','4');await page.fill('#fmShopMemo','면이 쫄깃');await page.fill('#fmShopDate',day(-3));
  await page.locator('#fmShopSheet .primary').click();
  const s=(await st(page,'firemate_travel_shops_v1')).list[0];
  expect(s).toMatchObject({name:'연남 손칼국수',url:'https://naver.me/AbCd123',src:'naver',kind:'food',place:'11',gu:'마포구',dong:'연남동',want:false,visits:[{d:day(-3),with:'couple',rate:4,memo:'면이 쫄깃'}]});
  const m=await st(page,'firemate_travel_map_v1');expect(m.kr['11']).toBe(1);expect(m.sub.D11[s.dongc]).toBe(1);expect(Object.values(m.sub.K11)).toContain(1);
  await expect(page.locator('circle.fm-jn-dot.shop')).toHaveCount(1);
- await expect(page.locator('[data-shop]')).toContainText('연남 손칼국수');await expect(page.locator('[data-shop]')).toContainText('★4');await expect(page.locator('[data-shop]')).toContainText('면이 쫄깃');
+ await expect(page.locator('[data-shop]')).toContainText('연남 손칼국수');await expect(page.locator('[data-shop]')).toContainText('★4.0');await expect(page.locator('[data-shop]')).toContainText('면이 쫄깃');
  await expect(page.locator('.fm-shop-go')).toHaveAttribute('href','https://naver.me/AbCd123');await expect(page.locator('#fmJournalSub')).toContainText('가게 1곳');
  // Same shop again (another share link, same name·address): asked, then a second visit on the same shop.
  await page.locator('[data-shopadd]').click();await page.fill('#fmShopPaste',NAVER.replace('AbCd123','Zz999'));await page.locator('#fmShopSheet .primary').click();
@@ -53,8 +53,8 @@ test('🍽️ 카카오맵 공유 · 가고 싶어요 → 다녀왔어요, 종�
  await page.locator('circle.fm-jn-dot.shop:not(.want)').dispatchEvent('click');await expect(page.locator('.fm-shop-h p')).toContainText('여기서 간 가게 1곳');await expect(page.locator('[data-shop]')).toHaveCount(1);
  // 가고 싶은 가게 → 다녀왔어요.
  await page.goto('/index.html');await page.locator('#settingsBottom').click();await page.locator('#fmJournalOpen').click();
- await page.locator('[data-shop="'+l[0].id+'"]').click();await page.locator('#fmShopVAdd').click();await page.locator('[data-rate="5"]').click();await page.locator('#fmShopSheet .primary').click();
- expect((await st(page,'firemate_travel_shops_v1')).list[0]).toMatchObject({want:false,visits:[{d:day(0),rate:5}]});
+ await page.locator('[data-shop="'+l[0].id+'"]').click();await page.locator('#fmShopVAdd').click();await page.fill('#fmShopRate','4.7');await expect(page.locator('#fmShopRateV')).toHaveText('4.7점');await page.locator('#fmShopSheet .primary').click();
+ expect((await st(page,'firemate_travel_shops_v1')).list[0]).toMatchObject({want:false,visits:[{d:day(0),rate:4.7}]});
 });
 
 test('🍽️ 안드로이드 공유로 열면 가게 추가 창이 채워져 열리고, 링크 중복 · 이름 없이는 저장 안 함 · 백업에 들어감',async({page})=>{

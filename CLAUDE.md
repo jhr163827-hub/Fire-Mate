@@ -228,3 +228,8 @@ FIRE_MATE_URL=http://127.0.0.1:4180 python3 -m unittest discover -s tests -p 'te
 - 테스트 `tests/audit-286.spec.cjs`.
 - ⏱️ 2차(같은 PR): `sw.js` 앱 열기는 여전히 네트워크 먼저지만, 저장된 페이지가 있으면 **3초 안에 못 받을 때 저장된 페이지로 연다**(다운로드는 뒤에서 끝까지 받아 다음에 열 때 씀, `event.waitUntil`). 업데이트 안내(`fm-pwa-updates`)·`validPage` 검사는 그대로. `vendor/`도 `arcade/`처럼 받은 것을 캐시에 넣어 오프라인 가져오기에 씀. 테스트 `tests/sw-fallback.test.cjs`(test:finance).
 - 생활 기능 나눠 불러오기는 **하지 않음**: 앱 전체가 메인 스크립트 한 클로저(약 75만 자)를 공유하고, CPU 6배 느리게(저가 폰)도 첫 화면 준비가 약 0.9초라 나눠도 0.2초 안팎 — 위험에 비해 이득이 작음(2026-11-28 측정).
+
+## v3.5.287 가게 사진·여행 일지 배치 (사용자 "사진 첨부, 가게 추가가 밑에 있어 불편 → 전체 위치 편하게")
+- 여행 일지 첫 화면: 찾기 줄(📍 여기 왔어요) 바로 아래 `.fm-jn-acts` 버튼 줄 `🍽️ 가게 기록`(국내만, `data-shopadd` — 메인 화면의 가게 묶음 머리엔 `＋ 가게` 없음, 구·동 지도엔 그대로)·`✈️ 여행 추가`(`#fmJnNewTop`). 지도 아래는 탭 `🍽️ 가게 · 📍 발자국 · ✈️ 여행`(`.fm-jn-seg`, `data-jnseg`) 중 하나만 펼침(`.fm-jn-sec[data-sec]`, 고른 탭은 국내·해외 따로 `sessionStorage fm-jn-seg-<area>`, 기본은 가게→발자국→여행 중 있는 것). 여행 추가 칸이 열리면 여행 탭, 가게 저장·지도 노란 점은 가게 탭, 여기 왔어요·가볼 만한 곳은 발자국 탭으로. 브라우저 테스트는 `__fmJnSegTest`가 없으면 전부 보임.
+- 📷 가게 사진: 가게 시트 `#fmShopPhs`(여러 장, 20장까지, `fmShrink` 1600px JPEG, IndexedDB `shop:<가게 id>:<uid>`, 가게 `photos`[키]). 새 가게는 저장할 때 같이 저장(창을 그냥 닫으면 넣은 파일도 지움), 기존 가게는 넣거나 지우면 바로 저장. 누르면 크게 보기·지우기(`fmShopPhView`), 목록 줄 아이콘 자리에 첫 사진, 가게를 지우면 사진도 지움, 사진 ZIP `가게/이름/n`·되살리기 `shop:`.
+- 테스트 `tests/shops-photo-layout.spec.cjs`.

@@ -3195,3 +3195,11 @@ html body #settingsOverlay #fmStartSel{flex:0 0 auto;max-width:46%;min-height:40
 .fm-shop-open{text-align:center;text-decoration:none}
 .fm-jn-dot.shop{fill:#ffb300}
 .fm-jn-dot.shop.want{fill:transparent;stroke:#ffb300;stroke-width:2.5}
+.fm-more-sug{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 2px}
+.fm-more-sug small{width:100%;color:var(--sub);font-size:12px}
+.fm-more-sug button[data-more-go]{width:auto;margin:0;padding:6px 10px;border-radius:999px;font-size:13px;background:var(--panel);color:var(--txt);border:0}
+.fm-more-sug button[data-more-go] i{font-style:normal;margin-right:4px}
+.fm-dev .fm-life-row{align-items:center}
+.fm-dev .fm-life-main{cursor:default}
+.fm-dev-go{width:auto;margin:0;padding:6px 14px;font-size:13px;border-radius:999px;flex:none}
+.fm-dev-st{font-size:13px}
